@@ -1,14 +1,17 @@
-function record_data(arduino, fpath, numiter, wait)
-  file = fopen(fpath);
-  i = 0;
+function record_data(a, fpath, numiter, wait)
+  fpath_write = fopen(fpath, 'w');
+  fprintf('Beginning in...\n');
+  for (i = 0:2)
+    fprintf('%d\n', 3-i);
+    pause(1);
+  end
   tic;
   while (i < numiter)
     t_now = toc;
     v = readVoltage(a, 'A0');
     fprintf('%16.8f  %16.8f\n', t_now, v);
-    fprintf(file, '%16.8f  %16.8f\n', t_now, v);
-    i = i + 1;
+    fprintf(fpath_write, '%16.8f  %16.8f\n', t_now, v);
     pause(wait);
   end
-  fclose(file);
+  fclose(fpath_write);
 end

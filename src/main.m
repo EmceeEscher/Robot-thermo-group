@@ -4,11 +4,13 @@
 %% Constants
 PATH_ARDUINO = '/dev/tty.usbmodem1421';  % mac/unix
 %% PATH_ARDUINO = 'COM3';  % pc
+TIME = 60 * 20;
+PERIOD = 0.5;
+NUM_ITER = TIME / PERIOD;
+WRITE_FILE = '../data/calibrate.dat';
 
 %% Script
-arduino = initialize_arduino(PATH_ARDUINO);
-if (arduino ~= 0)
-  record_data(arduino, './test.dat', 1000, 0.5);
-else
-  fprintf('Arduino not found at %s\n', PATH_ARDUINO);
-end
+clearvars a;
+a = arduino(PATH_ARDUINO, 'Uno');
+%% record_data(a, WRITE_FILE, NUM_ITER, PERIOD);
+manual_calibrate(a, WRITE_FILE);
