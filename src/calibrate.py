@@ -20,12 +20,14 @@ y_pts = [p[1] for p in points]
 x_array = np.array(x_pts)
 y_array = np.array(y_pts)
 
+
 # Fit to points
 def linear(x, params):
     a, b = params[:2]
     return a * x + b
 
 fit_function = linear
+
 
 def lsq(params, fitfn, x_arr, y_arr):
     y_fit = np.empty_like(y_arr)

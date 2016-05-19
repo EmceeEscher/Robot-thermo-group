@@ -1,17 +1,26 @@
-function record_data(a, pin, fpath, numiter, wait)
-  fpath_write = fopen(fpath, 'w');
-  fprintf('Beginning in...\n');
-  for (i = 0:2)
-    fprintf('%d\n', 3-i);
-    pause(1);
+function record_data(a, pins, fpaths, numiter, wait)
+  [n, zzz] = size(fpaths);
+  %% open files
+  f = zeros(n);
+  for (i = 1:n)
+    f(i) = fopen(fpaths(i, :), 'w');
   end
+  fprintf('Beginning data recording...\n');
   tic;
   while (i < numiter)
-    t_now = toc;
-    v = readVoltage(a, pin);
-    fprintf('%16.8f  %16.8f\n', t_now, v);
-    fprintf(fpath_write, '%16.8f  %16.8f\n', t_now, v);
+    i = i + 1;
+    %% get data for each pin
+    for (j = 1:n)
+      t = toc;
+      v = readVoltage(a, pins(j, :));
+      fprintf('t = %16.8f  V_%s = %16.8f\n', t, pins(j, :), v);
+      fprintf(f(j), '%16.8f  %16.8f\n', t, v);
+    end
     pause(wait);
   end
-  fclose(fpath_write);
+  %% close files
+  for (i = 1:n)
+    fclose(f(i));
+    fprintf('\nOutput for pin %s written to %s\n\n', pins(i, :), f(i));
+  end
 end

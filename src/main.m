@@ -7,11 +7,11 @@ PATH_ARDUINO = '/dev/tty.usbmodem1421';  % mac/unix
 TIME = 60 * 20;
 PERIOD = 0.5;
 NUM_ITER = TIME / PERIOD;
-PINS = [['A0']; ['A1']; ['A2']; ['A3'];];
-WRITE_FILES = [['../data/testA0.dat'];
-	       ['../data/testA1.dat'];
-	       ['../data/testA2.dat'];
-	       ['../data/testA3.dat'];
+PINS = ['A0'; 'A1'; 'A2'; 'A3';];
+WRITE_FILES = ['../data/testA0.dat';
+	       '../data/testA1.dat';
+	       '../data/testA2.dat';
+	       '../data/testA3.dat';
 	      ];
 
 %% Script
