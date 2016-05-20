@@ -3,7 +3,7 @@
 
 %% Constants
 PATH_ARDUINO = '/dev/tty.usbmodem1421';  % mac/unix
-%% PATH_ARDUINO = 'COM3';  % pc
+%% PATH_ARDUINO = 'COM3';  % windows
 TIME = 60 * 20;
 PERIOD = 0.5;
 NUM_ITER = TIME / PERIOD;
