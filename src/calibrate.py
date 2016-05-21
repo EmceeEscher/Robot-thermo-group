@@ -4,7 +4,7 @@ from scipy.optimize import leastsq
 import numpy as np
 
 # Constants
-FPATH_CALIBRATE = '../data/calibrate.dat'
+FPATH_CALIBRATE = '../data/calibrate_tc1.dat'
 
 # Parse file
 points = list()
