@@ -13,7 +13,7 @@ MAX_Z = 0.5
 DIM_Z = 10
 T_ATM = 300.0
 T_SRC = 1000.0
-NUM_STEPS = 100
+NUM_STEPS = 1000
 TIME_STEP = 1.0
 ALPHA = 1.0
 
@@ -50,23 +50,48 @@ for step in range(NUM_STEPS):
             t1 = point_to_temp_map[(idx_r+1, idx_a, idx_z)]
             t_1 = point_to_temp_map[(idx_r-1, idx_a, idx_z)]
         else:  # boundary conditions
-            pass
+            if min_idx_r == idx_r:
+                t1 = point_to_temp_map[(idx_r+1, idx_a, idx_z)]
+                t_1 = point_to_temp_map[
+                    (idx_r, (idx_a+DIM_A/2)%DIM_A, idx_z)]
+            else:
+                t_1 = point_to_temp_map[(idx_r-1, idx_a, idx_z)]
+                t1 = t_1
         next_temp += ALPHA*dt/dr**2 * (t1 - 2*temp + t_1)
-        next_temp += ALPHA*dt/(r*dr) * (t1 - t_1)
+        if r != 0:
+            next_temp += ALPHA*dt/(r*dr) * (t1 - t_1)
         # angular part
         if min_idx_a < idx_a < max_idx_a:
             t1 = point_to_temp_map[(idx_r, idx_a+1, idx_z)]
             t_1 = point_to_temp_map[(idx_r, idx_a-1, idx_z)]
         else:  # boundary conditions
-            pass
-        next_temp += ALPHA*dt/(r*da)**2 * (t1 - 2*temp + t_1)
+            if min_idx_a == idx_a:
+                t1 = point_to_temp_map[(idx_r, idx_a+1, idx_z)]
+                t_1 = point_to_temp_map[(idx_r, max_idx_a, idx_z)]
+            else:
+                t_1 = point_to_temp_map[(idx_r, idx_a-1, idx_z)]
+                t1 = point_to_temp_map[(idx_r, min_idx_a, idx_z)]
+        if r != 0:
+            next_temp += ALPHA*dt/(r*da)**2 * (t1 - 2*temp + t_1)
         # axial part
         if min_idx_z < idx_z < max_idx_z:
             t1 = point_to_temp_map[(idx_r, idx_a, idx_z+1)]
             t_1 = point_to_temp_map[(idx_r, idx_a, idx_z-1)]
         else:  # boundary conditions
-            pass
+            if min_idx_z == idx_z:
+                next_temp = T_SRC
+                next_point_to_temp_map[point] = next_temp
+                continue
+            else:
+                t_1 = point_to_temp_map[(idx_r, idx_a, idx_z-1)]
+                t1 = t_1
         next_temp += ALPHA*dt/dz**2 * (t1 - 2*temp + t_1)
         # add point to map
         next_point_to_temp_map[point] = next_temp
     point_to_temp_map = next_point_to_temp_map
+    # print stuff
+    for point, temp in sorted(point_to_temp_map.items()):
+        idx_r, idx_a, idx_z = point
+        if idx_a == 0 and idx_r == 0:
+            print('{:8.2f}'.format(temp), end=' ')
+    print()
