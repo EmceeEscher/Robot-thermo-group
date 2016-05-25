@@ -46,7 +46,7 @@ for step in range(NUM_STEPS):
         if idx_a == 0 and idx_r == 0:
             print('{:8.2f}'.format(temp), end=' ')
     print()
-
+    # do finite differencing
     next_point_to_temp_map = dict()
     for point, temp in point_to_temp_map.items():
         idx_r, idx_a, idx_z = point
@@ -55,48 +55,52 @@ for step in range(NUM_STEPS):
         # radial part
         if min_idx_r < idx_r < max_idx_r:
             t1 = point_to_temp_map[(idx_r+1, idx_a, idx_z)]
+            t0 = temp
             t_1 = point_to_temp_map[(idx_r-1, idx_a, idx_z)]
         else:  # boundary conditions
             if min_idx_r == idx_r:
                 t1 = point_to_temp_map[(idx_r+1, idx_a, idx_z)]
+                t0 = t1
                 t_1 = point_to_temp_map[
                     (idx_r, (idx_a+DIM_A/2) % DIM_A, idx_z)]
             else:
                 t_1 = point_to_temp_map[(idx_r-1, idx_a, idx_z)]
-                t1 = t_1
-        next_temp += ALPHA*dt/dr**2 * (t1 - 2*temp + t_1)
+                t0 = temp
+                t1 = t0
+        next_temp += ALPHA*dt/dr**2 * (t1 - 2*t0 + t_1)
         if r != 0:
-            next_temp += ALPHA*dt/(r*dr) * (t1 - temp)
+            next_temp += ALPHA*dt/(r*dr) * (t1 - t0)
         # angular part
         if min_idx_a < idx_a < max_idx_a:
             t1 = point_to_temp_map[(idx_r, idx_a+1, idx_z)]
+            t0 = temp
             t_1 = point_to_temp_map[(idx_r, idx_a-1, idx_z)]
         else:  # boundary conditions
             if min_idx_a == idx_a:
                 t1 = point_to_temp_map[(idx_r, idx_a+1, idx_z)]
+                t0 = temp
                 t_1 = point_to_temp_map[(idx_r, max_idx_a, idx_z)]
             else:
                 t_1 = point_to_temp_map[(idx_r, idx_a-1, idx_z)]
+                t0 = temp
                 t1 = point_to_temp_map[(idx_r, min_idx_a, idx_z)]
         if r != 0:
-            next_temp += ALPHA*dt/(r*da)**2 * (t1 - 2*temp + t_1)
+            next_temp += ALPHA*dt/(r*da)**2 * (t1 - 2*t0 + t_1)
         # axial part
         if min_idx_z < idx_z < max_idx_z:
             t1 = point_to_temp_map[(idx_r, idx_a, idx_z+1)]
+            t0 = temp
             t_1 = point_to_temp_map[(idx_r, idx_a, idx_z-1)]
         else:  # boundary conditions
             if min_idx_z == idx_z:
-                if min_idx_r == idx_r:
-                    next_temp = T_SRC
-                    next_point_to_temp_map[point] = next_temp
-                    continue
-                else:
-                    t1 = point_to_temp_map[(idx_r, idx_a, idx_z+1)]
-                    t_1 = t1
+                next_temp = T_SRC
+                next_point_to_temp_map[point] = next_temp
+                continue
             else:
                 t_1 = point_to_temp_map[(idx_r, idx_a, idx_z-1)]
-                t1 = t_1
-        next_temp += ALPHA*dt/dz**2 * (t1 - 2*temp + t_1)
+                t0 = temp
+                t1 = t0
+        next_temp += ALPHA*dt/dz**2 * (t1 - 2*t0 + t_1)
         # add point to map
         next_point_to_temp_map[point] = next_temp
     point_to_temp_map = next_point_to_temp_map
