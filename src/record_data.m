@@ -1,4 +1,4 @@
-function record_data(a, pins, fpaths, numiter, wait)
+function record_data(a, pins, fpaths, numiter, max_time, wait)
   [n, zzz] = size(fpaths);
   %% open files
   f = zeros(n);
@@ -7,7 +7,8 @@ function record_data(a, pins, fpaths, numiter, wait)
   end
   fprintf('Beginning data recording...\n');
   tic;
-  while (i < numiter)
+  t = 0
+  while (i < numiter & t < max_time)
     i = i + 1;
     %% get data for each pin
     for (j = 1:n)

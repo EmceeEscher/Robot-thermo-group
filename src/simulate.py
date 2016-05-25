@@ -1,6 +1,10 @@
 from __future__ import print_function, division
 from math import pi
+from matplotlib import pyplot as plt
+from matplotlib import animation, colors, cm
+from mpl_toolkits.mplot3d import axes3d as p3
 import numpy as np
+# import visual as vpy
 
 MIN_R = 0.0
 MAX_R = 0.1
@@ -39,6 +43,7 @@ for idx_r in range(len(r_array)):
             point_to_temp_map[(idx_r, idx_a, idx_z)] = temp
 
 # begin finite differencing
+point_to_temp_map_list = [point_to_temp_map]
 for step in range(NUM_STEPS):
     # print stuff
     for point, temp in sorted(point_to_temp_map.items()):
@@ -50,7 +55,8 @@ for step in range(NUM_STEPS):
     next_point_to_temp_map = dict()
     for point, temp in point_to_temp_map.items():
         idx_r, idx_a, idx_z = point
-        r, a, z = r_array[idx_r], a_array[idx_a], z_array[idx_z]
+        # r, a, z = r_array[idx_r], a_array[idx_a], z_array[idx_z]
+        r = r_array[idx_r]
         next_temp = temp
         # radial part
         if min_idx_r < idx_r < max_idx_r:
@@ -104,3 +110,60 @@ for step in range(NUM_STEPS):
         # add point to map
         next_point_to_temp_map[point] = next_temp
     point_to_temp_map = next_point_to_temp_map
+    point_to_temp_map_list.append(point_to_temp_map)
+
+
+# do animation or something
+def update_lines(num, lines, temp_array, scalar_map):
+    temp_list = temp_array[num]
+    for line, temp in zip(lines, temp_list):
+        line.set_color(scalar_map.to_rgba(temp))
+    return lines
+
+NSKIP = 10
+TEMP_MIN = 200
+TEMP_MAX = 1000
+fig = plt.figure()
+ax = p3.Axes3D(fig)
+c_norm = colors.Normalize(vmin=TEMP_MIN, vmax=TEMP_MAX)
+scalar_map = cm.ScalarMappable(norm=c_norm, cmap='rainbow')
+
+data_points = sorted(point_to_temp_map.keys())
+temp_array = list()
+i = 0
+for point_to_temp_map in point_to_temp_map_list:
+    if i % NSKIP == 0:
+        temp_array.append(
+            [temp for point, temp in sorted(point_to_temp_map.items())])
+    i += 1
+lines = list()
+all_pts_list = list()
+for point, temp in zip(data_points, temp_array[0]):
+    idx_r, idx_a, idx_z = point
+    r, a, z = r_array[idx_r], a_array[idx_a], z_array[idx_z]
+    x = r * np.cos(a)
+    y = r * np.sin(a)
+    all_pts_list.append((x, y, z))
+    x_arr = np.array([x])
+    y_arr = np.array([y])
+    z_arr = np.array([z])
+    lines.append(
+        ax.plot(x_arr, y_arr, z_arr, 'o', color=scalar_map.to_rgba(temp))[0])
+
+ani = animation.FuncAnimation(
+    fig=fig, func=update_lines, frames=len(temp_array),
+    fargs=(lines, temp_array, scalar_map), interval=50, blit=False,
+    repeat=False,
+)
+plt.show()
+
+# # vpython
+# pts_obj_list = list()
+# for point, temp in zip(all_pts_list, temp_array[0]):
+#     c = scalar_map.to_rgba(temp)
+#     pts_obj_list.append(vpy.points(pos=[point], size=50, color=c))
+# for temp_list in temp_array:
+#     vpy.sleep(0.01)
+#     for pt_obj, temp in zip(pts_obj_list, temp_list):
+#         c = scalar_map.to_rgba(temp)
+#         pt_obj.color = c
