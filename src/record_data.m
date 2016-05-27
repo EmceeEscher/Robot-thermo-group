@@ -38,7 +38,7 @@ function [t_arr, v_arr] = record_data(a, pins, fpaths, numiter,...
   %% close files
   for (j = 1:n)
     fclose(f(j));
-    fprintf('\nOutput for pin %s written to %s\n\n', pins(j, :), f(j));
+    fprintf('Output for pin %s written to %s\n', pins(j, :), f(j));
   end
   %% return vectors
   t_arr = t_arr0;
