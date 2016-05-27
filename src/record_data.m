@@ -3,9 +3,14 @@ function [t_arr, v_arr] = record_data(a, pins, fpaths, numiter,...
   [n, zzz] = size(fpaths);
   %% open files
   f = zeros(n);
-  for (i = 1:n)
-    f(i) = fopen(fpaths(i, :), 'w');
+  for (j = 1:n)
+    f(j) = fopen(fpaths(j, :), 'w');
   end
+  %% do an initial read for all pins
+  for (j = 1:n)
+    readVoltage(a, pins(j, :));
+  end
+  %% begin recording
   fprintf('Beginning data recording...\n');
   tic;
   t = 0
@@ -31,9 +36,9 @@ function [t_arr, v_arr] = record_data(a, pins, fpaths, numiter,...
     pause(wait);
   end
   %% close files
-  for (i = 1:n)
-    fclose(f(i));
-    fprintf('\nOutput for pin %s written to %s\n\n', pins(i, :), f(i));
+  for (j = 1:n)
+    fclose(f(j));
+    fprintf('\nOutput for pin %s written to %s\n\n', pins(j, :), f(j));
   end
   %% return vectors
   t_arr = t_arr0;

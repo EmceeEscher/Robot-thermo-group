@@ -6,6 +6,11 @@ function manual_calibrate(a, pins, fpaths)
   for (i = 1:n)
     f(i, 1) = fopen(fpaths(i, :), 'w');
   end
+  %% do an initial read for all pins
+  for (i = 1:n)
+    readVoltage(a, pins(i, :));
+  end
+  %% begin calibration
   fprintf('Beginning calibration curve...\n');
   while (1)
     %% user inputs temperatire
