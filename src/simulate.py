@@ -33,7 +33,8 @@ TIME_STEP = 1.0  # seconds
 
 
 # functions
-def finite_difference_step(point_to_temp_map, alpha, t_src, r_array, dim_a):
+def finite_difference_step(point_to_temp_map, r_array, a_array, z_array, dt,
+                           alpha, t_src):
     """Step forward in the cylindrical polar heat equation
         u_t = alpha * laplacian(u)
     :param point_to_temp_map: map from cylindrical point indices to temperature
@@ -41,8 +42,13 @@ def finite_difference_step(point_to_temp_map, alpha, t_src, r_array, dim_a):
     :param alpha: constant of proportionality in heat equation
     :param t_src: source temperature
     :param r_array: array of r values (acts as a map idx_r -> r)
-    :param dim_a: angular dimension, i.e. number of angular points
     """
+    dim_r = len(r_array)
+    dim_a = len(a_array)
+    dim_z = len(z_array)
+    dr = (dim_r - 1) / (r_array[-1] - r_array[0])
+    da = (dim_a - 1) / (a_array[-1] - a_array[0])
+    dz = (dim_z - 1) / (z_array[-1] - z_array[0])
     next_point_to_temp_map = dict()
     for point, temp in point_to_temp_map.items():
         idx_r, idx_a, idx_z = point
@@ -133,8 +139,9 @@ for step in range(NUM_STEPS):
     print()
     # do finite difference
     next_point_to_temp_map = finite_difference_step(
-        point_to_temp_map=point_to_temp_map, alpha=ALPHA, t_src=T_SRC,
-        r_array=r_array, dim_a=DIM_A,
+        point_to_temp_map=point_to_temp_map,
+        r_array=r_array, a_array=a_array, z_array=z_array, dt=dt,
+        alpha=ALPHA, t_src=T_SRC,
     )
     point_to_temp_map = next_point_to_temp_map
     point_to_temp_map_list.append(point_to_temp_map)
