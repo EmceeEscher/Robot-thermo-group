@@ -1,25 +1,34 @@
+#!/bin/python
+"""simulate.py
+An attempt at a 3-dimensional heat flow simulation in cylindrical-polar
+coordinates
+"""
 from __future__ import print_function, division
 from math import pi
 from matplotlib import pyplot as plt
 from matplotlib import animation, colors, cm
 from mpl_toolkits.mplot3d import axes3d as p3
 import numpy as np
-# import visual as vpy
 
+# constants
+# radial dimensions (meters)
 MIN_R = 0.0
 MAX_R = 0.1
 DIM_R = 10
+# angular dimensions (radians)
 MIN_A = 0.0
 MAX_A = 2 * pi
 DIM_A = 10
+# axial dimensions (meters)
 MIN_Z = 0.0
 MAX_Z = 0.5
 DIM_Z = 10
+# thermodynamical parameters
 T_ATM = 300.0
 T_SRC = 1000.0
+ALPHA = 1.0
 NUM_STEPS = 1000
 TIME_STEP = 1.0
-ALPHA = 1.0
 
 # initialize points
 dt = TIME_STEP
@@ -156,14 +165,3 @@ ani = animation.FuncAnimation(
     repeat=False,
 )
 plt.show()
-
-# # vpython
-# pts_obj_list = list()
-# for point, temp in zip(all_pts_list, temp_array[0]):
-#     c = scalar_map.to_rgba(temp)
-#     pts_obj_list.append(vpy.points(pos=[point], size=50, color=c))
-# for temp_list in temp_array:
-#     vpy.sleep(0.01)
-#     for pt_obj, temp in zip(pts_obj_list, temp_list):
-#         c = scalar_map.to_rgba(temp)
-#         pt_obj.color = c
