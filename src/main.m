@@ -19,6 +19,7 @@ WRITE_FILES = [
 %% Script
 clearvars a;
 a = arduino(PATH_ARDUINO, 'Uno');
-%% record_data(a, PINS, WRITE_FILES, NUM_ITER, MAX_TIME, PERIOD);
+%% [t_arr, v_arr] = record_data(a, PINS, WRITE_FILES, NUM_ITER,...
+%% 			     MAX_TIME, PERIOD);
 %% manual_calibrate(a, PINS, WRITE_FILES);
 %% [x, y] = get_calibration('../data/calibrate.dat');
