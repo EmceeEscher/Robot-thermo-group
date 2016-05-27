@@ -4,6 +4,7 @@ An attempt at a 3-dimensional heat flow simulation in cylindrical-polar
 coordinates
 """
 from __future__ import print_function, division
+from os import path
 from math import pi
 from matplotlib import pyplot as plt
 from matplotlib import animation, colors, cm
@@ -113,9 +114,28 @@ def finite_difference_step(point_to_temp_map, r_array, a_array, z_array, dt,
     return next_point_to_temp_map
 
 
-def run_simulation(time_step, r_array, a_array, z_array, t_src, t_atm):
+def simulation(
+        time_step, r_array, a_array, z_array, t_src, t_atm, alpha):
+    """Returns a generator object that will step the cylindrical-polar
+    point -> temp map accoring to finite_difference_step, yielding this map
+    after each step.
+    The point -> temp map has the form
+        (idx_r, idx_a, idx_z) -> temp,
+    where
+        r = r_array[idx_r]
+        a = a_array[idx_a]
+        z = z_array[idx_z]
+    :param time_step: time difference, dt
+    :param r_array: array of r (radial) points
+    :param a_array: array of a (angular) points [0, 2pi)
+    :param z_array: array of z (axial) points
+    :param t_src: source temperature
+    :param t_atm: atmospheric (ambient) temperature
+    :param alpha: constant of proportionality for the Laplacian
+    :return generator object, which yields the point -> temp array after
+    each step
+    """
     # initialize points
-    dt = time_step
     point_to_temp_map = dict()
     for idx_r in range(len(r_array)):
         for idx_a in range(len(a_array)):
@@ -127,12 +147,12 @@ def run_simulation(time_step, r_array, a_array, z_array, t_src, t_atm):
                 point_to_temp_map[(idx_r, idx_a, idx_z)] = temp
     # begin finite differencing
     yield point_to_temp_map
-    for step in range(NUM_STEPS):
+    while True:
         # do finite difference
         next_point_to_temp_map = finite_difference_step(
             point_to_temp_map=point_to_temp_map,
-            r_array=r_array, a_array=a_array, z_array=z_array, dt=dt,
-            alpha=ALPHA, t_src=T_SRC,
+            r_array=r_array, a_array=a_array, z_array=z_array, dt=time_step,
+            alpha=alpha, t_src=t_src,
         )
         point_to_temp_map = next_point_to_temp_map
         yield point_to_temp_map
