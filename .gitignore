@@ -4,3 +4,4 @@ Icon*
 src/simulate-try1.py
 .DS_Store
 *.sh
+src/simulations/*.dat
