@@ -151,12 +151,11 @@ def simulation(
     yield point_to_temp_map
     while True:
         # do finite difference
-        next_point_to_temp_map = finite_step_method(
+        point_to_temp_map = finite_step_method(
             point_to_temp_map=point_to_temp_map,
             r_array=r_array, a_array=a_array, z_array=z_array, dt=time_step,
             alpha=alpha, t_src=t_src,
         )
-        point_to_temp_map = next_point_to_temp_map
         yield point_to_temp_map
 
 
