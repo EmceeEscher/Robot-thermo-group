@@ -38,8 +38,8 @@ Z_ARRAY = np.linspace(MIN_Z, MAX_Z, DIM_Z)
 
 
 # functions
-def finite_difference_step(point_to_temp_map, r_array, a_array, z_array, dt,
-                           alpha, t_src):
+def explicit_step(point_to_temp_map, r_array, a_array, z_array, dt,
+                  alpha, t_src):
     """Step forward in the cylindrical polar heat equation
         u_t = alpha * laplacian(u)
     :param point_to_temp_map: map from cylindrical point indices to temperature
@@ -115,7 +115,9 @@ def finite_difference_step(point_to_temp_map, r_array, a_array, z_array, dt,
 
 
 def simulation(
-        time_step, r_array, a_array, z_array, t_src, t_atm, alpha):
+        time_step, r_array, a_array, z_array, t_src, t_atm, alpha,
+        finite_step_method=explicit_step,
+):
     """Returns a generator object that will step the cylindrical-polar
     point -> temp map accoring to finite_difference_step, yielding this map
     after each step.
@@ -149,7 +151,7 @@ def simulation(
     yield point_to_temp_map
     while True:
         # do finite difference
-        next_point_to_temp_map = finite_difference_step(
+        next_point_to_temp_map = finite_step_method(
             point_to_temp_map=point_to_temp_map,
             r_array=r_array, a_array=a_array, z_array=z_array, dt=time_step,
             alpha=alpha, t_src=t_src,
