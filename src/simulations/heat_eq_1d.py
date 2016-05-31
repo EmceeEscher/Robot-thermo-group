@@ -1,5 +1,4 @@
 from __future__ import division, print_function
-from math import pi
 from datetime import datetime
 import numpy as np
 
@@ -42,23 +41,21 @@ def _explicit_step_func(point_to_temp_map, x_array, dt, alpha, t_src, t_amb):
     """
     max_idx_x = len(x_array) - 1
     dx = max_idx_x / (x_array[max_idx_x] - x_array[0])
-    next_point_to_temp_map = dict()
-    for point, temp in point_to_temp_map.items():
-        idx_x = point
-        u0 = point_to_temp_map[idx_x]
-        if idx_x == 0:
-            u_1 = t_src
-            u1 = point_to_temp_map[idx_x+1]
-        elif idx_x == max_idx_x:
-            u_1 = point_to_temp_map[idx_x-1]
-            u1 = t_amb
-        else:  # non-boundary
-            u_1 = point_to_temp_map[idx_x-1]
-            u1 = point_to_temp_map[idx_x+1]
-        k = alpha * dt / dx**2
-        next_temp = k * u1 + (1 - 2*k) * u0 + k * u_1
-        next_point_to_temp_map[idx_x] = next_temp
-    return next_point_to_temp_map
+    # make u^n vector
+    points = sorted(point_to_temp_map.keys())
+    n = len(points)
+    u_prev = np.zeros(shape=n+2)
+    for point, idx in zip(points, range(n)):
+        u_prev[idx+1] = point_to_temp_map[point]
+    # boundary condition ghost points
+    u_prev[0] = t_src
+    u_prev[n+1] = t_amb
+    # make matrix
+    mat = _deriv_matrix(size=n+2, k=alpha*dt/dx**2)
+    # get u^{n+1} vector
+    u_next = np.dot(mat, u_prev)
+    # return point -> temp map
+    return {p: t for p, t in zip(points, u_next[1:-1])}
 
 
 def _implicit_step_func(point_to_temp_map, x_array, dt, alpha, t_src, t_amb):
@@ -110,12 +107,11 @@ def _crank_nicolson_step_func(
     # make matrix for u^n
     k1 = .5 * alpha * dt / dx**2
     mat1 = _deriv_matrix(size=n+2, k=k1)
-    u_prev = np.dot(mat1, u_prev)
     # make matrix for u^{n+1}
     k2 = -k1
     mat2 = _deriv_matrix(size=n+2, k=k2)
     # solve for u^{n+1} vector
-    u_next = np.linalg.solve(mat2, u_prev)
+    u_next = np.linalg.solve(mat2, np.dot(mat1, u_prev))
     # return point -> temp map
     return {p: t for p, t in zip(points, u_next[1:-1])}
 
