@@ -19,7 +19,6 @@ TIME_STEP = 0.01
 X_ARRAY = np.linspace(MIN_X, MAX_X, DIM_X)
 
 
-# data definitions
 def _deriv_matrix(size, k):
     n = size
     mat = np.eye(n)
@@ -49,6 +48,44 @@ def _d2_matrix(n, diff=1):
     return np.dot(_d1_matrix(n=n-diff, diff=diff), _d1_matrix(n=n, diff=diff))
 
 
+# boundary conditions
+def _x0_d0(f_t):
+    def bc(d_mat, u_vect, t):
+        d_mat[0] = np.zeros_like(d_mat[0])
+        d_mat[0, 0] = 1
+        u_vect[0] = f_t(t)
+        return d_mat, u_vect, t
+    return bc
+
+
+def _x0_d1(g_t):
+    def bc(d_mat, u_vect, t, dx):
+        d_mat[0] = np.zeros_like(d_mat[0])
+        d_mat[0, 0] = 1
+        u_vect[0] = u_vect[2] - 2 * dx * g_t(t)
+        return d_mat, u_vect, t
+    return bc
+
+
+def _x1_d0(f_t):
+    def bc(d_mat, u_vect, t):
+        d_mat[-1] = np.zeros_like(d_mat[-1])
+        d_mat[-1, -1] = 1
+        u_vect[-1] = f_t(t)
+        return d_mat, u_vect, t
+    return bc
+
+
+def _x1_d1(g_t):
+    def bc(d_mat, u_vect, t, dx):
+        d_mat[-1] = np.zeros_like(d_mat[-1])
+        d_mat[-1, -1] = 1
+        u_vect[-1] = u_vect[-3] + 2 * dx * g_t(t)
+        return d_mat, u_vect, t
+    return bc
+
+
+# step functions
 def _explicit_step_func(point_to_temp_map, x_array, dt, alpha, t_src, t_amb):
     """Make a step forward in time using the explicit finite difference
     method for the heat equation:
