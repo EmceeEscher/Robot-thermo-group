@@ -32,6 +32,23 @@ def _deriv_matrix(size, k):
     return mat
 
 
+def _d1_matrix(n, diff=1):
+    rows = n - diff
+    cols = n
+    mat = np.zeros(shape=(rows, cols))
+    for i in range(rows):
+        for j in range(cols):
+            if j - i == 0:
+                mat[i, j] = -1
+            elif j - i == diff:
+                mat[i, j] = 1
+    return mat
+
+
+def _d2_matrix(n, diff=1):
+    return np.dot(_d1_matrix(n=n-diff, diff=diff), _d1_matrix(n=n, diff=diff))
+
+
 def _explicit_step_func(point_to_temp_map, x_array, dt, alpha, t_src, t_amb):
     """Make a step forward in time using the explicit finite difference
     method for the heat equation:
@@ -200,10 +217,11 @@ def run_simulation(
 
 
 # script
-run_simulation(
-    fpath='./try.dat', verbose=True,
-    dim_x=DIM_X, min_x=MIN_X, max_x=MAX_X, alpha=ALPHA,
-    t_0=T_0, t_amb=T_AMB, t_src=T_SRC,
-    num_steps=NUM_STEPS, time_step=TIME_STEP,
-    finite_step_method=crank_nicolson
-)
+if __name__ == '__main__':
+    run_simulation(
+        fpath='./try.dat', verbose=True,
+        dim_x=DIM_X, min_x=MIN_X, max_x=MAX_X, alpha=ALPHA,
+        t_0=T_0, t_amb=T_AMB, t_src=T_SRC,
+        num_steps=NUM_STEPS, time_step=TIME_STEP,
+        finite_step_method=crank_nicolson
+    )
