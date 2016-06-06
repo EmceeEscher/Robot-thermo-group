@@ -1,6 +1,6 @@
 %Making jpegs of temperatures
 %f1 to f4 are the filenames for thermocouple data from TCs 1-4
-function getTempGraphs(f1,f2,f3,f4)
+function [o,p,q,r,s,t,u,v] = getTempGraphs(f1,f2,f3,f4)
 
 [o,p] = convertToTemp(f1, '../data/calibration stuff/calibrate_tc1_May_25_Trial_3.dat');
 [q,r] = convertToTemp(f2, '../data/calibration stuff/calibrate_tc2_May_25_Trial_3.dat');

@@ -1,4 +1,4 @@
-function averageValues(x,y)
+function averageValues(x,y,file)
 % n = size(x)
 % y_avg = zeros(1,n(2));
 % 
@@ -14,5 +14,12 @@ function averageValues(x,y)
 % y_new = y_avg(num+1:n(2)-num-1);
 % plot(x_new,y_new);
 % end
-plot(x,smooth(smooth(smooth(smooth(y,60,'sgolay',3),40,'sgolay',3),40,'sgolay',3),40,'sgolay',3));
+
+y_smooth = smooth(smooth(smooth(smooth(y,60,'sgolay',3),40,'sgolay',3),40,'sgolay',3),40,'sgolay',3);
+f = fopen(file,'w');
+for i = 1:size(y_smooth)
+   fprintf(f, '%16.8f %16.8f\n\r', x(i),y_smooth(i)); 
+end
+fclose(f);
+plot(x,y_smooth);
 end
