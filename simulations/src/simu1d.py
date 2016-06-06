@@ -60,7 +60,7 @@ def run_simulation(
         boundary_conditions=boundary_conditions, params_dict=params_dict
     )
     params_lines = [
-        '   {} = {}{}\n'.format(k, ' '*(15 - len(k)), v)
+        '   {} = {}{}\n'.format(k.replace('_', ' '), ' '*(25 - len(k)), v)
         for k, v in params_dict.items()]
     lines = [
         ' {}\n'.format(str(datetime.now())),
@@ -68,24 +68,24 @@ def run_simulation(
         ' Simulation of heat flow through 1-dimensional rod\n',
         '\n',
         ' Dimensions\n',
-        '   dim x =           {}\n'.format(dim_x),
-        '   min x =           {}\n'.format(min_x),
-        '   max x =           {}\n'.format(max_x),
+        '   dim x =                     {}\n'.format(dim_x),
+        '   min x =                     {}\n'.format(min_x),
+        '   max x =                     {}\n'.format(max_x),
         '\n',
         ' Thermodynamical parameters\n',
-        '   initial temp =    {}\n'.format(t_0),
+        '   initial temp =              {}\n'.format(t_0),
     ] + params_lines + [
         '\n',
         ' Boundary conditions:\n',
-        '   method =          {}\n'.format(boundary_conditions.name),
-        '   x0 order =        {}\n'.format(boundary_conditions.x0_order),
-        '   x1 order =        {}\n'.format(boundary_conditions.x1_order),
+        '   method =                    {}\n'.format(boundary_conditions.name),
+        '   x0 order =                  {}\n'.format(boundary_conditions.x0_order),
+        '   x1 order =                  {}\n'.format(boundary_conditions.x1_order),
         '\n',
         ' Finite differencing\n',
-        '   num steps =       {}\n'.format(num_steps),
-        '   time step =       {}\n'.format(time_step),
-        '   method =          {}\n'.format(finite_step_method.name),
-        '   write period =    {}\n'.format(write_period),
+        '   num steps =                 {}\n'.format(num_steps),
+        '   time step =                 {}\n'.format(time_step),
+        '   method =                    {}\n'.format(finite_step_method.name),
+        '   write period =              {}\n'.format(write_period),
         '\n',
     ]
     if verbose:

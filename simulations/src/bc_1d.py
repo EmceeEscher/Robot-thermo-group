@@ -62,72 +62,72 @@ class BoundaryConditions:
 
 
 def get_bc_dirichlet(x0, x1):
+    fx0 = _x0_d0(f_t=lambda t: x0) if x0 is not None else None
+    fx1 = _x1_d0(f_t=lambda t: x1) if x1 is not None else None
     return BoundaryConditions(
-        x0_func=_x0_d0(f_t=lambda t: x0),
-        x1_func=_x1_d0(f_t=lambda t: x1),
-        x0_order=1, x1_order=1,
+        x0_func=fx0, x1_func=fx1, x0_order=1, x1_order=1,
         name='Dirichlet',
     )
 
 
 def get_bc_neumann(x0, x1, dx):
+    fx0 = _x0_d1(g_t=lambda t: x0, dx=dx) if x0 is not None else None
+    fx1 = _x1_d1(g_t=lambda t: x1, dx=dx) if x1 is not None else None
     return BoundaryConditions(
-        x0_func=_x0_d1(g_t=lambda t: x0, dx=dx),
-        x1_func=_x1_d1(g_t=lambda t: x1, dx=dx),
-        x0_order=2, x1_order=2,
+        x0_func=fx0, x1_func=fx1, x0_order=2, x1_order=2,
         name='Neumann',
     )
 
 
 def get_bc_mixed1(x0, x1, dx):
+    fx0 = _x0_d0(f_t=lambda t: x0) if x0 is not None else None
+    fx1 = _x1_d1(g_t=lambda t: x1, dx=dx) if x1 is not None else None
     return BoundaryConditions(
-        x0_func=_x0_d0(f_t=lambda t: x0),
-        x1_func=_x1_d1(g_t=lambda t: x1, dx=dx),
-        x0_order=1, x1_order=2,
+        x0_func=fx0, x1_func=fx1, x0_order=1, x1_order=2,
         name='Mixed I',
     )
 
 
 def get_bc_mixed2(x0, x1, dx):
+    fx0 = _x0_d1(g_t=lambda t: x0, dx=dx) if x0 is not None else None
+    fx1 = _x1_d0(f_t=lambda t: x1) if x1 is not None else None
     return BoundaryConditions(
-        x0_func=_x0_d1(g_t=lambda t: x0, dx=dx),
-        x1_func=_x1_d0(f_t=lambda t: x1),
-        x0_order=2, x1_order=1,
+        x0_func=fx0, x1_func=fx1, x0_order=2, x1_order=1,
         name='Mixed II',
     )
 
 
 def get_bc_time_dirichlet(x0_func, x1_func):
+    fx0 = _x0_d0(f_t=x0_func) if x0_func is not None else None
+    fx1 = _x1_d0(f_t=x1_func) if x1_func is not None else None
     return BoundaryConditions(
-        x0_func=_x0_d0(f_t=x0_func),
-        x1_func=_x1_d0(f_t=x1_func),
-        x0_order=1, x1_order=1,
+        x0_func=fx0, x1_func=fx1, x0_order=1, x1_order=1,
         name='Time-dependent Dirichlet',
     )
 
 
 def get_bc_time_neumann(x0_func, x1_func, dx):
+    fx0 = _x0_d1(g_t=x0_func, dx=dx) if x0_func is not None else None
+    fx1 = _x1_d1(g_t=x1_func, dx=dx) if x1_func is not None else None
     return BoundaryConditions(
-        x0_func=_x0_d1(g_t=x0_func, dx=dx),
-        x1_func=_x1_d1(g_t=x1_func, dx=dx),
-        x0_order=2, x1_order=2,
+        x0_func=fx0, x1_func=fx1, x0_order=2, x1_order=2,
         name='Time-dependent Neumann',
     )
 
 
 def get_bc_time_mixed1(x0_func, x1_func, dx):
+    fx0 = _x0_d0(f_t=x0_func) if x0_func is not None else None
+    fx1 = _x1_d1(g_t=x1_func, dx=dx) if x1_func is not None else None
     return BoundaryConditions(
-        x0_func=_x0_d0(f_t=x0_func),
-        x1_func=_x1_d1(g_t=x1_func, dx=dx),
-        x0_order=1, x1_order=2,
+        x0_func=fx0, x1_func=fx1, x0_order=1, x1_order=2,
         name='Time-dependent Mixed I',
     )
 
 
 def get_bc_time_mixed2(x0_func, x1_func, dx):
+    fx0 = _x0_d1(g_t=x0_func, dx=dx) if x0_func is not None else None
+    fx1 = _x1_d0(f_t=x1_func) if x1_func is not None else None
     return BoundaryConditions(
-        x0_func=_x0_d1(g_t=x0_func, dx=dx),
-        x1_func=_x1_d0(f_t=x1_func),
-        x0_order=2, x1_order=1,
+        x0_func=fx0, x1_func=fx1, x0_order=2, x1_order=1,
         name='Time-dependent Mixed II',
     )

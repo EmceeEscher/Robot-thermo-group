@@ -21,7 +21,7 @@ WRITE_PERIOD = 1000
 X_ARRAY = np.linspace(MIN_X, MAX_X, DIM_X)
 
 
-def _heat_eq_matrix(n, k):
+def heat_eq_matrix(n, k):
     zerow = np.zeros(shape=(1, n+2))
     return np.eye(n+2) + k * np.r_[zerow, d2_matrix(n + 2), zerow]
 
@@ -45,7 +45,7 @@ def _explicit_step_func_heat_eq(
     for point, idx in zip(points, range(n)):
         u_prev[idx+1] = point_to_temp_map[point]
     # make matrix
-    mat = _heat_eq_matrix(n=n, k=alpha*dt/dx**2)
+    mat = heat_eq_matrix(n=n, k=alpha * dt / dx ** 2)
     # implement boundary conditions
     mat, u_prev, time = boundary_conditions(d_mat=mat, u_vect=u_prev, t=time)
     # get u^{n+1} vector
@@ -72,7 +72,7 @@ def _implicit_step_func_heat_eq(
     for point, idx in zip(points, range(n)):
         u_prev[idx+1] = point_to_temp_map[point]
     # make matrix
-    mat = _heat_eq_matrix(n=n, k=-alpha * dt / dx**2)
+    mat = heat_eq_matrix(n=n, k=-alpha * dt / dx ** 2)
     # implement boundary conditions
     mat, u_prev, time = boundary_conditions(d_mat=mat, u_vect=u_prev, t=time)
     # solve for u^{n+1} vector
@@ -101,10 +101,10 @@ def _crank_nicolson_step_func_heat_eq(
         u_prev[idx+1] = point_to_temp_map[point]
     # make matrix for u^n
     k1 = .5 * alpha * dt / dx**2
-    mat1 = _heat_eq_matrix(n=n, k=k1)
+    mat1 = heat_eq_matrix(n=n, k=k1)
     # make matrix for u^{n+1}
     k2 = -k1
-    mat2 = _heat_eq_matrix(n=n, k=k2)
+    mat2 = heat_eq_matrix(n=n, k=k2)
     # implement boundary conditions
     mat, u_prev, time = boundary_conditions(d_mat=mat2, u_vect=u_prev, t=time)
     # solve for u^{n+1} vector
