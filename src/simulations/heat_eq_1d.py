@@ -16,7 +16,7 @@ T_SRC = 1000.0  # heating temperature
 # finite differencing
 NUM_STEPS = 100000
 TIME_STEP = 0.01
-WRITE_PERIOD = 100
+WRITE_PERIOD = 1000
 # points
 X_ARRAY = np.linspace(MIN_X, MAX_X, DIM_X)
 
@@ -44,8 +44,8 @@ def _heat_eq_matrix(n, k):
 
 
 # step functions
-def _explicit_step_func(
-        point_to_temp_map, time, x_array, dt, alpha, boundary_conditions,
+def _explicit_step_func_heat_eq(
+        point_to_temp_map, time, x_array, dt, boundary_conditions, alpha,
 ):
     """Make a step forward in time using the explicit finite difference
     method for the heat equation:
@@ -71,8 +71,8 @@ def _explicit_step_func(
     return {p: t for p, t in zip(points, u_next[1:-1])}
 
 
-def _implicit_step_func(
-        point_to_temp_map, time, x_array, dt, alpha, boundary_conditions,
+def _implicit_step_func_heat_eq(
+        point_to_temp_map, time, x_array, dt, boundary_conditions, alpha,
 ):
     """Make a step forward in time using the implicit finite difference
     method for the heat equation:
@@ -98,8 +98,8 @@ def _implicit_step_func(
     return {p: t for p, t in zip(points, u_next[1:-1])}
 
 
-def _crank_nicolson_step_func(
-        point_to_temp_map, time, x_array, dt, alpha, boundary_conditions,
+def _crank_nicolson_step_func_heat_eq(
+        point_to_temp_map, time, x_array, dt, boundary_conditions, alpha,
 ):
     """Make a step forward in time using the Crank-Nicolson finite difference
     method for the heat equation:
@@ -139,18 +139,20 @@ class FiniteStepMethod:
         return self._f(*args, **kwargs)
 
 
-explicit = FiniteStepMethod(f=_explicit_step_func, name='Explicit')
+explicit_heat_eq = FiniteStepMethod(
+    f=_explicit_step_func_heat_eq, name='Explicit')
 
-implicit = FiniteStepMethod(f=_implicit_step_func, name='Implicit')
+implicit_heat_eq = FiniteStepMethod(
+    f=_implicit_step_func_heat_eq, name='Implicit')
 
-crank_nicolson = FiniteStepMethod(
-    f=_crank_nicolson_step_func, name='Crank-Nicolson')
+crank_nicolson_heat_eq = FiniteStepMethod(
+    f=_crank_nicolson_step_func_heat_eq, name='Crank-Nicolson')
 
 
 # functions
 def simulation(
-        time_step, x_array, t_0, alpha, finite_step_method,
-        boundary_conditions,
+        time_step, x_array, t_0, finite_step_method,
+        boundary_conditions, params_dict
 ):
     # initialize points
     point_to_temp_map = {idx_x: t_0 for idx_x in range(len(x_array))}
@@ -161,7 +163,7 @@ def simulation(
         point_to_temp_map = finite_step_method(
             point_to_temp_map=point_to_temp_map,
             time=time, x_array=x_array, dt=time_step,
-            alpha=alpha, boundary_conditions=boundary_conditions,
+            boundary_conditions=boundary_conditions, **params_dict
         )
         time += time_step
         yield point_to_temp_map
@@ -169,38 +171,43 @@ def simulation(
 
 def run_simulation(
         fpath, verbose, write_period,
-        dim_x, min_x, max_x, alpha, t_0,
+        dim_x, min_x, max_x, t_0,
         num_steps, time_step, finite_step_method, boundary_conditions,
+        params_dict,
 ):
     x_array = np.linspace(min_x, max_x, dim_x)
     s = simulation(
         time_step=time_step, x_array=x_array,
-        t_0=t_0, alpha=alpha, finite_step_method=finite_step_method,
-        boundary_conditions=boundary_conditions,
+        t_0=t_0, finite_step_method=finite_step_method,
+        boundary_conditions=boundary_conditions, params_dict=params_dict
     )
+    params_lines = [
+        '   {} = {}{}\n'.format(k, ' '*(15 - len(k)), v)
+        for k, v in params_dict.items()]
     lines = [
         ' {}\n'.format(str(datetime.now())),
         '\n',
         ' Simulation of heat flow through 1-dimensional rod\n',
         '\n',
         ' Dimensions\n',
-        '   dim_x=        {}\n'.format(dim_x),
-        '   min_x=        {}\n'.format(min_x),
-        '   max_x=        {}\n'.format(max_x),
+        '   dim x =           {}\n'.format(dim_x),
+        '   min x =           {}\n'.format(min_x),
+        '   max x =           {}\n'.format(max_x),
         '\n',
         ' Thermodynamical parameters\n',
-        '   alpha=        {}\n'.format(alpha),
-        '   t_0=          {}\n'.format(t_0),
+        '   initial temp =    {}\n'.format(t_0),
+    ] + params_lines + [
         '\n',
         ' Boundary conditions:\n',
-        '   method=       {}\n'.format(boundary_conditions.name),
-        '   x0_order=     {}\n'.format(boundary_conditions.x0_order),
-        '   x1_order=     {}\n'.format(boundary_conditions.x1_order),
+        '   method =          {}\n'.format(boundary_conditions.name),
+        '   x0 order =        {}\n'.format(boundary_conditions.x0_order),
+        '   x1 order =        {}\n'.format(boundary_conditions.x1_order),
         '\n',
         ' Finite differencing\n',
-        '   num_steps=    {}\n'.format(num_steps),
-        '   time_step=    {}\n'.format(time_step),
-        '   method=       {}\n'.format(finite_step_method.name),
+        '   num steps =       {}\n'.format(num_steps),
+        '   time step =       {}\n'.format(time_step),
+        '   method =          {}\n'.format(finite_step_method.name),
+        '   write period =    {}\n'.format(write_period),
         '\n',
     ]
     if verbose:
@@ -225,8 +232,9 @@ def run_simulation(
 if __name__ == '__main__':
     run_simulation(
         fpath='./try.dat', verbose=True, write_period=WRITE_PERIOD,
-        dim_x=DIM_X, min_x=MIN_X, max_x=MAX_X, alpha=ALPHA,
+        dim_x=DIM_X, min_x=MIN_X, max_x=MAX_X,
         t_0=T_0, num_steps=NUM_STEPS, time_step=TIME_STEP,
-        finite_step_method=implicit,
-        boundary_conditions=get_bc_dirichlet(x0=T_SRC, x1=T_AMB)
+        finite_step_method=implicit_heat_eq,
+        boundary_conditions=get_bc_dirichlet(x0=T_SRC, x1=T_AMB),
+        params_dict={'alpha': ALPHA}
     )
