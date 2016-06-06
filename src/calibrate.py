@@ -16,7 +16,7 @@ def linear(x, params):
 # FUNCTIONS
 def get_data(fpath):
     points = list()
-    with open(FPATH_CALIBRATE) as fr:
+    with open(fpath) as fr:
         for line in fr:
             point = tuple([float(x) for x in line.split()])
             points.append(point)
@@ -45,21 +45,21 @@ def get_optimized_parameters(fit_function, x_array, y_array):
 
 
 # SCRIPT
+if __name__ == '__main__':
+    # get data
+    x_array, y_array = get_data(fpath=FPATH_CALIBRATE)
 
-# get data
-x_array, y_array = get_data(fpath=FPATH_CALIBRATE)
+    # get fit parameters
+    params, yfit_array = get_optimized_parameters(
+        fit_function=linear, x_array=x_array, y_array=y_array)
+    print('Fit params = {}'.format(params))
 
-# get fit parameters
-params, yfit_array = get_optimized_parameters(
-    fit_function=linear, x_array=x_array, y_array=y_array)
-print('Fit params = {}'.format(params))
+    # plot points
+    plt.plot(x_array, y_array, '-')
+    plt.plot(x_array, yfit_array, '--')
+    plt.xlabel('Temperature (C)')
+    plt.ylabel('Potential (V)')
+    plt.title('Calibration curve')
 
-# plot points
-plt.plot(x_array, y_array, '-')
-plt.plot(x_array, yfit_array, '--')
-plt.xlabel('Temperature (C)')
-plt.ylabel('Potential (V)')
-plt.title('Calibration curve')
-
-# show plot
-plt.show()
+    # show plot
+    plt.show()
