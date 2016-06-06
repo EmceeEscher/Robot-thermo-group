@@ -10,8 +10,8 @@ from heat_eq_1d import heat_eq_matrix
 STEFAN_BOLTZMANN = 5.67 * 10**(-8)
 # dimensions
 MIN_X = 0.0
-MAX_X = 0.5
-DIM_X = 100 + 1
+MAX_X = .33
+DIM_X = 3300 + 1
 # thermodynamical parameters
 T_0 = 300.0  # initial temperature
 T_AMB = 300.0  # ambient temperature
@@ -19,12 +19,13 @@ T_SRC = 1000.0  # heating temperature
 THERMAL_CONDUCTIVITY = 125
 SPECIFIC_HEAT = 380
 MASS_DENSITY = 8730
-POROSITY_AIR = .1
-VELOCITY_AIR = .1
+POROSITY_AIR = .01
+VELOCITY_AIR = .01
 # EMISSIVITY = 0.6
-EMISSIVITY = 0
-PERIMETER = .1
-AREA = pi * (PERIMETER / 2*pi)**2
+EMISSIVITY = .01
+RADIUS = .01111
+PERIMETER = 2*pi*RADIUS
+AREA = pi*RADIUS**2
 PARAMS_DICT = {
     'thermal_conductivity': THERMAL_CONDUCTIVITY,
     'specific_heat': SPECIFIC_HEAT,
