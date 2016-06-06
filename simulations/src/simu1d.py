@@ -48,7 +48,7 @@ def simulation(
         yield point_to_temp_map
 
 
-def run_simulation(
+def run_simulation_f(
         fpath, verbose, write_period, dim_x, min_x, max_x, t_0,
         num_steps, time_step, finite_step_method, boundary_conditions,
         params_dict,
@@ -77,9 +77,12 @@ def run_simulation(
     ] + params_lines + [
         '\n',
         ' Boundary conditions:\n',
-        '   method =                    {}\n'.format(boundary_conditions.name),
-        '   x0 order =                  {}\n'.format(boundary_conditions.x0_order),
-        '   x1 order =                  {}\n'.format(boundary_conditions.x1_order),
+        '   method =                    {}\n'
+        ''.format( boundary_conditions.name),
+        '   x0 order =                  {}\n'
+        ''.format(boundary_conditions.x0_order),
+        '   x1 order =                  {}\n'
+        ''.format(boundary_conditions.x1_order),
         '\n',
         ' Finite differencing\n',
         '   num steps =                 {}\n'.format(num_steps),

@@ -1,7 +1,7 @@
 from __future__ import division, print_function
 import numpy as np
 from bc_1d import get_bc_dirichlet
-from simu1d import d2_matrix, FiniteStepMethod, run_simulation
+from simu1d import d2_matrix, FiniteStepMethod, run_simulation_f
 
 # constants
 # dimensions
@@ -125,7 +125,7 @@ crank_nicolson_heat_eq = FiniteStepMethod(
 
 # script
 if __name__ == '__main__':
-    run_simulation(
+    run_simulation_f(
         fpath='../results/try.dat', verbose=True, write_period=WRITE_PERIOD,
         dim_x=DIM_X, min_x=MIN_X, max_x=MAX_X,
         t_0=T_0, num_steps=NUM_STEPS, time_step=TIME_STEP,

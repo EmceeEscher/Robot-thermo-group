@@ -1,7 +1,7 @@
 from __future__ import division, print_function
 import numpy as np
 from math import pi
-from simu1d import FiniteStepMethod, run_simulation, d1_matrix
+from simu1d import FiniteStepMethod, run_simulation_f, d1_matrix
 from bc_1d import get_bc_dirichlet
 from heat_eq_1d import heat_eq_matrix
 
@@ -38,9 +38,9 @@ PARAMS_DICT = {
     'u_amb': T_AMB,
 }
 # finite differencing
-NUM_STEPS = 100 * 1200
-TIME_STEP = 0.01
-WRITE_PERIOD = 1200
+TIME_STEP = 0.25
+NUM_STEPS = 2700 / TIME_STEP
+WRITE_PERIOD = 270
 # points
 X_ARRAY = np.linspace(MIN_X, MAX_X, DIM_X)
 
@@ -98,7 +98,7 @@ implicit_mod_diffusion = FiniteStepMethod(
 
 # script
 if __name__ == '__main__':
-    run_simulation(
+    run_simulation_f(
         fpath='../results/diffusion_try.dat', verbose=True,
         write_period=WRITE_PERIOD,
         dim_x=DIM_X, min_x=MIN_X, max_x=MAX_X,
