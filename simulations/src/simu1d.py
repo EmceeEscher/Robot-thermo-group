@@ -49,8 +49,7 @@ def simulation(
 
 
 def run_simulation(
-        fpath, verbose, write_period,
-        dim_x, min_x, max_x, t_0,
+        fpath, verbose, write_period, dim_x, min_x, max_x, t_0,
         num_steps, time_step, finite_step_method, boundary_conditions,
         params_dict,
 ):
