@@ -1,5 +1,6 @@
 from __future__ import division, print_function
 from datetime import datetime
+from math import floor
 import numpy as np
 
 
@@ -78,7 +79,7 @@ def run_simulation_f(
         '\n',
         ' Boundary conditions:\n',
         '   method =                    {}\n'
-        ''.format( boundary_conditions.name),
+        ''.format(boundary_conditions.name),
         '   x0 order =                  {}\n'
         ''.format(boundary_conditions.x0_order),
         '   x1 order =                  {}\n'
@@ -107,3 +108,35 @@ def run_simulation_f(
                     f.write(line)
                     if verbose:
                         print(line, end='')
+
+
+def mindiff(array, value):
+    diff = abs(array[0] - value)
+    idx = 0
+    for x, i in zip(array, range(len(array))):
+        if abs(x - value) < diff:
+            diff = abs(x - value)
+            idx = i
+    return idx
+
+
+def run_simulation_opt(
+        exp_time_array, exp_x_array, exp_temp_array,
+        dim_x, min_x, max_x, t_0, num_steps, time_step, finite_step_method,
+        boundary_conditions, params_dict,
+):
+    x_array = np.linspace(min_x, max_x, dim_x)
+    s = simulation(
+        time_step=time_step, x_array=x_array,
+        t_0=t_0, finite_step_method=finite_step_method,
+        boundary_conditions=boundary_conditions, params_dict=params_dict
+    )
+    # get indices of positions and times closest to the experimental
+    x_idx_list = [mindiff(x_array, exp_x) for exp_x in exp_x_array]
+    t_idx_list = list()
+    for exp_t in exp_time_array:
+        t_idx_0 = floor(exp_t/time_step)
+        t_idx_list.append(mindiff([t_idx_0, t_idx_0 + time_step], exp_t))
+    for point_to_temp_map, step in zip(s, range(num_steps+1)):
+        for point, temp in point_to_temp_map.items():
+            pass  # TODO: finish me
