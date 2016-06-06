@@ -126,7 +126,7 @@ crank_nicolson_heat_eq = FiniteStepMethod(
 # script
 if __name__ == '__main__':
     run_simulation(
-        fpath='./try.dat', verbose=True, write_period=WRITE_PERIOD,
+        fpath='../results/try.dat', verbose=True, write_period=WRITE_PERIOD,
         dim_x=DIM_X, min_x=MIN_X, max_x=MAX_X,
         t_0=T_0, num_steps=NUM_STEPS, time_step=TIME_STEP,
         finite_step_method=implicit_heat_eq,
