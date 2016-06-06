@@ -46,12 +46,19 @@ class BoundaryConditions:
     def __init__(self, x0_func, x1_func, x0_order=1, x1_order=1, name=None):
         self._x0_func = x0_func
         self._x1_func = x1_func
-        self.x0_order = x0_order
-        self.x1_order = x1_order
+        self.x0_order = x0_order if self._x0_func is not None else None
+        self.x1_order = x1_order if self._x1_func is not None else None
         self.name = name
 
     def __call__(self, *args, **kwargs):
-        return self._x1_func(*self._x0_func(*args, **kwargs))
+        if self._x0_func is not None and self._x1_func is not None:
+            return self._x1_func(*self._x0_func(*args, **kwargs))
+        elif self._x0_func is not None:
+            return self._x0_func(*args, **kwargs)
+        elif self._x1_func is not None:
+            return self._x1_func(*args, **kwargs)
+        else:
+            return None
 
 
 def get_bc_dirichlet(x0, x1):
