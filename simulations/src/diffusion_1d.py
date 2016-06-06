@@ -46,6 +46,7 @@ X_ARRAY = np.linspace(MIN_X, MAX_X, DIM_X)
 
 
 def conv_matrix(n, k):
+    # TODO: docstring
     zerow = np.zeros(shape=(1, n+2))
     return k * np.r_[zerow, d1_matrix(n=n+2, diff=2), zerow]
 

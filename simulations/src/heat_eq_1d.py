@@ -22,6 +22,7 @@ X_ARRAY = np.linspace(MIN_X, MAX_X, DIM_X)
 
 
 def heat_eq_matrix(n, k):
+    # TODO: docstring
     zerow = np.zeros(shape=(1, n+2))
     return np.eye(n+2) + k * np.r_[zerow, d2_matrix(n + 2), zerow]
 

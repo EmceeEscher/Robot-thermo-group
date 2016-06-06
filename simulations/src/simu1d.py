@@ -5,6 +5,7 @@ import numpy as np
 
 
 def d1_matrix(n, diff=1):
+    # TODO: docstring
     rows = n - diff
     cols = n
     mat = np.zeros(shape=(rows, cols))
@@ -18,6 +19,7 @@ def d1_matrix(n, diff=1):
 
 
 def d2_matrix(n, diff=1):
+    # TODO: docstring
     return np.dot(d1_matrix(n=n - diff, diff=diff), d1_matrix(n=n, diff=diff))
 
 
@@ -34,6 +36,7 @@ def simulation(
         time_step, x_array, t_0, finite_step_method,
         boundary_conditions, params_dict
 ):
+    # TODO: docstring
     # initialize points
     point_to_temp_map = {idx_x: t_0 for idx_x in range(len(x_array))}
     time = 0
@@ -54,6 +57,7 @@ def run_simulation_f(
         num_steps, time_step, finite_step_method, boundary_conditions,
         params_dict,
 ):
+    # TODO: docstring
     x_array = np.linspace(min_x, max_x, dim_x)
     s = simulation(
         time_step=time_step, x_array=x_array,
@@ -111,6 +115,7 @@ def run_simulation_f(
 
 
 def mindiff(array, value):
+    # TODO: docstring
     diff = abs(array[0] - value)
     idx = 0
     for x, i in zip(array, range(len(array))):
@@ -125,6 +130,7 @@ def run_simulation_opt(
         dim_x, min_x, max_x, t_0, num_steps, time_step, finite_step_method,
         boundary_conditions, params_dict,
 ):
+    # TODO: docstring
     x_array = np.linspace(min_x, max_x, dim_x)
     s = simulation(
         time_step=time_step, x_array=x_array,
