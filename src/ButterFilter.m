@@ -4,8 +4,8 @@ dataIn = y;
 dataOut = filter(b,a,dataIn);
 
 figure
-subplot(2,1,1)
-plot(x,dataIn)
-
-subplot(2,1,2)
+% subplot(2,1,1)
+% plot(x,dataIn)
+% 
+% subplot(2,1,2)
 plot(x,dataOut)
