@@ -126,7 +126,7 @@ def mindiff(array, value):
 
 
 def run_simulation_opt(
-        exp_time_array, exp_x_array, exp_temp_array,
+        exp_time_array, exp_x_array,
         dim_x, min_x, max_x, t_0, num_steps, time_step, finite_step_method,
         boundary_conditions, params_dict,
 ):
@@ -138,11 +138,20 @@ def run_simulation_opt(
         boundary_conditions=boundary_conditions, params_dict=params_dict
     )
     # get indices of positions and times closest to the experimental
-    x_idx_list = [mindiff(x_array, exp_x) for exp_x in exp_x_array]
-    t_idx_list = list()
+    imp_x_idx_list = [mindiff(x_array, exp_x) for exp_x in exp_x_array]
+    imp_t_idx_list = list()
     for exp_t in exp_time_array:
         t_idx_0 = floor(exp_t/time_step)
-        t_idx_list.append(mindiff([t_idx_0, t_idx_0 + time_step], exp_t))
+        imp_t_idx_list.append(mindiff([t_idx_0, t_idx_0 + time_step], exp_t))
+    # get points
+    step_to_temp_array = list()
     for point_to_temp_map, step in zip(s, range(num_steps+1)):
-        for point, temp in point_to_temp_map.items():
-            pass  # TODO: finish me
+        if step in imp_t_idx_list:
+            temp_list = list()
+            for x_idx, temp in sorted(point_to_temp_map.items()):
+                if x_idx in imp_x_idx_list:
+                    temp_list.append(temp)
+            step_to_temp_array.append(np.array(temp_list))
+    return step_to_temp_array
+
+
