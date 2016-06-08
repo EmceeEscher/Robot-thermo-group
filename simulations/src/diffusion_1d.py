@@ -39,7 +39,7 @@ PARAMS_DICT = {
 }
 # finite differencing
 TIME_STEP = 0.25
-NUM_STEPS = 2700 / TIME_STEP
+NUM_STEPS = int(2700 / TIME_STEP)
 WRITE_PERIOD = 270
 # points
 X_ARRAY = np.linspace(MIN_X, MAX_X, DIM_X)
