@@ -66,9 +66,11 @@ def get_experimental_arrays(dat_fpaths_list):
         temp_list = list()
         with open(fpath, 'r') as f:
             for line in f:
-                time, temp = [float(x) for x in line.split()]
-                time_list.append(time)
-                temp_list.append(temp)
+                ldat = line.split()
+                if len(ldat) > 0:
+                    time, temp = [float(x) for x in ldat]
+                    time_list.append(time)
+                    temp_list.append(temp)
             time_temp_lists.append((time_list, temp_list))
     return time_temp_lists
 
@@ -82,7 +84,7 @@ if __name__ == '__main__':
         'porosity_air': 1.0,
         'velocity_air': 1.0,
         'emissivity': 1.0,
-        'u_amb': 300.0,
+        'u_amb': 300.0
     }
     const_keys = filter(
         lambda k: k not in params_guess_dict0, PARAMS_DICT.keys())
@@ -98,42 +100,40 @@ if __name__ == '__main__':
     for temps in zip(*[x[1] for x in time_temp_arrays]):
         exp_temp_list.append(np.array(temps))
     exp_temp_array0 = np.array(exp_temp_list)
-
-    print(exp_time_array0)
-    # result = optimize_diffusion_parameters(
-    #     params_guess_dict=params_guess_dict0,
-    #     const_params_dict=const_params_dict0,
-    #     exp_time_array=exp_time_array0,
-    #     exp_x_array=EXP_X_ARRAY,
-    #     exp_temp_array=exp_temp_array0,
-    #     dim_x=DIM_X, min_x=MIN_X, max_x=MAX_X,
-    #     t_0=T_0, num_steps=NUM_STEPS, time_step=TIME_STEP,
-    #     finite_step_method=implicit_mod_diffusion,
-    #     boundary_conditions=get_bc_dirichlet(x0=T_SRC, x1=None)
-    # )
-    # x, cov, info, msg, ier = result
-    # with open(FPATH_SAVE, 'w') as fw:
-    #     fw.write(str(datetime.now()) + '\n')
-    #     fw.write('\n')
-    #     fw.write('Optimization of 1-dimensional parameters\n')
-    #     fw.write('\n')
-    #     fw.write('Optimized parameters:\n')
-    #     for pk, v in zip(sorted(params_guess_dict0.keys()), x):
-    #         fw.write('  {:16} = {}\n'.format(pk, v))
-    #     fw.write('\n')
-    #     fw.write('Covariance matrix:\n')
-    #     for row in cov:
-    #         fw.write('  ')
-    #         for item in row:
-    #             fw.write('{:16.8f}  '.format(item))
-    #         fw.write('\n')
-    #     fw.write('\n')
-    #     fw.write('Info:\n')
-    #     for k, v in info.items():
-    #         fw.write('{}:\n  {}\n'.format(k, v))
-    #     fw.write('\n')
-    #     fw.write('Message:\n')
-    #     fw.write('  {}\n'.format(msg))
-    #     fw.write('\n')
-    #     fw.write('Flag:\n')
-    #     fw.write('  {}\n'.format(ier))
+    result = optimize_diffusion_parameters(
+        params_guess_dict=params_guess_dict0,
+        const_params_dict=const_params_dict0,
+        exp_time_array=exp_time_array0,
+        exp_x_array=EXP_X_ARRAY,
+        exp_temp_array=exp_temp_array0,
+        dim_x=DIM_X, min_x=MIN_X, max_x=MAX_X,
+        t_0=T_0, num_steps=NUM_STEPS, time_step=TIME_STEP,
+        finite_step_method=implicit_mod_diffusion,
+        boundary_conditions=get_bc_dirichlet(x0=T_SRC, x1=None)
+    )
+    x, cov, info, msg, ier = result
+    with open(FPATH_SAVE, 'w') as fw:
+        fw.write(str(datetime.now()) + '\n')
+        fw.write('\n')
+        fw.write('Optimization of 1-dimensional parameters\n')
+        fw.write('\n')
+        fw.write('Optimized parameters:\n')
+        for pk, v in zip(sorted(params_guess_dict0.keys()), x):
+            fw.write('  {:16} = {}\n'.format(pk, v))
+        fw.write('\n')
+        fw.write('Covariance matrix:\n')
+        for row in cov:
+            fw.write('  ')
+            for item in row:
+                fw.write('{:16.8f}  '.format(item))
+            fw.write('\n')
+        fw.write('\n')
+        fw.write('Info:\n')
+        for k, v in info.items():
+            fw.write('{}:\n  {}\n'.format(k, v))
+        fw.write('\n')
+        fw.write('Message:\n')
+        fw.write('  {}\n'.format(msg))
+        fw.write('\n')
+        fw.write('Flag:\n')
+        fw.write('  {}\n'.format(ier))
