@@ -153,5 +153,3 @@ def run_simulation_opt(
                     temp_list.append(temp)
             step_to_temp_array.append(np.array(temp_list))
     return step_to_temp_array
-
-
