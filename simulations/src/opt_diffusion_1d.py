@@ -4,7 +4,13 @@ import numpy as np
 from scipy.optimize import leastsq
 from simu1d import run_simulation_opt
 from diffusion_1d import PARAMS_DICT
-from diffusion_1d import DIM_X, MIN_X, MAX_X, T_0, T_SRC
+from diffusion_1d import DIM_X, MIN_X, MAX_X, T_0, T_SRC, T_AMB
+from diffusion_1d import THERMAL_CONDUCTIVITY
+from diffusion_1d import SPECIFIC_HEAT
+from diffusion_1d import MASS_DENSITY
+from diffusion_1d import POROSITY_AIR
+from diffusion_1d import VELOCITY_AIR
+from diffusion_1d import EMISSIVITY
 from diffusion_1d import NUM_STEPS, TIME_STEP
 from diffusion_1d import implicit_mod_diffusion
 from bc_1d import get_bc_dirichlet
@@ -47,6 +53,19 @@ def _lsq_func(
         boundary_conditions=boundary_conditions,
         params_dict=params_dict,
     )
+    print('exp_x_array =\n{}'.format(exp_x_array))
+    print('sim_temp_array =\n{}'.format(sim_temp_array))
+    print('  shape = {}'.format(sim_temp_array.shape))
+    print('sim_temp_array (flattened)=\n{}'.format(sim_temp_array.flatten()))
+    print('  shape = {}'.format(sim_temp_array.flatten().shape))
+    print('exp_temp_array =\n{}'.format(exp_temp_array))
+    print('  shape = {}'.format(exp_temp_array.shape))
+    print('exp_temp_array (flattened)=\n{}'.format(exp_temp_array.flatten()))
+    print('  shape = {}'.format(exp_temp_array.flatten().shape))
+    sum = 0.0
+    for st, et in zip(sim_temp_array.flatten(), exp_temp_array.flatten()):
+        sum += (st - et) ** 2
+    print('  Sum of squares = {}'.format(sum))
     return sim_temp_array.flatten() - exp_temp_array.flatten()
 
 
@@ -80,7 +99,7 @@ def get_experimental_arrays(dat_fpaths_list):
                 if len(ldat) > 0:
                     time, temp = [float(x) for x in ldat]
                     time_list.append(time)
-                    temp_list.append(temp)
+                    temp_list.append(temp + 273.15)
             time_temp_lists.append((time_list, temp_list))
     return time_temp_lists
 
@@ -88,13 +107,13 @@ def get_experimental_arrays(dat_fpaths_list):
 # script
 if __name__ == '__main__':
     params_guess_dict0 = {
-        'thermal_conductivity': 1.0,
-        'specific_heat': 1.0,
-        'mass_density': 1.0,
-        'porosity_air': 1.0,
-        'velocity_air': 1.0,
-        'emissivity': 1.0,
-        'u_amb': 300.0
+        'thermal_conductivity': THERMAL_CONDUCTIVITY,
+        'specific_heat': SPECIFIC_HEAT,
+        'mass_density': MASS_DENSITY,
+        'porosity_air': POROSITY_AIR,
+        'velocity_air': VELOCITY_AIR,
+        'emissivity': EMISSIVITY,
+        'u_amb': T_AMB,
     }
     const_keys = filter(
         lambda k: k not in params_guess_dict0, PARAMS_DICT.keys())

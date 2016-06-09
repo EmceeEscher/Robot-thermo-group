@@ -142,7 +142,8 @@ def run_simulation_opt(
     imp_t_idx_list = list()
     for exp_t in exp_time_array:
         t_idx_0 = floor(exp_t/time_step)
-        imp_t_idx_list.append(mindiff([t_idx_0, t_idx_0 + time_step], exp_t))
+        md = mindiff([t_idx_0, t_idx_0 + time_step], exp_t)
+        imp_t_idx_list.append(t_idx_0 + md)
     # get points
     step_to_temp_array = list()
     for point_to_temp_map, step in zip(s, range(num_steps+1)):
@@ -150,6 +151,7 @@ def run_simulation_opt(
             temp_list = list()
             for x_idx, temp in sorted(point_to_temp_map.items()):
                 if x_idx in imp_x_idx_list:
-                    temp_list.append(temp)
-            step_to_temp_array.append(np.array(temp_list))
+                    temp_list.extend([temp] * imp_x_idx_list.count(x_idx))
+            step_to_temp_array.extend(
+                [np.array(temp_list)] * imp_t_idx_list.count(step))
     return np.array(step_to_temp_array)
