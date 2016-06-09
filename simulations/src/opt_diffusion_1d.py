@@ -36,32 +36,35 @@ def _lsq_func(
         params_arr, const_params_dict, variable_params_keys,
         exp_time_array, exp_x_array, exp_temp_array,
         dim_x, min_x, max_x, t_0, num_steps, time_step,
-        finite_step_method, boundary_conditions, iteration_fn
+        finite_step_method, iteration_fn
 ):
     params_dict = _make_params_dict(
         params_arr=params_arr, const_params_dict=const_params_dict,
         variable_params_keys=variable_params_keys
     )
+    u_src = params_dict['u_src']
     print('Iteration {:3}'.format(next(iteration_fn)))
+    print('params_arr =\n{}'.format(params_arr))
     for k, v in sorted(params_dict.items()):
         print('  {:24}:  {}'.format(k, v))
+    del params_dict['u_src']
     sim_temp_array = run_simulation_opt(
         exp_time_array=exp_time_array, exp_x_array=exp_x_array,
         dim_x=dim_x, min_x=min_x, max_x=max_x, t_0=t_0,
         num_steps=num_steps, time_step=time_step,
         finite_step_method=finite_step_method,
-        boundary_conditions=boundary_conditions,
+        boundary_conditions=get_bc_dirichlet(x0=u_src, x1=None),
         params_dict=params_dict,
     )
-    print('exp_x_array =\n{}'.format(exp_x_array))
-    print('sim_temp_array =\n{}'.format(sim_temp_array))
-    print('  shape = {}'.format(sim_temp_array.shape))
-    print('sim_temp_array (flattened)=\n{}'.format(sim_temp_array.flatten()))
-    print('  shape = {}'.format(sim_temp_array.flatten().shape))
-    print('exp_temp_array =\n{}'.format(exp_temp_array))
-    print('  shape = {}'.format(exp_temp_array.shape))
-    print('exp_temp_array (flattened)=\n{}'.format(exp_temp_array.flatten()))
-    print('  shape = {}'.format(exp_temp_array.flatten().shape))
+    # print('exp_x_array =\n{}'.format(exp_x_array))
+    # print('sim_temp_array =\n{}'.format(sim_temp_array))
+    # print('  shape = {}'.format(sim_temp_array.shape))
+    # print('sim_temp_array (flattened)=\n{}'.format(sim_temp_array.flatten()))
+    # print('  shape = {}'.format(sim_temp_array.flatten().shape))
+    # print('exp_temp_array =\n{}'.format(exp_temp_array))
+    # print('  shape = {}'.format(exp_temp_array.shape))
+    # print('exp_temp_array (flattened)=\n{}'.format(exp_temp_array.flatten()))
+    # print('  shape = {}'.format(exp_temp_array.flatten().shape))
     sum = 0.0
     for st, et in zip(sim_temp_array.flatten(), exp_temp_array.flatten()):
         sum += (st - et) ** 2
@@ -73,7 +76,7 @@ def optimize_diffusion_parameters(
         params_guess_dict, const_params_dict,
         exp_time_array, exp_x_array, exp_temp_array,
         dim_x, min_x, max_x, t_0, num_steps, time_step,
-        finite_step_method, boundary_conditions,
+        finite_step_method, 
 ):
     params_guess = np.array([v for k, v in sorted(params_guess_dict.items())])
     iter_fn = _iteration()
@@ -83,7 +86,7 @@ def optimize_diffusion_parameters(
             const_params_dict, params_guess_dict.keys(),
             exp_time_array, exp_x_array, exp_temp_array,
             dim_x, min_x, max_x, t_0, num_steps, time_step,
-            finite_step_method, boundary_conditions, iter_fn
+            finite_step_method, iter_fn
         ),
     )
 
@@ -114,6 +117,7 @@ if __name__ == '__main__':
         'velocity_air': VELOCITY_AIR,
         'emissivity': EMISSIVITY,
         'u_amb': T_AMB,
+        'u_src': T_SRC,
     }
     const_keys = filter(
         lambda k: k not in params_guess_dict0, PARAMS_DICT.keys())
@@ -138,7 +142,6 @@ if __name__ == '__main__':
         dim_x=DIM_X, min_x=MIN_X, max_x=MAX_X,
         t_0=T_0, num_steps=NUM_STEPS, time_step=TIME_STEP,
         finite_step_method=implicit_mod_diffusion,
-        boundary_conditions=get_bc_dirichlet(x0=T_SRC, x1=None)
     )
     x, cov, info, msg, ier = result
     with open(FPATH_SAVE, 'w') as fw:

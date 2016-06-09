@@ -15,7 +15,7 @@ DIM_X = 330 + 1
 # thermodynamical parameters
 T_0 = 300.0  # initial temperature
 T_AMB = 300.0  # ambient temperature
-T_SRC = 1000.0  # heating temperature
+T_SRC = 400.0  # heating temperature
 THERMAL_CONDUCTIVITY = 125.0
 SPECIFIC_HEAT = 380.0
 MASS_DENSITY = 8730.0
