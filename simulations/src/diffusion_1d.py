@@ -11,7 +11,7 @@ STEFAN_BOLTZMANN = 5.67 * 10**(-8)
 # dimensions
 MIN_X = 0.0
 MAX_X = .33
-DIM_X = 3300 + 1
+DIM_X = 330 + 1
 # thermodynamical parameters
 T_0 = 300.0  # initial temperature
 T_AMB = 300.0  # ambient temperature

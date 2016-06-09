@@ -14,6 +14,12 @@ FPATH_SAVE = '../results/opt_test.txt'
 EXP_X_ARRAY = np.array(sorted([.33 - .01555 - .0725*n for n in range(4)]))
 
 
+def _iteration():
+    i = 0
+    while True:
+        yield i
+        i += 1
+
 def _make_params_dict(params_arr, variable_params_keys, const_params_dict):
     d = dict(const_params_dict)
     d.update({k: v for k, v in zip(sorted(variable_params_keys), params_arr)})
@@ -24,12 +30,15 @@ def _lsq_func(
         params_arr, const_params_dict, variable_params_keys,
         exp_time_array, exp_x_array, exp_temp_array,
         dim_x, min_x, max_x, t_0, num_steps, time_step,
-        finite_step_method, boundary_conditions,
+        finite_step_method, boundary_conditions, iteration_fn
 ):
     params_dict = _make_params_dict(
         params_arr=params_arr, const_params_dict=const_params_dict,
         variable_params_keys=variable_params_keys
     )
+    print('Iteration {:3}'.format(next(iteration_fn)))
+    for k, v in sorted(params_dict.items()):
+        print('  {:24}:  {}'.format(k, v))
     sim_temp_array = run_simulation_opt(
         exp_time_array=exp_time_array, exp_x_array=exp_x_array,
         dim_x=dim_x, min_x=min_x, max_x=max_x, t_0=t_0,
@@ -48,13 +57,14 @@ def optimize_diffusion_parameters(
         finite_step_method, boundary_conditions,
 ):
     params_guess = np.array([v for k, v in sorted(params_guess_dict.items())])
+    iter_fn = _iteration()
     return leastsq(
         func=_lsq_func, x0=params_guess, full_output=True,
         args=(
             const_params_dict, params_guess_dict.keys(),
             exp_time_array, exp_x_array, exp_temp_array,
             dim_x, min_x, max_x, t_0, num_steps, time_step,
-            finite_step_method, boundary_conditions,
+            finite_step_method, boundary_conditions, iter_fn
         ),
     )
 

@@ -152,4 +152,4 @@ def run_simulation_opt(
                 if x_idx in imp_x_idx_list:
                     temp_list.append(temp)
             step_to_temp_array.append(np.array(temp_list))
-    return step_to_temp_array
+    return np.array(step_to_temp_array)
