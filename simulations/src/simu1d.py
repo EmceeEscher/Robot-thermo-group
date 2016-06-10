@@ -127,7 +127,7 @@ def mindiff(array, value):
 def run_simulation_opt(
         exp_time_array, exp_x_array,
         dim_x, min_x, max_x, t_0, num_steps, time_step, finite_step_method,
-        boundary_conditions, params_dict,
+        boundary_conditions, params_dict, fpath,
 ):
     # TODO: docstring
     x_array = np.linspace(min_x, max_x, dim_x)
@@ -145,12 +145,15 @@ def run_simulation_opt(
         imp_t_idx_list.append(t_idx_0 + md)
     # get points
     step_to_temp_array = list()
-    for point_to_temp_map, step in zip(s, range(num_steps+1)):
-        if step in imp_t_idx_list:
-            temp_list = list()
-            for x_idx, temp in sorted(point_to_temp_map.items()):
-                if x_idx in imp_x_idx_list:
-                    temp_list.extend([temp] * imp_x_idx_list.count(x_idx))
-            step_to_temp_array.extend(
-                [np.array(temp_list)] * imp_t_idx_list.count(step))
+    with open(fpath, 'w') as fw:
+        for point_to_temp_map, step in zip(s, range(num_steps+1)):
+            if step in imp_t_idx_list:
+                fw.write('Step= {}\n'.format(step))
+                temp_list = list()
+                for x_idx, temp in sorted(point_to_temp_map.items()):
+                    if x_idx in imp_x_idx_list:
+                        fw.write('{:8}  {:16.8f}\n'.format(x_idx, temp))
+                        temp_list.extend([temp] * imp_x_idx_list.count(x_idx))
+                step_to_temp_array.extend(
+                    [np.array(temp_list)] * imp_t_idx_list.count(step))
     return np.array(step_to_temp_array)
