@@ -10,7 +10,7 @@ STEFAN_BOLTZMANN = 5.67 * 10**(-8)
 # dimensions
 MIN_X = 0.0
 MAX_X = .33
-DIM_X = 330 + 1
+DIM_X = 33 + 1
 # thermodynamical parameters
 T_0 = 300.0  # initial temperature
 T_AMB = 300.0  # ambient temperature
@@ -38,7 +38,7 @@ PARAMS_DICT = {
     'u_amb': T_AMB,
 }
 # finite differencing
-TIME_STEP = 0.25
+TIME_STEP = 1.
 NUM_STEPS = int(2700 / TIME_STEP)
 WRITE_PERIOD = 270
 # points

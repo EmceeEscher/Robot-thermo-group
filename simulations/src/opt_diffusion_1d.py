@@ -196,29 +196,16 @@ if __name__ == '__main__':
         finite_step_method=implicit_mod_diffusion,
         t_stop=STOP_TIME,
     )
-    x, cov, info, msg, ier = result
+    result_items = [
+        'x', 'cost', 'fun', 'jac', 'grad', 'optimality', 'active_mask',
+        'nfev', 'njev', 'status', 'message', 'success'
+    ]
     with open(FPATH_SAVE, 'w') as fw:
         fw.write(str(datetime.now()) + '\n')
         fw.write('\n')
         fw.write('Optimization of 1-dimensional parameters\n')
         fw.write('\n')
-        fw.write('Optimized parameters:\n')
-        for pk, val in zip(sorted(params_guess_dict0.keys()), x):
-            fw.write('  {:16} = {}\n'.format(pk, val))
-        fw.write('\n')
-        fw.write('Covariance matrix:\n')
-        for row in cov:
-            fw.write('  ')
-            for item in row:
-                fw.write('{:16.8f}  '.format(item))
+        for name, item in zip(result_items, result):
+            fw.write('Name:\n')
+            fw.write('{}\n'.format(item))
             fw.write('\n')
-        fw.write('\n')
-        fw.write('Info:\n')
-        for k, val in info.items():
-            fw.write('{}:\n  {}\n'.format(k, val))
-        fw.write('\n')
-        fw.write('Message:\n')
-        fw.write('  {}\n'.format(msg))
-        fw.write('\n')
-        fw.write('Flag:\n')
-        fw.write('  {}\n'.format(ier))
