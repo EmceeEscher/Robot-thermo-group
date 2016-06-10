@@ -45,10 +45,10 @@ def _lsq_func(
     )
     u_src = params_dict['u_src']
     t_0 = params_dict['u_0']
-    # print('Iteration {:3}'.format(next(iteration_fn)))
-    # print('params_arr =\n{}'.format(params_arr))
-    # for k, v in sorted(params_dict.items()):
-    #     print('  {:24}:  {}'.format(k, v))
+    print('Iteration {:3}'.format(next(iteration_fn)))
+    print('params_arr =\n{}'.format(params_arr))
+    for k, v in sorted(params_dict.items()):
+        print('  {:24}:  {}'.format(k, v))
     del params_dict['u_src']
     del params_dict['u_0']
     sim_temp_array = run_simulation_opt(
@@ -59,10 +59,10 @@ def _lsq_func(
         boundary_conditions=get_bc_dirichlet(x0=u_src, x1=None),
         params_dict=params_dict,
     )
-    # sq_sum = 0.0
-    # for st, et in zip(sim_temp_array.flatten(), exp_temp_array.flatten()):
-    #     sq_sum += (st - et) ** 2
-    # print('  Sum of squares = {}'.format(sq_sum))
+    sq_sum = 0.0
+    for st, et in zip(sim_temp_array.flatten(), exp_temp_array.flatten()):
+        sq_sum += (st - et) ** 2
+    print('  Sum of squares = {}'.format(sq_sum))
     return sim_temp_array.flatten() - exp_temp_array.flatten()
 
 
@@ -144,15 +144,24 @@ if __name__ == '__main__':
         'u_src': T_SRC,
     }
     params_bounds_dict0 = {
-        'thermal_conductivity': (0., np.inf),
-        'specific_heat': (.9*SPECIFIC_HEAT, 1.1*SPECIFIC_HEAT),
-        'mass_density': (.9*MASS_DENSITY, 1.1*MASS_DENSITY),
-        'porosity_air': (0., 1.),
-        'velocity_air': (0., 3.*10**8),
-        'emissivity': (0., 1.),
-        'u_0': (0.9*T_0, 1.1*T_0),
-        'u_amb': (0.9*T_AMB, 1.1*T_AMB),
-        'u_src': (0.5*T_SRC, 1.5*T_SRC),
+        'thermal_conductivity':
+            (.5*THERMAL_CONDUCTIVITY, 1.5*THERMAL_CONDUCTIVITY),
+        'specific_heat':
+            (.9*SPECIFIC_HEAT, 1.1*SPECIFIC_HEAT),
+        'mass_density':
+            (.9*MASS_DENSITY, 1.1*MASS_DENSITY),
+        'porosity_air':
+            (0., 1.),
+        'velocity_air':
+            (0., 3.*10**8),
+        'emissivity':
+            (0., 1.),
+        'u_0':
+            (.9*T_0, 1.1*T_0),
+        'u_amb':
+            (.9*T_AMB, 1.1*T_AMB),
+        'u_src':
+            (.5*T_SRC, 1.5*T_SRC),
     }
     const_keys = filter(
         lambda k: k not in params_guess_dict0, PARAMS_DICT.keys())
