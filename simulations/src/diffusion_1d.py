@@ -25,6 +25,7 @@ EMISSIVITY = .01
 RADIUS = .01111
 PERIMETER = 2*pi*RADIUS
 AREA = pi*RADIUS**2
+STOP_TIME = 900.0
 PARAMS_DICT = {
     'thermal_conductivity': THERMAL_CONDUCTIVITY,
     'specific_heat': SPECIFIC_HEAT,
@@ -81,7 +82,7 @@ def _implicit_mod_step_func_diffusion(
     mat_conv = conv_matrix(n=n, k=beta*dt/(2*dx))
     mat = mat_heat + mat_conv
     # implement boundary conditions
-    mat, u_prev, time = boundary_conditions(d_mat=mat, u_vect=u_vector, t=time)
+    mat, u_prev, time = boundary_conditions(mat, u_vector, time)
     # solve for u^{n+1} vector
     tmat = np.transpose(mat)
     u_next = np.linalg.solve(np.dot(tmat, mat), np.dot(tmat, u_prev))

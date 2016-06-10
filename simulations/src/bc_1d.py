@@ -21,6 +21,18 @@ def _x0_d1(g_t, dx):
     return bc
 
 
+def x0_d0_discontinuous(f_t, t_stop):
+    def bc(d_mat, u_vect, t):
+        d_mat[:2] = np.zeros_like(d_mat[:2])
+        d_mat[0, 0] = 1
+        d_mat[1, 1] = 1
+        u_vect[0] = 1
+        if t < t_stop:
+            u_vect[1] = f_t(t)
+        return d_mat, u_vect, t
+    return bc
+
+
 def _x1_d0(f_t):
     def bc(d_mat, u_vect, t):
         d_mat[-2:] = np.zeros_like(d_mat[-2:])
@@ -49,15 +61,21 @@ class BoundaryConditions:
         self.x1_order = x1_order if self._x1_func is not None else None
         self.name = name
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args):
         if self._x0_func is not None and self._x1_func is not None:
-            return self._x1_func(*self._x0_func(*args, **kwargs))
+            return self._x1_func(*self._x0_func(*args))
         elif self._x0_func is not None:
-            return self._x0_func(*args, **kwargs)
+            return self._x0_func(*args)
         elif self._x1_func is not None:
-            return self._x1_func(*args, **kwargs)
+            return self._x1_func(*args)
         else:
             return None
+
+
+def identity():
+    def _identity(*args):
+        return args
+    return BoundaryConditions(x0_func=_identity(), x1_func=_identity())
 
 
 def get_bc_dirichlet(x0, x1):

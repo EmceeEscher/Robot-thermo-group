@@ -11,9 +11,11 @@ from diffusion_1d import MASS_DENSITY
 from diffusion_1d import POROSITY_AIR
 from diffusion_1d import VELOCITY_AIR
 from diffusion_1d import EMISSIVITY
+from diffusion_1d import STOP_TIME
 from diffusion_1d import NUM_STEPS, TIME_STEP
 from diffusion_1d import implicit_mod_diffusion
-from bc_1d import get_bc_dirichlet
+from bc_1d import x0_d0_discontinuous
+from bc_1d import BoundaryConditions
 
 
 FPATH_SAVE = '../results/opt_test.txt'
@@ -37,7 +39,7 @@ def _lsq_func(
         params_arr, const_params_dict, variable_params_keys,
         exp_time_array, exp_x_array, exp_temp_array,
         dim_x, min_x, max_x, num_steps, time_step,
-        finite_step_method, iteration_fn
+        finite_step_method, t_stop, iteration_fn
 ):
     params_dict = _make_params_dict(
         params_arr=params_arr, const_params_dict=const_params_dict,
@@ -51,12 +53,17 @@ def _lsq_func(
         print('  {:24}:  {}'.format(k, v))
     del params_dict['u_src']
     del params_dict['u_0']
+    bc = BoundaryConditions(
+        x0_func=x0_d0_discontinuous(f_t=lambda t: u_src, t_stop=t_stop),
+        x1_func=None,
+        name='Heating stopped at {}'.format(t_stop)
+    )
     sim_temp_array = run_simulation_opt(
         exp_time_array=exp_time_array, exp_x_array=exp_x_array,
         dim_x=dim_x, min_x=min_x, max_x=max_x, t_0=t_0,
         num_steps=num_steps, time_step=time_step,
         finite_step_method=finite_step_method,
-        boundary_conditions=get_bc_dirichlet(x0=u_src, x1=None),
+        boundary_conditions=bc,
         params_dict=params_dict,
     )
     sq_sum = 0.0
@@ -70,7 +77,7 @@ def optimize_diffusion_parameters(
         params_guess_dict, const_params_dict,
         exp_time_array, exp_x_array, exp_temp_array,
         dim_x, min_x, max_x, num_steps, time_step,
-        finite_step_method, 
+        finite_step_method, t_stop,
 ):
     # TODO: docstring
     params_guess = np.array([v for k, v in sorted(params_guess_dict.items())])
@@ -81,7 +88,7 @@ def optimize_diffusion_parameters(
             const_params_dict, params_guess_dict.keys(),
             exp_time_array, exp_x_array, exp_temp_array,
             dim_x, min_x, max_x, num_steps, time_step,
-            finite_step_method, iter_fn
+            finite_step_method, t_stop, iter_fn
         ),
     )
 
@@ -90,7 +97,7 @@ def optimize_diffusion_parameters_with_bounds(
         params_guess_dict, params_bounds_dict, const_params_dict,
         exp_time_array, exp_x_array, exp_temp_array,
         dim_x, min_x, max_x, num_steps, time_step,
-        finite_step_method,
+        finite_step_method, t_stop,
 ):
     # TODO: docstring
     params_guess = np.array([v for k, v in sorted(params_guess_dict.items())])
@@ -108,7 +115,7 @@ def optimize_diffusion_parameters_with_bounds(
             const_params_dict, params_guess_dict.keys(),
             exp_time_array, exp_x_array, exp_temp_array,
             dim_x, min_x, max_x, num_steps, time_step,
-            finite_step_method, iter_fn
+            finite_step_method, t_stop, iter_fn
         ),
     )
 
@@ -187,6 +194,7 @@ if __name__ == '__main__':
         dim_x=DIM_X, min_x=MIN_X, max_x=MAX_X,
         num_steps=NUM_STEPS, time_step=TIME_STEP,
         finite_step_method=implicit_mod_diffusion,
+        t_stop=STOP_TIME,
     )
     x, cov, info, msg, ier = result
     with open(FPATH_SAVE, 'w') as fw:
