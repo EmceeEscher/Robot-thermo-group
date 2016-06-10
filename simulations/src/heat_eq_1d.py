@@ -1,4 +1,3 @@
-from __future__ import division, print_function
 import numpy as np
 from bc_1d import get_bc_dirichlet
 from simu1d import d2_matrix, FiniteStepMethod, run_simulation_f
@@ -48,7 +47,7 @@ def _explicit_step_func_heat_eq(
     # make matrix
     mat = heat_eq_matrix(n=n, k=alpha * dt / dx ** 2)
     # implement boundary conditions
-    mat, u_prev, time = boundary_conditions(d_mat=mat, u_vect=u_prev, t=time)
+    mat, u_prev, time = boundary_conditions(mat, u_prev, time)
     # get u^{n+1} vector
     u_next = np.dot(mat, u_prev)
     # return point -> temp map
@@ -75,7 +74,7 @@ def _implicit_step_func_heat_eq(
     # make matrix
     mat = heat_eq_matrix(n=n, k=-alpha * dt / dx ** 2)
     # implement boundary conditions
-    mat, u_prev, time = boundary_conditions(d_mat=mat, u_vect=u_prev, t=time)
+    mat, u_prev, time = boundary_conditions(mat, u_prev, time)
     # solve for u^{n+1} vector
     u_next = np.linalg.solve(mat, u_prev)
     # return point -> temp map
@@ -107,7 +106,7 @@ def _crank_nicolson_step_func_heat_eq(
     k2 = -k1
     mat2 = heat_eq_matrix(n=n, k=k2)
     # implement boundary conditions
-    mat, u_prev, time = boundary_conditions(d_mat=mat2, u_vect=u_prev, t=time)
+    mat, u_prev, time = boundary_conditions(mat2, u_prev, time)
     # solve for u^{n+1} vector
     u_next = np.linalg.solve(mat2, np.dot(mat1, u_prev))
     # return point -> temp map

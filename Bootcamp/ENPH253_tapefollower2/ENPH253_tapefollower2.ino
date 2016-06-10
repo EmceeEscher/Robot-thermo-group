@@ -25,6 +25,8 @@ void setup() {
   // put your setup code here, to run once:
   #include <phys253setup.txt>
   Serial.begin(9600);
+  LCD.clear();
+  LCD.print("Hello world");
 }
 
 void loop() {
@@ -40,10 +42,9 @@ void loop() {
   else if (rightSensor > threshold)
     error = 1;
   else if (lastError > 0)
-      error = 5;
+      error = 5*2;
   else
-      error = -5;
-
+      error = -5*2;
   if (error != lastError) {
     recentError = lastError;
     prevTime = timeStep;

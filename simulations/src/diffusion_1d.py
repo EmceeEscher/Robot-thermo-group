@@ -1,4 +1,3 @@
-from __future__ import division, print_function
 import numpy as np
 from math import pi
 from simu1d import FiniteStepMethod, run_simulation_f, d1_matrix
@@ -11,14 +10,14 @@ STEFAN_BOLTZMANN = 5.67 * 10**(-8)
 # dimensions
 MIN_X = 0.0
 MAX_X = .33
-DIM_X = 3300 + 1
+DIM_X = 33 + 1
 # thermodynamical parameters
 T_0 = 300.0  # initial temperature
 T_AMB = 300.0  # ambient temperature
-T_SRC = 1000.0  # heating temperature
-THERMAL_CONDUCTIVITY = 125
-SPECIFIC_HEAT = 380
-MASS_DENSITY = 8730
+T_SRC = 400.0  # heating temperature
+THERMAL_CONDUCTIVITY = 125.0
+SPECIFIC_HEAT = 380.0
+MASS_DENSITY = 8730.0
 POROSITY_AIR = .01
 VELOCITY_AIR = .01
 # EMISSIVITY = 0.6
@@ -26,6 +25,7 @@ EMISSIVITY = .01
 RADIUS = .01111
 PERIMETER = 2*pi*RADIUS
 AREA = pi*RADIUS**2
+STOP_TIME = 900.0
 PARAMS_DICT = {
     'thermal_conductivity': THERMAL_CONDUCTIVITY,
     'specific_heat': SPECIFIC_HEAT,
@@ -38,7 +38,7 @@ PARAMS_DICT = {
     'u_amb': T_AMB,
 }
 # finite differencing
-TIME_STEP = 0.25
+TIME_STEP = 1.
 NUM_STEPS = int(2700 / TIME_STEP)
 WRITE_PERIOD = 270
 # points
@@ -82,7 +82,7 @@ def _implicit_mod_step_func_diffusion(
     mat_conv = conv_matrix(n=n, k=beta*dt/(2*dx))
     mat = mat_heat + mat_conv
     # implement boundary conditions
-    mat, u_prev, time = boundary_conditions(d_mat=mat, u_vect=u_vector, t=time)
+    mat, u_prev, time = boundary_conditions(mat, u_vector, time)
     # solve for u^{n+1} vector
     tmat = np.transpose(mat)
     u_next = np.linalg.solve(np.dot(tmat, mat), np.dot(tmat, u_prev))
