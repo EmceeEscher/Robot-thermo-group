@@ -1,4 +1,3 @@
-from __future__ import division, print_function
 import numpy as np
 from bc_1d import get_bc_dirichlet
 from simu1d import d2_matrix, FiniteStepMethod, run_simulation_f

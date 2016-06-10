@@ -1,4 +1,3 @@
-from __future__ import division, print_function
 import numpy as np
 from math import pi
 from simu1d import FiniteStepMethod, run_simulation_f, d1_matrix

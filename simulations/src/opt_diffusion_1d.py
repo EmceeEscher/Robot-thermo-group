@@ -1,7 +1,7 @@
-from __future__ import division, print_function
 from datetime import datetime
 import numpy as np
 from scipy.optimize import leastsq
+from scipy.optimize import least_squares
 from simu1d import run_simulation_opt
 from diffusion_1d import PARAMS_DICT
 from diffusion_1d import DIM_X, MIN_X, MAX_X, T_0, T_SRC, T_AMB
@@ -26,6 +26,7 @@ def _iteration():
         yield i
         i += 1
 
+
 def _make_params_dict(params_arr, variable_params_keys, const_params_dict):
     d = dict(const_params_dict)
     d.update({k: v for k, v in zip(sorted(variable_params_keys), params_arr)})
@@ -35,7 +36,7 @@ def _make_params_dict(params_arr, variable_params_keys, const_params_dict):
 def _lsq_func(
         params_arr, const_params_dict, variable_params_keys,
         exp_time_array, exp_x_array, exp_temp_array,
-        dim_x, min_x, max_x, t_0, num_steps, time_step,
+        dim_x, min_x, max_x, num_steps, time_step,
         finite_step_method, iteration_fn
 ):
     params_dict = _make_params_dict(
@@ -43,11 +44,13 @@ def _lsq_func(
         variable_params_keys=variable_params_keys
     )
     u_src = params_dict['u_src']
+    t_0 = params_dict['u_0']
     print('Iteration {:3}'.format(next(iteration_fn)))
     print('params_arr =\n{}'.format(params_arr))
     for k, v in sorted(params_dict.items()):
         print('  {:24}:  {}'.format(k, v))
     del params_dict['u_src']
+    del params_dict['u_0']
     sim_temp_array = run_simulation_opt(
         exp_time_array=exp_time_array, exp_x_array=exp_x_array,
         dim_x=dim_x, min_x=min_x, max_x=max_x, t_0=t_0,
@@ -56,26 +59,17 @@ def _lsq_func(
         boundary_conditions=get_bc_dirichlet(x0=u_src, x1=None),
         params_dict=params_dict,
     )
-    # print('exp_x_array =\n{}'.format(exp_x_array))
-    # print('sim_temp_array =\n{}'.format(sim_temp_array))
-    # print('  shape = {}'.format(sim_temp_array.shape))
-    # print('sim_temp_array (flattened)=\n{}'.format(sim_temp_array.flatten()))
-    # print('  shape = {}'.format(sim_temp_array.flatten().shape))
-    # print('exp_temp_array =\n{}'.format(exp_temp_array))
-    # print('  shape = {}'.format(exp_temp_array.shape))
-    # print('exp_temp_array (flattened)=\n{}'.format(exp_temp_array.flatten()))
-    # print('  shape = {}'.format(exp_temp_array.flatten().shape))
-    sum = 0.0
+    sq_sum = 0.0
     for st, et in zip(sim_temp_array.flatten(), exp_temp_array.flatten()):
-        sum += (st - et) ** 2
-    print('  Sum of squares = {}'.format(sum))
+        sq_sum += (st - et) ** 2
+    print('  Sum of squares = {}'.format(sq_sum))
     return sim_temp_array.flatten() - exp_temp_array.flatten()
 
 
 def optimize_diffusion_parameters(
         params_guess_dict, const_params_dict,
         exp_time_array, exp_x_array, exp_temp_array,
-        dim_x, min_x, max_x, t_0, num_steps, time_step,
+        dim_x, min_x, max_x, num_steps, time_step,
         finite_step_method, 
 ):
     params_guess = np.array([v for k, v in sorted(params_guess_dict.items())])
@@ -85,7 +79,26 @@ def optimize_diffusion_parameters(
         args=(
             const_params_dict, params_guess_dict.keys(),
             exp_time_array, exp_x_array, exp_temp_array,
-            dim_x, min_x, max_x, t_0, num_steps, time_step,
+            dim_x, min_x, max_x, num_steps, time_step,
+            finite_step_method, iter_fn
+        ),
+    )
+
+
+def optimize_diffuion_parameters_with_bounds(
+        params_guess_dict, params_bounds, const_params_dict,
+        exp_time_array, exp_x_array, exp_temp_array,
+        dim_x, min_x, max_x, num_steps, time_step,
+        finite_step_method,
+):
+    params_guess = np.array([v for k, v in sorted(params_guess_dict.items())])
+    iter_fn = _iteration()
+    return least_squares(
+        fun=_lsq_func, x0=params_guess, bounds=params_bounds, verbose=2,
+        args=(
+            const_params_dict, params_guess_dict.keys(),
+            exp_time_array, exp_x_array, exp_temp_array,
+            dim_x, min_x, max_x, num_steps, time_step,
             finite_step_method, iter_fn
         ),
     )
@@ -116,6 +129,7 @@ if __name__ == '__main__':
         'porosity_air': POROSITY_AIR,
         'velocity_air': VELOCITY_AIR,
         'emissivity': EMISSIVITY,
+        'u_0': T_0,
         'u_amb': T_AMB,
         'u_src': T_SRC,
     }
@@ -140,7 +154,7 @@ if __name__ == '__main__':
         exp_x_array=EXP_X_ARRAY,
         exp_temp_array=exp_temp_array0,
         dim_x=DIM_X, min_x=MIN_X, max_x=MAX_X,
-        t_0=T_0, num_steps=NUM_STEPS, time_step=TIME_STEP,
+        num_steps=NUM_STEPS, time_step=TIME_STEP,
         finite_step_method=implicit_mod_diffusion,
     )
     x, cov, info, msg, ier = result
@@ -150,8 +164,8 @@ if __name__ == '__main__':
         fw.write('Optimization of 1-dimensional parameters\n')
         fw.write('\n')
         fw.write('Optimized parameters:\n')
-        for pk, v in zip(sorted(params_guess_dict0.keys()), x):
-            fw.write('  {:16} = {}\n'.format(pk, v))
+        for pk, val in zip(sorted(params_guess_dict0.keys()), x):
+            fw.write('  {:16} = {}\n'.format(pk, val))
         fw.write('\n')
         fw.write('Covariance matrix:\n')
         for row in cov:
@@ -161,8 +175,8 @@ if __name__ == '__main__':
             fw.write('\n')
         fw.write('\n')
         fw.write('Info:\n')
-        for k, v in info.items():
-            fw.write('{}:\n  {}\n'.format(k, v))
+        for k, val in info.items():
+            fw.write('{}:\n  {}\n'.format(k, val))
         fw.write('\n')
         fw.write('Message:\n')
         fw.write('  {}\n'.format(msg))

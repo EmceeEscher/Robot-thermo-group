@@ -1,4 +1,3 @@
-from __future__ import division, print_function
 from datetime import datetime
 from math import floor
 import numpy as np
