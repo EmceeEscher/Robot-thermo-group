@@ -25,6 +25,8 @@ void setup() {
   // put your setup code here, to run once:
   #include <phys253setup.txt>
   Serial.begin(9600);
+  LCD.clear();
+  LCD.print("Hello world");
 }
 
 void loop() {
