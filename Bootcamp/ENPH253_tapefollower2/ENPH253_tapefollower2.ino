@@ -42,10 +42,9 @@ void loop() {
   else if (rightSensor > threshold)
     error = 1;
   else if (lastError > 0)
-      error = 5;
+      error = 5*2;
   else
-      error = -5;
-
+      error = -5*2;
   if (error != lastError) {
     recentError = lastError;
     prevTime = timeStep;
