@@ -1,7 +1,7 @@
 import numpy as np
 from math import pi
 from simu1d import FiniteStepMethod, run_simulation_f, d1_matrix
-from bc_1d import get_bc_dirichlet
+from bc_1d import get_bc_neumann
 from heat_eq_1d import heat_eq_matrix
 
 
@@ -14,7 +14,7 @@ DIM_X = 33 + 1
 # thermodynamical parameters
 T_0 = 300.0  # initial temperature
 T_AMB = 300.0  # ambient temperature
-T_SRC = 400.0  # heating temperature
+DT_SRC = 400.0  # heating temperature
 THERMAL_CONDUCTIVITY = 125.0
 SPECIFIC_HEAT = 380.0
 MASS_DENSITY = 8730.0
@@ -105,6 +105,6 @@ if __name__ == '__main__':
         dim_x=DIM_X, min_x=MIN_X, max_x=MAX_X,
         t_0=T_0, num_steps=NUM_STEPS, time_step=TIME_STEP,
         finite_step_method=implicit_mod_diffusion,
-        boundary_conditions=get_bc_dirichlet(x0=T_SRC, x1=None),
+        boundary_conditions=get_bc_neumann(x0=DT_SRC, x1=None),
         params_dict=PARAMS_DICT,
     )

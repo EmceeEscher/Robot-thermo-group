@@ -33,6 +33,16 @@ def x0_d0_discontinuous(f_t, t_stop):
     return bc
 
 
+def x0_d1_discontinuous(g_t, dx, t_stop):
+    def bc(d_mat, u_vect, t):
+        d_mat[0] = np.zeros_like(d_mat[0])
+        d_mat[0, 0] = 1
+        if t < t_stop:
+            u_vect[0] = u_vect[2] - 2 * dx * g_t(t)
+        return d_mat, u_vect, t
+    return bc
+
+
 def _x1_d0(f_t):
     def bc(d_mat, u_vect, t):
         d_mat[-2:] = np.zeros_like(d_mat[-2:])

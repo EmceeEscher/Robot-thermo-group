@@ -4,7 +4,7 @@ from scipy.optimize import leastsq
 from scipy.optimize import least_squares
 from simu1d import run_simulation_opt
 from diffusion_1d import PARAMS_DICT
-from diffusion_1d import DIM_X, MIN_X, MAX_X, T_0, T_SRC, T_AMB
+from diffusion_1d import DIM_X, MIN_X, MAX_X, T_0, DT_SRC, T_AMB
 from diffusion_1d import THERMAL_CONDUCTIVITY
 from diffusion_1d import SPECIFIC_HEAT
 from diffusion_1d import MASS_DENSITY
@@ -14,7 +14,7 @@ from diffusion_1d import EMISSIVITY
 from diffusion_1d import STOP_TIME
 from diffusion_1d import NUM_STEPS, TIME_STEP
 from diffusion_1d import implicit_mod_diffusion
-from bc_1d import x0_d0_discontinuous
+from bc_1d import x0_d1_discontinuous
 from bc_1d import BoundaryConditions
 
 
@@ -46,16 +46,17 @@ def _lsq_func(
         params_arr=params_arr, const_params_dict=const_params_dict,
         variable_params_keys=variable_params_keys
     )
-    u_src = params_dict['u_src']
+    du_src = params_dict['du_src']
     t_0 = params_dict['u_0']
     print('Iteration {:3}'.format(next(iteration_fn)))
     print('params_arr =\n{}'.format(params_arr))
     for k, v in sorted(params_dict.items()):
         print('  {:24}:  {}'.format(k, v))
-    del params_dict['u_src']
+    del params_dict['du_src']
     del params_dict['u_0']
+    dx = (max_x - min_x) / (dim_x - 1)
     bc = BoundaryConditions(
-        x0_func=x0_d0_discontinuous(f_t=lambda t: u_src, t_stop=t_stop),
+        x0_func=x0_d1_discontinuous(g_t=lambda t: du_src, dx=dx, t_stop=t_stop),
         x1_func=None,
         name='Heating stopped at {}'.format(t_stop)
     )
@@ -150,7 +151,7 @@ if __name__ == '__main__':
         'emissivity': EMISSIVITY,
         'u_0': T_0,
         'u_amb': T_AMB,
-        'u_src': T_SRC,
+        'du_src': DT_SRC,
     }
     params_bounds_dict0 = {
         'thermal_conductivity':
@@ -169,8 +170,8 @@ if __name__ == '__main__':
             (.9*T_0, 1.1*T_0),
         'u_amb':
             (.9*T_AMB, 1.1*T_AMB),
-        'u_src':
-            (.5*T_SRC, 1.5*T_SRC),
+        'du_src':
+            (0, np.inf),
     }
     const_keys = filter(
         lambda k: k not in params_guess_dict0, PARAMS_DICT.keys())
