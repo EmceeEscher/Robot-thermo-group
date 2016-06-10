@@ -45,10 +45,10 @@ def _lsq_func(
     )
     u_src = params_dict['u_src']
     t_0 = params_dict['u_0']
-    print('Iteration {:3}'.format(next(iteration_fn)))
-    print('params_arr =\n{}'.format(params_arr))
-    for k, v in sorted(params_dict.items()):
-        print('  {:24}:  {}'.format(k, v))
+    # print('Iteration {:3}'.format(next(iteration_fn)))
+    # print('params_arr =\n{}'.format(params_arr))
+    # for k, v in sorted(params_dict.items()):
+    #     print('  {:24}:  {}'.format(k, v))
     del params_dict['u_src']
     del params_dict['u_0']
     sim_temp_array = run_simulation_opt(
@@ -59,10 +59,10 @@ def _lsq_func(
         boundary_conditions=get_bc_dirichlet(x0=u_src, x1=None),
         params_dict=params_dict,
     )
-    sq_sum = 0.0
-    for st, et in zip(sim_temp_array.flatten(), exp_temp_array.flatten()):
-        sq_sum += (st - et) ** 2
-    print('  Sum of squares = {}'.format(sq_sum))
+    # sq_sum = 0.0
+    # for st, et in zip(sim_temp_array.flatten(), exp_temp_array.flatten()):
+    #     sq_sum += (st - et) ** 2
+    # print('  Sum of squares = {}'.format(sq_sum))
     return sim_temp_array.flatten() - exp_temp_array.flatten()
 
 
@@ -72,6 +72,7 @@ def optimize_diffusion_parameters(
         dim_x, min_x, max_x, num_steps, time_step,
         finite_step_method, 
 ):
+    # TODO: docstring
     params_guess = np.array([v for k, v in sorted(params_guess_dict.items())])
     iter_fn = _iteration()
     return leastsq(
@@ -85,16 +86,24 @@ def optimize_diffusion_parameters(
     )
 
 
-def optimize_diffuion_parameters_with_bounds(
-        params_guess_dict, params_bounds, const_params_dict,
+def optimize_diffusion_parameters_with_bounds(
+        params_guess_dict, params_bounds_dict, const_params_dict,
         exp_time_array, exp_x_array, exp_temp_array,
         dim_x, min_x, max_x, num_steps, time_step,
         finite_step_method,
 ):
+    # TODO: docstring
     params_guess = np.array([v for k, v in sorted(params_guess_dict.items())])
+    if params_bounds_dict is None:
+        bounds = None
+    else:
+        pgi = sorted(params_bounds_dict.items())
+        lower_bounds = np.array([v[0] for k, v in pgi])
+        upper_bounds = np.array([v[1] for k, v in pgi])
+        bounds = (lower_bounds, upper_bounds)
     iter_fn = _iteration()
     return least_squares(
-        fun=_lsq_func, x0=params_guess, bounds=params_bounds, verbose=2,
+        fun=_lsq_func, x0=params_guess, bounds=bounds, verbose=2,
         args=(
             const_params_dict, params_guess_dict.keys(),
             exp_time_array, exp_x_array, exp_temp_array,
@@ -105,6 +114,7 @@ def optimize_diffuion_parameters_with_bounds(
 
 
 def get_experimental_arrays(dat_fpaths_list):
+    # TODO: docstring
     time_temp_lists = list()
     for fpath in dat_fpaths_list:
         time_list = list()
@@ -133,6 +143,17 @@ if __name__ == '__main__':
         'u_amb': T_AMB,
         'u_src': T_SRC,
     }
+    params_bounds_dict0 = {
+        'thermal_conductivity': (0., np.inf),
+        'specific_heat': (.9*SPECIFIC_HEAT, 1.1*SPECIFIC_HEAT),
+        'mass_density': (.9*MASS_DENSITY, 1.1*MASS_DENSITY),
+        'porosity_air': (0., 1.),
+        'velocity_air': (0., 3.*10**8),
+        'emissivity': (0., 1.),
+        'u_0': (0.9*T_0, 1.1*T_0),
+        'u_amb': (0.9*T_AMB, 1.1*T_AMB),
+        'u_src': (0.5*T_SRC, 1.5*T_SRC),
+    }
     const_keys = filter(
         lambda k: k not in params_guess_dict0, PARAMS_DICT.keys())
     const_params_dict0 = {k: PARAMS_DICT[k] for k in const_keys}
@@ -147,8 +168,9 @@ if __name__ == '__main__':
     for temps in zip(*[x[1] for x in time_temp_arrays]):
         exp_temp_list.append(np.array(temps))
     exp_temp_array0 = np.array(exp_temp_list)
-    result = optimize_diffusion_parameters(
+    result = optimize_diffusion_parameters_with_bounds(
         params_guess_dict=params_guess_dict0,
+        params_bounds_dict=params_bounds_dict0,
         const_params_dict=const_params_dict0,
         exp_time_array=exp_time_array0,
         exp_x_array=EXP_X_ARRAY,
