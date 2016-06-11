@@ -56,7 +56,7 @@ class Simulation:
             self, time_step, x_array, t_0, finite_step_method, params_dict,
             boundary_conditions
     ):
-        self.dt = time_step,
+        self.dt = time_step
         self.x_array = x_array
         self.u_0 = t_0
         self.step_method = finite_step_method
