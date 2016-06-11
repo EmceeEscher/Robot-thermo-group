@@ -1,6 +1,6 @@
 import numpy as np
 from math import pi
-from simu1d import FiniteStepMethod, run_simulation_f, d1_matrix
+from simu1d import FiniteStepMethod, run_simulation_f, d1_matrix, Simulation
 from bc_1d import get_bc_neumann
 from heat_eq_1d import heat_eq_matrix
 
@@ -99,13 +99,15 @@ implicit_mod_diffusion = FiniteStepMethod(
 
 # script
 if __name__ == '__main__':
+    sim = Simulation(
+        time_step=TIME_STEP, x_array=X_ARRAY, t_0=T_0,
+        finite_step_method=implicit_mod_diffusion, params_dict=PARAMS_DICT,
+        boundary_conditions=get_bc_neumann(
+            x0=DT_SRC, x1=None, dx=(MAX_X+MIN_X)/(DIM_X+1)
+        )
+    )
     run_simulation_f(
+        simulation=sim, num_steps=NUM_STEPS,
         fpath='../results/diffusion_try.dat', verbose=True,
         write_period=WRITE_PERIOD,
-        dim_x=DIM_X, min_x=MIN_X, max_x=MAX_X,
-        t_0=T_0, num_steps=NUM_STEPS, time_step=TIME_STEP,
-        finite_step_method=implicit_mod_diffusion,
-        boundary_conditions=get_bc_neumann(
-            x0=DT_SRC, x1=None, dx=(MAX_X+MIN_X)/(DIM_X+1)),
-        params_dict=PARAMS_DICT,
     )
