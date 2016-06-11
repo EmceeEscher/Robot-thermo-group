@@ -105,6 +105,7 @@ if __name__ == '__main__':
         dim_x=DIM_X, min_x=MIN_X, max_x=MAX_X,
         t_0=T_0, num_steps=NUM_STEPS, time_step=TIME_STEP,
         finite_step_method=implicit_mod_diffusion,
-        boundary_conditions=get_bc_neumann(x0=DT_SRC, x1=None),
+        boundary_conditions=get_bc_neumann(
+            x0=DT_SRC, x1=None, dx=(MAX_X+MIN_X)/(DIM_X+1)),
         params_dict=PARAMS_DICT,
     )
