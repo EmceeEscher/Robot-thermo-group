@@ -1,4 +1,6 @@
 from datetime import datetime
+from math import ceil
+from os import path, makedirs
 import numpy as np
 from scipy.optimize import least_squares
 from simu1d import run_simulation_opt, Simulation
@@ -11,15 +13,57 @@ from diffusion_1d import POROSITY_AIR
 from diffusion_1d import VELOCITY_AIR
 from diffusion_1d import EMISSIVITY
 from diffusion_1d import STOP_TIME
-from diffusion_1d import NUM_STEPS, TIME_STEP
+from diffusion_1d import TIME_STEP
 from diffusion_1d import implicit_mod_diffusion
 from bc_1d import x0_d1_discontinuous
 from bc_1d import BoundaryConditions
 
 
+# input files
+DATA_FPATHS = [
+    '../../data/temperature data/June 6/Run1_tc1.dat',
+    '../../data/temperature data/June 6/Run1_tc2.dat',
+    '../../data/temperature data/June 6/Run1_tc3.dat',
+    '../../data/temperature data/June 6/Run1_tc4.dat',
+]
+# output files
 OPT_FPATH = '../results/opt_test-params.dat'
 SIM_FPATH = '../results/opt_test-sim.dat'
+
 EXP_X_ARRAY = np.array(sorted([.33 - .01555 - .0725*n for n in range(4)]))
+
+params_guess_dict0 = {
+    'thermal_conductivity': THERMAL_CONDUCTIVITY,
+    'specific_heat': SPECIFIC_HEAT,
+    'mass_density': MASS_DENSITY,
+    'porosity_air': POROSITY_AIR,
+    'velocity_air': VELOCITY_AIR,
+    'emissivity': EMISSIVITY,
+    'u_0': T_0,
+    'u_amb': T_AMB,
+    'du_src': DT_SRC,
+}
+
+params_bounds_dict0 = {
+    'thermal_conductivity':
+        (.5*THERMAL_CONDUCTIVITY, 1.5*THERMAL_CONDUCTIVITY),
+    'specific_heat':
+        (.9*SPECIFIC_HEAT, 1.1*SPECIFIC_HEAT),
+    'mass_density':
+        (.9*MASS_DENSITY, 1.1*MASS_DENSITY),
+    'porosity_air':
+        (0., 1.),
+    'velocity_air':
+        (0., 10.),
+    'emissivity':
+        (0., 1.),
+    'u_0':
+        (.9*T_0, 1.1*T_0),
+    'u_amb':
+        (.9*T_AMB, 1.1*T_AMB),
+    'du_src':
+        (0, np.inf),
+}
 
 
 def _iteration():
@@ -190,46 +234,24 @@ def get_exp_time_temp_arrays(dat_fpaths_list):
 
 # script
 if __name__ == '__main__':
-    params_guess_dict0 = {
-        'thermal_conductivity': THERMAL_CONDUCTIVITY,
-        'specific_heat': SPECIFIC_HEAT,
-        'mass_density': MASS_DENSITY,
-        'porosity_air': POROSITY_AIR,
-        'velocity_air': VELOCITY_AIR,
-        'emissivity': EMISSIVITY,
-        'u_0': T_0,
-        'u_amb': T_AMB,
-        'du_src': DT_SRC,
-    }
-    params_bounds_dict0 = {
-        'thermal_conductivity':
-            (.5*THERMAL_CONDUCTIVITY, 1.5*THERMAL_CONDUCTIVITY),
-        'specific_heat':
-            (.9*SPECIFIC_HEAT, 1.1*SPECIFIC_HEAT),
-        'mass_density':
-            (.9*MASS_DENSITY, 1.1*MASS_DENSITY),
-        'porosity_air':
-            (0., 1.),
-        'velocity_air':
-            (0., 10.),
-        'emissivity':
-            (0., 1.),
-        'u_0':
-            (.9*T_0, 1.1*T_0),
-        'u_amb':
-            (.9*T_AMB, 1.1*T_AMB),
-        'du_src':
-            (0, np.inf),
-    }
+    # make results directories
+    opt_dpath = path.split(OPT_FPATH)[0]
+    sim_dpath = path.split(SIM_FPATH)[0]
+    if not path.exists(opt_dpath):
+        makedirs(opt_dpath)
+    if not path.exists(sim_dpath):
+        makedirs(sim_dpath)
+    # determine which parameters to hold constant
     const_keys = filter(
         lambda k: k not in params_guess_dict0, PARAMS_DICT.keys())
     const_params_dict0 = {k: PARAMS_DICT[k] for k in const_keys}
+    # get experimental arrays
     exp_time_array0, exp_temp_array0 = get_exp_time_temp_arrays(
-        dat_fpaths_list=[
-            '../../data/temperature data/June 6/Run1_tc{}.dat'.format(i)
-            for i in range(1, 5)
-            ]
+        dat_fpaths_list=DATA_FPATHS
     )
+    # get num_steps
+    num_steps0 = ceil(exp_time_array0[-1] / TIME_STEP)
+    # run optimization
     result = optimize_diffusion_parameters_with_bounds(
         params_guess_dict=params_guess_dict0,
         params_bounds_dict=params_bounds_dict0,
@@ -238,10 +260,11 @@ if __name__ == '__main__':
         exp_x_array=EXP_X_ARRAY,
         exp_temp_array=exp_temp_array0,
         x_array=np.linspace(MIN_X, MAX_X, DIM_X),
-        num_steps=NUM_STEPS, time_step=TIME_STEP,
+        num_steps=num_steps0, time_step=TIME_STEP,
         finite_step_method=implicit_mod_diffusion,
         sim_fpath=SIM_FPATH, t_stop=STOP_TIME,
     )
+    # write results file
     params_array = result.x
     with open(OPT_FPATH, 'w') as fw:
         fw.write(str(datetime.now()) + '\n')
