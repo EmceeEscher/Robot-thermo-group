@@ -9,4 +9,5 @@ averageValues(xp,yp,['../data/' smthVFile]);
 [time,temp] = convertToTemp( ...
     ['../data/' smthVFile], ['../data/' calFile], ['../data/' tFile]);
 
+plot(time,temp);
 end
