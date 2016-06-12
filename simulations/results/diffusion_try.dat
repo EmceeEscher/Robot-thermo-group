@@ -1,32 +1,65 @@
-# 2016-06-08 15:00:01.192400
-#
+# 2016-06-10 19:52:34.057117
+
 # Simulation of heat flow through 1-dimensional rod
-#
+# 
 # Dimensions
-#   dim x =                     3301
-#   min x =                     0.0
-#   max x =                     0.33
-#
+#   dim x =                  34
+#   min x =                  0.0
+#   max x =                  0.33
+# 
 # Thermodynamical parameters
-#   initial temp =              300.0
-#   perimeter =                 0.0698061887628
-#   porosity air =              0.01
-#   thermal conductivity =      125
-#   velocity air =              0.01
-#   area =                      0.000387773378577
-#   specific heat =             380
-#   mass density =              8730
-#   emissivity =                0.01
-#   u amb =                     300.0
-#
-# Boundary conditions:
-#   method =                    Dirichlet
-#   x0 order =                  1
-#   x1 order =                  None
-#
-# Finite differencing
-#   num steps =                 10800.0
-#   time step =                 0.25
-#   method =                    Modified implicit for convection-diffusion equation
-#   write period =              270
-#
+#   initial temp =           300.0
+#    thermal conductivity =      125.0
+#    mass density =              8730.0
+#    velocity air =              0.01
+#    specific heat =             380.0
+#    area =                      0.0003877733785771607
+#    u amb =                     300.0
+#    perimeter =                 0.0698061887627652
+#    porosity air =              0.01
+#    emissivity =                0.01
+# 
+#  Boundary conditions:
+#    method =                    Neumann
+#    x0 order =                  2
+#    x1 order =                  None
+# 
+#  Finite differencing
+#    time step =                 (1.0,)
+#    method =                    Modified implicit for convection-diffusion equation
+# 
+Step= 0
+       0      300.00000000
+       1      300.00000000
+       2      300.00000000
+       3      300.00000000
+       4      300.00000000
+       5      300.00000000
+       6      300.00000000
+       7      300.00000000
+       8      300.00000000
+       9      300.00000000
+      10      300.00000000
+      11      300.00000000
+      12      300.00000000
+      13      300.00000000
+      14      300.00000000
+      15      300.00000000
+      16      300.00000000
+      17      300.00000000
+      18      300.00000000
+      19      300.00000000
+      20      300.00000000
+      21      300.00000000
+      22      300.00000000
+      23      300.00000000
+      24      300.00000000
+      25      300.00000000
+      26      300.00000000
+      27      300.00000000
+      28      300.00000000
+      29      300.00000000
+      30      300.00000000
+      31      300.00000000
+      32      300.00000000
+      33      300.00000000
