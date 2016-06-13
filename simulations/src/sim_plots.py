@@ -11,7 +11,7 @@ FPATHS_LIST = [
     for i in range(1, 5)
 ]
 
-SIM_FPATH = '../results/June 6 - Run 2/opt_test-sim.dat'
+SIM_FPATH = '../results/June 8 - Run 1/opt_test-sim.dat'
 
 
 def _get_exp_datum(fpath):
@@ -143,9 +143,6 @@ def plot_simulation_data_surface(fpath):
     ax = fig.gca(projection='3d')
     x_arr, time_arr = np.meshgrid(x_arr, time_arr)
     # reduce sizes
-    x_arr = x_arr
-    time_arr = time_arr
-    temp_arr = temp_arr
     surf = ax.plot_surface(
         x_arr, time_arr, temp_arr, cmap='coolwarm',
         rstride=1, cstride=1,
@@ -164,12 +161,12 @@ if __name__ == '__main__':
     plt.legend()
     plt.show()
 
-    plot_experimental_data_surface(fpaths_list=FPATHS_LIST)
-    plt.show()
+    # plot_experimental_data_surface(fpaths_list=FPATHS_LIST)
+    # plt.show()
 
     plot_simulation_data(fpath=SIM_FPATH)
     plt.legend()
     plt.show()
 
-    plot_simulation_data_surface(fpath=SIM_FPATH)
-    plt.show()
+    # plot_simulation_data_surface(fpath=SIM_FPATH)
+    # plt.show()
