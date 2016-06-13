@@ -160,16 +160,16 @@ def plot_simulation_data_surface(fpath):
 
 # script
 if __name__ == '__main__':
-    # plot_experimental_data(fpaths_list=FPATHS_LIST)
-    # plt.legend()
-    # plt.show()
-    #
-    # plot_experimental_data_surface(fpaths_list=FPATHS_LIST)
-    # plt.show()
-    #
-    # plot_simulation_data(fpath=SIM_FPATH)
-    # plt.legend()
-    # plt.show()
-    #
-    # plot_simulation_data_surface(fpath=SIM_FPATH)
-    # plt.show()
+    plot_experimental_data(fpaths_list=FPATHS_LIST)
+    plt.legend()
+    plt.show()
+
+    plot_experimental_data_surface(fpaths_list=FPATHS_LIST)
+    plt.show()
+
+    plot_simulation_data(fpath=SIM_FPATH)
+    plt.legend()
+    plt.show()
+
+    plot_simulation_data_surface(fpath=SIM_FPATH)
+    plt.show()
