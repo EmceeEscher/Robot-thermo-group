@@ -62,15 +62,19 @@ def plot_experimental_data_surface(fpaths_list):
     for f in files:
         f.close()
     x_arr = np.arange(1, len(fpaths_list)+1)
-    time_arr = np.array(time_list)[::2]
-    temp_arr = np.array(temp_arr_list)[::2]
+    time_arr = np.array(time_list)
+    temp_arr = np.array(temp_arr_list)
     # make figure
     fig = plt.figure()
     ax = fig.gca(projection='3d')
-    time_arr, x_arr = np.meshgrid(x_arr, time_arr)
-    surf = ax.plot_surface(x_arr, time_arr, temp_arr, cmap='coolwarm')
-    ax.set_ylabel('Thermocouple')
-    ax.set_xlabel('Time (s)')
+    x_arr, time_arr = np.meshgrid(x_arr, time_arr)
+    surf = ax.plot_surface(
+        x_arr, time_arr, temp_arr, cmap='coolwarm',
+        rstride=1, cstride=1,
+        linewidth=0
+    )
+    ax.set_xlabel('Thermocouple')
+    ax.set_ylabel('Time (s)')
     ax.set_zlabel('Temperature (K)')
     plt.title('Temperature vs. Time Surface Plot')
     return surf
@@ -130,15 +134,50 @@ def plot_simulation_data(fpath):
     return lines
 
 
+def plot_simulation_data_surface(fpath):
+    # get data
+    temp_arr = _get_simulation_data(fpath)
+    time_step = _get_simulation_params_dict(fpath)['time step']
+    time_arr = time_step * np.arange(len(temp_arr))
+    x_arr = np.arange(1, 1+temp_arr.shape[1])
+    # make figure
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+    x_arr, time_arr = np.meshgrid(x_arr, time_arr)
+    # reduce sizes
+    x_arr = x_arr
+    time_arr = time_arr
+    temp_arr = temp_arr
+    try:
+        surf = ax.plot_surface(
+            x_arr, time_arr, temp_arr, cmap='coolwarm',
+            rstride=1, cstride=1,
+            linewidth=0
+        )
+    except ValueError:
+        print('x_arr shape= {}'.format(x_arr.shape))
+        print('time_arr shape= {}'.format(time_arr.shape))
+        print('temp_arr shape= {}'.format(temp_arr.shape))
+        raise
+    ax.set_xlabel('Thermocouple')
+    ax.set_ylabel('Time (s)')
+    ax.set_zlabel('Temperature (K)')
+    plt.title('Temperature vs. Time Surface Plot for Simulation')
+    return surf
+
+
 # script
 if __name__ == '__main__':
     # plot_experimental_data(fpaths_list=FPATHS_LIST)
     # plt.legend()
     # plt.show()
     #
-    # plot_experimental_data_surface(fpaths_list=FPATHS_LIST)
+    plot_experimental_data_surface(fpaths_list=FPATHS_LIST)
+    plt.show()
+    #
+    # plot_simulation_data(fpath=SIM_FPATH)
+    # plt.legend()
     # plt.show()
 
-    plot_simulation_data(fpath=SIM_FPATH)
-    plt.legend()
+    plot_simulation_data_surface(fpath=SIM_FPATH)
     plt.show()
