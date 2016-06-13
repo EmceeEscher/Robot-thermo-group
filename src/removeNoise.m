@@ -10,6 +10,8 @@ for i = 2:n(2)
    end
 end
 
+plot(x,y);
+
 f = fopen(outFile,'w');
 for i = 1:n(2)
    fprintf(f, '%16.8f %16.8f\n\r', x(i),y(i)); 
