@@ -58,8 +58,8 @@ def _implicit_mod_step_func_diffusion_simple(
     denom = specific_heat*mass_density*area
     u_vect = (
         u_prev +
-        u_amb_vect*dt*convection_coeff*perimeter/denom -
-        emissivity*STEFAN_BOLTZMANN*perimeter*dt/denom *
+        dt*convection_coeff*perimeter/denom * u_amb_vect -
+        dt*emissivity*STEFAN_BOLTZMANN*perimeter/denom *
         (u_prev**4-u_amb_vect**4)
     )
     mat_heat = heat_eq_matrix(
@@ -75,9 +75,8 @@ def _implicit_mod_step_func_diffusion_simple(
     mat, u_prev, time = boundary_conditions(mat_heat+mat_conv, u_vect, time)
     # solve for u^{n+1} vector
     tmat = np.transpose(mat)
-    u_next = np.linalg.solve(np.dot(tmat, mat), np.dot(tmat, u_prev))
-    # u_next = np.linalg.solve(mat, u_prev)
-    # return point -> temp map
+    # u_next = np.linalg.solve(np.dot(tmat, mat), np.dot(tmat, u_prev))
+    u_next = np.linalg.solve(mat, u_prev)
     return {p: t for p, t in zip(points, u_next[1:-1])}
 
 
@@ -117,8 +116,8 @@ def _implicit_mod2_step_func_diffusion_simple(
     mat, u_prev, time = boundary_conditions(mat_heat, u_vect, time)
     # solve for u^{n+1} vector
     tmat = np.transpose(mat)
-    u_next = np.linalg.solve(np.dot(tmat, mat), np.dot(tmat, u_prev))
-    # u_next = np.linalg.solve(mat, u_prev)
+    # u_next = np.linalg.solve(np.dot(tmat, mat), np.dot(tmat, u_prev))
+    u_next = np.linalg.solve(mat, u_prev)
     # return point -> temp map
     return {p: t for p, t in zip(points, u_next[1:-1])}
 

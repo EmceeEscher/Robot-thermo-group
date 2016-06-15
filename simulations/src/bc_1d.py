@@ -103,7 +103,7 @@ def simple_heat_diffusion2_x1(
         dt, dx, denom, k_c, area, perimeter, u_prev, u_amb):
     def bc(d_mat, u_vect, t):
         diff = (dt*k_c/denom * (area/(2*dx) - perimeter/2) *
-                (u_prev[1] - u_amb[1]))
+                (u_prev[-2] - u_amb[-2]))
         d_mat[-1, -1] = 1
         u_vect[-1] = 0
         u_vect[-2] += diff

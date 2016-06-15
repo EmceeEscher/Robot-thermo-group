@@ -9,6 +9,7 @@ from opt_diffusion_1d import make_params_dict, iteration
 from opt_diffusion_1d import get_exp_time_temp_arrays
 from diffusion_1d import PERIMETER, AREA, MIN_X, MAX_X
 from diffusion_1d_v2 import implicit_mod_diffusion_simple
+from diffusion_1d_v2 import implicit_mod2_diffusion_simple
 
 
 # input files
@@ -151,7 +152,7 @@ if __name__ == '__main__':
         exp_temp_array=exp_temp_array0,
         x_array=np.linspace(MIN_X, MAX_X, DIM_X),
         num_steps=num_steps0, time_step=TIME_STEP,
-        finite_step_method=implicit_mod_diffusion_simple,
+        finite_step_method=implicit_mod2_diffusion_simple,
         sim_fpath=SIM_FPATH,
     )
     # write results file
