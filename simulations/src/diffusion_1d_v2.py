@@ -2,7 +2,7 @@ import numpy as np
 from simu1d import FiniteStepMethod, Simulation, run_simulation_f
 from heat_eq_1d import heat_eq_matrix
 from diffusion_1d import STEFAN_BOLTZMANN, PERIMETER, AREA
-from bc_1d import get_simple_heat_diffusion
+from bc_1d import get_simple_heat_diffusion, get_simple_heat_diffusion2
 
 
 # dimensions
@@ -63,14 +63,14 @@ def _implicit_mod_step_func_diffusion_simple(
         (u_prev**4-u_amb_vect**4)
     )
     mat_heat = heat_eq_matrix(
-        n=n, k=-thermal_conductivity/(specific_heat*mass_density))
+        n=n, k=-(dt/dx**2)*thermal_conductivity/(specific_heat*mass_density))
     mat_conv = convection_coeff*perimeter*dt/denom * np.eye(n+2)
     # implement boundary conditions
     if boundary_conditions is None:
         boundary_conditions = get_simple_heat_diffusion(
             power_fn=_get_power_fn(power=power, stop_time=stop_time),
             dt=dt, dx=dx, denom=denom, k_c=convection_coeff,
-            area=area, perimeter=perimeter,
+            area=area, perimeter=perimeter, u_amb=u_amb_vect,
         )
     mat, u_prev, time = boundary_conditions(mat_heat+mat_conv, u_vect, time)
     # solve for u^{n+1} vector
@@ -81,8 +81,56 @@ def _implicit_mod_step_func_diffusion_simple(
     return {p: t for p, t in zip(points, u_next[1:-1])}
 
 
+def _implicit_mod2_step_func_diffusion_simple(
+        point_to_temp_map, time, x_array, dt, boundary_conditions,
+        u_amb, thermal_conductivity, specific_heat, mass_density,
+        convection_coeff, emissivity, perimeter, area, power, stop_time,
+):
+    # get dx
+    max_idx_x = len(x_array) - 1
+    dx = max_idx_x / (x_array[max_idx_x] - x_array[0])
+    # make u^n vector
+    points = sorted(point_to_temp_map.keys())
+    n = len(points)
+    u_prev = np.zeros(shape=n+2)
+    u_amb_vect = np.zeros(shape=n+2)
+    for point, idx in zip(points, range(n)):
+        u_prev[idx+1] = point_to_temp_map[point]
+        u_amb_vect[idx+1] = u_amb
+    denom = specific_heat*mass_density*area
+    u_vect = (
+        u_prev +
+        dt*convection_coeff*perimeter/denom * (u_prev-u_amb_vect) -
+        dt*emissivity*STEFAN_BOLTZMANN*perimeter/denom *
+        (u_prev**4-u_amb_vect**4)
+    )
+    mat_heat = heat_eq_matrix(
+        n=n, k=-(dt/dx**2)*thermal_conductivity/(specific_heat*mass_density))
+    # implement boundary conditions
+    if boundary_conditions is None:
+        boundary_conditions = get_simple_heat_diffusion2(
+            power_fn=_get_power_fn(power=power, stop_time=stop_time),
+            dt=dt, dx=dx, denom=denom, k_c=convection_coeff,
+            area=area, perimeter=perimeter,
+            u_prev=u_prev, u_amb=u_amb_vect,
+        )
+    mat, u_prev, time = boundary_conditions(mat_heat, u_vect, time)
+    # solve for u^{n+1} vector
+    tmat = np.transpose(mat)
+    u_next = np.linalg.solve(np.dot(tmat, mat), np.dot(tmat, u_prev))
+    # u_next = np.linalg.solve(mat, u_prev)
+    # return point -> temp map
+    return {p: t for p, t in zip(points, u_next[1:-1])}
+
+
 implicit_mod_diffusion_simple = FiniteStepMethod(
     f=_implicit_mod_step_func_diffusion_simple,
+    name='Modified implicit for simple convection-diffusion equation',
+)
+
+
+implicit_mod2_diffusion_simple = FiniteStepMethod(
+    f=_implicit_mod2_step_func_diffusion_simple,
     name='Modified implicit for simple convection-diffusion equation',
 )
 

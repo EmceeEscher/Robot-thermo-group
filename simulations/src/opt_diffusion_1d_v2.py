@@ -56,7 +56,7 @@ PARAMS_BOUNDS_DICT = dict(
     convection_coeff=(0., 1000.),
     emissivity=(0., 1.),
     power=(0., 10000.),
-    stop_time=(.9*STOP_TIME, 1.1*STOP_TIME),
+    stop_time=(.8*STOP_TIME, 1.2*STOP_TIME),
 )
 
 ALL_PARAMS_DICT = dict(PARAMS_GUESS_DICT)
@@ -91,7 +91,8 @@ def _lsq_func_simp(
     sq_sum = 0.0
     for st, et in zip(sim_temp_array.flatten(), exp_temp_array.flatten()):
         sq_sum += (st - et) ** 2
-    print('  Sum of squares = {}'.format(sq_sum/len(sim_temp_array.flatten())))
+    print('  Sum of squares per point = {}'.format(
+        sq_sum/len(sim_temp_array.flatten())))
     return sim_temp_array.flatten() - exp_temp_array.flatten()
 
 

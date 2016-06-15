@@ -63,22 +63,48 @@ def _x1_d1(g_t, dx):
     return bc
 
 
-def simple_heat_diffusion_x0(power_fn, dt, dx, denom, k_c, area, perimeter):
+def simple_heat_diffusion_x0(
+        power_fn, dt, dx, denom, k_c, area, perimeter, u_amb):
     def bc(d_mat, u_vect, t):
         diff = k_c/denom * ((area/2)*(dt/dx) - perimeter/2)
         d_mat[0, 0] = 1
         d_mat[1, 1] += diff
+        u_vect[0] = 0
+        u_vect[1] += power_fn(t)*(dt/dx)/denom + diff * u_amb[1]
+        return d_mat, u_vect, t
+    return bc
+
+
+def simple_heat_diffusion_x1(
+        dt, dx, denom, k_c, area, perimeter, u_amb):
+    def bc(d_mat, u_vect, t):
+        diff = k_c/denom * ((area/2)*(dt/dx) - perimeter/2)
+        d_mat[-1, -1] = 1
+        d_mat[-2, -2] += diff
+        u_vect[-1] = 0
+        u_vect[-2] += diff * u_amb[-2]
+        return d_mat, u_vect, t
+    return bc
+
+
+def simple_heat_diffusion2_x0(
+        power_fn, dt, dx, denom, k_c, area, perimeter, u_prev, u_amb):
+    def bc(d_mat, u_vect, t):
+        diff = (k_c/denom * ((area/2)*(dt/dx) - perimeter/2) *
+                (u_prev[1] - u_amb[1]))
+        d_mat[0, 0] = 1
         u_vect[0] = 0
         u_vect[1] += power_fn(t)*(dt/dx)/denom + diff
         return d_mat, u_vect, t
     return bc
 
 
-def simple_heat_diffusion_x1(dt, dx, denom, k_c, area, perimeter):
+def simple_heat_diffusion2_x1(
+        dt, dx, denom, k_c, area, perimeter, u_prev, u_amb):
     def bc(d_mat, u_vect, t):
-        diff = k_c/denom * ((area/2)*(dt/dx) - perimeter/2)
+        diff = (k_c/denom * ((area/2)*(dt/dx) - perimeter/2) *
+                (u_prev[1] - u_amb[1]))
         d_mat[-1, -1] = 1
-        d_mat[-2, -2] += diff
         u_vect[-1] = 0
         u_vect[-2] += diff
         return d_mat, u_vect, t
@@ -104,14 +130,31 @@ class BoundaryConditions:
             return None
 
 
-def get_simple_heat_diffusion(power_fn, dt, dx, denom, k_c, area, perimeter):
+def get_simple_heat_diffusion(
+        power_fn, dt, dx, denom, k_c, area, perimeter, u_amb):
     fx0 = simple_heat_diffusion_x0(
         power_fn=power_fn, dt=dt, dx=dx, denom=denom, k_c=k_c,
-        area=area, perimeter=perimeter
+        area=area, perimeter=perimeter, u_amb=u_amb,
     )
     fx1 = simple_heat_diffusion_x1(
         dt=dt, dx=dx, denom=denom, k_c=k_c,
-        area=area, perimeter=perimeter
+        area=area, perimeter=perimeter, u_amb=u_amb,
+    )
+    return BoundaryConditions(
+        x0_func=fx0, x1_func=fx1,
+        name='Simple heat-diffusion BC'
+    )
+
+
+def get_simple_heat_diffusion2(
+        power_fn, dt, dx, denom, k_c, area, perimeter, u_prev, u_amb):
+    fx0 = simple_heat_diffusion2_x0(
+        power_fn=power_fn, dt=dt, dx=dx, denom=denom, k_c=k_c,
+        area=area, perimeter=perimeter, u_prev=u_prev, u_amb=u_amb,
+    )
+    fx1 = simple_heat_diffusion2_x1(
+        dt=dt, dx=dx, denom=denom, k_c=k_c,
+        area=area, perimeter=perimeter, u_prev=u_prev, u_amb=u_amb,
     )
     return BoundaryConditions(
         x0_func=fx0, x1_func=fx1,
