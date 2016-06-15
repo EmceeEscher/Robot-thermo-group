@@ -66,14 +66,14 @@ params_bounds_dict0 = {
 }
 
 
-def _iteration():
+def iteration():
     i = 0
     while True:
         yield i
         i += 1
 
 
-def _make_params_dict(params_arr, variable_params_keys, const_params_dict):
+def make_params_dict(params_arr, variable_params_keys, const_params_dict):
     d = dict(const_params_dict)
     d.update({k: v for k, v in zip(sorted(variable_params_keys), params_arr)})
     return d
@@ -85,7 +85,7 @@ def _lsq_func(
         x_array, num_steps, time_step,
         finite_step_method, sim_fpath, t_stop, iteration_fn
 ):
-    params_dict = _make_params_dict(
+    params_dict = make_params_dict(
         params_arr=params_arr, const_params_dict=const_params_dict,
         variable_params_keys=variable_params_keys
     )
@@ -123,6 +123,7 @@ def optimize_diffusion_parameters_with_bounds(
         params_guess_dict, params_bounds_dict, const_params_dict,
         exp_time_array, exp_x_array, exp_temp_array,
         x_array, num_steps, time_step, finite_step_method, sim_fpath, t_stop,
+        lsq_fn=_lsq_func,
 ):
     """Attempts to optimize the full convection-diffusion equation
     physical parameters based on a given initial guess, parameter boundaries,
@@ -154,9 +155,9 @@ def optimize_diffusion_parameters_with_bounds(
         lower_bounds = np.array([v[0] for k, v in pgi])
         upper_bounds = np.array([v[1] for k, v in pgi])
         bounds = (lower_bounds, upper_bounds)
-    iter_fn = _iteration()
+    iter_fn = iteration()
     return least_squares(
-        fun=_lsq_func, x0=params_guess, bounds=bounds, verbose=2,
+        fun=lsq_fn, x0=params_guess, bounds=bounds, verbose=2,
         args=(
             const_params_dict, params_guess_dict.keys(),
             exp_time_array, exp_x_array, exp_temp_array,

@@ -63,6 +63,28 @@ def _x1_d1(g_t, dx):
     return bc
 
 
+def simple_heat_diffusion_x0(power_fn, dt, dx, denom, k_c, area, perimeter):
+    def bc(d_mat, u_vect, t):
+        diff = k_c/denom * ((area/2)*(dt/dx) - perimeter/2)
+        d_mat[0, 0] = 1
+        d_mat[1, 1] += diff
+        u_vect[0] = 0
+        u_vect[1] += power_fn(t)*(dt/dx)/denom + diff
+        return d_mat, u_vect, t
+    return bc
+
+
+def simple_heat_diffusion_x1(dt, dx, denom, k_c, area, perimeter):
+    def bc(d_mat, u_vect, t):
+        diff = k_c/denom * ((area/2)*(dt/dx) - perimeter/2)
+        d_mat[-1, -1] = 1
+        d_mat[-2, -2] += diff
+        u_vect[-1] = 0
+        u_vect[-2] += diff
+        return d_mat, u_vect, t
+    return bc
+
+
 class BoundaryConditions:
     def __init__(self, x0_func, x1_func, x0_order=1, x1_order=1, name=None):
         self._x0_func = x0_func
@@ -80,6 +102,21 @@ class BoundaryConditions:
             return self._x1_func(*args)
         else:
             return None
+
+
+def get_simple_heat_diffusion(power_fn, dt, dx, denom, k_c, area, perimeter):
+    fx0 = simple_heat_diffusion_x0(
+        power_fn=power_fn, dt=dt, dx=dx, denom=denom, k_c=k_c,
+        area=area, perimeter=perimeter
+    )
+    fx1 = simple_heat_diffusion_x1(
+        dt=dt, dx=dx, denom=denom, k_c=k_c,
+        area=area, perimeter=perimeter
+    )
+    return BoundaryConditions(
+        x0_func=fx0, x1_func=fx1,
+        name='Simple heat-diffusion BC'
+    )
 
 
 def identity():

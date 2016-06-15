@@ -78,6 +78,14 @@ class Simulation:
         params_lines = [
             '   {} = {}{}\n'.format(k.replace('_', ' '), ' '*(25 - len(k)), v)
             for k, v in self.params_dict.items()]
+        if self.bc is not None:
+            bc_name = self.bc.name
+            x0_order = self.bc.x0_order
+            x1_order = self.bc.x1_order
+        else:
+            bc_name = 'Simple heat-diffusion BC'
+            x0_order = None
+            x1_order = None
         return [
             'Simulation of heat flow through 1-dimensional rod\n',
             '\n',
@@ -92,11 +100,11 @@ class Simulation:
             '\n',
             ' Boundary conditions:\n',
             '   method =                    {}\n'
-            ''.format(self.bc.name),
+            ''.format(bc_name),
             '   x0 order =                  {}\n'
-            ''.format(self.bc.x0_order),
+            ''.format(x0_order),
             '   x1 order =                  {}\n'
-            ''.format(self.bc.x1_order),
+            ''.format(x1_order),
             '\n',
             ' Finite differencing\n',
             '   time step =                 {}\n'.format(self.dt),
