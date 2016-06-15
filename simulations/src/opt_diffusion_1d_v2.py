@@ -13,17 +13,17 @@ from diffusion_1d_v2 import implicit_mod_diffusion_simple
 
 # input files
 DATA_FPATHS = [
-    '../../data/temperature data/June 8/Run1_tc1.dat',
-    '../../data/temperature data/June 8/Run1_tc2.dat',
-    '../../data/temperature data/June 8/Run1_tc3.dat',
-    '../../data/temperature data/June 8/Run1_tc4.dat',
+    '../../data/temperature data/June 6/Run2_tc1.dat',
+    '../../data/temperature data/June 6/Run2_tc2.dat',
+    '../../data/temperature data/June 6/Run2_tc3.dat',
+    '../../data/temperature data/June 6/Run2_tc4.dat',
 ]
 # output files
-OPT_FPATH = '../results/opt_test-v2-params.dat'
-SIM_FPATH = '../results/opt_test-v2-sim.dat'
+OPT_FPATH = '../results/June 6 - Run 2/opt_test-v2-params.dat'
+SIM_FPATH = '../results/June 6 - Run 2/opt_test-v2-sim.dat'
 
 TIME_STEP = .5
-DIM_X = 33
+DIM_X = 33*2+1
 
 U_0 = 300.
 U_AMB = 300.
@@ -33,7 +33,7 @@ MASS_DENSITY = 8730.
 CONVECTION_COEFF = .05
 EMISSIVITY = .01
 POWER = 1000.
-STOP_TIME = 1100.
+STOP_TIME = 1200.
 
 PARAMS_GUESS_DICT = dict(
     u_0=U_0,
