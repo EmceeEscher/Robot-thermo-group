@@ -66,7 +66,7 @@ def _x1_d1(g_t, dx):
 def simple_heat_diffusion_x0(
         power_fn, dt, dx, denom, k_c, area, perimeter, u_amb):
     def bc(d_mat, u_vect, t):
-        diff = k_c/denom * ((area/2)*(dt/dx) - perimeter/2)
+        diff = dt*k_c/denom * (area/(2*dx) - perimeter/2)
         d_mat[0, 0] = 1
         d_mat[1, 1] += diff
         u_vect[0] = 0
@@ -78,7 +78,7 @@ def simple_heat_diffusion_x0(
 def simple_heat_diffusion_x1(
         dt, dx, denom, k_c, area, perimeter, u_amb):
     def bc(d_mat, u_vect, t):
-        diff = k_c/denom * ((area/2)*(dt/dx) - perimeter/2)
+        diff = dt*k_c/denom * (area/(2*dx) - perimeter/2)
         d_mat[-1, -1] = 1
         d_mat[-2, -2] += diff
         u_vect[-1] = 0
@@ -90,7 +90,7 @@ def simple_heat_diffusion_x1(
 def simple_heat_diffusion2_x0(
         power_fn, dt, dx, denom, k_c, area, perimeter, u_prev, u_amb):
     def bc(d_mat, u_vect, t):
-        diff = (k_c/denom * ((area/2)*(dt/dx) - perimeter/2) *
+        diff = (dt*k_c/denom * (area/(2*dx) - perimeter/2) *
                 (u_prev[1] - u_amb[1]))
         d_mat[0, 0] = 1
         u_vect[0] = 0
@@ -102,7 +102,7 @@ def simple_heat_diffusion2_x0(
 def simple_heat_diffusion2_x1(
         dt, dx, denom, k_c, area, perimeter, u_prev, u_amb):
     def bc(d_mat, u_vect, t):
-        diff = (k_c/denom * ((area/2)*(dt/dx) - perimeter/2) *
+        diff = (dt*k_c/denom * (area/(2*dx) - perimeter/2) *
                 (u_prev[1] - u_amb[1]))
         d_mat[-1, -1] = 1
         u_vect[-1] = 0
