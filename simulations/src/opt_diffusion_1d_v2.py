@@ -20,8 +20,8 @@ DATA_FPATHS = [
     '../../data/temperature data/June 8/Run1_tc4.dat',
 ]
 # output files
-OPT_FPATH = '../results/opt_test-v2-params.dat'
-SIM_FPATH = '../results/opt_test-v2-sim.dat'
+OPT_FPATH = '../results/June 6 - Run 2/opt_test-v2-params.dat'
+SIM_FPATH = '../results/June 6 - Run 2/opt_test-v2-sim.dat'
 
 TIME_STEP = .2
 DIM_X = 11 + 1
