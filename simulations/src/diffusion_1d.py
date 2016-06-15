@@ -64,8 +64,7 @@ def _implicit_mod_step_func_diffusion(
              (mass_density * area * specific_heat))
     theta = 1 / (specific_heat * mass_density)
     # get dx
-    max_idx_x = len(x_array) - 1
-    dx = max_idx_x / (x_array[max_idx_x] - x_array[0])
+    dx = (x_array[-1] - x_array[0]) / (len(x_array) - 1)
     # make u^n vector, u_amb^n vector, Q^n vector
     points = sorted(point_to_temp_map.keys())
     n = len(points)
@@ -82,11 +81,11 @@ def _implicit_mod_step_func_diffusion(
     mat_conv = conv_matrix(n=n, k=beta*dt/(2*dx))
     mat = mat_heat + mat_conv
     # implement boundary conditions
-    mat, u_prev, time = boundary_conditions(mat, u_vector, time)
+    mat, u_vector, time = boundary_conditions(mat, u_vector, time)
     # solve for u^{n+1} vector
     tmat = np.transpose(mat)
-    u_next = np.linalg.solve(np.dot(tmat, mat), np.dot(tmat, u_prev))
-    # u_next = np.linalg.solve(mat, u_prev)
+    # u_next = np.linalg.solve(np.dot(tmat, mat), np.dot(tmat, u_vector))
+    u_next = np.linalg.solve(mat, u_vector)
     # return point -> temp map
     return {p: t for p, t in zip(points, u_next[1:-1])}
 

@@ -2,7 +2,7 @@ import numpy as np
 from simu1d import FiniteStepMethod, Simulation, run_simulation_f
 from heat_eq_1d import heat_eq_matrix
 from diffusion_1d import STEFAN_BOLTZMANN, PERIMETER, AREA
-from bc_1d import get_simple_heat_diffusion, get_simple_heat_diffusion2
+from bc_1d import get_bc_simple_heat_diffusion, get_bc_simple_heat_diffusion2
 
 
 # dimensions
@@ -45,8 +45,7 @@ def _implicit_mod_step_func_diffusion_simple(
         convection_coeff, emissivity, perimeter, area, power, stop_time,
 ):
     # get dx
-    max_idx_x = len(x_array) - 1
-    dx = max_idx_x / (x_array[max_idx_x] - x_array[0])
+    dx = (x_array[-1] - x_array[0]) / (len(x_array) - 1)
     # make u^n vector
     points = sorted(point_to_temp_map.keys())
     n = len(points)
@@ -67,16 +66,16 @@ def _implicit_mod_step_func_diffusion_simple(
     mat_conv = convection_coeff*perimeter*dt/denom * np.eye(n+2)
     # implement boundary conditions
     if boundary_conditions is None:
-        boundary_conditions = get_simple_heat_diffusion(
+        boundary_conditions = get_bc_simple_heat_diffusion(
             power_fn=_get_power_fn(power=power, stop_time=stop_time),
             dt=dt, dx=dx, denom=denom, k_c=convection_coeff,
             area=area, perimeter=perimeter, u_amb=u_amb_vect,
         )
     mat, u_prev, time = boundary_conditions(mat_heat+mat_conv, u_vect, time)
     # solve for u^{n+1} vector
-    tmat = np.transpose(mat)
-    # u_next = np.linalg.solve(np.dot(tmat, mat), np.dot(tmat, u_prev))
-    u_next = np.linalg.solve(mat, u_prev)
+    # tmat = np.transpose(mat)
+    # u_next = np.linalg.solve(np.dot(tmat, mat), np.dot(tmat, u_vect))
+    u_next = np.linalg.solve(mat, u_vect)
     return {p: t for p, t in zip(points, u_next[1:-1])}
 
 
@@ -86,8 +85,7 @@ def _implicit_mod2_step_func_diffusion_simple(
         convection_coeff, emissivity, perimeter, area, power, stop_time,
 ):
     # get dx
-    max_idx_x = len(x_array) - 1
-    dx = max_idx_x / (x_array[max_idx_x] - x_array[0])
+    dx = (x_array[-1] - x_array[0]) / (len(x_array) - 1)
     # make u^n vector
     points = sorted(point_to_temp_map.keys())
     n = len(points)
@@ -107,17 +105,17 @@ def _implicit_mod2_step_func_diffusion_simple(
         n=n, k=-(dt/dx**2)*thermal_conductivity/(specific_heat*mass_density))
     # implement boundary conditions
     if boundary_conditions is None:
-        boundary_conditions = get_simple_heat_diffusion2(
+        boundary_conditions = get_bc_simple_heat_diffusion2(
             power_fn=_get_power_fn(power=power, stop_time=stop_time),
             dt=dt, dx=dx, denom=denom, k_c=convection_coeff,
             area=area, perimeter=perimeter,
             u_prev=u_prev, u_amb=u_amb_vect,
         )
-    mat, u_prev, time = boundary_conditions(mat_heat, u_vect, time)
+    mat, u_vect, time = boundary_conditions(mat_heat, u_vect, time)
     # solve for u^{n+1} vector
-    tmat = np.transpose(mat)
-    # u_next = np.linalg.solve(np.dot(tmat, mat), np.dot(tmat, u_prev))
-    u_next = np.linalg.solve(mat, u_prev)
+    # tmat = np.transpose(mat)
+    # u_next = np.linalg.solve(np.dot(tmat, mat), np.dot(tmat, u_vect))
+    u_next = np.linalg.solve(mat, u_vect)
     # return point -> temp map
     return {p: t for p, t in zip(points, u_next[1:-1])}
 
