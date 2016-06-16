@@ -36,8 +36,7 @@ def _explicit_step_func_heat_eq(
     where
         k = alpha * dt / dx^2
     """
-    max_idx_x = len(x_array) - 1
-    dx = max_idx_x / (x_array[max_idx_x] - x_array[0])
+    dx = (x_array[-1] - x_array[0]) / (len(x_array) - 1)
     # make u^n vector
     points = sorted(point_to_temp_map.keys())
     n = len(points)
@@ -63,8 +62,7 @@ def _implicit_step_func_heat_eq(
     where
         k = - alpha * dt / dx^2
     """
-    max_idx_x = len(x_array) - 1
-    dx = max_idx_x / (x_array[max_idx_x] - x_array[0])
+    dx = (x_array[-1] - x_array[0]) / (len(x_array) - 1)
     # make u^n vector
     points = sorted(point_to_temp_map.keys())
     n = len(points)
@@ -91,8 +89,7 @@ def _crank_nicolson_step_func_heat_eq(
     where
         k = (-1/2) * alpha * dt / dx^2
     """
-    max_idx_x = len(x_array) - 1
-    dx = max_idx_x / (x_array[max_idx_x] - x_array[0])
+    dx = (x_array[-1] - x_array[0]) / (len(x_array) - 1)
     # make u^n vector
     points = sorted(point_to_temp_map.keys())
     n = len(points)

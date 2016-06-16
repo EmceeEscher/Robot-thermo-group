@@ -130,7 +130,7 @@ class BoundaryConditions:
             return None
 
 
-def get_simple_heat_diffusion(
+def get_bc_simple_heat_diffusion(
         power_fn, dt, dx, denom, k_c, area, perimeter, u_amb):
     fx0 = simple_heat_diffusion_x0(
         power_fn=power_fn, dt=dt, dx=dx, denom=denom, k_c=k_c,
@@ -146,7 +146,7 @@ def get_simple_heat_diffusion(
     )
 
 
-def get_simple_heat_diffusion2(
+def get_bc_simple_heat_diffusion2(
         power_fn, dt, dx, denom, k_c, area, perimeter, u_prev, u_amb):
     fx0 = simple_heat_diffusion2_x0(
         power_fn=power_fn, dt=dt, dx=dx, denom=denom, k_c=k_c,

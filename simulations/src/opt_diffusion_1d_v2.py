@@ -14,17 +14,17 @@ from diffusion_1d_v2 import implicit_mod2_diffusion_simple
 
 # input files
 DATA_FPATHS = [
-    '../../data/temperature data/June 6/Run2_tc1.dat',
-    '../../data/temperature data/June 6/Run2_tc2.dat',
-    '../../data/temperature data/June 6/Run2_tc3.dat',
-    '../../data/temperature data/June 6/Run2_tc4.dat',
+    '../../data/temperature data/June 8/Run1_tc1.dat',
+    '../../data/temperature data/June 8/Run1_tc2.dat',
+    '../../data/temperature data/June 8/Run1_tc3.dat',
+    '../../data/temperature data/June 8/Run1_tc4.dat',
 ]
 # output files
 OPT_FPATH = '../results/June 6 - Run 2/opt_test-v2-params-high-e.dat'
 SIM_FPATH = '../results/June 6 - Run 2/opt_test-v2-sim-high-e.dat'
 
-TIME_STEP = .5
-DIM_X = 33*2+1
+TIME_STEP = .2
+DIM_X = 11 + 1
 
 U_0 = 300.
 U_AMB = 300.
@@ -34,7 +34,21 @@ MASS_DENSITY = 8730.
 CONVECTION_COEFF = .05
 EMISSIVITY = .9
 POWER = 1000.
-STOP_TIME = 1200.
+STOP_TIME = 1085.
+
+ALL_PARAMS_DICT = dict(
+    u_0=U_0,
+    u_amb=U_AMB,
+    thermal_conductivity=THERMAL_CONDUCTIVITY,
+    specific_heat=SPECIFIC_HEAT,
+    mass_density=MASS_DENSITY,
+    convection_coeff=CONVECTION_COEFF,
+    emissivity=EMISSIVITY,
+    power=POWER,
+    stop_time=STOP_TIME,
+    perimeter=PERIMETER,
+    area=AREA,
+)
 
 PARAMS_GUESS_DICT = dict(
     u_0=U_0,
@@ -49,19 +63,18 @@ PARAMS_GUESS_DICT = dict(
 )
 
 PARAMS_BOUNDS_DICT = dict(
-    u_0=(.9*U_0, 1.1*U_0),
+    u_0=(.95*U_0, 1.05*U_0),
     u_amb=(.9*U_AMB, 1.1*U_AMB),
     thermal_conductivity=(.8*THERMAL_CONDUCTIVITY, 1.2*THERMAL_CONDUCTIVITY),
-    specific_heat=(.9*SPECIFIC_HEAT, 1.1*SPECIFIC_HEAT),
-    mass_density=(.9*MASS_DENSITY, 1.1*MASS_DENSITY),
+    specific_heat=(.95*SPECIFIC_HEAT, 1.05*SPECIFIC_HEAT),
+    mass_density=(.95*MASS_DENSITY, 1.05*MASS_DENSITY),
     convection_coeff=(0., 1000.),
     emissivity=(0., 1.),
     power=(0., 10000.),
-    stop_time=(.8*STOP_TIME, 1.2*STOP_TIME),
+    stop_time=(STOP_TIME-10, STOP_TIME+10),
 )
 
-ALL_PARAMS_DICT = dict(PARAMS_GUESS_DICT)
-ALL_PARAMS_DICT.update(dict(perimeter=PERIMETER, area=AREA))
+ALL_PARAMS_DICT.update(PARAMS_GUESS_DICT)
 
 
 def _lsq_func_simp(
