@@ -1,7 +1,6 @@
 import re
 from os import path
-from matplotlib import pyplot as plt
-from matplotlib import cm
+from matplotlib import pyplot as plt, colors, cm
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 
@@ -11,7 +10,7 @@ FPATHS_LIST = [
     for i in range(1, 5)
 ]
 
-SIM_FPATH = '../results/opt_test-v2-sim.dat'
+SIM_FPATH = '../results/opt_test-sim-heating.dat'
 
 
 def _get_exp_datum(fpath):
@@ -155,18 +154,57 @@ def plot_simulation_data_surface(fpath):
     return surf
 
 
+def plot_experimental_and_simulation_data(sim_fpath, exp_fpaths):
+    # get sim data
+    time_array, temp_array = _get_sim_data(sim_fpath)
+    plots = list()
+    for tc_dat, i in zip(temp_array.T, range(len(temp_array.T))):
+        plots.append((time_array, tc_dat, 'Thermocouple {} fit'.format(i+1)))
+    # get colors
+    c_norm = colors.Normalize(vmin=0, vmax=len(plots)-1)
+    scalar_map = cm.ScalarMappable(norm=c_norm, cmap=plt.get_cmap('jet'))
+    # make figure
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    lines = list()
+    for p, i in zip(plots, range(len(plots))):
+        x, y, lab = p
+        lines.append(
+            ax.plot(x, y, '--', label=lab, color=scalar_map.to_rgba(i)))
+    plt.xlabel('Time (s)')
+    plt.ylabel('Temperature (K)')
+    plt.title('Temperature vs Time Data for Simulation')
+    # get exp data
+    time_temp_arrays = _get_exp_data(exp_fpaths)
+    plots = list()
+    for time_temp_arrs, fpath in zip(time_temp_arrays, exp_fpaths):
+        time_arr, temp_arr = time_temp_arrs
+        plots.append((time_arr, temp_arr, path.split(fpath)[1]))
+    # make figure
+    lines = list()
+    for p, i in zip(plots, range(len(plots))):
+        x, y, label = p
+        line = ax.plot(x, y, label=label, color=scalar_map.to_rgba(i))
+        lines.append(line)
+
+
 # script
 if __name__ == '__main__':
-    plot_experimental_data(fpaths_list=FPATHS_LIST)
-    plt.legend()
-    plt.show()
+    # plot_experimental_data(fpaths_list=FPATHS_LIST)
+    # plt.legend()
+    # plt.show()
 
     # plot_experimental_data_surface(fpaths_list=FPATHS_LIST)
     # plt.show()
 
-    plot_simulation_data(fpath=SIM_FPATH)
-    plt.legend()
-    plt.show()
+    # plot_simulation_data(fpath=SIM_FPATH)
+    # plt.legend()
+    # plt.show()
 
     # plot_simulation_data_surface(fpath=SIM_FPATH)
     # plt.show()
+
+    plot_experimental_and_simulation_data(
+        sim_fpath=SIM_FPATH, exp_fpaths=FPATHS_LIST)
+    plt.legend()
+    plt.show()

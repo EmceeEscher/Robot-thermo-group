@@ -1,5 +1,5 @@
 from datetime import datetime
-from math import ceil
+from math import ceil, floor
 from os import path, makedirs
 from scipy.optimize import least_squares
 import numpy as np
@@ -10,6 +10,7 @@ from opt_diffusion_1d import get_exp_time_temp_arrays
 from diffusion_1d import PERIMETER, AREA, MIN_X, MAX_X
 from diffusion_1d_v2 import implicit_mod_diffusion_simple
 from diffusion_1d_v2 import implicit_mod2_diffusion_simple
+from diffusion_1d_v3 import explicit_diffusion_simple
 
 
 # input files
@@ -20,20 +21,22 @@ DATA_FPATHS = [
     '../../data/temperature data/June 8/Run1_tc4.dat',
 ]
 # output files
-OPT_FPATH = '../results/June 6 - Run 2/opt_test-v2-params.dat'
-SIM_FPATH = '../results/June 6 - Run 2/opt_test-v2-sim.dat'
+OPT_FPATH = '../results/opt_test-params-heating.dat'
+SIM_FPATH = '../results/opt_test-sim-heating.dat'
+
+METHOD = explicit_diffusion_simple
 
 TIME_STEP = .2
-DIM_X = 11 + 1
+DIM_X = 10 + 1
 
-U_0 = 300.
-U_AMB = 300.
+U_0 = 303.
+U_AMB = 297.
 THERMAL_CONDUCTIVITY = 125.
 SPECIFIC_HEAT = 380.
 MASS_DENSITY = 8730.
-CONVECTION_COEFF = .05
+CONVECTION_COEFF = 1.95
 EMISSIVITY = .01
-POWER = 1000.
+POWER = 10.
 STOP_TIME = 1085.
 
 ALL_PARAMS_DICT = dict(
@@ -59,7 +62,7 @@ PARAMS_GUESS_DICT = dict(
     convection_coeff=CONVECTION_COEFF,
     emissivity=EMISSIVITY,
     power=POWER,
-    stop_time=STOP_TIME,
+    # stop_time=STOP_TIME,
 )
 
 PARAMS_BOUNDS_DICT = dict(
@@ -71,7 +74,7 @@ PARAMS_BOUNDS_DICT = dict(
     convection_coeff=(0., 1000.),
     emissivity=(0., 1.),
     power=(0., 10000.),
-    stop_time=(STOP_TIME-10, STOP_TIME+10),
+    # stop_time=(STOP_TIME-10, STOP_TIME+10),
 )
 
 ALL_PARAMS_DICT.update(PARAMS_GUESS_DICT)
@@ -102,12 +105,17 @@ def _lsq_func_simp(
         simulation=sim, num_steps=num_steps, fpath=sim_fpath,
         exp_time_array=exp_time_array, exp_x_array=exp_x_array,
     )
-    sq_sum = 0.0
-    for st, et in zip(sim_temp_array.flatten(), exp_temp_array.flatten()):
-        sq_sum += (st - et) ** 2
-    print('  Sum of squares per point = {}'.format(
-        sq_sum/len(sim_temp_array.flatten())))
-    return sim_temp_array.flatten() - exp_temp_array.flatten()
+    residuals = (sim_temp_array.flatten() - exp_temp_array.flatten())
+    # return residuals
+    m, n = sim_temp_array.shape
+    # diff_arr = residuals * np.array(
+    #     [np.exp(-floor(i/n)/(m-1)) for i in range(m*n)])
+    diff_arr = residuals
+    print('  Sum of squares per point (res) = {}'.format(
+        np.dot(residuals, residuals)/(m*n)))
+    print('  Sum of squares per point (opt) = {}'.format(
+        np.dot(diff_arr, diff_arr)/(m*n)))
+    return diff_arr
 
 
 def optimize_diffusion_simp_parameters_with_bounds(
@@ -153,8 +161,15 @@ if __name__ == '__main__':
     exp_time_array0, exp_temp_array0 = get_exp_time_temp_arrays(
         dat_fpaths_list=DATA_FPATHS
     )
+    # find index of last time before stop time
+    for time, ii in zip(exp_time_array0, range(len(exp_time_array0))):
+        if time > STOP_TIME:
+            exp_time_array0 = exp_time_array0[:ii]
+            exp_temp_array0 = exp_temp_array0[:ii]
+            break
     # get num_steps
     num_steps0 = ceil(exp_time_array0[-1] / TIME_STEP)
+    print(num_steps0)
     # run optimization
     result = optimize_diffusion_simp_parameters_with_bounds(
         params_guess_dict=PARAMS_GUESS_DICT,
@@ -165,7 +180,7 @@ if __name__ == '__main__':
         exp_temp_array=exp_temp_array0,
         x_array=np.linspace(MIN_X, MAX_X, DIM_X),
         num_steps=num_steps0, time_step=TIME_STEP,
-        finite_step_method=implicit_mod2_diffusion_simple,
+        finite_step_method=METHOD,
         sim_fpath=SIM_FPATH,
     )
     # write results file
