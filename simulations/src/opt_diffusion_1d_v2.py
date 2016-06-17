@@ -26,8 +26,8 @@ SIM_FPATH = '../results/opt_test-sim-newdata.dat'
 
 METHOD = explicit_diffusion_simple
 
-TIME_STEP = .2
-DIM_X = 10 + 1
+TIME_STEP = .1
+DIM_X = 66 + 1
 
 U_0 = 303.
 U_AMB = 297.

@@ -10,7 +10,7 @@ FPATHS_LIST = [
     for i in range(1, 5)
 ]
 
-SIM_FPATH = '../results/opt_test-sim-heating-newdata-weightedback.dat'
+SIM_FPATH = '../results/opt_test-sim-newdata.dat'
 
 
 def _get_exp_datum(fpath):
