@@ -26,7 +26,8 @@ PARAMS_DICT = dict(
     emissivity=.01,
     perimeter=PERIMETER,
     area=AREA,
-    power=1000.,
+    power=10.,
+    power2=-10.,
     stop_time=900.,
 )
 
@@ -39,7 +40,8 @@ WRITE_PERIOD = 27
 def _explicit_step_func_diffusion_simple(
         point_to_temp_map, time, x_array, dt, boundary_conditions,
         u_amb, thermal_conductivity, specific_heat, mass_density,
-        convection_coeff, emissivity, perimeter, area, power, stop_time,
+        convection_coeff, emissivity, perimeter, area, power, power2,
+        stop_time,
 ):
     # get dx
     dx = x_array[1] - x_array[0]
@@ -62,7 +64,7 @@ def _explicit_step_func_diffusion_simple(
     u_next_vect = du_rad + du_conv + du_cond
     # boundary conditions
     if time >= stop_time:
-        power = 0
+        power = power2
     u_next_vect[0] += (
         area/(perimeter*dx) * (du_rad[0] + du_conv[0]) +
         k_heat * (u_prev_vect[1] - u_prev_vect[0]) +

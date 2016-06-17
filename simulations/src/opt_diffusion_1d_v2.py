@@ -15,14 +15,14 @@ from diffusion_1d_v3 import explicit_diffusion_simple
 
 # input files
 DATA_FPATHS = [
-    '../../data/temperature data/June 8/Run1_tc1.dat',
-    '../../data/temperature data/June 8/Run1_tc2.dat',
-    '../../data/temperature data/June 8/Run1_tc3.dat',
-    '../../data/temperature data/June 8/Run1_tc4.dat',
+    '../../data/temperature data/June 8/Run1_tc1_v2.dat',
+    '../../data/temperature data/June 8/Run1_tc2_v2.dat',
+    '../../data/temperature data/June 8/Run1_tc3_v2.dat',
+    '../../data/temperature data/June 8/Run1_tc4_v2.dat',
 ]
 # output files
-OPT_FPATH = '../results/opt_test-params-heating.dat'
-SIM_FPATH = '../results/opt_test-sim-heating.dat'
+OPT_FPATH = '../results/opt_test-params-newdata.dat'
+SIM_FPATH = '../results/opt_test-sim-newdata.dat'
 
 METHOD = explicit_diffusion_simple
 
@@ -37,6 +37,7 @@ MASS_DENSITY = 8730.
 CONVECTION_COEFF = 1.95
 EMISSIVITY = .01
 POWER = 10.
+POWER2 = -10.
 STOP_TIME = 1085.
 
 ALL_PARAMS_DICT = dict(
@@ -48,6 +49,7 @@ ALL_PARAMS_DICT = dict(
     convection_coeff=CONVECTION_COEFF,
     emissivity=EMISSIVITY,
     power=POWER,
+    power2=POWER2,
     stop_time=STOP_TIME,
     perimeter=PERIMETER,
     area=AREA,
@@ -62,6 +64,7 @@ PARAMS_GUESS_DICT = dict(
     convection_coeff=CONVECTION_COEFF,
     emissivity=EMISSIVITY,
     power=POWER,
+    power2=POWER2,
     # stop_time=STOP_TIME,
 )
 
@@ -73,7 +76,8 @@ PARAMS_BOUNDS_DICT = dict(
     mass_density=(.95*MASS_DENSITY, 1.05*MASS_DENSITY),
     convection_coeff=(0., 1000.),
     emissivity=(0., 1.),
-    power=(0., 10000.),
+    power=(0., 1000.),
+    power2=(-1000., 1000.)
     # stop_time=(STOP_TIME-10, STOP_TIME+10),
 )
 
@@ -162,11 +166,11 @@ if __name__ == '__main__':
         dat_fpaths_list=DATA_FPATHS
     )
     # find index of last time before stop time
-    for time, ii in zip(exp_time_array0, range(len(exp_time_array0))):
-        if time > STOP_TIME:
-            exp_time_array0 = exp_time_array0[:ii]
-            exp_temp_array0 = exp_temp_array0[:ii]
-            break
+    # for time, ii in zip(exp_time_array0, range(len(exp_time_array0))):
+    #     if time > STOP_TIME:
+    #         exp_time_array0 = exp_time_array0[:ii]
+    #         exp_temp_array0 = exp_temp_array0[:ii]
+    #         break
     # get num_steps
     num_steps0 = ceil(exp_time_array0[-1] / TIME_STEP)
     print(num_steps0)

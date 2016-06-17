@@ -6,11 +6,11 @@ import numpy as np
 
 
 FPATHS_LIST = [
-    '../../data/temperature data/June 8/Run1_tc{}.dat'.format(i)
+    '../../data/temperature data/June 8/Run1_tc{}_v2.dat'.format(i)
     for i in range(1, 5)
 ]
 
-SIM_FPATH = '../results/opt_test-sim-heating.dat'
+SIM_FPATH = '../results/opt_test-sim-heating-newdata-weightedback.dat'
 
 
 def _get_exp_datum(fpath):
