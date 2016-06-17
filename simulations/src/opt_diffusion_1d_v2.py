@@ -21,10 +21,11 @@ DATA_FPATHS = [
     '../../data/temperature data/June 8/Run1_tc4_v2.dat',
 ]
 # output files
-OPT_FPATH = '../results/opt_test-params-newdata.dat'
-SIM_FPATH = '../results/opt_test-sim-newdata.dat'
+OPT_FPATH = '../results/opt_test-params-newdata-heatingonly.dat'
+SIM_FPATH = '../results/opt_test-sim-newdata-heatingonly.dat'
 
 METHOD = explicit_diffusion_simple
+HEATING_ONLY = True
 
 TIME_STEP = .1
 DIM_X = 66 + 1
@@ -166,11 +167,12 @@ if __name__ == '__main__':
         dat_fpaths_list=DATA_FPATHS
     )
     # find index of last time before stop time
-    # for time, ii in zip(exp_time_array0, range(len(exp_time_array0))):
-    #     if time > STOP_TIME:
-    #         exp_time_array0 = exp_time_array0[:ii]
-    #         exp_temp_array0 = exp_temp_array0[:ii]
-    #         break
+    if HEATING_ONLY:
+        for time, ii in zip(exp_time_array0, range(len(exp_time_array0))):
+            if time > STOP_TIME:
+                exp_time_array0 = exp_time_array0[:ii]
+                exp_temp_array0 = exp_temp_array0[:ii]
+                break
     # get num_steps
     num_steps0 = ceil(exp_time_array0[-1] / TIME_STEP)
     print(num_steps0)
