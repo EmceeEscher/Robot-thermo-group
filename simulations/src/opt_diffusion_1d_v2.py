@@ -29,7 +29,7 @@ EXP_X_ARRAY = np.array(sorted([.33 - .01555 - .0725*n for n in range(4)]))
 METHOD = explicit_diffusion_simple
 HEATING_ONLY = True
 
-TIME_STEP = .1
+TIME_STEP = .25
 DIM_X = 66 + 1
 
 U_0 = 303.
@@ -39,9 +39,9 @@ SPECIFIC_HEAT = 380.
 MASS_DENSITY = 8730.
 CONVECTION_COEFF = 1.95
 EMISSIVITY = .01
-POWER = 10.
+POWER = 10. #set to V^2/15, look in spreadsheet for V
 POWER2 = -10.
-STOP_TIME = 1085.
+STOP_TIME = 1085. #set to value for run listed in spreadsheet
 
 ALL_PARAMS_DICT = dict(
     u_0=U_0,
@@ -79,7 +79,7 @@ PARAMS_BOUNDS_DICT = dict(
     mass_density=(.95*MASS_DENSITY, 1.05*MASS_DENSITY),
     convection_coeff=(0., 1000.),
     emissivity=(0., 1.),
-    power=(0., 1000.),
+    power=(0., POWER),
     power2=(-1000., 1000.)
     # stop_time=(STOP_TIME-10, STOP_TIME+10),
 )
