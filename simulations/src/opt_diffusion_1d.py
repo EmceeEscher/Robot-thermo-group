@@ -1,4 +1,5 @@
 from datetime import datetime
+from itertools import count
 from math import ceil
 from os import path, makedirs
 import numpy as np
@@ -64,13 +65,6 @@ params_bounds_dict0 = {
     'du_src':
         (0, np.inf),
 }
-
-
-def iteration():
-    i = 0
-    while True:
-        yield i
-        i += 1
 
 
 def make_params_dict(params_arr, variable_params_keys, const_params_dict):
@@ -155,7 +149,7 @@ def optimize_diffusion_parameters_with_bounds(
         lower_bounds = np.array([v[0] for k, v in pgi])
         upper_bounds = np.array([v[1] for k, v in pgi])
         bounds = (lower_bounds, upper_bounds)
-    iter_fn = iteration()
+    iter_fn = count()
     return least_squares(
         fun=lsq_fn, x0=params_guess, bounds=bounds, verbose=2,
         args=(
