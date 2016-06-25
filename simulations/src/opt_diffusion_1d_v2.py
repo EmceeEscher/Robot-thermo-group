@@ -4,7 +4,6 @@ from os import path, makedirs
 from scipy.optimize import least_squares
 import numpy as np
 from simu1d import Simulation, run_simulation_opt
-from opt_diffusion_1d import EXP_X_ARRAY
 from opt_diffusion_1d import make_params_dict, iteration
 from opt_diffusion_1d import get_exp_time_temp_arrays
 from diffusion_1d import PERIMETER, AREA, MIN_X, MAX_X
@@ -23,6 +22,8 @@ DATA_FPATHS = [
 # output files
 OPT_FPATH = '../results/opt_test-params-newdata-heatingonly.dat'
 SIM_FPATH = '../results/opt_test-sim-newdata-heatingonly.dat'
+
+EXP_X_ARRAY = np.array(sorted([.33 - .01555 - .0725*n for n in range(4)]))
 
 METHOD = explicit_diffusion_simple
 HEATING_ONLY = True
