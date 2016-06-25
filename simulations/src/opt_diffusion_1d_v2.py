@@ -1,10 +1,11 @@
 from datetime import datetime
+from itertools import count
 from math import ceil, floor
 from os import path, makedirs
 from scipy.optimize import least_squares
 import numpy as np
 from simu1d import Simulation, run_simulation_opt
-from opt_diffusion_1d import make_params_dict, iteration
+from opt_diffusion_1d import make_params_dict
 from opt_diffusion_1d import get_exp_time_temp_arrays
 from diffusion_1d import PERIMETER, AREA, MIN_X, MAX_X
 from diffusion_1d_v2 import implicit_mod_diffusion_simple
@@ -138,7 +139,7 @@ def optimize_diffusion_simp_parameters_with_bounds(
         lower_bounds = np.array([v[0] for k, v in pgi])
         upper_bounds = np.array([v[1] for k, v in pgi])
         bounds = (lower_bounds, upper_bounds)
-    iter_fn = iteration()
+    iter_fn = count()
     return least_squares(
         fun=lsq_fn, x0=params_guess, bounds=bounds, verbose=2,
         args=(
