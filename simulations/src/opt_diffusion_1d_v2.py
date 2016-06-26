@@ -15,14 +15,14 @@ from diffusion_1d_v3 import explicit_diffusion_simple
 
 # input files
 DATA_FPATHS = [
-    '../../data/temperature data/June 8/Run1_tc1_v2.dat',
-    '../../data/temperature data/June 8/Run1_tc2_v2.dat',
-    '../../data/temperature data/June 8/Run1_tc3_v2.dat',
-    '../../data/temperature data/June 8/Run1_tc4_v2.dat',
+    '../../data/temperature data/May 30/Run1_tc1.dat',
+    '../../data/temperature data/May 30/Run1_tc2.dat',
+    '../../data/temperature data/May 30/Run1_tc3.dat',
+    '../../data/temperature data/May 30/Run1_tc4.dat',
 ]
 # output files
-OPT_FPATH = '../results/opt_test-params-newdata-heatingonly.dat'
-SIM_FPATH = '../results/opt_test-sim-newdata-heatingonly.dat'
+OPT_FPATH = '../results/May 30 - Run 1/opt_test-params-newdata-v2.dat'
+SIM_FPATH = '../results/May 30 - Run 1/opt_test-sim-newdata-v2.dat'
 
 EXP_X_ARRAY = np.array(sorted([.33 - .01555 - .0725*n for n in range(4)]))
 
@@ -32,16 +32,16 @@ HEATING_ONLY = True
 TIME_STEP = .25
 DIM_X = 66 + 1
 
-U_0 = 303.
+U_0 = 297.
 U_AMB = 297.
 THERMAL_CONDUCTIVITY = 125.
 SPECIFIC_HEAT = 380.
 MASS_DENSITY = 8730.
 CONVECTION_COEFF = 1.95
 EMISSIVITY = .01
-POWER = 10. #set to V^2/15, look in spreadsheet for V
+POWER = 27.4727 #set to V^2/15, look in spreadsheet for V
 POWER2 = -10.
-STOP_TIME = 1085. #set to value for run listed in spreadsheet
+STOP_TIME = 684. #set to value for run listed in spreadsheet
 
 ALL_PARAMS_DICT = dict(
     u_0=U_0,
@@ -72,15 +72,15 @@ PARAMS_GUESS_DICT = dict(
 )
 
 PARAMS_BOUNDS_DICT = dict(
-    u_0=(.95*U_0, 1.05*U_0),
-    u_amb=(.9*U_AMB, 1.1*U_AMB),
+    u_0=(293, 301),
+    u_amb=(293, 299),
     thermal_conductivity=(.8*THERMAL_CONDUCTIVITY, 1.2*THERMAL_CONDUCTIVITY),
     specific_heat=(.95*SPECIFIC_HEAT, 1.05*SPECIFIC_HEAT),
     mass_density=(.95*MASS_DENSITY, 1.05*MASS_DENSITY),
     convection_coeff=(0., 1000.),
     emissivity=(0., 1.),
     power=(0., POWER),
-    power2=(-1000., 1000.)
+    power2=((-1.*POWER), 0.)
     # stop_time=(STOP_TIME-10, STOP_TIME+10),
 )
 
