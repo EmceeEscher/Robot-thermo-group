@@ -8,9 +8,9 @@ from simu1d import Simulation, run_simulation_opt
 from opt_diffusion_1d import make_params_dict
 from opt_diffusion_1d import get_exp_time_temp_arrays
 from diffusion_1d import PERIMETER, AREA, MIN_X, MAX_X
-from diffusion_1d_v2 import implicit_mod_diffusion_simple
-from diffusion_1d_v2 import implicit_mod2_diffusion_simple
 from diffusion_1d_v3 import explicit_diffusion_simple
+# from diffusion_1d_v2 import implicit_mod_diffusion_simple
+# from diffusion_1d_v2 import implicit_mod2_diffusion_simple
 
 
 # input files
@@ -39,9 +39,9 @@ SPECIFIC_HEAT = 380.
 MASS_DENSITY = 8730.
 CONVECTION_COEFF = 1.95
 EMISSIVITY = .01
-POWER = 10. #set to V^2/15, look in spreadsheet for V
+POWER = 10.  # set to V^2/15, look in spreadsheet for V
 POWER2 = -10.
-STOP_TIME = 1085. #set to value for run listed in spreadsheet
+STOP_TIME = 1085.  # set to value for run listed in spreadsheet
 
 ALL_PARAMS_DICT = dict(
     u_0=U_0,
