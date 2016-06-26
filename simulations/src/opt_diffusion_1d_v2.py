@@ -28,7 +28,7 @@ SIM_FPATH = '../results/random-sim.dat'
 EXP_X_ARRAY = np.array(sorted([.33 - .01555 - .0725*n for n in range(4)]))
 
 METHOD = explicit_diffusion_simple
-HEATING_ONLY = True
+HEATING_ONLY = False
 
 TIME_STEP = .25
 DIM_X = 66 + 1
