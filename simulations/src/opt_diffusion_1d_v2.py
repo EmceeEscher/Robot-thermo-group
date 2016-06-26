@@ -133,11 +133,19 @@ def _lsq_func_simp(
     t_0 = params_dict['u_0']
     iter_num = next(iteration_fn)
     num_params = len(params_arr) + 1
-    print('Iteration {}-{}'.format(
-        floor(iter_num/num_params), iter_num % num_params))
+    sub_iter = iter_num % num_params
+    print('\nIteration {}-{}'.format(
+        floor(iter_num/num_params), sub_iter))
+    i = 0
     for k, v in sorted(params_dict.items()):
         if k in variable_params_keys:
-            print('  {:24}:  {}'.format(k, v))
+            i += 1
+            if i == sub_iter:
+                print('\033[96m *{:24}:  {}\033[0m'.format(k, v))
+            elif 0 == sub_iter:
+                print('\033[96m  {:24}:  {}\033[0m'.format(k, v))
+            else:
+                print('  {:24}:  {}'.format(k, v))
     del params_dict['u_0']
     sim = Simulation(
         time_step=time_step, x_array=x_array, t_0=t_0,
