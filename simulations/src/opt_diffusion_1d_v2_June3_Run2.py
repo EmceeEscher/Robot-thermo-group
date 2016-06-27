@@ -16,14 +16,14 @@ from diffusion_1d_v3 import explicit_diffusion_simple
 
 # input files
 DATA_FPATHS = [
-    '../../data/temperature data/June 8/Run1_tc1_v2.dat',
-    '../../data/temperature data/June 8/Run1_tc2_v2.dat',
-    '../../data/temperature data/June 8/Run1_tc3_v2.dat',
-    '../../data/temperature data/June 8/Run1_tc4_v2.dat',
+    '../../data/temperature data/June 3/Run2_tc1_June1.dat',
+    '../../data/temperature data/June 3/Run2_tc2_June1.dat',
+    '../../data/temperature data/June 3/Run2_tc3_June1.dat',
+    '../../data/temperature data/June 3/Run2_tc4_June1.dat',
 ]
 # output files
-OPT_FPATH = '../results/random-params.dat'
-SIM_FPATH = '../results/random-sim.dat'
+OPT_FPATH = '../results/June 3 - Run 2/params.dat'
+SIM_FPATH = '../results/June 3 - Run 2/sim.dat'
 
 EXP_X_ARRAY = np.array(sorted([.33 - .01555 - .0725*n for n in range(4)]))
 
@@ -40,9 +40,9 @@ SPECIFIC_HEAT = 380.
 MASS_DENSITY = 8730.
 CONVECTION_COEFF = 1.95
 EMISSIVITY = .01
-POWER = 10.  # set to V^2/15, look in spreadsheet for V
+POWER = 15.36216  # set to V^2/15, look in spreadsheet for V
 POWER2 = -10.
-STOP_TIME = 1085.  # set to value for run listed in spreadsheet
+STOP_TIME = 900.  # set to value for run listed in spreadsheet
 
 ALL_PARAMS_DICT = dict(
     u_0=U_0,
@@ -81,7 +81,7 @@ PARAMS_BOUNDS_DICT = dict(
     convection_coeff=(0., 1000.),
     emissivity=(0., 1.),
     power=(0., POWER),
-    power2=(-1000., 1000.)
+    power2=(-POWER, 0)
     # stop_time=(STOP_TIME-10, STOP_TIME+10),
 )
 
@@ -264,4 +264,3 @@ if __name__ == '__main__':
             fw.write('{}:\n'.format(name))
             fw.write('{}\n'.format(item))
             fw.write('\n')
-
