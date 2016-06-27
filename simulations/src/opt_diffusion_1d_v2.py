@@ -22,13 +22,20 @@ DATA_FPATHS = [
     '../../data/temperature data/June 8/Run1_tc4_v2.dat',
 ]
 # output files
-OPT_FPATH = '../results/random-params.dat'
-SIM_FPATH = '../results/random-sim.dat'
+OPT_FPATH = '../results/june8_run1-params.dat'
+SIM_FPATH = '../results/june8_run1-sim.dat'
 
-EXP_X_ARRAY = np.array(sorted([.33 - .01555 - .0725*n for n in range(4)]))
+EXP_X_ARRAY = np.array([
+    .09695,
+    .16945,
+    .24195,
+    .31445,
+])
 
 METHOD = explicit_diffusion_simple
 HEATING_ONLY = False
+
+FIG_SIZE = (5, 4)
 
 TIME_STEP = .25
 DIM_X = 66 + 1
@@ -40,7 +47,8 @@ SPECIFIC_HEAT = 380.
 MASS_DENSITY = 8730.
 CONVECTION_COEFF = 1.95
 EMISSIVITY = .01
-POWER = 10.  # set to V^2/15, look in spreadsheet for V
+VOLTAGE = 15.18
+POWER = VOLTAGE**2/15  # set to V^2/15, look in spreadsheet for V
 POWER2 = -10.
 STOP_TIME = 1085.  # set to value for run listed in spreadsheet
 
@@ -182,7 +190,7 @@ def optimize_diffusion_simp_parameters_with_bounds(
         params_guess_dict, params_bounds_dict, const_params_dict,
         exp_time_array, exp_x_array, exp_temp_array,
         x_array, num_steps, time_step, finite_step_method, sim_fpath,
-        lsq_fn=_lsq_func_simp,
+        lsq_fn=_lsq_func_simp, figsize=FIG_SIZE,
 ):
     params_guess = np.array([v for k, v in sorted(params_guess_dict.items())])
     if params_bounds_dict is None:
@@ -193,7 +201,8 @@ def optimize_diffusion_simp_parameters_with_bounds(
         upper_bounds = np.array([v[1] for k, v in pgi])
         bounds = (lower_bounds, upper_bounds)
     iter_fn = count()
-    fig = plt.figure()
+    if figsize is not None:
+        fig = plt.figure(figsize=figsize)
     ax = fig.add_subplot(111)
     fit_lines = list()
     return least_squares(
@@ -233,7 +242,7 @@ if __name__ == '__main__':
                 break
     # get num_steps
     num_steps0 = ceil(exp_time_array0[-1] / TIME_STEP)
-    print(num_steps0)
+    # print(num_steps0)
     # run optimization
     result = optimize_diffusion_simp_parameters_with_bounds(
         params_guess_dict=PARAMS_GUESS_DICT,

@@ -66,12 +66,12 @@ def _explicit_step_func_diffusion_simple(
     if time >= stop_time:
         power = power2
     u_next_vect[0] += (
-        area/(perimeter*dx) * (du_rad[0] + du_conv[0]) +
+        (1 + area/(perimeter*dx)) * (du_rad[0] + du_conv[0]) +
         k_heat * (u_prev_vect[1] - u_prev_vect[0]) +
         dt/dx * power/denom
     )
     u_next_vect[-1] += (
-        area/(perimeter*dx) * (du_rad[-1] + du_conv[-1]) +
+        (1 + area/(perimeter*dx)) * (du_rad[-1] + du_conv[-1]) +
         k_heat * (u_prev_vect[-2] - u_prev_vect[-1])
     )
     return {p: t for p, t in zip(points, u_next_vect)}
