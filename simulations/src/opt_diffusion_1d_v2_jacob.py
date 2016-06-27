@@ -16,15 +16,15 @@ from diffusion_1d_v3 import explicit_diffusion_simple
 
 # input files
 DATA_FPATHS = [
-    '../../data/temperature data/May 30/Run1_tc1.dat',
-    '../../data/temperature data/May 30/Run1_tc2.dat',
-    '../../data/temperature data/May 30/Run1_tc3.dat',
-    '../../data/temperature data/May 30/Run1_tc4.dat',
+    '../../data/temperature data/May 30/Run2_tc1.dat',
+    '../../data/temperature data/May 30/Run2_tc2.dat',
+    '../../data/temperature data/May 30/Run2_tc3.dat',
+    '../../data/temperature data/May 30/Run2_tc4.dat',
 ]
 # output files
 
-OPT_FPATH = '../results/May 30 - Run 1/opt_test-params-newdata-v3.dat'
-SIM_FPATH = '../results/May 30 - Run 1/opt_test-sim-newdata-v3.dat'
+OPT_FPATH = '../results/May 30 - Run 2/opt_test-params-newdata.dat'
+SIM_FPATH = '../results/May 30 - Run 2/opt_test-sim-newdata.dat'
 
 
 EXP_X_ARRAY = np.array(sorted([.33 - .01555 - .0725*n for n in range(4)]))
@@ -42,9 +42,9 @@ SPECIFIC_HEAT = 380.
 MASS_DENSITY = 8730.
 CONVECTION_COEFF = 1.95
 EMISSIVITY = .01
-POWER = 27.4727 #set to V^2/15, look in spreadsheet for V
+POWER = 20.886 #set to V^2/15, look in spreadsheet for V
 POWER2 = 0.
-STOP_TIME = 684. #set to value for run listed in spreadsheet
+STOP_TIME = 960. #set to value for run listed in spreadsheet
 
 
 ALL_PARAMS_DICT = dict(
