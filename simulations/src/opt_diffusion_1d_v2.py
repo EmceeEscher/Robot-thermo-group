@@ -22,8 +22,8 @@ DATA_FPATHS = [
     '../../data/temperature data/June 8/Run1_tc4_v2.dat',
 ]
 # output files
-OPT_FPATH = '../results/june8_run1-params.dat'
-SIM_FPATH = '../results/june8_run1-sim.dat'
+OPT_FPATH = '../results/random-params.dat'
+SIM_FPATH = '../results/random-sim.dat'
 
 EXP_X_ARRAY = np.array([
     .09695,

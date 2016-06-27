@@ -6,11 +6,13 @@ import numpy as np
 
 
 FPATHS_LIST = [
-    '../../data/temperature data/June 8/Run1_tc{}_v2.dat'.format(i)
-    for i in range(1, 5)
+    # '../../data/temperature data/June 8/Run1_tc1_v2.dat',
+    '../../data/temperature data/June 8/Run1_tc2_v2.dat',
+    '../../data/temperature data/June 8/Run1_tc3_v2.dat',
+    # '../../data/temperature data/June 8/Run1_tc4_v2.dat',
 ]
 
-SIM_FPATH = '../results/opt_test-sim-newdata-heatingonly.dat'
+SIM_FPATH = '../results/june8_run1-noTC1,4-sim.dat'
 
 
 def _get_exp_datum(fpath):
@@ -206,5 +208,5 @@ if __name__ == '__main__':
 
     plot_experimental_and_simulation_data(
         sim_fpath=SIM_FPATH, exp_fpaths=FPATHS_LIST)
-    plt.legend()
+    # plt.legend()
     plt.show()
