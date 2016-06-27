@@ -4,13 +4,14 @@ from math import ceil, floor
 from os import path, makedirs
 from scipy.optimize import least_squares
 import numpy as np
+from matplotlib import pyplot as plt, colors, cm
 from simu1d import Simulation, run_simulation_opt
 from opt_diffusion_1d import make_params_dict
 from opt_diffusion_1d import get_exp_time_temp_arrays
 from diffusion_1d import PERIMETER, AREA, MIN_X, MAX_X
-from diffusion_1d_v2 import implicit_mod_diffusion_simple
-from diffusion_1d_v2 import implicit_mod2_diffusion_simple
 from diffusion_1d_v3 import explicit_diffusion_simple
+# from diffusion_1d_v2 import implicit_mod_diffusion_simple
+# from diffusion_1d_v2 import implicit_mod2_diffusion_simple
 
 
 # input files
@@ -21,8 +22,10 @@ DATA_FPATHS = [
     '../../data/temperature data/May 30/Run1_tc4.dat',
 ]
 # output files
-OPT_FPATH = '../results/May 30 - Run 1/opt_test-params-newdata-v2.dat'
-SIM_FPATH = '../results/May 30 - Run 1/opt_test-sim-newdata-v2.dat'
+
+OPT_FPATH = '../results/May 30 - Run 1/opt_test-params-newdata-v3.dat'
+SIM_FPATH = '../results/May 30 - Run 1/opt_test-sim-newdata-v3.dat'
+
 
 EXP_X_ARRAY = np.array(sorted([.33 - .01555 - .0725*n for n in range(4)]))
 
@@ -40,8 +43,9 @@ MASS_DENSITY = 8730.
 CONVECTION_COEFF = 1.95
 EMISSIVITY = .01
 POWER = 27.4727 #set to V^2/15, look in spreadsheet for V
-POWER2 = -10.
+POWER2 = 0.
 STOP_TIME = 684. #set to value for run listed in spreadsheet
+
 
 ALL_PARAMS_DICT = dict(
     u_0=U_0,
@@ -67,7 +71,7 @@ PARAMS_GUESS_DICT = dict(
     convection_coeff=CONVECTION_COEFF,
     emissivity=EMISSIVITY,
     power=POWER,
-    power2=POWER2,
+    #power2=POWER2,
     # stop_time=STOP_TIME,
 )
 
@@ -80,11 +84,42 @@ PARAMS_BOUNDS_DICT = dict(
     convection_coeff=(0., 1000.),
     emissivity=(0., 1.),
     power=(0., POWER),
-    power2=((-1.*POWER), 0.)
+    #power2=(0., 0.)
     # stop_time=(STOP_TIME-10, STOP_TIME+10),
 )
 
 ALL_PARAMS_DICT.update(PARAMS_GUESS_DICT)
+
+
+def _first_iteration_plot(
+        ax, time_step, exp_temp_array, sim_temp_array, fit_lines):
+    num_steps, num_lines = exp_temp_array.shape
+    time_array = np.array([time_step * x for x in range(num_steps)])
+    # get colors
+    c_norm = colors.Normalize(vmin=0, vmax=num_lines-1)
+    scalar_map = cm.ScalarMappable(norm=c_norm, cmap=plt.get_cmap('jet'))
+    for exp_line, sim_line, i in zip(
+            exp_temp_array.T, sim_temp_array.T, count()):
+        clr = scalar_map.to_rgba(i)
+        ax.plot(
+            time_array, exp_line, '-', color=clr,
+            label='TC {} data'.format(i+1)
+        )
+        line, = ax.plot(
+            time_array, sim_line, '--', color=clr,
+        )
+        fit_lines.append(line)
+    plt.xlabel('Time (s)')
+    plt.ylabel('Temperature (K)')
+    plt.title('Temperature vs Time Data for Simulation')
+    plt.legend()
+    plt.show(block=False)
+
+
+def _update_iteration_plot(fig, fit_lines, sim_temp_array):
+    for line, col in zip(fit_lines, sim_temp_array.T):
+        line.set_ydata(col)
+        fig.canvas.draw()
 
 
 def _lsq_func_simp(
@@ -92,13 +127,17 @@ def _lsq_func_simp(
         exp_time_array, exp_x_array, exp_temp_array,
         x_array, num_steps, time_step,
         finite_step_method, sim_fpath, iteration_fn,
+        figure=None, ax=None, fit_lines=None,
 ):
     params_dict = make_params_dict(
         params_arr=params_arr, const_params_dict=const_params_dict,
         variable_params_keys=variable_params_keys
     )
     t_0 = params_dict['u_0']
-    print('Iteration {:3}'.format(next(iteration_fn)))
+    iter_num = next(iteration_fn)
+    num_params = len(params_arr) + 1
+    print('Iteration {}-{}'.format(
+        floor(iter_num/num_params), iter_num % num_params))
     for k, v in sorted(params_dict.items()):
         if k in variable_params_keys:
             print('  {:24}:  {}'.format(k, v))
@@ -122,6 +161,15 @@ def _lsq_func_simp(
         np.dot(residuals, residuals)/(m*n)))
     print('  Sum of squares per point (opt) = {}'.format(
         np.dot(diff_arr, diff_arr)/(m*n)))
+    if iter_num == 0:
+        _first_iteration_plot(
+            ax=ax, time_step=time_step,
+            exp_temp_array=exp_temp_array, sim_temp_array=sim_temp_array,
+            fit_lines=fit_lines,
+        )
+    else:
+        _update_iteration_plot(
+            fig=figure, fit_lines=fit_lines, sim_temp_array=sim_temp_array)
     return diff_arr
 
 
@@ -140,13 +188,16 @@ def optimize_diffusion_simp_parameters_with_bounds(
         upper_bounds = np.array([v[1] for k, v in pgi])
         bounds = (lower_bounds, upper_bounds)
     iter_fn = count()
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    fit_lines = list()
     return least_squares(
         fun=lsq_fn, x0=params_guess, bounds=bounds, verbose=2,
         args=(
             const_params_dict, params_guess_dict.keys(),
             exp_time_array, exp_x_array, exp_temp_array,
             x_array, num_steps, time_step,
-            finite_step_method, sim_fpath, iter_fn
+            finite_step_method, sim_fpath, iter_fn, fig, ax, fit_lines
         ),
     )
 
