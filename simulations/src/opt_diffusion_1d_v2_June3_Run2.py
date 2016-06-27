@@ -16,26 +16,19 @@ from diffusion_1d_v3 import explicit_diffusion_simple
 
 # input files
 DATA_FPATHS = [
-    '../../data/temperature data/June 8/Run1_tc1_v2.dat',
-    '../../data/temperature data/June 8/Run1_tc2_v2.dat',
-    '../../data/temperature data/June 8/Run1_tc3_v2.dat',
-    '../../data/temperature data/June 8/Run1_tc4_v2.dat',
+    '../../data/temperature data/June 3/Run2_tc1_June1.dat',
+    '../../data/temperature data/June 3/Run2_tc2_June1.dat',
+    '../../data/temperature data/June 3/Run2_tc3_June1.dat',
+    '../../data/temperature data/June 3/Run2_tc4_June1.dat',
 ]
 # output files
-OPT_FPATH = '../results/june8_run1-params.dat'
-SIM_FPATH = '../results/june8_run1-sim.dat'
+OPT_FPATH = '../results/June 3 - Run 2/params.dat'
+SIM_FPATH = '../results/June 3 - Run 2/sim.dat'
 
-EXP_X_ARRAY = np.array([
-    .09695,
-    .16945,
-    .24195,
-    .31445,
-])
+EXP_X_ARRAY = np.array(sorted([.33 - .01555 - .0725*n for n in range(4)]))
 
 METHOD = explicit_diffusion_simple
 HEATING_ONLY = False
-
-FIG_SIZE = (5, 4)
 
 TIME_STEP = .25
 DIM_X = 66 + 1
@@ -47,10 +40,9 @@ SPECIFIC_HEAT = 380.
 MASS_DENSITY = 8730.
 CONVECTION_COEFF = 1.95
 EMISSIVITY = .01
-VOLTAGE = 15.18
-POWER = VOLTAGE**2/15  # set to V^2/15, look in spreadsheet for V
+POWER = 15.36216  # set to V^2/15, look in spreadsheet for V
 POWER2 = -10.
-STOP_TIME = 1085.  # set to value for run listed in spreadsheet
+STOP_TIME = 900.  # set to value for run listed in spreadsheet
 
 ALL_PARAMS_DICT = dict(
     u_0=U_0,
@@ -89,7 +81,7 @@ PARAMS_BOUNDS_DICT = dict(
     convection_coeff=(0., 1000.),
     emissivity=(0., 1.),
     power=(0., POWER),
-    power2=(-1000., 1000.)
+    power2=(-POWER, 0)
     # stop_time=(STOP_TIME-10, STOP_TIME+10),
 )
 
@@ -190,7 +182,7 @@ def optimize_diffusion_simp_parameters_with_bounds(
         params_guess_dict, params_bounds_dict, const_params_dict,
         exp_time_array, exp_x_array, exp_temp_array,
         x_array, num_steps, time_step, finite_step_method, sim_fpath,
-        lsq_fn=_lsq_func_simp, figsize=FIG_SIZE,
+        lsq_fn=_lsq_func_simp,
 ):
     params_guess = np.array([v for k, v in sorted(params_guess_dict.items())])
     if params_bounds_dict is None:
@@ -201,8 +193,7 @@ def optimize_diffusion_simp_parameters_with_bounds(
         upper_bounds = np.array([v[1] for k, v in pgi])
         bounds = (lower_bounds, upper_bounds)
     iter_fn = count()
-    if figsize is not None:
-        fig = plt.figure(figsize=figsize)
+    fig = plt.figure()
     ax = fig.add_subplot(111)
     fit_lines = list()
     return least_squares(
@@ -242,7 +233,7 @@ if __name__ == '__main__':
                 break
     # get num_steps
     num_steps0 = ceil(exp_time_array0[-1] / TIME_STEP)
-    # print(num_steps0)
+    print(num_steps0)
     # run optimization
     result = optimize_diffusion_simp_parameters_with_bounds(
         params_guess_dict=PARAMS_GUESS_DICT,
@@ -273,4 +264,3 @@ if __name__ == '__main__':
             fw.write('{}:\n'.format(name))
             fw.write('{}\n'.format(item))
             fw.write('\n')
-

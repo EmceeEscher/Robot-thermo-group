@@ -16,41 +16,36 @@ from diffusion_1d_v3 import explicit_diffusion_simple
 
 # input files
 DATA_FPATHS = [
-    '../../data/temperature data/June 8/Run1_tc1_v2.dat',
-    '../../data/temperature data/June 8/Run1_tc2_v2.dat',
-    '../../data/temperature data/June 8/Run1_tc3_v2.dat',
-    '../../data/temperature data/June 8/Run1_tc4_v2.dat',
+    '../../data/temperature data/May 30/Run1_tc1.dat',
+    '../../data/temperature data/May 30/Run1_tc2.dat',
+    '../../data/temperature data/May 30/Run1_tc3.dat',
+    '../../data/temperature data/May 30/Run1_tc4.dat',
 ]
 # output files
-OPT_FPATH = '../results/june8_run1-params.dat'
-SIM_FPATH = '../results/june8_run1-sim.dat'
 
-EXP_X_ARRAY = np.array([
-    .09695,
-    .16945,
-    .24195,
-    .31445,
-])
+OPT_FPATH = '../results/May 30 - Run 1/opt_test-params-newdata-v3.dat'
+SIM_FPATH = '../results/May 30 - Run 1/opt_test-sim-newdata-v3.dat'
+
+
+EXP_X_ARRAY = np.array(sorted([.33 - .01555 - .0725*n for n in range(4)]))
 
 METHOD = explicit_diffusion_simple
-HEATING_ONLY = False
-
-FIG_SIZE = (5, 4)
+HEATING_ONLY = True
 
 TIME_STEP = .25
 DIM_X = 66 + 1
 
-U_0 = 303.
+U_0 = 297.
 U_AMB = 297.
 THERMAL_CONDUCTIVITY = 125.
 SPECIFIC_HEAT = 380.
 MASS_DENSITY = 8730.
 CONVECTION_COEFF = 1.95
 EMISSIVITY = .01
-VOLTAGE = 15.18
-POWER = VOLTAGE**2/15  # set to V^2/15, look in spreadsheet for V
-POWER2 = -10.
-STOP_TIME = 1085.  # set to value for run listed in spreadsheet
+POWER = 27.4727 #set to V^2/15, look in spreadsheet for V
+POWER2 = 0.
+STOP_TIME = 684. #set to value for run listed in spreadsheet
+
 
 ALL_PARAMS_DICT = dict(
     u_0=U_0,
@@ -76,20 +71,20 @@ PARAMS_GUESS_DICT = dict(
     convection_coeff=CONVECTION_COEFF,
     emissivity=EMISSIVITY,
     power=POWER,
-    power2=POWER2,
+    #power2=POWER2,
     # stop_time=STOP_TIME,
 )
 
 PARAMS_BOUNDS_DICT = dict(
-    u_0=(.95*U_0, 1.05*U_0),
-    u_amb=(.9*U_AMB, 1.1*U_AMB),
+    u_0=(293, 301),
+    u_amb=(293, 299),
     thermal_conductivity=(.8*THERMAL_CONDUCTIVITY, 1.2*THERMAL_CONDUCTIVITY),
     specific_heat=(.95*SPECIFIC_HEAT, 1.05*SPECIFIC_HEAT),
     mass_density=(.95*MASS_DENSITY, 1.05*MASS_DENSITY),
     convection_coeff=(0., 1000.),
     emissivity=(0., 1.),
     power=(0., POWER),
-    power2=(-1000., 1000.)
+    #power2=(0., 0.)
     # stop_time=(STOP_TIME-10, STOP_TIME+10),
 )
 
@@ -141,19 +136,11 @@ def _lsq_func_simp(
     t_0 = params_dict['u_0']
     iter_num = next(iteration_fn)
     num_params = len(params_arr) + 1
-    sub_iter = iter_num % num_params
-    print('\nIteration {}-{}'.format(
-        floor(iter_num/num_params), sub_iter))
-    i = 0
+    print('Iteration {}-{}'.format(
+        floor(iter_num/num_params), iter_num % num_params))
     for k, v in sorted(params_dict.items()):
         if k in variable_params_keys:
-            i += 1
-            if i == sub_iter:
-                print('\033[96m *{:24}:  {}\033[0m'.format(k, v))
-            elif 0 == sub_iter:
-                print('\033[96m  {:24}:  {}\033[0m'.format(k, v))
-            else:
-                print('  {:24}:  {}'.format(k, v))
+            print('  {:24}:  {}'.format(k, v))
     del params_dict['u_0']
     sim = Simulation(
         time_step=time_step, x_array=x_array, t_0=t_0,
@@ -190,7 +177,7 @@ def optimize_diffusion_simp_parameters_with_bounds(
         params_guess_dict, params_bounds_dict, const_params_dict,
         exp_time_array, exp_x_array, exp_temp_array,
         x_array, num_steps, time_step, finite_step_method, sim_fpath,
-        lsq_fn=_lsq_func_simp, figsize=FIG_SIZE,
+        lsq_fn=_lsq_func_simp,
 ):
     params_guess = np.array([v for k, v in sorted(params_guess_dict.items())])
     if params_bounds_dict is None:
@@ -201,8 +188,7 @@ def optimize_diffusion_simp_parameters_with_bounds(
         upper_bounds = np.array([v[1] for k, v in pgi])
         bounds = (lower_bounds, upper_bounds)
     iter_fn = count()
-    if figsize is not None:
-        fig = plt.figure(figsize=figsize)
+    fig = plt.figure()
     ax = fig.add_subplot(111)
     fit_lines = list()
     return least_squares(
@@ -242,7 +228,7 @@ if __name__ == '__main__':
                 break
     # get num_steps
     num_steps0 = ceil(exp_time_array0[-1] / TIME_STEP)
-    # print(num_steps0)
+    print(num_steps0)
     # run optimization
     result = optimize_diffusion_simp_parameters_with_bounds(
         params_guess_dict=PARAMS_GUESS_DICT,
@@ -273,4 +259,3 @@ if __name__ == '__main__':
             fw.write('{}:\n'.format(name))
             fw.write('{}\n'.format(item))
             fw.write('\n')
-
