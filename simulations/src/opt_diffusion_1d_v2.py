@@ -35,6 +35,7 @@ EXP_X_ARRAY = np.array([
 METHOD = explicit_diffusion_simple
 HEATING_ONLY = False
 
+SHOW_PLOT_REAL_TIME = True
 FIG_SIZE = (5, 4)
 
 TIME_STEP = .25
@@ -174,15 +175,16 @@ def _lsq_func_simp(
         np.dot(residuals, residuals)/(m*n)))
     print('  Sum of squares per point (opt) = {}'.format(
         np.dot(diff_arr, diff_arr)/(m*n)))
-    if iter_num == 0:
-        _first_iteration_plot(
-            ax=ax, time_step=time_step,
-            exp_temp_array=exp_temp_array, sim_temp_array=sim_temp_array,
-            fit_lines=fit_lines,
-        )
-    else:
-        _update_iteration_plot(
-            fig=figure, fit_lines=fit_lines, sim_temp_array=sim_temp_array)
+    if SHOW_PLOT_REAL_TIME:
+        if iter_num == 0:
+            _first_iteration_plot(
+                ax=ax, time_step=time_step,
+                exp_temp_array=exp_temp_array, sim_temp_array=sim_temp_array,
+                fit_lines=fit_lines,
+            )
+        else:
+            _update_iteration_plot(
+                fig=figure, fit_lines=fit_lines, sim_temp_array=sim_temp_array)
     return diff_arr
 
 

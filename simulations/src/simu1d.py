@@ -1,10 +1,19 @@
+from itertools import count
 from datetime import datetime
 from math import floor
 import numpy as np
 
 
 def d1_matrix(n, diff=1):
-    # TODO: docstring
+    """Creates a first derivative matrix, with -1 on the primary diagonal and
+    1 on the diagonal shifted to the right by diff.
+    The dimensions of the matrix are (n-diff) x n, where the default for
+    diff is 1.
+    :param n: number of columns (or length of vector whose derivative is to be
+    taken)
+    :param diff: number of columns to the right of the primary diagonal to
+    place the diagonal of ones.
+    """
     rows = n - diff
     cols = n
     mat = np.zeros(shape=(rows, cols))
@@ -18,7 +27,14 @@ def d1_matrix(n, diff=1):
 
 
 def d2_matrix(n, diff=1):
-    # TODO: docstring
+    """Returns the central second derivative matrix with 1 on the primary
+    diagonal, -2 on the diagonal shifted by diff, and 1 on the diagonal
+    shifted by 2*diff.
+    The dimensions will be (n-2*diff) x n.
+    :param n: number of columns, or length of vector whose second derivative is
+    to be taken
+    :param diff: off set from primary diagonal for next term in derivative
+    """
     return np.dot(d1_matrix(n=n - diff, diff=diff), d1_matrix(n=n, diff=diff))
 
 
@@ -35,7 +51,17 @@ def simulation_fn(
         time_step, x_array, t_0, finite_step_method, params_dict,
         boundary_conditions,
 ):
-    # TODO: docstring
+    """Returns a simulation generator object, which will indefinitely yield
+    the subsequent point -> temp map based on the time step, finite step
+    method, etc.
+    :param time_step: dt, the difference in time for each step
+    :param x_array: array of x points
+    :param t_0: initial temperature for all points
+    :param finite_step_method: method to apply to get from one step to the next
+    :param params_dict: dictionary containing any parameters necessary for
+    applying the finite_step_method
+    :param boundary_conditions: boundary conditions for the step method
+    """
     # initialize points
     point_to_temp_map = {idx_x: t_0 for idx_x in range(len(x_array))}
     time = 0
@@ -76,7 +102,7 @@ class Simulation:
 
     def description_lines(self):
         params_lines = [
-            '   {} = {}{}\n'.format(k.replace('_', ' '), ' '*(25 - len(k)), v)
+            '  {} = {}{}\n'.format(k.replace('_', ' '), ' '*(25 - len(k)), v)
             for k, v in self.params_dict.items()]
         if self.bc is not None:
             bc_name = self.bc.name
@@ -90,25 +116,25 @@ class Simulation:
             'Simulation of heat flow through 1-dimensional rod\n',
             '\n',
             'Dimensions\n',
-            '  dim x =                  {}\n'.format(len(self.x_array)),
-            '  min x =                  {}\n'.format(self.x_array[0]),
-            '  max x =                  {}\n'.format(self.x_array[-1]),
+            '  dim x =                     {}\n'.format(len(self.x_array)),
+            '  min x =                     {}\n'.format(self.x_array[0]),
+            '  max x =                     {}\n'.format(self.x_array[-1]),
             '\n',
             'Thermodynamical parameters\n',
-            '  initial temp =           {}\n'.format(self.u_0),
+            '  initial temp =              {}\n'.format(self.u_0),
         ] + params_lines + [
             '\n',
-            ' Boundary conditions:\n',
-            '   method =                    {}\n'
+            'Boundary conditions:\n',
+            '  method =                    {}\n'
             ''.format(bc_name),
-            '   x0 order =                  {}\n'
+            '  x0 order =                  {}\n'
             ''.format(x0_order),
-            '   x1 order =                  {}\n'
+            '  x1 order =                  {}\n'
             ''.format(x1_order),
             '\n',
-            ' Finite differencing\n',
-            '   time step =                 {}\n'.format(self.dt),
-            '   method =                    {}\n'.format(self.step_method.name),
+            'Finite differencing\n',
+            '  time step =                 {}\n'.format(self.dt),
+            '  method =                    {}\n'.format(self.step_method.name),
             '\n',
         ]
 
@@ -126,16 +152,17 @@ def run_simulation_f(
     were given, only every tenth step would be written to fpath
     """
     lines = simulation.description_lines()
+    dt = simulation.dt
     if verbose:
         print(''.join(lines), end='\n')
     with open(fpath, 'w') as f:
         f.write('# ' + str(datetime.now()) + '\n')
-        f.write('\n')
+        f.write('#\n')
         for line in lines:
             f.write('# ' + line)
         for point_to_temp_map, step in zip(simulation, range(num_steps+1)):
             if step % write_period == 0:
-                line = 'Step= {}\n'.format(step)
+                line = 'Step= {:<12}  Time= {:>12.4f}\n'.format(step, step*dt)
                 f.write(line)
                 if verbose:
                     print(line, end='')
@@ -147,10 +174,13 @@ def run_simulation_f(
 
 
 def mindiff(array, value):
-    # TODO: docstring
+    """Returns the index of the item in array that is closest to value
+    :param array: array or list of values
+    :param value: value to compare to items
+    """
     diff = abs(array[0] - value)
     idx = 0
-    for x, i in zip(array, range(len(array))):
+    for x, i in zip(array, count()):
         if abs(x - value) < diff:
             diff = abs(x - value)
             idx = i
