@@ -10,48 +10,49 @@ from opt_diffusion_1d import make_params_dict
 from opt_diffusion_1d import get_exp_time_temp_arrays
 from diffusion_1d import PERIMETER, AREA, MIN_X, MAX_X
 from diffusion_1d_v3 import explicit_diffusion_simple
-# from diffusion_1d_v2 import implicit_mod_diffusion_simple
-# from diffusion_1d_v2 import implicit_mod2_diffusion_simple
 
 
 # input files
 DATA_FPATHS = [
-    '../../data/temperature data/June 8/Run1_tc1_v2.dat',
+    # '../../data/temperature data/June 8/Run1_tc1_v2.dat',
     '../../data/temperature data/June 8/Run1_tc2_v2.dat',
     '../../data/temperature data/June 8/Run1_tc3_v2.dat',
-    '../../data/temperature data/June 8/Run1_tc4_v2.dat',
+    # '../../data/temperature data/June 8/Run1_tc4_v2.dat',
 ]
 # output files
-OPT_FPATH = '../results/random-params.dat'
-SIM_FPATH = '../results/random-sim.dat'
+OPT_FPATH = '../results/June 8 - Run 1/june8_run1-tc2,3-params.dat'
+SIM_FPATH = '../results/June 8 - Run 1/june8_run1-tc2,3-sim.dat'
+
+
+# set these two values based on run
+VOLTAGE = 15.18
+STOP_TIME = 1085.
 
 EXP_X_ARRAY = np.array([
-    .09695,
+    # .09695,
     .16945,
     .24195,
-    .31445,
+    # .31445,
 ])
 
 METHOD = explicit_diffusion_simple
 HEATING_ONLY = False
 
 SHOW_PLOT_REAL_TIME = True
-FIG_SIZE = (5, 4)
+FIG_SIZE = (7, 4)
 
 TIME_STEP = .25
 DIM_X = 66 + 1
 
-U_0 = 303.
+U_0 = 297.
 U_AMB = 297.
 THERMAL_CONDUCTIVITY = 125.
 SPECIFIC_HEAT = 380.
 MASS_DENSITY = 8730.
 CONVECTION_COEFF = 1.95
 EMISSIVITY = .01
-VOLTAGE = 15.18
-POWER = VOLTAGE**2/15  # set to V^2/15, look in spreadsheet for V
-POWER2 = -10.
-STOP_TIME = 1085.  # set to value for run listed in spreadsheet
+POWER_HEAT = VOLTAGE ** 2 / 15
+POWER_COOL = -1.
 
 ALL_PARAMS_DICT = dict(
     u_0=U_0,
@@ -61,8 +62,8 @@ ALL_PARAMS_DICT = dict(
     rho=MASS_DENSITY,
     k_c=CONVECTION_COEFF,
     emiss=EMISSIVITY,
-    power_heat=POWER,
-    power_cool=POWER2,
+    power_heat=POWER_HEAT,
+    power_cool=POWER_COOL,
     stop_time=STOP_TIME,
     perim=PERIMETER,
     area=AREA,
@@ -76,8 +77,8 @@ PARAMS_GUESS_DICT = dict(
     rho=MASS_DENSITY,
     k_c=CONVECTION_COEFF,
     emiss=EMISSIVITY,
-    power_heat=POWER,
-    power_cool=POWER2,
+    power_heat=POWER_HEAT,
+    power_cool=POWER_COOL,
     # stop_time=STOP_TIME,
 )
 
@@ -89,7 +90,7 @@ PARAMS_BOUNDS_DICT = dict(
     rho=(.95*MASS_DENSITY, 1.05*MASS_DENSITY),
     k_c=(0., 1000.),
     emiss=(0., 1.),
-    power_heat=(0., POWER),
+    power_heat=(0., POWER_HEAT),
     power_cool=(-1000., 1000.)
     # stop_time=(STOP_TIME-10, STOP_TIME+10),
 )
@@ -98,9 +99,8 @@ ALL_PARAMS_DICT.update(PARAMS_GUESS_DICT)
 
 
 def _first_iteration_plot(
-        ax, time_step, exp_temp_array, sim_temp_array, fit_lines):
+        ax, time_array, exp_temp_array, sim_temp_array, fit_lines):
     num_steps, num_lines = exp_temp_array.shape
-    time_array = np.array([time_step * x for x in range(num_steps)])
     # get colors
     c_norm = colors.Normalize(vmin=0, vmax=num_lines-1)
     scalar_map = cm.ScalarMappable(norm=c_norm, cmap=plt.get_cmap('jet'))
@@ -178,7 +178,7 @@ def _lsq_func_simp(
     if SHOW_PLOT_REAL_TIME:
         if iter_num == 0:
             _first_iteration_plot(
-                ax=ax, time_step=time_step,
+                ax=ax, time_array=exp_time_array,
                 exp_temp_array=exp_temp_array, sim_temp_array=sim_temp_array,
                 fit_lines=fit_lines,
             )
@@ -275,4 +275,3 @@ if __name__ == '__main__':
             fw.write('{}:\n'.format(name))
             fw.write('{}\n'.format(item))
             fw.write('\n')
-

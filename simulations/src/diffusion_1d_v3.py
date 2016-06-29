@@ -1,7 +1,6 @@
 from itertools import count
 from math import pi
 import numpy as np
-from heat_eq_1d import heat_eq_matrix
 from simu1d import FiniteStepMethod, Simulation, run_simulation_f
 from simu1d import d2_matrix
 
@@ -20,7 +19,7 @@ AREA = pi*RADIUS**2
 # thermodynamical parameters
 TEMP_INITIAL = 300.
 PARAMS_DICT = dict(
-    u_amb=300.,
+    u_amb=300.,       # ambient temperature for convection
     k=125.,           # thermal conductivity of rod
     c=380.,           # specific heat of rod
     rho=8730,         # mass density of rod
@@ -154,7 +153,6 @@ def _explicit_step_func_diffusion_simple(
 
     # make u_prev (previous temperature) vector
     points = sorted(point_to_temp_map.keys())
-    n = len(points)
     u_prev_vect = np.array([point_to_temp_map[p] for p in points])
 
     # make ds and dv vectors
