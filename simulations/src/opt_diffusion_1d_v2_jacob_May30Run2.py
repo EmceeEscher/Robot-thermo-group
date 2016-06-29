@@ -17,13 +17,13 @@ from diffusion_1d_v3 import explicit_diffusion_simple
 # input files
 DATA_FPATHS = [
     #'../../data/temperature data/June 8/Run1_tc1_v2.dat',
-    '../../data/temperature data/June 8/Run1_tc2_v2.dat',
-    '../../data/temperature data/June 8/Run1_tc3_v2.dat',
+    '../../data/temperature data/May 30/Run2_tc2.dat',
+    '../../data/temperature data/May 30/Run2_tc3.dat',
     #'../../data/temperature data/June 8/Run1_tc4_v2.dat',
 ]
 # output files
-OPT_FPATH = '../results/random-params.dat'
-SIM_FPATH = '../results/random-sim.dat'
+OPT_FPATH = '../results/May 30 - Run 2/random-params-6-28.dat'
+SIM_FPATH = '../results/May 30 - Run 2/random-sim-6-28.dat'
 
 EXP_X_ARRAY = np.array([
     #.09695,
@@ -47,10 +47,10 @@ SPECIFIC_HEAT = 380.
 MASS_DENSITY = 8730.
 CONVECTION_COEFF = 1.95
 EMISSIVITY = .01
-VOLTAGE = 15.18
+VOLTAGE = 17.7
 POWER = VOLTAGE**2/15  # set to V^2/15, look in spreadsheet for V
 POWER2 = -10.
-STOP_TIME = 1085.  # set to value for run listed in spreadsheet
+STOP_TIME = 960.  # set to value for run listed in spreadsheet
 
 ALL_PARAMS_DICT = dict(
     u_0=U_0,
