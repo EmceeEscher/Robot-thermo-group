@@ -14,19 +14,17 @@ from diffusion_1d_v3 import explicit_diffusion_simple
 
 # input files
 DATA_FPATHS = [
-    # '../../data/temperature data/June 8/Run1_tc1_v2.dat',
-    '../../data/temperature data/June 8/Run1_tc2_v2.dat',
-    '../../data/temperature data/June 8/Run1_tc3_v2.dat',
-    # '../../data/temperature data/June 8/Run1_tc4_v2.dat',
+    '../../data/temperature data/May 27/Run2_tc2.dat',
+    '../../data/temperature data/May 27/Run2_tc3.dat',
 ]
 # output files
-OPT_FPATH = '../results/June 8 - Run 1/june8_run1-tc2,3-params.dat'
-SIM_FPATH = '../results/June 8 - Run 1/june8_run1-tc2,3-sim.dat'
+OPT_FPATH = '../results/May 27 - Run 2/may27_run2-tc2,3-params.dat'
+SIM_FPATH = '../results/May 27 - Run 2/may27_run2-tc2,3-sim.dat'
 
 
 # set these two values based on run
 VOLTAGE = 15.18
-STOP_TIME = 1085.
+STOP_TIME = 900.
 
 EXP_X_ARRAY = np.array([
     # .09695,
