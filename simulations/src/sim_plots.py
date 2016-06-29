@@ -4,6 +4,7 @@ from matplotlib import pyplot as plt, colors, cm
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 
+FPATH_FIGURE = './figure.pdf'
 
 FPATHS_LIST = [
     # '../../data/temperature data/June 8/Run1_tc1_v2.dat',
@@ -209,4 +210,5 @@ if __name__ == '__main__':
     plot_experimental_and_simulation_data(
         sim_fpath=SIM_FPATH, exp_fpaths=FPATHS_LIST)
     # plt.legend()
+	plt.savefig(FPATH_FIGURE)
     plt.show()
