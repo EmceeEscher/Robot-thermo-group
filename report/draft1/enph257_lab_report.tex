@@ -9,8 +9,8 @@
 \usepackage{tabularx}
 \usepackage{todonotes}
 \usepackage{hyperref}
+\usepackage{amsmath}
 %% \usepackage{dcolumn}
-%% \usepackage{amsmath}
 %% \usepackage{amsfonts}
 %% \usepackage{hyperref}
 %% \usepackage{xcolor}
@@ -108,10 +108,93 @@
 
 \chapter{Comparison of Finite Differencing Methods}
 \label{ch:finitediff}
-%% TODO
+The following are methods of finite differencing, demonstrated
+using the simple example of the one-dimensional heat conduction equation
+\begin{equation}\label{eq:condsimp}
+  \frac{\partial}{\partial t}u(x,t) = \alpha\frac{\partial^2}{\partial x^2}u(x,t).
+\end{equation}
 
 \section{Explicit method}
-%% TODO
+
+\subsection*{Finite difference equation}
+In the explicit method for finite differencing, the temperature for
+each spatial point can be independently determined from the previous
+step. That is,
+\begin{equation}\label{eq:explicit}
+  u_i^{n+1} = u_i^n + \alpha\cdot\frac{\delta t}{\delta x^2}\cdot
+  \left(u_{i-1}^n - 2u_i^n + u_{i+1}^n\right),
+\end{equation}
+where the superscript $n \in [0, T]$ signifies the step in time
+$t_n$ and the
+subscript $i \in [0, X]$ represents the position
+$x_i$. $\delta t$ and $\delta x$
+are the time steps in time and position respectively.
+\\\\
+If we define
+\begin{equation*}
+  \zeta = \alpha\cdot\frac{\delta t}{\delta x^2},
+\end{equation*}
+then this can be written as a linear relationship
+\begin{equation}\label{eq:explicitlinear}
+  \mathbf{u}^{n+1} = \mathbf{D}\mathbf{u}^{n},
+\end{equation}
+where $\mathbf{D}$ is the matrix defined by
+\begin{equation}\label{eq:explicitdmatrix}
+  \mathbf{D}_{ij} = 
+  \begin{cases}
+    \text{BC}, & \quad i=0 \text{ or } i=X \\
+    \zeta,     & \quad 0<i<X \text{ and } |i-j|=1 \\
+    1-2\zeta,  & \quad 0<i<X \text{ and } i-j=0 \\
+    0,         & \quad \text{else} \\
+  \end{cases}
+\end{equation}
+The top and bottom rows ($i=0$ and $i=X$) are determined from
+boundary conditions. Note that as $\zeta$ approaches $0$,
+$\mathbf{D}$ approaches the identity matrix. Thus $\zeta$ should be
+as small as possible for the best approximtation. The condition for
+stability is
+\begin{equation*}
+  0<\zeta<1.
+\end{equation*}
+
+\subsection*{Error in time}
+The explicit method uses a forward difference in time. The
+expression for the derivative approximation is derived from
+the power series expansion in $\delta t$
+\begin{equation}\label{eq:explicitexpansiondt}
+  u(x,t+\delta t) = u(x,t) + \frac{\partial}{\partial t}u(x,t)\cdot\delta t
+  + \frac{\partial^2}{\partial t^2}u(x,t)\cdot\frac{\delta t^2}{2!} + \dots
+\end{equation}
+Thus we have an approximation for the time derivative
+\begin{equation}\label{eq:expliciterrdt}
+  \frac{u(x,t+\delta t)-u(x,t)}{\delta t} = \frac{\partial}{\partial t}u(x,t)
+  + O(\delta t).
+\end{equation}
+The error in time due to this approximation is linear in $\delta t$.
+
+\subsection*{Error in position}
+The explicit method uses a central second derivative in space. The
+expression for the second derivative approximation is derived from
+the power series expansion in $\delta x$.
+\begin{equation}\label{eq:explicitexpansiondx}
+  u(x+\delta x,t) = u(x,t) + \frac{\partial}{\partial x}u(x,t)\cdot\delta x +
+  \frac{\partial^2}{\partial x^2}u(x,t)\cdot\frac{\delta x^2}{2!} +
+  \frac{\partial^3}{\partial x^3}u(x,t)\cdot\frac{\delta x^3}{3!}
+  + \dots
+\end{equation}
+At $-\delta x$, this is
+\begin{equation*}
+  u(x-\delta x,t) = u(x,t) - \frac{\partial}{\partial x}u(x,t)\cdot\delta x +
+  \frac{\partial^2}{\partial x^2}u(x,t)\cdot\frac{\delta x^2}{2!} -
+  \frac{\partial^3}{\partial x^3}u(x,t)\cdot\frac{\delta x^3}{3!}
+  + \dots
+\end{equation*}
+Thus the approximation for the second spatial derivative is
+\begin{equation}\label{eq:expliciterrdx}
+  \frac{u(x-\delta x,t)-2u(x,t)+u(x+\delta x,t)}{\delta x^2} =
+  \frac{\partial^2}{\partial x^2}u(x,t) + O(\delta x^2).
+\end{equation}
+The error in position due to this approximation is quadratic in $\delta x$.
 
 \section{Implicit method}
 %% TODO
