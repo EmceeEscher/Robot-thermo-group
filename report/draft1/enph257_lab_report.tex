@@ -230,7 +230,7 @@ convective coefficient, the rod was placed in three different
 positions: horizontally, vertically, and diagonally. In its
 horizontal position, the rod was held up by two edges of
 a container and tied down with string to restrict its motion.
-A stand and ring clamp was used to hold the rod diagonally,
+A stand and ring clamp were used to hold the rod diagonally,
 where O-rings were used again to minimize heat loss by
 conduction between the rod and clamp. Then, emissivity was
 increased by applying black electrical tape over the entire
@@ -318,6 +318,20 @@ were used. The code used is available at
 \url{https://github.com/EmceeEscher/Robot-thermo-group}.
 
 \section{High-level simulation}
+SolidWorks was used to produce a CAD file of the rod. Details such as
+ the hole placement and depth were included, but O-rings were excluded.
+ While, SolidWorks was capable of running a steady-state thermal simulation,
+ it seemed inefficient to run a transient-time simulation. Hence,
+ the program ANSYS, was used for this purpose instead.
+ As a starting point, the material properties of brass, pre-loaded
+ into SolidWorks, were selected for the simulation, which set the
+ specific heat, conductivity and density. Furthermore, an emissivity
+ of 0.03 was found online, and the convective coefficient followed
+ a pre-loaded curve in ANSYS, which depended on the difference
+ between the temperature of the rod and ambient temperature,
+ set to 23.6˚C. Finally, heat flow is simulated to one end of the rod
+ with an input value corresponding to the trial we sought to simulate.
+\\\\
 The heat transfer coefficients that were found through the
 optimization program were subsequently inputted to produce a high-level
 simulation of the heating of the rod in ANSYS
@@ -326,48 +340,6 @@ parameters such as initial temperature and density were
 fitted in the optimization software, a custom material was made
 possessing these qualities, and initial conditions were set to
 match the parameters.
-\\\\
-The results of the high-level simulation are comparable to the
-experimental data gathered on June 6th, which used 15.18 V
-to the power resistor and 15.36 W of heating power, and was set
-up vertically, prior to being polished. For thermocouples 2 to
-4, the temperatures after a 1200 second heating period have
-approximately a 3$^{\circ}$C difference to the simulation.
-This demonstrates that the parameters derived from the fitting
-optimization produced plausible (although not completely
-accurate) values.
-
-\begin{figure}[ht]
-  \centering
-  \includegraphics[width=.5\textwidth]{ansysrod}
-  \caption{Initial ANSYS simulation 7.5 V}
-  \label{fig:ansysrod}
-\end{figure}
-
-\begin{figure}[ht]
-  \centering
-  \begin{subfigure}[h]{0.4\textwidth}
-    \includegraphics[width=1\textwidth]{ansys1}
-    %% \caption{ANSYS simulation for thermocouple 1}
-  \end{subfigure}
-  \quad
-  \begin{subfigure}[h]{0.4\textwidth}
-    \includegraphics[width=1\textwidth]{ansys2}
-    %% \caption{ANSYS simulation for thermocouple 2}
-  \end{subfigure}
-  \\
-  \begin{subfigure}[h]{0.4\textwidth}
-    \includegraphics[width=1\textwidth]{ansys3}
-    %% \caption{ANSYS simulation for thermocouple 3}
-  \end{subfigure}
-  \quad
-  \begin{subfigure}[h]{0.4\textwidth}
-    \includegraphics[width=1\textwidth]{ansys4}
-    %% \caption{ANSYS simulation for thermocouple 4}
-  \end{subfigure}
-  \caption{Example ANSYS simulation results for thermocouples 1-4}
-  \label{fig:ansys}
-\end{figure}
 
 \chapter{Results}
 \label{ch:results}
@@ -543,6 +515,49 @@ of the trial.
   \end{tabularx}
 \end{table}
 % TODO
+
+\subsection*{High Level Simulation Results}
+The results of the high-level simulation are comparable to the
+experimental data gathered on June 6th, which used 15.18 V
+to the power resistor and 15.36 W of heating power, and was set
+up vertically, prior to being polished. For thermocouples 2 to
+4, the temperatures after a 1200 second heating period have
+approximately a 3$^{\circ}$C difference to the simulation.
+This demonstrates that the parameters derived from the fitting
+optimization produced plausible (although not completely
+accurate) values.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=.5\textwidth]{ansysrod}
+  \caption{Initial ANSYS simulation 7.5 V}
+  \label{fig:ansysrod}
+\end{figure}
+
+\begin{figure}[ht]
+  \centering
+  \begin{subfigure}[h]{0.4\textwidth}
+    \includegraphics[width=1\textwidth]{ansys1}
+    %% \caption{ANSYS simulation for thermocouple 1}
+  \end{subfigure}
+  \quad
+  \begin{subfigure}[h]{0.4\textwidth}
+    \includegraphics[width=1\textwidth]{ansys2}
+    %% \caption{ANSYS simulation for thermocouple 2}
+  \end{subfigure}
+  \\
+  \begin{subfigure}[h]{0.4\textwidth}
+    \includegraphics[width=1\textwidth]{ansys3}
+    %% \caption{ANSYS simulation for thermocouple 3}
+  \end{subfigure}
+  \quad
+  \begin{subfigure}[h]{0.4\textwidth}
+    \includegraphics[width=1\textwidth]{ansys4}
+    %% \caption{ANSYS simulation for thermocouple 4}
+  \end{subfigure}
+  \caption{Example ANSYS simulation results for thermocouples 1-4}
+  \label{fig:ansys}
+\end{figure}
 
 \section{Explanation of results}
 
