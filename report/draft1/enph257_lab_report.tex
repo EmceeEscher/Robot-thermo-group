@@ -307,9 +307,11 @@ Levenberg-Marquardt algorithm was used to optimize
 thermodynamical parameters by repeatedly varying these parameters,
 running the one-dimensional simulation, and comparing the results to
 experimental data until optimal parameters were achieved.
-This optimization was run for each dataset. For each optimization,
-67 positional points and a time step of .5 seconds were used.
-The code used is available at
+This optimization was run for each dataset.
+Only the data of the two middle thermocouples was used in the optimization,
+as these were generally much better behaved than the edges.
+For each optimization, 67 positional points and a time step of .5 seconds
+were used. The code used is available at
 \url{https://github.com/EmceeEscher/Robot-thermo-group}.
 
 \section{High-level simulation}
@@ -465,8 +467,40 @@ Results of parameter optimizations are documented in Table
 \chapter{Analysis}
 \label{ch:analysis}
 
-\section{Quality of fits}
+\section{Quality of optimization}
 %% TODO
+
+\subsection*{Individual fits}
+Table \ref{tab:optindividual} describes the quality of the individual fits to
+data from which individual thermodynamical parameters were derived.
+The slope and intercept are those of the linear regression and should
+theoretically be 1 and 0 respectively. The R$^2$ is the square of the
+correlation coefficient between the simulation and experimental data; a value
+close to 1 indicates a strong fit. Finally standard error is the standard
+error of the estimates of slope and intercept.
+
+\begin{table}[ht]
+  \caption{Optimization quality: Individual fits}
+  \label{tab:optindividual}
+  \centering
+  \begin{tabularx}{0.75\textwidth}{|X|r|r|r|r|r|}
+    \hline
+    Run & Slope & Intercept & R-squared & Std Err \\
+    \hline
+    May  30 - Run 1   &   0.9998   &   0.0558   &    0.9956   &   0.0010 \\
+    May  30 - Run 2   &   1.0635   & -19.7122   &    0.9193   &   0.0041 \\
+    June 01 - Run 1   &   0.9999   &   0.0251   &    0.9964   &   0.0009 \\
+    June 03 - Run 1   &   1.0000   &   0.0110   &    0.9969   &   0.0005 \\
+    June 03 - Run 2   &   0.9999   &   0.0298   &    0.9973   &   0.0005 \\
+    June 06 - Run 1   &   0.9999   &   0.0257   &    0.9942   &   0.0010 \\
+    June 06 - Run 2   &   1.0056   &  -1.7206   &    0.9912   &   0.0010 \\
+    June 06 - Run 3   &   0.9997   &   0.1019   &    0.9826   &   0.0014 \\
+    June 08 - Run 1   &   0.9371   &  23.7314   &    0.9984   &   0.0005 \\
+    June 08 - Run 3   &   0.9998   &   0.0594   &    0.9971   &   0.0006 \\
+    June 13 - Run 1   &   1.0028   &  -0.8647   &    0.9966   &   0.0006 \\
+    \hline
+  \end{tabularx}
+\end{table}
 
 \section{Explanation of results}
 
