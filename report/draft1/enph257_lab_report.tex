@@ -12,6 +12,8 @@
 \usepackage{amsmath}
 \usepackage{pdflscape} 
 \usepackage{afterpage}
+\usepackage{adjustbox}
+\usepackage{array}
 %% \usepackage{dcolumn}
 %% \usepackage{amsfonts}
 %% \usepackage{hyperref}
@@ -849,6 +851,44 @@ and reducing the number of degrees of freedom the optimization has to
 account for by making more physical measurements.
 
 \appendix
+
+\chapter{Group member roles}
+
+\begin{table}[ht]
+  \caption{Group member roles}
+  \label{tab:roles}
+  \centering
+
+  \newcolumntype{R}[2]{%
+    >{\adjustbox{angle=#1,lap=\width-(#2)}\bgroup}%
+    l%
+    <{\egroup}%
+  }
+  \newcommand*\rot{\multicolumn{1}{R{90}{1em}|}}
+
+  \begin{tabularx}{.75\textwidth}{|X|c|c|c|c|c|c|c|c|c|}
+    \hline
+    Member &
+    \rot{Exp. Design} &
+    \rot{Exp. Construction} &
+    \rot{DAQ Elec.} &
+    \rot{DAQ Code} &
+    \rot{Simulation} &
+    \rot{SolidWorks} &
+    \rot{Data analysis} &
+    \rot{Results synthesis} &
+    \rot{Writing} \\
+    \hline
+    Brunette, Jacob    &    &    &    &    &    &    &    &    &    \\
+    \hline
+    Fullerton, Dilyn   &  0 &  0 &  0 & 50 & 95 &  0 & 20 & 20 & 30 \\
+    \hline
+    Watt, Ryan         &    &    &    &    &    &    &    &    &    \\
+    \hline
+    Yao, Dickson       &    &    &    &    &    &    &    &    &    \\
+    \hline
+  \end{tabularx}
+\end{table}
 
 \chapter{Explicit Method of Finite differencing}
 \label{ch:finitediff}
