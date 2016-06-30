@@ -42,12 +42,73 @@
 
 \chapter{Introduction}
 \label{ch:intro}
+% TODO
 
-\section{Heat transfer: Conduction, convection, and radiation}
-%% TODO theoretical background on heat transfer
+\section{Conduction}
+Heat diffusion due to conduction is given by the heat equation
+\begin{equation}\label{eq:duconduction}
+  \left(\frac{\partial}{\partial t}u(\mathbf{r},t)\right)_{\rm{cond}} =
+  \frac{k}{c\rho}\nabla^2u(\mathbf{r}, t),
+\end{equation}
+where $u(\mathbf{r},t)$ is the temperature at position $\mathbf{r}$
+and time $t$, $k$ is the thermal conductivity, $c$ is the specific
+heat of the material, and $\rho$ is the mass density of the material.
 
-\section{The convection-diffusion equation}
-%% TODO the full equation, along with our approximations and considerations
+\section{Convection}
+Power gain due to convection for a differential surface element
+at position $\mathbf{r}$ may be approximated by
+\begin{equation}\label{eq:convectionpower}
+  P_{\rm{conv}}(\mathbf{r},t) = -k_c\,\delta S(\mathbf{r})
+  \left(u(\mathbf{r},t)-u_{\rm{amb}}\right),
+\end{equation}
+where $k_c$ is the convection coefficient, $\delta S(\mathbf{r})$ is
+the differential surface element at $\mathbf{r}$, and $u_{\rm{amb}}$ is
+the ambient temperature of the surrounding fluid.
+\\\\
+Now temperature change due to power for a differential mass element
+is given by
+\begin{equation}\label{eq:powertodu}
+  P = \frac{\partial}{\partial t}Q = c\,\rho\,\delta V\frac{\partial}{\partial t}u,
+\end{equation}
+so the rate of change of temperature due to convection is given by
+\begin{equation}\label{eq:duconvection}
+  \left(\frac{\partial}{\partial t}u(\mathbf{r},t)\right)_{\rm{conv}} =
+  -\frac{k_c\,\delta S(\mathbf{r})}{c\,\rho\,\delta V(\mathbf{r})}
+  \left(u(\mathbf{r},t)-u_{\rm{amb}}\right).
+\end{equation}
+
+\section{Radiation}
+Power gain due to radiation for a differential surface element at
+position $\mathbf{r}$ is given by Planck's Law to be
+\begin{equation}\label{eq:radiationpower}
+  P_{\rm{rad}}(\mathbf{r},t) = -\epsilon\,\sigma\,\delta S(\mathbf{r})
+  \left(u(\mathbf{r},t)^4-u_{\rm{amb}}^4\right),
+\end{equation}
+where $\epsilon$ is the emissivity and $\sigma$ is the Stefan-Boltzmann
+constant.
+\\\\
+Again from Equation (\ref{eq:powertodu}), we can obtain the contribution
+to the rate of change of temperature due to radiation
+\begin{equation}\label{eq:duradiation}
+  \left(\frac{\partial}{\partial t}u(\mathbf{r},t)\right)_{\rm{rad}} =
+  -\frac{\epsilon\,\sigma\,\delta S(\mathbf{r})}{c\,\rho\,\delta V(\mathbf{r})}
+  \left(u(\mathbf{r},t)^4-u_{\rm{amb}}^4\right).
+\end{equation}
+
+\section{Heat diffusion equation for a cylindrical rod}
+For a one-dimensional cylindrical rod of length $L$ and radius
+$R$, the heat diffusion equation is 
+\begin{equation}\label{eq:heatdiffrod}
+  \frac{\partial}{\partial t}u(x,t) =
+  \frac{1}{c\,\rho}\left(
+  k\frac{\partial^2}{\partial x^2}u(x, t)
+  -k_c\frac{\delta S(x)}{\delta V(x)}
+  \left(u(x,t)-u_{\rm{amb}}\right) 
+  -\epsilon\,\sigma\frac{\delta S(x)}{\delta V(x)}
+  \left(u(x,t)^4-u_{\rm{amb}}^4\right)
+  +\frac{P_{\rm{in}}(x,t)}{\delta V(x)}
+  \right)
+\end{equation}
 
 \chapter{Objective}
 \label{ch:objective}
@@ -80,6 +141,22 @@
 \label{ch:simulation}
 
 \section{One-dimensional explicit-step simulation}
+A one-dimensional explicit-step finite difference program was
+constructed to simulate heat diffusion based on
+Equation (\ref{eq:heatdiffrod}). Based on the formalism in
+Appendix \ref{ch:finitediff}, the explicit finite difference form
+of Equation (\ref{eq:heatdiffrod}) is
+\begin{equation}\label{eq:finitediffrod}
+  \mathbf{u}^{n+1} = \mathbf{u}^n + \delta t \left(
+  \delta\mathbf{u}_{\rm{cond}} +
+  \delta\mathbf{u}_{\rm{conv}} +
+  \delta\mathbf{u}_{\rm{rad}} +
+  \delta\mathbf{u}_{\rm{pow}} \right),
+\end{equation}
+where
+%% \begin{equation*}
+%%   \begin{aligned}
+%%     \delta(u_i^n)_{\rm{cond}} = 
 %% TODO description of python simulation
 
 \subsection{Finite difference equation}
