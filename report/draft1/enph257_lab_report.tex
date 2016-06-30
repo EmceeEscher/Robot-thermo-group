@@ -542,7 +542,6 @@ of the trial.
     \hline
   \end{tabularx}
 \end{table}
-% TODO
 
 \section{Explanation of results}
 
@@ -661,10 +660,42 @@ correct experimental mistakes. This was especially detrimental
 to the convective heat transfer coefficient result,
 which depends the most upon particular experimental setups. 
 
-\subsection*{Simulation}
-%% TODO - me
+\subsection*{Simulation and optimization}
+
+\subsubsection*{Errors in simulation}
+The simulation is subjected to certain errors based on the approximations
+of the finite differencing scheme (see Appendix \ref{ch:finitediff}).
+Error in position (Equation (\ref{eq:expliciterrdx})) is quadratic, and since
+the simulations used $\delta x = 0.005$ m, the error in the spatial
+derivative is on the order of $10^{-5}$ m and thus largely negligible.
+Error in time (Equation (\ref{eq:expliciterrdt})) is linear, and since
+the simulations used $\delta t = 0.25$ s, the error in the time derivative
+is on the order of $0.1$. While the condition for numerical stability
+(Equation (\ref{eq:stability})) is
+satisfied, this certainly could have contributed to the
+error in the final optimized parameter, especially since only a rudimentery
+explicit scheme was used. Perhaps it would have been useful to implement
+an implicit scheme, which is guaranteed to be numerically stable, or a
+a Crank-Nicolson scheme, which is guaranteed to be numerically stable and
+in which the error in time is quadratic.
+Alternatively, a smaller time step could have been used, albeit this would
+have made optimization extremely slow.
+
+\subsubsection*{Errors in optimization}
+Errors in the optimization setup are difficult to quantify, but probably
+quite influencial here. The Levenberg-Marquardt algorithm is guaranteed
+to reach the local minimum within the set boundaries, and having set
+many different starting values with no effect on the results, it is quite
+evident that issues in the final results are not being caused by a failure
+of the algorithm to converge to the global minimum within the boundaries.
+Rather the most likely failure of the optimization procedure was overfitting.
+Namely, since the optimization was allowed to vary so many parameters, the
+individual parameters of interest were decoupled from the final results
+and only their relative values were fixed. This idea is expanded upon in
+\nameref{sec:emiss}.
 
 \subsection*{Emissivity}
+\label{sec:emiss}
 The intent of the experiment was to measure the emissivity of the
 rod in three different states: unaltered condition,
 covered with electrical tape, and buffed to be as shiny as possible.
@@ -819,8 +850,6 @@ account for by making more physical measurements.
 
 \appendix
 
-%% TODO figure out how to site sources (and do it)
-
 \chapter{Explicit Method of Finite differencing}
 \label{ch:finitediff}
 The following is a description of the explicit method of
@@ -867,9 +896,9 @@ boundary conditions. Note that as $\zeta$ approaches $0$,
 $\mathbf{D}$ approaches the identity matrix. Thus $\zeta$ should be
 as small as possible for the best approximtation. The condition for
 stability is
-\begin{equation*}
+\begin{equation}\label{eq:stability}
   0<\zeta<1.
-\end{equation*}
+\end{equation}
 
 \section*{Error in time}
 The explicit method uses a forward difference in time. The
@@ -909,11 +938,5 @@ Thus the approximation for the second spatial derivative is
   \frac{\partial^2}{\partial x^2}u(x,t) + O(\delta x^2).
 \end{equation}
 The error in position due to this approximation is quadratic in $\delta x$.
-
-%% \section{Implicit method}
-%% %% TODO
-
-%% \section{Crank-Nicolson method}
-%% %% TODO
 
 \end{document}
