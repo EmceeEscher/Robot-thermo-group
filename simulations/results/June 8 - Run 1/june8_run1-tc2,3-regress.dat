@@ -1,0 +1,7 @@
+Linear regression results for ../results/June 8 - Run 1/june8_run1-tc2,3-sim.dat
+Slope:                   0.93710314
+Intercept:              23.73143335
+Correlation coeff:       0.99919234
+R-squared:               0.99838534
+P-value:                 0.00000000
+Standard err:            0.00048563

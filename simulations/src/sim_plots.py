@@ -17,6 +17,10 @@ SIM_FPATH = '../results/june8_run1-noTC1,4-sim.dat'
 
 
 def _get_exp_datum(fpath):
+    """For a given data file, returns (time_arr, temp_arr), where
+    time_arr is the one-dimensional ordered array of times and temp_arr
+    is the one-dimensional ordered array of temperatures
+    """
     time_list = list()
     temp_list = list()
     with open(fpath, 'r') as fr:
@@ -31,11 +35,19 @@ def _get_exp_datum(fpath):
     return np.array(time_list), np.array(temp_list)
 
 
-def _get_exp_data(fpaths_list):
+def get_exp_data(fpaths_list):
+    """Makes an ordered list of items (time_arr, temp_arr) for each file
+    in fpaths_list
+    """
     return [_get_exp_datum(fpath) for fpath in fpaths_list]
 
 
-def _get_exp_data_matrix(exp_data):
+def get_exp_data_matrix(exp_data):
+    """Given a list of items (time_arr, temp_arr) such as that from
+    _get_exp_data(), returns the first time array and the 2-dimensional
+    array formed by combining the temp_arrays
+    :param exp_data: list of items (time_arr, temp_arr)
+    """
     time_arr = exp_data[0][0]
     temp_arrays = [dat[1] for dat in exp_data]
     temp_arr = np.vstack(temp_arrays).T
@@ -60,7 +72,12 @@ def _get_sim_params_dict(fpath):
     return params
 
 
-def _get_sim_data(fpath):
+def get_sim_data(fpath):
+    """Parses the given *-sim.dat to retrieve (time_arr, temp_arr), where
+    time_arr is a 1d array of times and temp_arr is a 2d array
+    of temperatures, where each row corresponds to a time and each column
+    corresponds to a time position
+    """
     steps = [0]
     temp_list = list()
     temps_list = list()
@@ -81,7 +98,7 @@ def _get_sim_data(fpath):
 
 
 def plot_experimental_data(fpaths_list):
-    time_temp_arrays = _get_exp_data(fpaths_list)
+    time_temp_arrays = get_exp_data(fpaths_list)
     plots = list()
     for time_temp_arrs, fpath in zip(time_temp_arrays, fpaths_list):
         time_arr, temp_arr = time_temp_arrs
@@ -100,7 +117,7 @@ def plot_experimental_data(fpaths_list):
 
 
 def plot_experimental_data_surface(fpaths_list):
-    time_arr, temp_arr = _get_exp_data_matrix(_get_exp_data(fpaths_list))
+    time_arr, temp_arr = get_exp_data_matrix(get_exp_data(fpaths_list))
     x_arr = np.arange(1, temp_arr.shape[1]+1)
     # make figure
     fig = plt.figure()
@@ -120,7 +137,7 @@ def plot_experimental_data_surface(fpaths_list):
 
 def plot_simulation_data(fpath):
     # get data
-    time_array, temp_array = _get_sim_data(fpath)
+    time_array, temp_array = get_sim_data(fpath)
     plots = list()
     for tc_dat, i in zip(temp_array.T, range(len(temp_array.T))):
         plots.append((time_array, tc_dat, 'Thermocouple {}'.format(i)))
@@ -138,7 +155,7 @@ def plot_simulation_data(fpath):
 
 def plot_simulation_data_surface(fpath):
     # get data
-    time_arr, temp_arr = _get_sim_data(fpath)
+    time_arr, temp_arr = get_sim_data(fpath)
     x_arr = np.arange(1, 1+temp_arr.shape[1])
     # make figure
     fig = plt.figure()
@@ -159,7 +176,7 @@ def plot_simulation_data_surface(fpath):
 
 def plot_experimental_and_simulation_data(sim_fpath, exp_fpaths):
     # get sim data
-    time_array, temp_array = _get_sim_data(sim_fpath)
+    time_array, temp_array = get_sim_data(sim_fpath)
     plots = list()
     for tc_dat, i in zip(temp_array.T, range(len(temp_array.T))):
         plots.append((time_array, tc_dat, 'Thermocouple {} fit'.format(i+1)))
@@ -178,7 +195,7 @@ def plot_experimental_and_simulation_data(sim_fpath, exp_fpaths):
     plt.ylabel('Temperature (K)')
     plt.title('Temperature vs Time Data for Simulation')
     # get exp data
-    time_temp_arrays = _get_exp_data(exp_fpaths)
+    time_temp_arrays = get_exp_data(exp_fpaths)
     plots = list()
     for time_temp_arrs, fpath in zip(time_temp_arrays, exp_fpaths):
         time_arr, temp_arr = time_temp_arrs
@@ -206,9 +223,9 @@ if __name__ == '__main__':
 
     # plot_simulation_data_surface(fpath=SIM_FPATH)
     # plt.show()
-
     plot_experimental_and_simulation_data(
+
         sim_fpath=SIM_FPATH, exp_fpaths=FPATHS_LIST)
     # plt.legend()
-	plt.savefig(FPATH_FIGURE)
+    plt.savefig(FPATH_FIGURE)
     plt.show()
