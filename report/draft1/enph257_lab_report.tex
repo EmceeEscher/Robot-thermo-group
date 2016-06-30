@@ -68,12 +68,12 @@ the ambient temperature of the surrounding fluid.
 Now temperature change due to power for a differential mass element
 is given by
 \begin{equation}\label{eq:powertodu}
-  P = \frac{\partial}{\partial t}Q = c\,\rho\,\delta V\frac{\partial}{\partial t}u,
+  P = \frac{\partial}{\partial t}Q = c\rho\,\delta V\frac{\partial}{\partial t}u,
 \end{equation}
 so the rate of change of temperature due to convection is given by
 \begin{equation}\label{eq:duconvection}
   \left(\frac{\partial}{\partial t}u(\mathbf{r},t)\right)_{\rm{conv}} =
-  -\frac{k_c\,\delta S(\mathbf{r})}{c\,\rho\,\delta V(\mathbf{r})}
+  -\frac{k_c\,\delta S(\mathbf{r})}{c\rho\,\delta V(\mathbf{r})}
   \left(u(\mathbf{r},t)-u_{\rm{amb}}\right).
 \end{equation}
 
@@ -91,7 +91,7 @@ Again from Equation (\ref{eq:powertodu}), we can obtain the contribution
 to the rate of change of temperature due to radiation
 \begin{equation}\label{eq:duradiation}
   \left(\frac{\partial}{\partial t}u(\mathbf{r},t)\right)_{\rm{rad}} =
-  -\frac{\epsilon\,\sigma\,\delta S(\mathbf{r})}{c\,\rho\,\delta V(\mathbf{r})}
+  -\frac{\epsilon\,\sigma\,\delta S(\mathbf{r})}{c\rho\,\delta V(\mathbf{r})}
   \left(u(\mathbf{r},t)^4-u_{\rm{amb}}^4\right).
 \end{equation}
 
@@ -100,15 +100,16 @@ For a one-dimensional cylindrical rod of length $L$ and radius
 $R$, the heat diffusion equation is 
 \begin{equation}\label{eq:heatdiffrod}
   \frac{\partial}{\partial t}u(x,t) =
-  \frac{1}{c\,\rho}\left(
+  \frac{1}{c\rho}\left(
   k\frac{\partial^2}{\partial x^2}u(x, t)
   -k_c\frac{\delta S(x)}{\delta V(x)}
   \left(u(x,t)-u_{\rm{amb}}\right) 
   -\epsilon\,\sigma\frac{\delta S(x)}{\delta V(x)}
   \left(u(x,t)^4-u_{\rm{amb}}^4\right)
   +\frac{P_{\rm{in}}(x,t)}{\delta V(x)}
-  \right)
+  \right),
 \end{equation}
+where $P_{\rm{in}}$ is the power input function.
 
 \chapter{Objective}
 \label{ch:objective}
@@ -141,32 +142,74 @@ $R$, the heat diffusion equation is
 \label{ch:simulation}
 
 \section{One-dimensional explicit-step simulation}
-A one-dimensional explicit-step finite difference program was
-constructed to simulate heat diffusion based on
-Equation (\ref{eq:heatdiffrod}). Based on the formalism in
-Appendix \ref{ch:finitediff}, the explicit finite difference form
+
+The following is the finite difference equation
+to simulate heat diffusion based on
+Equation (\ref{eq:heatdiffrod}) for a cylindrical rod of
+length $L$ and radius $R$. Based on the formalism in
+Appendix \ref{ch:finitediff} and supposing x points
+$\{x_i:i\in[0,X]\}$ and t points $\{t_n:n\in[0,T]\}$,
+the explicit finite difference form
 of Equation (\ref{eq:heatdiffrod}) is
 \begin{equation}\label{eq:finitediffrod}
   \mathbf{u}^{n+1} = \mathbf{u}^n + \delta t \left(
-  \delta\mathbf{u}_{\rm{cond}} +
-  \delta\mathbf{u}_{\rm{conv}} +
-  \delta\mathbf{u}_{\rm{rad}} +
-  \delta\mathbf{u}_{\rm{pow}} \right),
+  \delta\mathbf{u}_{\rm{cond}}^n +
+  \delta\mathbf{u}_{\rm{conv}}^n +
+  \delta\mathbf{u}_{\rm{rad}}^n +
+  \delta\mathbf{u}_{\rm{pow}}^n \right),
 \end{equation}
 where
-%% \begin{equation*}
-%%   \begin{aligned}
-%%     \delta(u_i^n)_{\rm{cond}} = 
-%% TODO description of python simulation
-
-\subsection{Finite difference equation}
-%% TODO
-
-\subsection{Implementation}
-%% TODO
+\begin{align*}
+    \left(\delta \mathbf{u}_{\rm{cond}}^n\right)_i &=
+    \frac{k}{c\rho}\cdot\frac{1}{\delta x^2}\cdot
+    \begin{cases}
+      \left(u_1^n-u_0^n\right), & \quad i=0\\
+      \left(u_{X-1}^n-u_X^n\right), & \quad i=X\\
+      \left(u_{i-1}^n-2u_i^n+u_{i+1}^n\right), & \quad \text{else}\\
+    \end{cases}
+    \\
+    \left(\delta \mathbf{u}_{\rm{conv}}^n\right)_i &=
+    -\frac{k_c}{c\rho}\cdot\frac{\delta S_i}{\delta V_i}
+    \left(u_i^n-u_{\rm{amb}}\right)
+    \\
+    \left(\delta \mathbf{u}_{\rm{rad}}^n\right)_i &=
+    -\frac{\epsilon\,\sigma}{c\rho}\cdot\frac{\delta S_i}{\delta V_i}
+    \left((u_i^n)^4-u_{\rm{amb}^4}\right)
+    \\
+    \left(\delta \mathbf{u}_{\rm{pow}}^n\right)_i &=
+    \frac{P_i^n}{c\rho\,\delta V_i}
+\end{align*}
+The differential volume at any point $x_i$ is the same
+\begin{equation*}
+  \delta V_i = \pi R^2\,\delta x.
+\end{equation*}
+The exposed surface is different at the ends, however, with
+\begin{equation*}
+  \delta S_i = 2\pi R\,\delta x +
+  \begin{cases}
+    \pi R^2, & \quad i=0 \text{ or } i=X\\
+    0,       & \quad \text{else}\\
+  \end{cases}
+\end{equation*}
+Finally power input occurs only at one end. It is assumed that
+power is a constant $P_1$ during heating and $P_2$ during cooling.
+Heating occurs until $t_{\rm{stop}}$ at which point cooling begins.
+Thus we have
+\begin{equation*}
+  P_i^n =
+  \begin{cases}
+    P_1, & \quad t_0 < t_n < t_{\rm{stop}}\\
+    P_2, & \quad t_{\rm{stop}} \leq t_n \leq t_T\\
+  \end{cases}
+\end{equation*}
 
 \section{Optimization of one-dimensional simulation}
-%% TODO numerical optimization of simulation parameters
+A numerical optimization routine was used to optimize
+thermodynamical parameters by repeatedly varying these parameters,
+running the one-dimensional simulation, and comparing the results to
+experimental data until optimal parameters were achieved.
+This optimization was run for each dataset. For each optimization,
+67 positional points and a time step of .5 seconds were used.
 
 \section{High-level simulation}
 %% TODO SolidWorks simulation
