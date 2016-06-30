@@ -211,7 +211,7 @@ found for each thermocouple using linear regression.
   \label{fig:calib}
 \end{figure}
 
-\section{Data aquisition}
+\section{Data acquisition}
 Experiments started with collecting the data that determined the
 heat transfer coefficients as controlled variables. For the
 control group, the rod was set up hanging vertically, clamped
@@ -490,7 +490,7 @@ Based on the average values determined in Table \ref{tab:runsdata},
 simulations were run for each trial where the global average values
 were used for ${\epsilon}$, ${\rho}$, ${c}$, and ${k}$.
 Average values for the particular geometry were used for $k_c$. And
-specific values were usedfor ${P_1}$, ${P_2}$, ${u_0}$,
+specific values were used for ${P_1}$, ${P_2}$, ${u_0}$,
 and ${u_{\rm{amb}}}$, as these are heavily dependent on the particulars
 of the trial.
 
@@ -690,7 +690,7 @@ the simulations used $\delta t = 0.25$ s, the error in the time derivative
 is on the order of $0.1$. While the condition for numerical stability
 (Equation (\ref{eq:stability})) is
 satisfied, this certainly could have contributed to the
-error in the final optimized parameter, especially since only a rudimentery
+error in the final optimized parameter, especially since only a rudimentary
 explicit scheme was used. Perhaps it would have been useful to implement
 an implicit scheme, which is guaranteed to be numerically stable, or a
 a Crank-Nicolson scheme, which is guaranteed to be numerically stable and
@@ -700,12 +700,12 @@ have made optimization extremely slow.
 
 \subsubsection*{Errors in optimization}
 Errors in the optimization setup are difficult to quantify, but probably
-quite influencial here. The Levenberg-Marquardt algorithm is guaranteed
+quite influential here. The Levenberg-Marquardt algorithm is guaranteed
 to reach the local minimum within the set boundaries, and having set
 many different starting values with no effect on the results, it is quite
 evident that issues in the final results are not being caused by a failure
 of the algorithm to converge to the global minimum within the boundaries.
-Rather the most likely failure of the optimization procedure was overfitting.
+Rather the most likely failure of the optimization procedure was over-fitting.
 Namely, since the optimization was allowed to vary so many parameters, the
 individual parameters of interest were decoupled from the final results
 and only their relative values were fixed. This idea is expanded upon in
@@ -727,7 +727,7 @@ the starting value we gave the optimization program tended to have
 more of an influence.
 \\\\
 We believe that these aberrant results were due to either the design
-of the model or overfitting. In either case, the effect of the
+of the model or over-fitting. In either case, the effect of the
 parameter had a negligible effect on the quality of the optimization,
 resulting in it consistently being fully maximized or minimized.
 In the eyes of the program the terms $\sigma(u(x,t)^4-u_{\rm{amb}}^4)$
@@ -850,11 +850,11 @@ We obtained the following numerical results:
   \end{itemize}
 \end{description}
 
-Overall, the obtained data was severly inconsistent and uncertain,
+Overall, the obtained data was severely inconsistent and uncertain,
 and it is difficult to draw meaningful conclusions from our
 numerical results. Indeed, for many of the results, uncertainties
 could not even be assigned,
-as rigrously establishing bounds would be implausible.
+as rigorously establishing bounds would be implausible.
 \\\\
 It is suspected that this was due to a number of factors, most
 notably noise in the directly-measured temperature data and
@@ -885,7 +885,7 @@ account for by making more physical measurements.
     \hline
     Member &
     \rot{Exp. Design} &
-    \rot{Exp. Construction} &
+    \rot{Exp. Construction  } &
     \rot{DAQ Elec.} &
     \rot{DAQ Code} &
     \rot{Simulation} &
@@ -894,13 +894,13 @@ account for by making more physical measurements.
     \rot{Results synthesis} &
     \rot{Writing} \\
     \hline
-    Brunette, Jacob    &    &    &    &    &    &    &    &    &    \\
+    Brunette, Jacob    & 25 & 45 & 26 &  7 &  0 &  0 & 40 & 25 & 25 \\
     \hline
-    Fullerton, Dilyn   &  0 &  0 &  0 & 50 & 95 &  0 & 20 & 20 & 30 \\
+    Fullerton, Dilyn   & 25 & 10 &  0 & 79 & 95 &  0 & 20 & 25 & 25 \\
     \hline
-    Watt, Ryan         &    &    &    &    &    &    &    &    &    \\
+    Watt, Ryan         & 25 & 45 & 37 &  7 &  5 &  0 & 20 & 25 & 25 \\
     \hline
-    Yao, Dickson       &    &    &    &    &    &    &    &    &    \\
+    Yao, Dickson       & 25 &  0 & 37 &  7 &  0 &100 & 20 & 25 & 25 \\
     \hline
   \end{tabularx}
 \end{table}
@@ -949,7 +949,7 @@ where $\mathbf{D}$ is the matrix defined by
 The top and bottom rows ($i=0$ and $i=X$) are determined from
 boundary conditions. Note that as $\zeta$ approaches $0$,
 $\mathbf{D}$ approaches the identity matrix. Thus $\zeta$ should be
-as small as possible for the best approximtation. The condition for
+as small as possible for the best approximation. The condition for
 stability is
 \begin{equation}\label{eq:stability}
   0<\zeta<1.
