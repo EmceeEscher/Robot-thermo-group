@@ -14,17 +14,17 @@ from diffusion_1d_v3 import explicit_diffusion_simple
 
 # input files
 DATA_FPATHS = [
-    '../../data/temperature data/May 27/Run2_tc2.dat',
-    '../../data/temperature data/May 27/Run2_tc3.dat',
+    '../../data/temperature data/June 8/Run1_tc2.dat',
+    '../../data/temperature data/June 8/Run1_tc3.dat',
 ]
 # output files
-OPT_FPATH = '../results/May 27 - Run 2/may27_run2-tc2,3-params.dat'
-SIM_FPATH = '../results/May 27 - Run 2/may27_run2-tc2,3-sim.dat'
+OPT_FPATH = '../results/june8_run1-tc2,3-params.dat'
+SIM_FPATH = '../results/june8_run1-tc2,3-sim.dat'
 
 
 # set these two values based on run
 VOLTAGE = 15.18
-STOP_TIME = 900.
+STOP_TIME = 1085.
 
 EXP_X_ARRAY = np.array([
     # .09695,
@@ -71,8 +71,8 @@ PARAMS_GUESS_DICT = dict(
     u_0=U_0,
     u_amb=U_AMB,
     k=THERMAL_CONDUCTIVITY,
-    c=SPECIFIC_HEAT,
-    rho=MASS_DENSITY,
+    # c=SPECIFIC_HEAT,
+    # rho=MASS_DENSITY,
     k_c=CONVECTION_COEFF,
     emiss=EMISSIVITY,
     power_heat=POWER_HEAT,
@@ -84,10 +84,11 @@ PARAMS_BOUNDS_DICT = dict(
     u_0=(.95*U_0, 1.05*U_0),
     u_amb=(.9*U_AMB, 1.1*U_AMB),
     k=(.8*THERMAL_CONDUCTIVITY, 1.2*THERMAL_CONDUCTIVITY),
-    c=(.95*SPECIFIC_HEAT, 1.05*SPECIFIC_HEAT),
-    rho=(.95*MASS_DENSITY, 1.05*MASS_DENSITY),
+    # c=(.95*SPECIFIC_HEAT, 1.05*SPECIFIC_HEAT),
+    # rho=(.95*MASS_DENSITY, 1.05*MASS_DENSITY),
     k_c=(0., 1000.),
-    emiss=(0., 1.),
+    # emiss=(0., 1.),
+    emiss=(0., np.inf),
     power_heat=(0., POWER_HEAT),
     power_cool=(-1000., 1000.)
     # stop_time=(STOP_TIME-10, STOP_TIME+10),
