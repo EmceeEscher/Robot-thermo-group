@@ -11,3 +11,4 @@ src/simulations/*.dat
 /report/*/*.aux
 /report/*/*.out
 /report/*/*.toc
+/report/submitted

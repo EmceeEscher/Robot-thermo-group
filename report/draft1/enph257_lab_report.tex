@@ -312,11 +312,13 @@ Levenberg-Marquardt algorithm was used to optimize
 thermodynamical parameters by repeatedly varying these parameters,
 running the one-dimensional simulation, and comparing the results to
 experimental data until optimal parameters were achieved.
+\\\\
 This optimization was run for each dataset.
-Only the data of the two middle thermocouples was used in the optimization,
-as these were generally much better behaved than the edges.
 For each optimization, 67 positional points and a time step of .5 seconds
-were used. The code used is available at
+were used.
+Generally, only the data of the two middle thermocouples was used in the
+optimization, as these were generally much better behaved than the edges.
+The code used is available at
 \url{https://github.com/EmceeEscher/Robot-thermo-group}.
 
 \section{High-level simulation}
@@ -484,6 +486,13 @@ error of the estimates of slope and intercept.
     \hline
   \end{tabularx}
 \end{table}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.75\textwidth]{opt23}
+  \caption{Example individual optimization curve: June 8 - Run 1}
+  \label{fig:opt}
+\end{figure}
 
 \subsection*{Average fits}
 Based on the average values determined in Table \ref{tab:runsdata},

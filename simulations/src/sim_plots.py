@@ -4,16 +4,17 @@ from matplotlib import pyplot as plt, colors, cm
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 
-FPATH_FIGURE = './figure.pdf'
+FPATH_FIGURE = '../figures/june8_run1-fig.pdf'
 
 FPATHS_LIST = [
-    # '../../data/temperature data/June 8/Run1_tc1_v2.dat',
-    '../../data/temperature data/June 8/Run1_tc2_v2.dat',
-    '../../data/temperature data/June 8/Run1_tc3_v2.dat',
-    # '../../data/temperature data/June 8/Run1_tc4_v2.dat',
+    '../../data/temperature data/June 8/Run1_tc1.dat',
+    '../../data/temperature data/June 8/Run1_tc2.dat',
+    '../../data/temperature data/June 8/Run1_tc3.dat',
+    '../../data/temperature data/June 8/Run1_tc4.dat',
 ]
 
-SIM_FPATH = '../results/june8_run1-noTC1,4-sim.dat'
+# SIM_FPATH = '../results/June 8 - Run 1/june8_run1-tc2,3-sim.dat'
+SIM_FPATH = '../results/june8_run1-sim.dat'
 
 
 def _get_exp_datum(fpath):
@@ -224,7 +225,6 @@ if __name__ == '__main__':
     # plot_simulation_data_surface(fpath=SIM_FPATH)
     # plt.show()
     plot_experimental_and_simulation_data(
-
         sim_fpath=SIM_FPATH, exp_fpaths=FPATHS_LIST)
     # plt.legend()
     plt.savefig(FPATH_FIGURE)
