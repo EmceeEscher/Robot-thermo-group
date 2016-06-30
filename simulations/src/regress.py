@@ -3,11 +3,11 @@ from scipy.stats import linregress
 
 
 EXP_FPATHS = [
-    '../../data/temperature data/June 15/Run2_tc2.dat',
-    '../../data/temperature data/June 15/Run2_tc3.dat',
+    '../../data/temperature data/June 3/Run2_tc2_June3.dat',
+    '../../data/temperature data/June 3/Run2_tc3_June3.dat',
 ]
-SIM_FPATH = '../results/June 15 - Run 2/june15_run2-tc2,3-sim.dat'
-REG_FPATH = '../results/June 15 - Run 2/june15_run2-tc2,3-regress.dat'
+SIM_FPATH = '../results/June 3 - Run 2/june3_run2-tc2,3-AVG-sim.dat'
+REG_FPATH = '../results/June 3 - Run 2/june3_run2-tc2,3-AVG-regress.dat'
 
 
 def compute_regression(exp_fpaths_list, sim_fpath):

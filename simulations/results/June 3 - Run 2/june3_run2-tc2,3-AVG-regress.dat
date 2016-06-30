@@ -1,0 +1,7 @@
+Linear regression results for ../results/June 3 - Run 2/june3_run2-tc2,3-AVG-sim.dat
+Slope:                   0.28000689
+Intercept:             217.04518700
+Correlation coeff:       0.79819220
+R-squared:               0.63711079
+P-value:                 0.00000000
+Standard err:            0.00218897
