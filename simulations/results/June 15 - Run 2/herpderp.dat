@@ -1,0 +1,35 @@
+# 2016-06-29 17:48:20.171248
+
+# Simulation of heat flow through 1-dimensional rod
+# 
+# Dimensions
+#   dim x =                     67
+#   min x =                     0.0
+#   max x =                     0.33
+# 
+# Thermodynamical parameters
+#   initial temp =              303.0
+#   power2 =                    -10.0
+#   mass density =              8730.0
+#   power =                     7.4906666659176
+#   specific heat =             380.0
+#   stop time =                 7200.0
+#   u amb =                     297.0
+#   emissivity =                0.8
+#   perimeter =                 0.0698061887627652
+#   convection coeff =          1.95
+#   thermal conductivity =      125.0
+#   area =                      0.0003877733785771607
+# 
+# Boundary conditions:
+#   method =                    Simple heat-diffusion BC
+#   x0 order =                  None
+#   x1 order =                  None
+# 
+# Finite differencing
+#   time step =                 0.25
+#   method =                    Explicit for simple convection-diffusion equation
+# 
+Step= 0
+      34      303.00000000
+      48      303.00000000
