@@ -34,5 +34,5 @@ See [`./examples`](./examples).
 
 ### See also
 ---
-* Arduino language: (https://www.arduino.cc/en/Reference/HomePage)
-* TINAH board: (http://projectlab.engphys.ubc.ca/enph-253-2016/tinah-2016/)
+* Arduino language: https://www.arduino.cc/en/Reference/HomePage
+* TINAH board: http://projectlab.engphys.ubc.ca/enph-253-2016/tinah-2016/
