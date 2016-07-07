@@ -133,7 +133,7 @@ void TapeFollow::loop() {
     this->timeStep = this->timeStep + 1;
 
     // adjust motor speed
-    tinah.motor.speed(this->motorPinL, -this->motorSpeed + control);
-    tinah.motor.speed(this->motorPinR, this->motorSpeed + control);
+    this->tinah.motor.speed(this->motorPinL, -this->motorSpeed + control);
+    this->tinah.motor.speed(this->motorPinR, this->motorSpeed + control);
     this->lastError = this->error;
 }
