@@ -12,3 +12,4 @@ src/simulations/*.dat
 /report/*/*.out
 /report/*/*.toc
 /report/submitted
+enph253/*/*.py
