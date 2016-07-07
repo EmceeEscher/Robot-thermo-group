@@ -20,7 +20,7 @@ The following should be done to prepare for usage:
 4. Clone this repository.  
 
    ```bash
-   git clone https://github.com/EmceeEscher/Robot-thermo-group.git
+   git clone 'https://github.com/EmceeEscher/Robot-thermo-group.git'
    ```
 
 5. Replace the existing phys253 library at
@@ -31,3 +31,8 @@ with the improved one
 ### Examples
 ---
 See [`./examples`](./examples).
+
+### See also
+---
+* Arduino language: (https://www.arduino.cc/en/Reference/HomePage)
+* TINAH board: (http://projectlab.engphys.ubc.ca/enph-253-2016/tinah-2016/)
