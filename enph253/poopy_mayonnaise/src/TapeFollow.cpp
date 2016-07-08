@@ -51,10 +51,8 @@ TapeFollow::TapeFollow(Tinah &t)
     // set instance arrays
     this->intersections[0] = 0;
     this->intersections[1] = 0;
-    this->activePins[0] = 0;
-    this->activePins[1] = 1;
-    this->activePins[2] = 2;
-    this->activePins[3] = 3;
+    for (int i = 0; i < 4; ++i)
+	this->activePins[i] = i;
 }
 
 // Main loop function
@@ -64,10 +62,8 @@ void TapeFollow::loop() {
     this->dervGain = knob(this->dervGainKnob) / 50;
 
     // get readings from tape sensors
-    this->pinReadings[0] = analogRead(this->activePins[0]);
-    this->pinReadings[1] = analogRead(this->activePins[1]);
-    this->pinReadings[2] = analogRead(this->activePins[2]);
-    this->pinReadings[3] = analogRead(this->activePins[3]);
+    for (int i = 0; i < 4; ++i)
+	this->pinReadings[i] = analogRead(this->activePins[i]);
 
     double mainL = this->pinReadings[1];
     double mainR = this->pinReadings[2];
