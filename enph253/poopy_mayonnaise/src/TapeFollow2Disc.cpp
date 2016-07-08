@@ -97,9 +97,9 @@ void TapeFollow2Disc::loop() {
 
     // adjust motor speed
     this->tinah.motor.speed(this->motorPinL,
-			   int(-this->motorSpeed + this->control));
+			   static_cast<int>(-this->motorSpeed + this->control));
     this->tinah.motor.speed(this->motorPinR,
-			   int(this->motorSpeed + this->control));
+			   static_cast<int>(this->motorSpeed + this->control));
 
     // update counters
     if (this->count == this->reset)

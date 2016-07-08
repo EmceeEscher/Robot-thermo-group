@@ -105,11 +105,11 @@ void TapeFollow::loop() {
     // decide which direction to go in
     // turnDirection is either 0 (left), 1 (right), or 2 (straight)
     if (this->intersections[0] && this->intersections[1])
-	this->turnDirection = int(random(3));
+	this->turnDirection = static_cast<int>(random(3));
     else if (this->intersections[0])
-	this->turnDirection = 2 * int(random(2));
+	this->turnDirection = 2 * static_cast<int>(random(2));
     else if (this->intersections[1])
-	this->turnDirection = 1 + int(random(2));
+	this->turnDirection = 1 + static_cast<int>(random(2));
     else
 	this->turnDirection = 2;
 
@@ -120,10 +120,12 @@ void TapeFollow::loop() {
 	this->error = this->largeError;
     
     // get net effect of proportional and derivative gains
-    this->prop = int(propGain * this->error);
-    this->derv = int(float(dervGain) *
-		    float(this->error - this->recentError) /
-		    float(this->prevTime - this->timeStep));
+    this->prop = static_cast<int>(propGain * this->error);
+    this->derv = static_cast<int>(static_cast<float>(dervGain) *
+				 static_cast<float>(this->error -
+						    this->recentError)
+				 / static_cast<float>(this->prevTime -
+						      this->timeStep));
     this->control = -(this->prop + this->derv);
 
     // increase counters
