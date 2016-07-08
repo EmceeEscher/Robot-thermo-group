@@ -86,6 +86,8 @@ void TapeFollow2Disc::loop() {
 	this->timeNext = 1;
     }
 
+    // TODO: Intersection detection
+
     // get effect of proportional and derivative gains
     this->ctrlPropl = this->gainPropl * this->errorNext;
     this->ctrlDeriv = this->gainDeriv *
