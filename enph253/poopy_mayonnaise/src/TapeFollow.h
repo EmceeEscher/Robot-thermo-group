@@ -23,9 +23,9 @@ class TapeFollow {
     const int motorPinL;
     const int motorPinR;
     Tinah tinah;
+    int count;
     int turnDirection;
     int direction;
-    int count;
     int prevTime;
     int timeStep;
     int error;
@@ -34,11 +34,6 @@ class TapeFollow {
     int intersections[2];
     int activePins[4];
     double pinReadings[4];
-    int propGain;
-    int dervGain;
-    int prop;
-    int derv;
-    int control;
 };
 
 #endif // TAPE_FOLLOW_H

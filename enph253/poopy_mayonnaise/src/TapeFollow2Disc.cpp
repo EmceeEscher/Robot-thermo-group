@@ -47,6 +47,11 @@ TapeFollow2Disc::TapeFollow2Disc(Tinah &t)
 
 // main loop function
 void TapeFollow2Disc::loop() {
+    // declare static variables (runs only once)
+    double ctrlPropl(0.0);
+    double ctrlDeriv(0.0);
+    int control(0);
+    
     // get readings from tape sensors
     this->readings[0] = analogRead(this->activePins[0]);
     this->readings[1] = analogRead(this->activePins[1]);
@@ -89,17 +94,15 @@ void TapeFollow2Disc::loop() {
     // TODO: Intersection detection
 
     // get effect of proportional and derivative gains
-    this->ctrlPropl = this->gainPropl * this->errorNext;
-    this->ctrlDeriv = this->gainDeriv *
+    ctrlPropl = this->gainPropl * this->errorNext;
+    ctrlDeriv = this->gainDeriv *
 	(this->errorNext - this->errorRecent) /
 	(this->timeNext - this->timePrev);
-    this->control = -(this->ctrlPropl + this->ctrlDeriv);
+    control = -static_cast<int>(ctrlPropl + ctrlDeriv);
 
     // adjust motor speed
-    this->tinah.motor.speed(this->motorPinL,
-			   static_cast<int>(-this->motorSpeed + this->control));
-    this->tinah.motor.speed(this->motorPinR,
-			   static_cast<int>(this->motorSpeed + this->control));
+    this->tinah.motor.speed(this->motorPinL, (-this->motorSpeed + control));
+    this->tinah.motor.speed(this->motorPinR, (this->motorSpeed + control));
 
     // update counters
     if (this->count == this->reset)

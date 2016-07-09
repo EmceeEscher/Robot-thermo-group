@@ -10,7 +10,12 @@ void setup() {
     Serial.begin(9600);
     randomSeed(analogRead(0));
     tinah.LCD.clear();
-    tinah.LCD.print("Hello world");
+    tinah.LCD.print("POOPY MAYONNAISE");
+    delay(500);
+    tinah.LCD.clear();
+    tinah.LCD.print("It's got that\nnice ring to it.");
+    delay(500);
+    tinah.LCD.clear();
 }
 
 void loop() {
