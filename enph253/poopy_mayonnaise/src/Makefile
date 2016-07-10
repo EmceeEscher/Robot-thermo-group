@@ -1,7 +1,8 @@
 # settings for TINAH board
-BOARDS_TXT = /Users/Alpha/Documents/Arduino/hardware/TINAH/avr/boards.txt
-ARDUINO_CORE_PATH = /Users/Alpha/Documents/Arduino/hardware/TINAH/avr/cores/Arduino
-ARDUINO_VAR_PATH = /Users/Alpha/Documents/Arduino/hardware/TINAH/avr/variants
+TINAH_DIR = /Users/Alpha/Documents/Arduino/hardware/TINAH/avr
+BOARDS_TXT = $(TINAH_DIR)/boards.txt
+ARDUINO_CORE_PATH = $(TINAH_DIR)/cores/Arduino
+ARDUINO_VAR_PATH = $(TINAH_DIR)/variants
 BOARD_TAG = TINAH
 AVRDUDE_MCU = atmega128
 
