@@ -5,17 +5,17 @@
 #include <math.h>
 
 // constants
-const float EPSILON = 0.01;
-const float ERROR_D2F = 1.0;
-const float ERROR_D1F = 3.0;
-const float ERROR_D0F = pow(0.5*ERROR_D1F, 2) - EPSILON*ERROR_D1F;
-const float PROPL_GAIN = 10.0;
-const float DERIV_GAIN = 10.0;
-const float THRESHOLD = 45.0;
-const int MOTOR_PIN_L = 0;      // left motor pin
-const int MOTOR_PIN_R = 3;      // right motor pin
-const int RESET_PERIOD = 30;
-const int MOTOR_SPEED = 200;
+const float EPSILON(0.01);
+const float ERROR_D2F(1.0);
+const float ERROR_D1F(3.0);
+const float ERROR_D0F(pow(0.5*ERROR_D1F, 2) - EPSILON*ERROR_D1F);
+const float PROPL_GAIN(10.0);
+const float DERIV_GAIN(10.0);
+const float THRESHOLD(45.0);
+const int MOTOR_PIN_L(0);      // left motor pin
+const int MOTOR_PIN_R(3);      // right motor pin
+const int RESET_PERIOD(30);
+const int MOTOR_SPEED(200);
 
 // object constructor
 TapeFollow2Disc::TapeFollow2Disc(Tinah &t)
