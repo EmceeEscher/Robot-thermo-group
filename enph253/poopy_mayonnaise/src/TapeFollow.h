@@ -22,7 +22,7 @@ class TapeFollow {
     const int dervGainKnob;
     const int motorPinL;
     const int motorPinR;
-    Tinah tinah;
+    Tinah &tinah;
     int count;
     int turnDirection;
     int direction;
