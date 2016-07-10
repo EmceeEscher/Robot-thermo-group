@@ -3,7 +3,7 @@ Code for controlling competition robot.
 
 ### Dependencies
 ---
-* Improved [TINAH phys253 library](./lib)
+* Improved [TINAH library](./lib)
 * Arduino 1.6.2 or newer
 
 ### Setup
