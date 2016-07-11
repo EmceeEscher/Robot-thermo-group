@@ -16,18 +16,18 @@ class TapeFollow {
     TapeFollow(Tinah &t);
     void loop();
  private:
-    const float smallError;
-    const float largeError;
-    const int motorSpeed;
-    const int resetPeriod;
-    const int propGainKnob;
-    const int dervGainKnob;
-    const int motorPinL;
-    const int motorPinR;
-    Tinah &tinah;
-    int count;
-    int turnDirection;
-    int direction;
+    const float smallError;  // error for when 1 sensor is over tape
+    const float largeError;  // error if both sensors are off tape
+    const int motorSpeed;    // forward velocity of the robot
+    const int resetPeriod;   // number of steps to resent `count`
+    const int propGainKnob;  // knob for proportional gain
+    const int dervGainKnob;  // knob for derivative gain
+    const int motorPinL;     // pin for left motor
+    const int motorPinR;     // pin for right motor
+    Tinah &tinah;            // object that stores LCD, RCServo objects, etc
+    int count;               // number of steps since last reset
+    int turnDirection;       // direction robot is trying to turn
+    int direction;           // move direction
     int prevTime;
     int timeStep;
     int error;
@@ -35,7 +35,7 @@ class TapeFollow {
     float recentError;
     int intersections[2];
     int activePins[4];
-    double pinReadings[4];
+    int pinReadings[4];
 };
 
 //#pragma clang diagnostic pop
