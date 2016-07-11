@@ -97,15 +97,15 @@ void TapeFollow::loop() {
         this->timeStep = 1;
     }
 
-    // // record intersection if seen
-    // if ((intersectionL == OVER_TAPE) && (this->lastError <= 0))
-    //     this->intersections[0] = 1;
-    // else if ((intersectionR == OVER_TAPE) && (this->lastError >= 0))
-    //     this->intersections[1] = 1;
-    // else {
-    //     this->intersections[0] = 0;
-    //     this->intersections[1] = 0;
-    // }
+    // record intersection if seen
+    if (intersectionL && (this->lastError <= 0))
+        this->intersections[0] = true;
+    else if (intersectionR && (this->lastError >= 0))
+        this->intersections[1] = true;
+    else if ((!(intersectionL)) && (this->intersections[0]))
+        0;  // TODO: register left intersection
+    else if ((!(intersectionR)) && (this->intersections[1]))
+        0;  // TODO: register right intersection
 
     // // decide which direction to go in
     // // turnDirection is either 0 (left), 1 (right), or 2 (straight)
