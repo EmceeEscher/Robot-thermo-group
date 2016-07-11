@@ -1,10 +1,10 @@
 ///
-// TapeFollow.h
+// TapeFollow.hpp
 //
 // Main tape following loop function
 //
-#ifndef TAPE_FOLLOW_H
-#define TAPE_FOLLOW_H
+#ifndef TAPE_FOLLOW_HPP
+#define TAPE_FOLLOW_HPP
 
 //#pragma clang diagnostic push
 #pragma ide diagnostic ignored "CannotResolve"
@@ -40,4 +40,4 @@ class TapeFollow {
 
 //#pragma clang diagnostic pop
 
-#endif // TAPE_FOLLOW_H
+#endif // TAPE_FOLLOW_HPP

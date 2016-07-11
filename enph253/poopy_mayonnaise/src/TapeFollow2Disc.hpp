@@ -1,5 +1,5 @@
 ///
-// TapeFollow2Disc.h
+// TapeFollow2Disc.hpp
 //
 // Modified discrete threshold tape-following algorithm
 //

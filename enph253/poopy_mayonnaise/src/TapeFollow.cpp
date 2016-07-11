@@ -8,14 +8,8 @@
 
 // constants
 // sensors
-const int TAPE_SENSOR_FOL(0);  // front, outside, left
-const int TAPE_SENSOR_FIL(1);  // front, inside,  left
-const int TAPE_SENSOR_FIR(2);  // front, inside,  right
-const int TAPE_SENSOR_FOR(3);  // front, outside, right
-const int TAPE_SENSOR_BOL(4);  // back,  outside, left
-const int TAPE_SENSOR_BIL(5);  // back,  inside,  left
-const int TAPE_SENSOR_BIR(6);  // back,  inside,  right
-const int TAPE_SENSOR_BOR(7);  // back,  outside, right
+const int TAPE_SENSOR_PINS_FRONT[] {0, 1, 2, 3};
+const int TAPE_SENSOR_PINS_BACK[]  {4, 5, 6, 7};
 const int MOTOR_PIN_L(0);      // left motor pin
 const int MOTOR_PIN_R(3);      // right motor pin
 // knobs
@@ -55,21 +49,20 @@ TapeFollow::TapeFollow(Tinah &t)
     this->intersections[0] = 0;
     this->intersections[1] = 0;
     for (int i = 0; i < 4; ++i) {
-        this->activePins[i] = i;
-	    pinMode(i, INPUT);
+        this->activePins[i] = TAPE_SENSOR_PINS_FRONT[i];
+	pinMode(i, INPUT);
     }
-
 }
 
 // Main loop function
 void TapeFollow::loop() {
     // declare static variables (runs only once)
-    static double propGain;  // proportional gain
-    static double dervGain;  // derivative gain
-    static double prop;      // proportional contribution to control
-    static double derv;      // derivative contribution to control
-    static double mainL;     // main left reading
-    static double mainR;     // main right reading
+    static double propGain;        // proportional gain
+    static double dervGain;        // derivative gain
+    static double prop;            // proportional contribution to control
+    static double derv;            // derivative contribution to control
+    static double mainL;           // main left reading
+    static double mainR;           // main right reading
     static double intersectionL;   // left intersection reading
     static double intersectionR;   // right intersection reading
     static int control;      
@@ -160,18 +153,30 @@ void TapeFollow::loop() {
 	    this->tinah.LCD.print(mainL);
 	    this->tinah.LCD.print(" ");
 	    this->tinah.LCD.print(mainR);
+	    this->tinah.LCD.setCursor(0,1);
+	    this->tinah.LCD.print(propGain);
+	    this->tinah.LCD.print(" ");
+	    this->tinah.LCD.print(dervGain);
 	} else if (control > 0.0) {
 	    this->tinah.LCD.clear();
 	    this->tinah.LCD.print("--> ");
 	    this->tinah.LCD.print(mainL);
 	    this->tinah.LCD.print(" ");
 	    this->tinah.LCD.print(mainR);
+	    this->tinah.LCD.setCursor(0,1);
+	    this->tinah.LCD.print(propGain);
+	    this->tinah.LCD.print(" ");
+	    this->tinah.LCD.print(dervGain);
 	} else {
 	    this->tinah.LCD.clear();
 	    this->tinah.LCD.print("-^- ");
 	    this->tinah.LCD.print(mainL);
 	    this->tinah.LCD.print(" ");
 	    this->tinah.LCD.print(mainR);
+	    this->tinah.LCD.setCursor(0,1);
+	    this->tinah.LCD.print(propGain);
+	    this->tinah.LCD.print(" ");
+	    this->tinah.LCD.print(dervGain);
 	}
     }
 }

@@ -16,7 +16,9 @@ void setup() {
     tinah.LCD.print("POOPY MAYONNAISE");
     delay(500);
     tinah.LCD.clear();
-    tinah.LCD.print("It's got that\nnice ring to it.");
+    tinah.LCD.print("It's got that");
+    tinah.LCD.setCursor(0,1);
+    tinah.LCD.print("nice ring to it!");
     delay(500);
     tinah.LCD.clear();
 }
