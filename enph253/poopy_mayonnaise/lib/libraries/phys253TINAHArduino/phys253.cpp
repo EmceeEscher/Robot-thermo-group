@@ -14,7 +14,12 @@ Tinah::Tinah()
     RCServo2.attach(RCServo2Output);
 }
 
-Tinah t;
+Tinah& Tinah::getInstance() {
+    static Tinah t;  // runs only once
+    return t;
+}
+
+Tinah &t = Tinah::getInstance();
 LiquidCrystal &LCD = t.LCD;
 motorClass &motor = t.motor;
 ServoTimer2 &RCServo0 = t.RCServo0;

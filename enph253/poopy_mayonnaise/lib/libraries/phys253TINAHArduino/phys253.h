@@ -44,13 +44,17 @@ void timer3PWMCOff(void);
 #endif
 
 class Tinah {
-public:
+ public:
     LiquidCrystal LCD;
     motorClass motor;
     ServoTimer2 RCServo0;
     ServoTimer2 RCServo1;
     ServoTimer2 RCServo2;
+    static Tinah& getInstance();
+ private:
     Tinah();
+    Tinah(const Tinah&);
+    Tinah& operator=(const Tinah&);
 };
 
 #endif
