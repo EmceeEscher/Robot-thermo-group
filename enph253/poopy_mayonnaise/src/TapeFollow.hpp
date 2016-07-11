@@ -13,7 +13,7 @@
 
 class TapeFollow {
  public:
-    TapeFollow(Tinah &t);
+    TapeFollow();
     void loop();
  private:
     const float smallError;  // error for when 1 sensor is over tape
@@ -24,7 +24,6 @@ class TapeFollow {
     const int dervGainKnob;  // knob for derivative gain
     const int motorPinL;     // pin for left motor
     const int motorPinR;     // pin for right motor
-    Tinah &tinah;            // object that stores LCD, RCServo objects, etc
     int count;               // number of steps since last reset
     int turnDirection;       // direction robot is trying to turn
     int direction;           // move direction

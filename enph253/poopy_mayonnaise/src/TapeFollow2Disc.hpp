@@ -13,7 +13,7 @@
 
 class TapeFollow2Disc {
 public:
-    TapeFollow2Disc(Tinah &t);
+    TapeFollow2Disc();
     void loop();
 private:
     const double errord0F;  // error for 0th derivative change in position
@@ -25,7 +25,6 @@ private:
     const int motorPinR;
     const int motorSpeed;
     const int reset;
-    Tinah &tinah;
     int activePins[4];
     bool tape[3][4];        // tape[0] : current read, tape[1] : previous, ...
     int timePositionMap[3];

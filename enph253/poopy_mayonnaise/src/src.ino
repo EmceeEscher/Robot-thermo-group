@@ -5,8 +5,7 @@
 #include <LiquidCrystal.h>
 #include "TapeFollow.hpp"
 
-Tinah tinah; // initialize Tinah board
-TapeFollow tf(tinah);
+TapeFollow tf;
 
 // functions
 void setup() {

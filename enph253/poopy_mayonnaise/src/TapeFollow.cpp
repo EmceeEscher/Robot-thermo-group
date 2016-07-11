@@ -22,7 +22,7 @@ const int MOTOR_SPEED(100);
 const int RESET_PERIOD(300);
 
 // Class constructor
-TapeFollow::TapeFollow(Tinah &t)
+TapeFollow::TapeFollow()
     : smallError(SMALL_ERROR),
       largeError(LARGE_ERROR),
       motorSpeed(MOTOR_SPEED),
@@ -38,7 +38,6 @@ TapeFollow::TapeFollow(Tinah &t)
       error(0),
       lastError(0),
       recentError(0),
-      tinah(t),
       count(0)
 {
     portMode(0, INPUT);

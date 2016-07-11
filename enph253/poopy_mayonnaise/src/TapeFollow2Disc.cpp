@@ -20,7 +20,7 @@ const int RESET_PERIOD(30);
 const int MOTOR_SPEED(200);
 
 // object constructor
-TapeFollow2Disc::TapeFollow2Disc(Tinah &t)
+TapeFollow2Disc::TapeFollow2Disc()
     : errord0F(ERROR_D0F),
       errord1F(ERROR_D1F),
       errord2F(ERROR_D2F),
@@ -33,8 +33,7 @@ TapeFollow2Disc::TapeFollow2Disc(Tinah &t)
       errorPrev(0.0),
       errorRecent(0.0),
       timePrev(0),
-      count(0),
-      tinah(t)
+      count(0)
 {
     // initialize tape array with 0's
     for (int row = 0; row < 3; ++row)
