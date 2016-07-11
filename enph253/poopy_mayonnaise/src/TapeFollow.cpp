@@ -3,7 +3,7 @@
 //
 #include "TapeFollow.hpp"
 
-#pragma clang diagnostic push
+//#pragma clang diagnostic push
 #pragma ide diagnostic ignored "CannotResolve"
 
 // constants
@@ -26,7 +26,6 @@ const float SMALL_ERROR(1.0);
 const float LARGE_ERROR(10.0);
 const int MOTOR_SPEED(100);
 const int RESET_PERIOD(300);
-const int THRESHOLD(45);
 const int OVER_TAPE(1);
 const int OFF_TAPE(0);
 
@@ -37,7 +36,6 @@ TapeFollow::TapeFollow(Tinah &t)
       largeError(LARGE_ERROR),
       motorSpeed(MOTOR_SPEED),
       resetPeriod(RESET_PERIOD),
-      threshold(THRESHOLD),
       propGainKnob(PROP_GAIN_KNOB),
       dervGainKnob(DERV_GAIN_KNOB),
       motorPinL(MOTOR_PIN_L),
@@ -50,9 +48,7 @@ TapeFollow::TapeFollow(Tinah &t)
       lastError(0),
       recentError(0),
       tinah(t),
-      count(0),
-      offTape(OFF_TAPE),
-      overTape(OVER_TAPE)
+      count(0)
 {
     portMode(0, INPUT);
     // set instance arrays
@@ -92,11 +88,11 @@ void TapeFollow::loop() {
     intersectionR = this->pinReadings[3];
 
     // determine error
-    if ((mainL == overTape) && (mainR == overTape))
+    if ((mainL == OVER_TAPE) && (mainR == OVER_TAPE))
         error = 0;
-    else if (mainL == overTape)
+    else if (mainL == OVER_TAPE)
         error = -this->smallError;
-    else if (mainR == overTape)
+    else if (mainR == OVER_TAPE)
         error = this->smallError;
     else if (this->lastError > 0)
         error = this->largeError;
@@ -110,9 +106,9 @@ void TapeFollow::loop() {
     }
 
     // record intersection if seen
-    if ((intersectionL > this->threshold) && (this->lastError <= 0))
+    if ((intersectionL == OVER_TAPE) && (this->lastError <= 0))
         this->intersections[0] = 1;
-    else if ((intersectionR > this->threshold) && (this->lastError >= 0))
+    else if ((intersectionR == OVER_TAPE) && (this->lastError >= 0))
         this->intersections[1] = 1;
     else {
         this->intersections[0] = 0;
@@ -157,25 +153,25 @@ void TapeFollow::loop() {
     // print crap
     if (this->count % 270 == 0) {
         if (control < 0.0) {
-	        this->tinah.LCD.clear();
-	        this->tinah.LCD.print("<-- ");
-	        this->tinah.LCD.print(mainL);
-	        this->tinah.LCD.print(" ");
-	        this->tinah.LCD.print(mainR);
-	    } else if (control > 0.0) {
-	        this->tinah.LCD.clear();
-	        this->tinah.LCD.print("--> ");
-	        this->tinah.LCD.print(mainL);
-	        this->tinah.LCD.print(" ");
-	        this->tinah.LCD.print(mainR);
-	    } else {
-	        this->tinah.LCD.clear();
-	        this->tinah.LCD.print("-^- ");
-	        this->tinah.LCD.print(mainL);
-	        this->tinah.LCD.print(" ");
-	        this->tinah.LCD.print(mainR);
-	    }
+	    this->tinah.LCD.clear();
+	    this->tinah.LCD.print("<-- ");
+	    this->tinah.LCD.print(mainL);
+	    this->tinah.LCD.print(" ");
+	    this->tinah.LCD.print(mainR);
+	} else if (control > 0.0) {
+	    this->tinah.LCD.clear();
+	    this->tinah.LCD.print("--> ");
+	    this->tinah.LCD.print(mainL);
+	    this->tinah.LCD.print(" ");
+	    this->tinah.LCD.print(mainR);
+	} else {
+	    this->tinah.LCD.clear();
+	    this->tinah.LCD.print("-^- ");
+	    this->tinah.LCD.print(mainL);
+	    this->tinah.LCD.print(" ");
+	    this->tinah.LCD.print(mainR);
+	}
     }
 }
 
-#pragma clang diagnostic pop
+//#pragma clang diagnostic pop

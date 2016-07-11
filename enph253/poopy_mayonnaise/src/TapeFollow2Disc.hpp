@@ -21,7 +21,6 @@ private:
     const double errord2F;  // error for 2nd derivative change in position
     const double gainPropl;
     const double gainDeriv;
-    const double threshold;
     const int motorPinL;
     const int motorPinR;
     const int motorSpeed;

@@ -14,11 +14,12 @@ const double ERROR_D1F(3.0);
 const double ERROR_D0F(pow(0.5*ERROR_D1F, 2) - EPSILON*ERROR_D1F);
 const double PROPL_GAIN(10.0);
 const double DERIV_GAIN(10.0);
-const double THRESHOLD(45.0);
 const int MOTOR_PIN_L(0);      // left motor pin
 const int MOTOR_PIN_R(3);      // right motor pin
 const int RESET_PERIOD(30);
 const int MOTOR_SPEED(200);
+const int OVER_TAPE(1);
+const int OFF_TAPE(0);
 
 // object constructor
 TapeFollow2Disc::TapeFollow2Disc(Tinah &t)
@@ -27,7 +28,6 @@ TapeFollow2Disc::TapeFollow2Disc(Tinah &t)
       errord2F(ERROR_D2F),
       gainPropl(PROPL_GAIN),
       gainDeriv(DERIV_GAIN),
-      threshold(THRESHOLD),
       motorPinL(MOTOR_PIN_L),
       motorPinR(MOTOR_PIN_R),
       motorSpeed(MOTOR_SPEED),
@@ -57,13 +57,13 @@ void TapeFollow2Disc::loop() {
     
     // get readings from tape sensors
     for (int i(0); i < 4; ++i)
-        this->readings[i] = analogRead(this->activePins[i]);
+        this->readings[i] = digitalRead(this->activePins[i]);
 
     // update tape array
     for (int i = 0; i < 4; ++i) {
         this->tape[2][i] = this->tape[1][i];
 	    this->tape[1][i] = this->tape[0][i];
-        if (this->readings[i] > this->threshold)
+        if (this->readings[i] == OVER_TAPE)
             this->tape[0][i] = 1;
         else
             this->tape[0][i] = 0;
@@ -72,12 +72,12 @@ void TapeFollow2Disc::loop() {
     // set the time map
     // left - 0 + right
     for (int i = 0; i < 3; ++i) {
-	    if (tape[i][1] > tape[i][2])
-	        this->timeMap[i] = -1;
-	    else if (tape[i][1] < tape[i][2])
-	        this->timeMap[i] = 1;
-	    else
-	        this->timeMap[i] = 0;
+	if (tape[i][1] > tape[i][2])
+	    this->timeMap[i] = -1;
+	else if (tape[i][1] < tape[i][2])
+	    this->timeMap[i] = 1;
+	else
+	    this->timeMap[i] = 0;
     }
 
     // determine error from timeMap
