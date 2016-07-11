@@ -56,10 +56,8 @@ void TapeFollow2Disc::loop() {
     int control(0);
     
     // get readings from tape sensors
-    this->readings[0] = analogRead(this->activePins[0]);
-    this->readings[1] = analogRead(this->activePins[1]);
-    this->readings[2] = analogRead(this->activePins[2]);
-    this->readings[3] = analogRead(this->activePins[3]);
+    for (int i(0); i < 4; ++i)
+        this->readings[i] = analogRead(this->activePins[i]);
 
     // update tape array
     for (int i = 0; i < 4; ++i) {
@@ -80,7 +78,7 @@ void TapeFollow2Disc::loop() {
 	        this->timeMap[i] = 1;
 	    else
 	        this->timeMap[i] = 0;
-        }
+    }
 
     // determine error from timeMap
     this->errorNext = this->errord0F * this->timeMap[0] +
