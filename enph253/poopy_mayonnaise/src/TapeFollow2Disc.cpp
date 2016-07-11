@@ -4,7 +4,7 @@
 #include "TapeFollow2Disc.hpp"
 #include <math.h>
 
-#pragma clang diagnostic push
+//#pragma clang diagnostic push
 #pragma ide diagnostic ignored "CannotResolve"
 
 // constants
@@ -112,4 +112,4 @@ void TapeFollow2Disc::loop() {
     this->timeNext += 1;
 }
 
-#pragma clang diagnostic pop
+//#pragma clang diagnostic pop

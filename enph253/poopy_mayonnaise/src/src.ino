@@ -1,4 +1,4 @@
-#pragma clang diagnostic push
+//#pragma clang diagnostic push
 #pragma ide diagnostic ignored "CannotResolve"
 
 #include <phys253.h>
@@ -25,4 +25,4 @@ void loop() {
     tf.loop();
 }
 
-#pragma clang diagnostic pop
+//#pragma clang diagnostic pop
