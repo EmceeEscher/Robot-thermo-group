@@ -105,6 +105,7 @@ void TapeFollow::loop() {
         this->timeStep = 1;
     }
 
+
     // // record intersection if seen
     // if ((intersectionL == OVER_TAPE) && (this->lastError <= 0))
     //     this->intersections[0] = 1;
@@ -131,6 +132,7 @@ void TapeFollow::loop() {
     //     error = -this->largeError;
     // else if (this->turnDirection == 1)
     //     error = this->largeError;
+
     
     // get net effect of proportional and derivative gains
     prop = (propGain * error);
