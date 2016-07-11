@@ -1,0 +1,24 @@
+
+##############################################################
+
+TINAH.name=TINAH Board - UBC Engineering Physics 253
+
+TINAH.upload.protocol=wiring
+TINAH.upload.maximum_size=126976
+TINAH.upload.speed=115200
+TINAH.upload.tool=avrdude
+
+
+TINAH.bootloader.low_fuses=0xFF
+TINAH.bootloader.high_fuses=0xDA
+TINAH.bootloader.extended_fuses=0xFF
+TINAH.bootloader.path=atmega
+TINAH.bootloader.file=ATmegaBOOT_168_atmega128.hex
+TINAH.bootloader.unlock_bits=0x3F
+TINAH.bootloader.lock_bits=0x0F
+
+TINAH.build.mcu=atmega128
+TINAH.build.f_cpu=16000000L
+TINAH.build.core=arduino
+TINAH.build.variant=TINAHvariant
+
