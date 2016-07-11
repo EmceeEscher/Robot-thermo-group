@@ -92,7 +92,7 @@ void TapeFollow::loop() {
     intersectionR = this->pinReadings[3];
 
     // determine error
-    if ((mainL == overTape) && (mainR == offTape))
+    if ((mainL == overTape) && (mainR == overTape))
         error = 0;
     else if (mainL == overTape)
         error = -this->smallError;
