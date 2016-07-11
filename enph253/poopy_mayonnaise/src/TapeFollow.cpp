@@ -148,36 +148,36 @@ void TapeFollow::loop() {
     // print crap
     if (this->count % 270 == 0) {
         if (control < 0.0) {
-	    this->tinah.LCD.clear();
-	    this->tinah.LCD.print("<-- ");
-	    this->tinah.LCD.print(mainL);
-	    this->tinah.LCD.print(" ");
-	    this->tinah.LCD.print(mainR);
-	    this->tinah.LCD.setCursor(0,1);
-	    this->tinah.LCD.print(propGain);
-	    this->tinah.LCD.print(" ");
-	    this->tinah.LCD.print(dervGain);
-	} else if (control > 0.0) {
-	    this->tinah.LCD.clear();
-	    this->tinah.LCD.print("--> ");
-	    this->tinah.LCD.print(mainL);
-	    this->tinah.LCD.print(" ");
-	    this->tinah.LCD.print(mainR);
-	    this->tinah.LCD.setCursor(0,1);
-	    this->tinah.LCD.print(propGain);
-	    this->tinah.LCD.print(" ");
-	    this->tinah.LCD.print(dervGain);
-	} else {
-	    this->tinah.LCD.clear();
-	    this->tinah.LCD.print("-^- ");
-	    this->tinah.LCD.print(mainL);
-	    this->tinah.LCD.print(" ");
-	    this->tinah.LCD.print(mainR);
-	    this->tinah.LCD.setCursor(0,1);
-	    this->tinah.LCD.print(propGain);
-	    this->tinah.LCD.print(" ");
-	    this->tinah.LCD.print(dervGain);
-	}
+	        this->tinah.LCD.clear();
+	        this->tinah.LCD.print("<-- ");
+	        this->tinah.LCD.print(mainL);
+	        this->tinah.LCD.print(" ");
+	        this->tinah.LCD.print(mainR);
+	        this->tinah.LCD.setCursor(0,1);
+	        this->tinah.LCD.print(propGain);
+	        this->tinah.LCD.print(" ");
+	        this->tinah.LCD.print(dervGain);
+	    } else if (control > 0.0) {
+	        this->tinah.LCD.clear();
+	        this->tinah.LCD.print("--> ");
+	        this->tinah.LCD.print(mainL);
+	        this->tinah.LCD.print(" ");
+	        this->tinah.LCD.print(mainR);
+	        this->tinah.LCD.setCursor(0,1);
+	        this->tinah.LCD.print(propGain);
+	        this->tinah.LCD.print(" ");
+	        this->tinah.LCD.print(dervGain);
+	    } else {
+	        this->tinah.LCD.clear();
+	        this->tinah.LCD.print("-^- ");
+	        this->tinah.LCD.print(mainL);
+	        this->tinah.LCD.print(" ");
+	        this->tinah.LCD.print(mainR);
+	        this->tinah.LCD.setCursor(0,1);
+	        this->tinah.LCD.print(propGain);
+	        this->tinah.LCD.print(" ");
+	        this->tinah.LCD.print(dervGain);
+	    }
     }
 }
 
