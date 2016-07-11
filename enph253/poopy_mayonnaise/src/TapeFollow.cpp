@@ -27,6 +27,8 @@ const float LARGE_ERROR(10.0);
 const int MOTOR_SPEED(100);
 const int RESET_PERIOD(300);
 const int THRESHOLD(45);
+const int OVER_TAPE(1);
+const int OFF_TAPE(0);
 
 
 // Class constructor
@@ -48,7 +50,9 @@ TapeFollow::TapeFollow(Tinah &t)
       lastError(0),
       recentError(0),
       tinah(t),
-      count(0)
+      count(0),
+      offTape(OFF_TAPE),
+      overTape(OVER_TAPE)
 {
     portMode(0, INPUT);
     // set instance arrays
@@ -81,18 +85,18 @@ void TapeFollow::loop() {
 
     // get readings from tape sensors
     for (int i = 0; i < 4; ++i)
-	this->pinReadings[i] = analogRead(this->activePins[i]);
+	this->pinReadings[i] = digitalRead(this->activePins[i]);
     mainL = this->pinReadings[1];
     mainR = this->pinReadings[2];
     intersectionL = this->pinReadings[0];
     intersectionR = this->pinReadings[3];
 
     // determine error
-    if ((mainL > this->threshold) && (mainR > this->threshold))
+    if ((mainL == overTape) && (mainR == offTape))
         error = 0;
-    else if (mainL > this->threshold)
+    else if (mainL == overTape)
         error = -this->smallError;
-    else if (mainR > this->threshold)
+    else if (mainR == overTape)
         error = this->smallError;
     else if (this->lastError > 0)
         error = this->largeError;

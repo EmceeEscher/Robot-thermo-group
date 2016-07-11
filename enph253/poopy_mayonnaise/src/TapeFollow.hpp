@@ -25,6 +25,8 @@ class TapeFollow {
     const int dervGainKnob;
     const int motorPinL;
     const int motorPinR;
+    const int overTape;
+    const int offTape;
     Tinah &tinah;
     int count;
     int turnDirection;
