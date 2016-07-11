@@ -20,9 +20,6 @@ const float SMALL_ERROR(1.0);
 const float LARGE_ERROR(10.0);
 const int MOTOR_SPEED(100);
 const int RESET_PERIOD(300);
-const int OVER_TAPE(1);
-const int OFF_TAPE(0);
-
 
 // Class constructor
 TapeFollow::TapeFollow(Tinah &t)
@@ -46,8 +43,8 @@ TapeFollow::TapeFollow(Tinah &t)
 {
     portMode(0, INPUT);
     // set instance arrays
-    this->intersections[0] = 0;
-    this->intersections[1] = 0;
+    this->intersections[0] = false;
+    this->intersections[1] = false;
     for (int i = 0; i < 4; ++i) {
         this->activePins[i] = TAPE_SENSOR_PINS_FRONT[i];
 	pinMode(i, INPUT);
@@ -61,31 +58,33 @@ void TapeFollow::loop() {
     static double dervGain;        // derivative gain
     static double prop;            // proportional contribution to control
     static double derv;            // derivative contribution to control
-    static double mainL;           // main left reading
-    static double mainR;           // main right reading
-    static double intersectionL;   // left intersection reading
-    static double intersectionR;   // right intersection reading
-    static int control;      
+    static int control;
     static float error;
-    
+    static bool pinReadings[4];
+    // TODO: make sure the following 4 lines are correct
+    const static bool &mainL = pinReadings[1];             // main left reading
+    const static bool &mainR = pinReadings[2];             // main right reading
+    const static bool &intersectionL = pinReadings[0];     // left intersection reading
+    const static bool &intersectionR = pinReadings[3];     // right intersection reading
+
     // get proportional and dervative gains from knobs
     propGain = knob(this->propGainKnob) / 50;
     dervGain = knob(this->dervGainKnob) / 50;
 
     // get readings from tape sensors
     for (int i = 0; i < 4; ++i)
-	this->pinReadings[i] = digitalRead(this->activePins[i]);
-    mainL = this->pinReadings[1];
-    mainR = this->pinReadings[2];
-    intersectionL = this->pinReadings[0];
-    intersectionR = this->pinReadings[3];
+        pinReadings[i] = static_cast<bool>(digitalRead(this->activePins[i]));
+//    mainL = pinReadings[1];
+//    mainR = pinReadings[2];
+//    intersectionL = pinReadings[0];
+//    intersectionR = pinReadings[3];
 
     // determine error
-    if ((mainL == OVER_TAPE) && (mainR == OVER_TAPE))
+    if (mainL && mainR)  // both mains over tape
         error = 0;
-    else if (mainL == OVER_TAPE)
+    else if (mainL)      // left main over tape
         error = -this->smallError;
-    else if (mainR == OVER_TAPE)
+    else if (mainR)      // right main over tape
         error = this->smallError;
     else if (this->lastError > 0)
         error = this->largeError;
@@ -97,7 +96,6 @@ void TapeFollow::loop() {
         this->prevTime = this->timeStep;
         this->timeStep = 1;
     }
-
 
     // // record intersection if seen
     // if ((intersectionL == OVER_TAPE) && (this->lastError <= 0))
@@ -126,7 +124,6 @@ void TapeFollow::loop() {
     // else if (this->turnDirection == 1)
     //     error = this->largeError;
 
-    
     // get net effect of proportional and derivative gains
     prop = (propGain * error);
     derv = (static_cast<float>(dervGain) *

@@ -41,29 +41,30 @@ TapeFollow2Disc::TapeFollow2Disc(Tinah &t)
 {
     // initialize tape array with 0's
     for (int row = 0; row < 3; ++row)
-	for (int col = 0; col < 4; ++col)
-	    this->tape[row][col] = 0;
+        for (int col = 0; col < 4; ++col)
+            this->tape[row][col] = 0;
     // initialize activePins array
     for (int i = 0; i < 4; ++i)
-	activePins[i] = i;
+        activePins[i] = i;
 }
 
 // main loop function
 void TapeFollow2Disc::loop() {
     // declare static variables (runs only once)
-    double ctrlPropl(0.0);
-    double ctrlDeriv(0.0);
-    int control(0);
+    static double ctrlPropl(0.0);
+    static double ctrlDeriv(0.0);
+    static int control(0);
+    static bool readings[4];
     
     // get readings from tape sensors
     for (int i(0); i < 4; ++i)
-        this->readings[i] = digitalRead(this->activePins[i]);
+        readings[i] = static_cast<bool>(digitalRead(this->activePins[i]));
 
     // update tape array
     for (int i = 0; i < 4; ++i) {
         this->tape[2][i] = this->tape[1][i];
 	    this->tape[1][i] = this->tape[0][i];
-        if (this->readings[i] == OVER_TAPE)
+        if (readings[i] == OVER_TAPE)
             this->tape[0][i] = 1;
         else
             this->tape[0][i] = 0;
@@ -72,12 +73,12 @@ void TapeFollow2Disc::loop() {
     // set the time map
     // left - 0 + right
     for (int i = 0; i < 3; ++i) {
-	if (tape[i][1] > tape[i][2])
-	    this->timeMap[i] = -1;
-	else if (tape[i][1] < tape[i][2])
-	    this->timeMap[i] = 1;
-	else
-	    this->timeMap[i] = 0;
+	    if (tape[i][1] > tape[i][2])
+	        this->timeMap[i] = -1;
+	    else if (tape[i][1] < tape[i][2])
+	        this->timeMap[i] = 1;
+	    else
+	        this->timeMap[i] = 0;
     }
 
     // determine error from timeMap

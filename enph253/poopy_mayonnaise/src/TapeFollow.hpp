@@ -33,9 +33,8 @@ class TapeFollow {
     int error;
     float lastError;
     float recentError;
-    int intersections[2];
+    bool intersections[2];
     int activePins[4];
-    int pinReadings[4];
 };
 
 //#pragma clang diagnostic pop
