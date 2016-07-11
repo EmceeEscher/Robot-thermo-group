@@ -6,6 +6,9 @@
 #ifndef TAPE_FOLLOW_2_DISC_H
 #define TAPE_FOLLOW_2_DISC_H
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "CannotResolve"
+
 #include <phys253.h>
 
 class TapeFollow2Disc {
@@ -35,5 +38,7 @@ private:
     int timeNext;
     int count;
 };
+
+#pragma clang diagnostic pop
 
 #endif // TAPE_FOLLOW_2_DISC_H

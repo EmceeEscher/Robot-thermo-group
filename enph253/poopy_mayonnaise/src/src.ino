@@ -1,6 +1,9 @@
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "CannotResolve"
+
 #include <phys253.h>
 #include <LiquidCrystal.h>
-#include "TapeFollow.h"
+#include "TapeFollow.hpp"
 
 Tinah tinah; // initialize Tinah board
 TapeFollow tf(tinah);
@@ -21,3 +24,5 @@ void setup() {
 void loop() {
     tf.loop();
 }
+
+#pragma clang diagnostic pop

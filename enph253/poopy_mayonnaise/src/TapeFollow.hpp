@@ -6,6 +6,9 @@
 #ifndef TAPE_FOLLOW_H
 #define TAPE_FOLLOW_H
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "CannotResolve"
+
 #include <phys253.h>
 
 class TapeFollow {
@@ -29,11 +32,13 @@ class TapeFollow {
     int prevTime;
     int timeStep;
     int error;
-    int lastError;
-    int recentError;
+    float lastError;
+    float recentError;
     int intersections[2];
     int activePins[4];
     double pinReadings[4];
 };
+
+#pragma clang diagnostic pop
 
 #endif // TAPE_FOLLOW_H

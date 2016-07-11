@@ -13,3 +13,5 @@ src/simulations/*.dat
 /report/*/*.toc
 /report/submitted
 enph253/*/*.py
+*/*/.idea
+*/*/CMakeLists.txt

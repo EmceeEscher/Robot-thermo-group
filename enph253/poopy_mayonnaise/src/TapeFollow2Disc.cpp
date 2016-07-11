@@ -1,17 +1,20 @@
 ///
 // TapeFollow2Disc.cpp
 //
-#include "TapeFollow2Disc.h"
+#include "TapeFollow2Disc.hpp"
 #include <math.h>
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "CannotResolve"
+
 // constants
-const float EPSILON(0.01);
-const float ERROR_D2F(1.0);
-const float ERROR_D1F(3.0);
-const float ERROR_D0F(pow(0.5*ERROR_D1F, 2) - EPSILON*ERROR_D1F);
-const float PROPL_GAIN(10.0);
-const float DERIV_GAIN(10.0);
-const float THRESHOLD(45.0);
+const double EPSILON(0.01);
+const double ERROR_D2F(1.0);
+const double ERROR_D1F(3.0);
+const double ERROR_D0F(pow(0.5*ERROR_D1F, 2) - EPSILON*ERROR_D1F);
+const double PROPL_GAIN(10.0);
+const double DERIV_GAIN(10.0);
+const double THRESHOLD(45.0);
 const int MOTOR_PIN_L(0);      // left motor pin
 const int MOTOR_PIN_R(3);      // right motor pin
 const int RESET_PERIOD(30);
@@ -60,24 +63,24 @@ void TapeFollow2Disc::loop() {
 
     // update tape array
     for (int i = 0; i < 4; ++i) {
-	this->tape[2][i] = this->tape[1][i];
-	this->tape[1][i] = this->tape[0][i];
-	if (this->readings[i] > this->threshold)
-	    this->tape[0][i] = 1;
-	else
-	    this->tape[0][i] = 0;
+        this->tape[2][i] = this->tape[1][i];
+	    this->tape[1][i] = this->tape[0][i];
+        if (this->readings[i] > this->threshold)
+            this->tape[0][i] = 1;
+        else
+            this->tape[0][i] = 0;
     }
 
     // set the time map
     // left - 0 + right
     for (int i = 0; i < 3; ++i) {
-	if (tape[i][1] > tape[i][2])
-	    this->timeMap[i] = -1;
-	else if (tape[i][1] < tape[i][2])
-	    this->timeMap[i] = 1;
-	else
-	    this->timeMap[i] = 0;
-    }
+	    if (tape[i][1] > tape[i][2])
+	        this->timeMap[i] = -1;
+	    else if (tape[i][1] < tape[i][2])
+	        this->timeMap[i] = 1;
+	    else
+	        this->timeMap[i] = 0;
+        }
 
     // determine error from timeMap
     this->errorNext = this->errord0F * this->timeMap[0] +
@@ -86,9 +89,9 @@ void TapeFollow2Disc::loop() {
 
     // update errors
     if (this->errorNext != this->errorPrev) {
-	this->errorRecent = this->errorPrev;
-	this->timePrev = this->timeNext;
-	this->timeNext = 1;
+	    this->errorRecent = this->errorPrev;
+	    this->timePrev = this->timeNext;
+	    this->timeNext = 1;
     }
 
     // TODO: Intersection detection
@@ -96,8 +99,8 @@ void TapeFollow2Disc::loop() {
     // get effect of proportional and derivative gains
     ctrlPropl = this->gainPropl * this->errorNext;
     ctrlDeriv = this->gainDeriv *
-	(this->errorNext - this->errorRecent) /
-	(this->timeNext - this->timePrev);
+            (this->errorNext - this->errorRecent) /
+            (this->timeNext - this->timePrev);
     control = -static_cast<int>(ctrlPropl + ctrlDeriv);
 
     // adjust motor speed
@@ -106,7 +109,9 @@ void TapeFollow2Disc::loop() {
 
     // update counters
     if (this->count == this->reset)
-	this->count = 0;
+        this->count = 0;
     this->count += 1;
     this->timeNext += 1;
 }
+
+#pragma clang diagnostic pop

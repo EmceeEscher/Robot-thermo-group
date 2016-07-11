@@ -1,8 +1,10 @@
 ///
 // TapeFollow.cpp
 //
-#include "TapeFollow.h"
+#include "TapeFollow.hpp"
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "CannotResolve"
 
 // constants
 // sensors
@@ -53,8 +55,8 @@ TapeFollow::TapeFollow(Tinah &t)
     this->intersections[0] = 0;
     this->intersections[1] = 0;
     for (int i = 0; i < 4; ++i) {
-	this->activePins[i] = i;
-	pinMode(i, INPUT);
+        this->activePins[i] = i;
+	    pinMode(i, INPUT);
     }
 
 }
@@ -71,7 +73,7 @@ void TapeFollow::loop() {
     static double intersectionL;   // left intersection reading
     static double intersectionR;   // right intersection reading
     static int control;      
-    static int error;
+    static float error;
     
     // get proportional and dervative gains from knobs
     propGain = knob(this->propGainKnob) / 50;
@@ -87,48 +89,48 @@ void TapeFollow::loop() {
 
     // determine error
     if ((mainL > this->threshold) && (mainR > this->threshold))
-	error = 0;
+        error = 0;
     else if (mainL > this->threshold)
-	error = -this->smallError;
+        error = -this->smallError;
     else if (mainR > this->threshold)
-	error = this->smallError;
+        error = this->smallError;
     else if (this->lastError > 0)
-	error = this->largeError;
+        error = this->largeError;
     else
-	error = -this->largeError;
+        error = -this->largeError;
 
     if (error != this->lastError) {
-	this->recentError = this->lastError;
-	this->prevTime = this->timeStep;
-	this->timeStep = 1;
+        this->recentError = this->lastError;
+        this->prevTime = this->timeStep;
+        this->timeStep = 1;
     }
 
     // record intersection if seen
     if ((intersectionL > this->threshold) && (this->lastError <= 0))
-	this->intersections[0] = 1;
+        this->intersections[0] = 1;
     else if ((intersectionR > this->threshold) && (this->lastError >= 0))
-	this->intersections[1] = 1;
+        this->intersections[1] = 1;
     else {
-	this->intersections[0] = 0;
-	this->intersections[1] = 0;
+        this->intersections[0] = 0;
+        this->intersections[1] = 0;
     }
 
     // decide which direction to go in
     // turnDirection is either 0 (left), 1 (right), or 2 (straight)
     if (this->intersections[0] && this->intersections[1])
-	this->turnDirection = static_cast<int>(random(3));
+        this->turnDirection = static_cast<int>(random(3));
     else if (this->intersections[0])
-	this->turnDirection = 2 * static_cast<int>(random(2));
+        this->turnDirection = 2 * static_cast<int>(random(2));
     else if (this->intersections[1])
-	this->turnDirection = 1 + static_cast<int>(random(2));
+        this->turnDirection = 1 + static_cast<int>(random(2));
     else
-	this->turnDirection = 2;
+        this->turnDirection = 2;
 
     // make turn by changing error
     if (this->turnDirection == 0)
-	error = -this->largeError;
+        error = -this->largeError;
     else if (this->turnDirection == 1)
-	error = this->largeError;
+        error = this->largeError;
     
     // get net effect of proportional and derivative gains
     prop = (propGain * this->error);
@@ -139,7 +141,7 @@ void TapeFollow::loop() {
 
     // increase counters
     if (this->count == this->resetPeriod) 
-	this->count = 0;
+        this->count = 0;
     this->count = this->count + 1;
     this->timeStep = this->timeStep + 1;
 
@@ -150,24 +152,26 @@ void TapeFollow::loop() {
 
     // print crap
     if (this->count % 270 == 0) {
-	if (control < 0.0) {
-	    this->tinah.LCD.clear();
-	    this->tinah.LCD.print("<-- ");
-	    this->tinah.LCD.print(mainL);
-	    this->tinah.LCD.print(" ");
-	    this->tinah.LCD.print(mainR);
-	} else if (control > 0.0) {
-	    this->tinah.LCD.clear();
-	    this->tinah.LCD.print("--> ");
-	    this->tinah.LCD.print(mainL);
-	    this->tinah.LCD.print(" ");
-	    this->tinah.LCD.print(mainR);
-	} else {
-	    this->tinah.LCD.clear();
-	    this->tinah.LCD.print("-^- ");
-	    this->tinah.LCD.print(mainL);
-	    this->tinah.LCD.print(" ");
-	    this->tinah.LCD.print(mainR);
-	}
+        if (control < 0.0) {
+	        this->tinah.LCD.clear();
+	        this->tinah.LCD.print("<-- ");
+	        this->tinah.LCD.print(mainL);
+	        this->tinah.LCD.print(" ");
+	        this->tinah.LCD.print(mainR);
+	    } else if (control > 0.0) {
+	        this->tinah.LCD.clear();
+	        this->tinah.LCD.print("--> ");
+	        this->tinah.LCD.print(mainL);
+	        this->tinah.LCD.print(" ");
+	        this->tinah.LCD.print(mainR);
+	    } else {
+	        this->tinah.LCD.clear();
+	        this->tinah.LCD.print("-^- ");
+	        this->tinah.LCD.print(mainL);
+	        this->tinah.LCD.print(" ");
+	        this->tinah.LCD.print(mainR);
+	    }
     }
 }
+
+#pragma clang diagnostic pop
