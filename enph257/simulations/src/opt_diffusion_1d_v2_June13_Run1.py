@@ -16,16 +16,16 @@ from diffusion_1d_v3 import explicit_diffusion_simple
 
 # input files
 DATA_FPATHS = [
-    '../../data/temperature data/June 13/Run1_tc1_June13.dat',
+    # '../../data/temperature data/June 13/Run1_tc1_June13.dat',
     '../../data/temperature data/June 13/Run1_tc2_June13.dat',
     '../../data/temperature data/June 13/Run1_tc3_June13.dat',
-    '../../data/temperature data/June 13/Run1_tc4_June13.dat',
+    # '../../data/temperature data/June 13/Run1_tc4_June13.dat',
 ]
 # output files
-OPT_FPATH = '../results/June 13 - Run 1/params.dat'
-SIM_FPATH = '../results/June 13 - Run 1/sim.dat'
+OPT_FPATH = '../results/June 13 - Run 1/params_2tcs.dat'
+SIM_FPATH = '../results/June 13 - Run 1/sim_2tcs.dat'
 
-EXP_X_ARRAY = np.array(sorted([.33 - .01555 - .0725*n for n in range(4)]))
+EXP_X_ARRAY = np.array(sorted([.33 - .01555 - .0725*n for n in [1, 2]]))
 
 METHOD = explicit_diffusion_simple
 HEATING_ONLY = False
