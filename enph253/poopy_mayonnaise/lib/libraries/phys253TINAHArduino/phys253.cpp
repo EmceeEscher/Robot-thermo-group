@@ -14,6 +14,14 @@ Tinah::Tinah()
     RCServo2.attach(RCServo2Output);
 }
 
+Tinah t;
+LiquidCrystal &LCD = t.LCD;
+motorClass &motor = t.motor;
+ServoTimer2 &RCServo0 = t.RCServo0;
+ServoTimer2 &RCServo1 = t.RCServo1;
+ServoTimer2 &RCServo2 = t.RCServo2;
+
+
 // functions
 int knob(int value) {return analogRead(knobInput[value]);}
 void buzzer(int value) {return;} //   pulseOut(buzzerOutput, value*2) ;}

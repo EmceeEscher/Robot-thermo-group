@@ -14,6 +14,12 @@
 // #include <Tone.cpp>
 #include <ServoTimer2.h>
 
+extern LiquidCrystal &LCD;
+extern motorClass &motor;
+extern ServoTimer2 &RCServo0;
+extern ServoTimer2 &RCServo1;
+extern ServoTimer2 &RCServo2;
+
 int knob(int value);
 void buzzer(int value);
 void buzzerOff();
