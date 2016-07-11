@@ -20,6 +20,7 @@ const float SMALL_ERROR(1.0);
 const float LARGE_ERROR(10.0);
 const int MOTOR_SPEED(100);
 const int RESET_PERIOD(300);
+const int PRINT_PERIOD(270);
 
 // Class constructor
 TapeFollow::TapeFollow()
@@ -147,8 +148,8 @@ void TapeFollow::loop() {
     this->lastError = error;
 
     // print crap
-    if (this->count % 270 == 0) {
-        if (control < 0.0) {
+    if (this->count % PRINT_PERIOD == 0) {
+        if (control < 0) {
 	        LCD.clear();
 	        LCD.print("<-- ");
 	        LCD.print(mainL);
@@ -158,7 +159,7 @@ void TapeFollow::loop() {
 	        LCD.print(propGain);
 	        LCD.print(" ");
 	        LCD.print(dervGain);
-	    } else if (control > 0.0) {
+	    } else if (control > 0) {
 	        LCD.clear();
 	        LCD.print("--> ");
 	        LCD.print(mainL);
