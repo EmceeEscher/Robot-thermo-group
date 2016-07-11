@@ -133,7 +133,7 @@ void TapeFollow::loop() {
     //     error = this->largeError;
     
     // get net effect of proportional and derivative gains
-    prop = (propGain * this->error);
+    prop = (propGain * error);
     derv = (static_cast<float>(dervGain) *
 	    static_cast<float>(error - this->recentError)
 	    / static_cast<float>(this->prevTime - this->timeStep));
