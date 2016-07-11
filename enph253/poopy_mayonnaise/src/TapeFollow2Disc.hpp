@@ -31,9 +31,7 @@ private:
     int timePositionMap[3];
     double errorPrev;
     double errorRecent;
-    double errorNext;
     int timePrev;
-    int timeNext;
     int count;
 };
 
