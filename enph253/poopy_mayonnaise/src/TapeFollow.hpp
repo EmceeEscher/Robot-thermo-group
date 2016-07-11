@@ -32,7 +32,7 @@ class TapeFollow {
     int error;
     float lastError;
     float recentError;
-    bool intersections[2];
+    bool prevIntersections[2];    // L, R : previous intersection readings
     int activePins[4];
 };
 

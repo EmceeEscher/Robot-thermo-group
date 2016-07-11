@@ -42,8 +42,8 @@ TapeFollow::TapeFollow()
 {
     portMode(0, INPUT);
     // set instance arrays
-    this->intersections[0] = false;
-    this->intersections[1] = false;
+    this->prevIntersections[0] = false;
+    this->prevIntersections[1] = false;
     for (int i = 0; i < 4; ++i) {
         this->activePins[i] = TAPE_SENSOR_PINS_FRONT[i];
 	pinMode(i, INPUT);
@@ -59,6 +59,7 @@ void TapeFollow::loop() {
     static double derv;            // derivative contribution to control
     static int control;
     static float error;
+    static bool intersectionDetected[2];
     static bool pinReadings[4];
     // TODO: make sure the following 4 lines are correct
     const static bool &mainL = pinReadings[1];             // main left reading
@@ -98,30 +99,34 @@ void TapeFollow::loop() {
 
     // record intersection if seen
     if (intersectionL && (this->lastError <= 0))
-        this->intersections[0] = true;
+        this->prevIntersections[0] = true;
     else if (intersectionR && (this->lastError >= 0))
-        this->intersections[1] = true;
-    else if ((!(intersectionL)) && (this->intersections[0]))
-        0;  // TODO: register left intersection
-    else if ((!(intersectionR)) && (this->intersections[1]))
-        0;  // TODO: register right intersection
+        this->prevIntersections[1] = true;
+    else if ((!(intersectionL)) && (this->prevIntersections[0]))
+        intersectionDetected[0] = true;
+    else if ((!(intersectionR)) && (this->prevIntersections[1]))
+        intersectionDetected[1] = true;
+    else {
+        intersectionDetected[0] = false;
+        intersectionDetected[1] = false;
+    }
 
-    // // decide which direction to go in
-    // // turnDirection is either 0 (left), 1 (right), or 2 (straight)
-    // if (this->intersections[0] && this->intersections[1])
-    //     this->turnDirection = static_cast<int>(random(3));
-    // else if (this->intersections[0])
-    //     this->turnDirection = 2 * static_cast<int>(random(2));
-    // else if (this->intersections[1])
-    //     this->turnDirection = 1 + static_cast<int>(random(2));
-    // else
-    //     this->turnDirection = 2;
+     // decide which direction to go in
+     // turnDirection is either 0 (left), 1 (right), or 2 (straight)
+     if (intersectionDetected[0] && intersectionDetected[1])
+         this->turnDirection = static_cast<int>(random(3));
+     else if (intersectionDetected[0])
+         this->turnDirection = 2 * static_cast<int>(random(2));
+     else if (intersectionDetected[1])
+         this->turnDirection = 1 + static_cast<int>(random(2));
+     else
+         this->turnDirection = 2;
 
-    // // make turn by changing error
-    // if (this->turnDirection == 0)
-    //     error = -this->largeError;
-    // else if (this->turnDirection == 1)
-    //     error = this->largeError;
+     // make turn by changing error
+     if (this->turnDirection == 0)
+         error = -this->largeError;
+     else if (this->turnDirection == 1)
+         error = this->largeError;
 
     // get net effect of proportional and derivative gains
     prop = (propGain * error);
