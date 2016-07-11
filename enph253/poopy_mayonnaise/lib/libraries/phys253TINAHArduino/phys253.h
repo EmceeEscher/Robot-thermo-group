@@ -43,18 +43,28 @@ void timer3PWMCOff(void);
 }
 #endif
 
-class Tinah {
- public:
+class TinahObjects {
+public:
     LiquidCrystal LCD;
     motorClass motor;
     ServoTimer2 RCServo0;
     ServoTimer2 RCServo1;
     ServoTimer2 RCServo2;
-    static Tinah& getInstance();
- private:
-    Tinah();
-    Tinah(const Tinah&);
-    Tinah& operator=(const Tinah&);
+    static TinahObjects& getInstance();
+private:
+    TinahObjects();
+    TinahObjects(const TinahObjects&);
+    TinahObjects& operator=(const TinahObjects&);
 };
+
+// class Tinah {
+//  public:
+//     LiquidCrystal &LCD;
+//     motorClass &motor;
+//     ServoTimer2 &RCServo0;
+//     ServoTimer2 &RCServo1;
+//     ServoTimer2 &RCServo2;
+//     Tinah();
+// };
 
 #endif

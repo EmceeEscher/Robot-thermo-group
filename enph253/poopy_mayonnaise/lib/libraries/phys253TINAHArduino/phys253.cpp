@@ -2,7 +2,7 @@
 
 
 // Tinah methods
-Tinah::Tinah()
+TinahObjects::TinahObjects()
     : LCD(26,27,28,16,17,18,19,20,21,22,23)
 {
     //setup the variables and classes used throughout phys 253.
@@ -14,17 +14,26 @@ Tinah::Tinah()
     RCServo2.attach(RCServo2Output);
 }
 
-Tinah& Tinah::getInstance() {
-    static Tinah t;  // runs only once
+TinahObjects& TinahObjects::getInstance() {
+    static TinahObjects t;  // runs only once
     return t;
 }
 
-Tinah &t = Tinah::getInstance();
+TinahObjects &t = TinahObjects::getInstance();
 LiquidCrystal &LCD = t.LCD;
 motorClass &motor = t.motor;
 ServoTimer2 &RCServo0 = t.RCServo0;
 ServoTimer2 &RCServo1 = t.RCServo1;
 ServoTimer2 &RCServo2 = t.RCServo2;
+
+// Tinah::Tinah()
+//     : LCD(LCD),
+//       motor(motor),
+//       RCServo0(RCServo0),
+//       RCServo1(RCServo1),
+//       RCServo2(RCServo2)
+// {
+// }
 
 
 // functions
