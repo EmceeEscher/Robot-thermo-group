@@ -28,7 +28,7 @@ private:
     Tinah &tinah;
     int activePins[4];
     bool tape[3][4];        // tape[0] : current read, tape[1] : previous, ...
-    int timeMap[3];
+    int timePositionMap[3];
     double errorPrev;
     double errorRecent;
     double errorNext;

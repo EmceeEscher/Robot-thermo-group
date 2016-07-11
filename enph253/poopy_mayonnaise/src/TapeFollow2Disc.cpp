@@ -18,8 +18,6 @@ const int MOTOR_PIN_L(0);      // left motor pin
 const int MOTOR_PIN_R(3);      // right motor pin
 const int RESET_PERIOD(30);
 const int MOTOR_SPEED(200);
-const int OVER_TAPE(1);
-const int OFF_TAPE(0);
 
 // object constructor
 TapeFollow2Disc::TapeFollow2Disc(Tinah &t)
@@ -64,9 +62,9 @@ void TapeFollow2Disc::loop() {
     for (int i = 0; i < 4; ++i) {
         this->tape[2][i] = this->tape[1][i];
 	    this->tape[1][i] = this->tape[0][i];
-        if (readings[i] == OVER_TAPE)
+        if (readings[i])  // over tape
             this->tape[0][i] = 1;
-        else
+        else              // off tape
             this->tape[0][i] = 0;
     }
 
@@ -74,17 +72,17 @@ void TapeFollow2Disc::loop() {
     // left - 0 + right
     for (int i = 0; i < 3; ++i) {
 	    if (tape[i][1] > tape[i][2])
-	        this->timeMap[i] = -1;
+	        this->timePositionMap[i] = -1;
 	    else if (tape[i][1] < tape[i][2])
-	        this->timeMap[i] = 1;
+	        this->timePositionMap[i] = 1;
 	    else
-	        this->timeMap[i] = 0;
+	        this->timePositionMap[i] = 0;
     }
 
     // determine error from timeMap
-    this->errorNext = this->errord0F * this->timeMap[0] +
-	this->errord1F * this->timeMap[1] +
-	this->errord2F * this->timeMap[2];
+    this->errorNext = this->errord0F * this->timePositionMap[0] +
+	this->errord1F * this->timePositionMap[1] +
+	this->errord2F * this->timePositionMap[2];
 
     // update errors
     if (this->errorNext != this->errorPrev) {
