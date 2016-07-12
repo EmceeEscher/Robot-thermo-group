@@ -12,7 +12,7 @@
 ** TODO Decide whether the main loop should actually loop or run just once
 ** TODO Design a State class that holds all of the major and minor modes
 ** TODO Design a main menu function that allows user to choose functionalities
-   + Use knobs to choose items and start button to select
+   + Use knobs to choose items and start button to select, stop button to go back
    + Use knobs to adjust variables
 ** TODO Design some sort of testing suite that can operate modes individually
    + Allow user to control operation and output so code reuploading is unnecessary
