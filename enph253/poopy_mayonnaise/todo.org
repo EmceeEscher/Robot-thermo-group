@@ -1,0 +1,21 @@
+#+TITLE: Robot software todo list
+#+DATE: 2016-07-12
+#+AUTHOR: Dilyn Fullerton
+
+* Logistics
+** TODO Find way to fix CMakeFile.txt so that CLion can properly evaluate files
+
+* Planning
+** TODO Determine the structure of the intersection detection
+** TODO Find a way to store intersections in a graph?
+** TODO Design the specifics of the overall looping structure
+** TODO Decide whether the main loop should actually loop or run just once
+** TODO Design a main menu function that allows user to choose functionalities
+   + Use knobs to choose items and start button to select
+   + Use knobs to adjust variables
+** TODO Design some sort of testing suite that can operate modes individually
+   + Allow user to control operation and output so code reuploading is unnecessary
+
+* Implementation
+** TODO Implement TapeFollower as a MinorMode
+** TODO Write an abstract class FailureMode that is a subtype of MinorMode
