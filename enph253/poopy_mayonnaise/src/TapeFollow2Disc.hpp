@@ -7,7 +7,7 @@
 #define TAPE_FOLLOW_2_DISC_H
 
 //#pragma clang diagnostic push
-#pragma ide diagnostic ignored "CannotResolve"
+//#pragma ide diagnostic ignored "CannotResolve"
 
 #include <phys253.h>
 

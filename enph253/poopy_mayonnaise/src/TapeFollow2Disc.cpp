@@ -5,7 +5,7 @@
 #include <math.h>
 
 //#pragma clang diagnostic push
-#pragma ide diagnostic ignored "CannotResolve"
+//#pragma ide diagnostic ignored "CannotResolve"
 
 // constants
 const double EPSILON(0.01);

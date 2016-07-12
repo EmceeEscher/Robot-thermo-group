@@ -1,5 +1,5 @@
 //#pragma clang diagnostic push
-#pragma ide diagnostic ignored "CannotResolve"
+//#pragma ide diagnostic ignored "CannotResolve"
 
 #include <phys253.h>
 #include <LiquidCrystal.h>
