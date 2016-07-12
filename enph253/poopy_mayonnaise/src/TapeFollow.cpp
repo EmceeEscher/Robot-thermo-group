@@ -63,7 +63,7 @@ void TapeFollow::loop() {
     static float error;
     static bool intersectionDetected[2];
     static bool pinReadings[4];
-    // TODO: make sure the following 4 lines are correct
+    static bool onTape(false);
     const static bool &mainL = pinReadings[1];             // main left reading
     const static bool &mainR = pinReadings[2];             // main right reading
     const static bool &intersectionL = pinReadings[0];     // left intersection reading
@@ -76,10 +76,7 @@ void TapeFollow::loop() {
     // get readings from tape sensors
     for (int i = 0; i < 4; ++i)
         pinReadings[i] = static_cast<bool>(digitalRead(this->activePins[i]));
-//    mainL = pinReadings[1];
-//    mainR = pinReadings[2];
-//    intersectionL = pinReadings[0];
-//    intersectionR = pinReadings[3];
+    onTape = (mainL || mainR);
 
     // determine error
     if (mainL && mainR)  // both mains over tape
@@ -100,7 +97,7 @@ void TapeFollow::loop() {
     }
 
     // do intersection stuff if on tape
-    if (mainL || mainR) {
+    if (onTape) {
 	// record intersection if seen
 	if (intersectionL && (this->lastError <= 0))
 	    this->prevIntersections[0] = true;
