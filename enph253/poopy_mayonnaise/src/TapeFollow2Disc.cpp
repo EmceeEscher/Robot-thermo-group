@@ -7,17 +7,19 @@
 //#pragma clang diagnostic push
 //#pragma ide diagnostic ignored "CannotResolve"
 
+
 // constants
+const int MOTOR_PIN_L(0);      // left motor pin
+const int MOTOR_PIN_R(3);      // right motor pin
+const int RESET_PERIOD(30);
+const int MOTOR_SPEED(200);
 const double EPSILON(0.01);
 const double ERROR_D2F(1.0);
 const double ERROR_D1F(3.0);
 const double ERROR_D0F(pow(0.5*ERROR_D1F, 2) - EPSILON*ERROR_D1F);
 const double PROPL_GAIN(10.0);
 const double DERIV_GAIN(10.0);
-const int MOTOR_PIN_L(0);      // left motor pin
-const int MOTOR_PIN_R(3);      // right motor pin
-const int RESET_PERIOD(30);
-const int MOTOR_SPEED(200);
+
 
 // object constructor
 TapeFollow2Disc::TapeFollow2Disc()

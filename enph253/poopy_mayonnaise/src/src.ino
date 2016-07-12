@@ -1,12 +1,10 @@
 //#pragma clang diagnostic push
 //#pragma ide diagnostic ignored "CannotResolve"
 
-#include <phys253.h>
-#include <LiquidCrystal.h>
-#include "TapeFollow.hpp"
 
-bool active(false);
-TapeFollow tf;
+#include <phys253.h>
+#include "control.hpp"
+
 
 // functions
 void setup() {
@@ -22,26 +20,10 @@ void setup() {
     LCD.print("Press START to");
     LCD.setCursor(0, 1);
     LCD.print("begin");
-    /* while (!(startbutton())) */
-    /* 	delay(100); */
-    /* LCD.clear(); */
 }
 
 void loop() {
-    if (startbutton() && !active) {
-	active = true;
-	tf.start();
-	LCD.clear();
-    } else if (stopbutton() && active) {
-	active = false;
-	tf.stop();
-	LCD.clear();
-	LCD.print("Press START to");
-	LCD.setCursor(0, 1);
-	LCD.print("begin");
-    }
-
-    tf.loop();
+    control::loop();
 }
 
 //#pragma clang diagnostic pop
