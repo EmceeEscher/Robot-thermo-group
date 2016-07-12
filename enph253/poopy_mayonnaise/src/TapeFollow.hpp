@@ -12,31 +12,31 @@
 #include <phys253.h>
 
 class TapeFollow {
- public:
+public:
     TapeFollow();
     void loop();
-    void stop();
     void start();
- private:
+    void stop();
+private:
     const float smallError;  // error for when 1 sensor is over tape
     const float largeError;  // error if both sensors are off tape
-    const int motorSpeed;    // forward velocity of the robot
     const int resetPeriod;   // number of steps to resent `count`
     const int propGainKnob;  // knob for proportional gain
     const int dervGainKnob;  // knob for derivative gain
     const int motorPinL;     // pin for left motor
     const int motorPinR;     // pin for right motor
+    bool prevIntersections[2];    // L, R : previous intersection readings
+    bool motorsActive;
+    int motorSpeed;    // forward velocity of the robot
     int count;               // number of steps since last reset
     int turnDirection;       // direction robot is trying to turn
     int direction;           // move direction
     int prevTime;
     int timeStep;
     int error;
+    int activePins[4];
     float lastError;
     float recentError;
-    bool prevIntersections[2];    // L, R : previous intersection readings
-    bool stopped;
-    int activePins[4];
 };
 
 //#pragma clang diagnostic pop

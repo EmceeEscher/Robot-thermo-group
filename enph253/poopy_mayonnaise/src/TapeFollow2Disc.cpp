@@ -33,7 +33,8 @@ TapeFollow2Disc::TapeFollow2Disc()
       errorPrev(0.0),
       errorRecent(0.0),
       timePrev(0),
-      count(0)
+      count(0),
+      motorsActive(false)
 {
     // initialize tape array with 0's
     for (int row = 0; row < 3; ++row)
@@ -61,19 +62,19 @@ void TapeFollow2Disc::loop() {
     // update tape array
     for (int i = 0; i < 4; ++i) {
         this->tape[2][i] = this->tape[1][i];
-	    this->tape[1][i] = this->tape[0][i];
+	this->tape[1][i] = this->tape[0][i];
         this->tape[0][i] = readings[i];
     }
 
     // set the time map
     // left - 0 + right
     for (int i = 0; i < 3; ++i) {
-	    if (tape[i][1] > tape[i][2])
-	        this->timePositionMap[i] = -1;
-	    else if (tape[i][1] < tape[i][2])
-	        this->timePositionMap[i] = 1;
-	    else
-	        this->timePositionMap[i] = 0;
+	if (tape[i][1] > tape[i][2])
+	    this->timePositionMap[i] = -1;
+	else if (tape[i][1] < tape[i][2])
+	    this->timePositionMap[i] = 1;
+	else
+	    this->timePositionMap[i] = 0;
     }
 
     // determine error from timeMap
@@ -83,9 +84,9 @@ void TapeFollow2Disc::loop() {
 
     // update errors
     if (error != this->errorPrev) {
-	    this->errorRecent = this->errorPrev;
-	    this->timePrev = time;
-	    time = 1;
+	this->errorRecent = this->errorPrev;
+	this->timePrev = time;
+	time = 1;
     }
 
     // TODO: Intersection detection
@@ -97,14 +98,26 @@ void TapeFollow2Disc::loop() {
     control = -static_cast<int>(ctrlPropl + ctrlDeriv);
 
     // adjust motor speed
-    motor.speed(this->motorPinL, (-this->motorSpeed + control));
-    motor.speed(this->motorPinR, (this->motorSpeed + control));
+    if (this->motorsActive) {
+	motor.speed(this->motorPinL, (-this->motorSpeed + control));
+	motor.speed(this->motorPinR, (this->motorSpeed + control));
+    }
 
     // update counters
     if (this->count == this->reset)
         this->count = 0;
     this->count += 1;
     time += 1;
+}
+
+void TapeFollow2Disc::start() {
+    this->motorsActive = true;
+}
+
+void TapeFollow2Disc::stop() {
+    this->motorsActive = false;
+    motor.speed(this->motorPinL, 0);
+    motor.speed(this->motorPinR, 0);
 }
 
 //#pragma clang diagnostic pop

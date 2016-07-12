@@ -40,7 +40,7 @@ TapeFollow::TapeFollow()
       lastError(0),
       recentError(0),
       count(0),
-      stopped(true)
+      motorsActive(false)
 {
     portMode(0, INPUT);
     // set instance arrays
@@ -144,7 +144,7 @@ void TapeFollow::loop() {
     this->timeStep = this->timeStep + 1;
 
     // adjust motor speed
-    if (!this->stopped) {
+    if (this->motorsActive) {
 	motor.speed(this->motorPinL, -this->motorSpeed + control);
 	motor.speed(this->motorPinR, this->motorSpeed + control);
     }
@@ -174,14 +174,15 @@ void TapeFollow::loop() {
     }
 }
 
+void TapeFollow::start() {
+    this->motorsActive = true;
+}
+
 void TapeFollow::stop() {
-    this->stopped = true;
+    this->motorsActive = false;
     motor.speed(this->motorPinL, 0);
     motor.speed(this->motorPinR, 0);
 }
 
-void TapeFollow::start() {
-    this->stopped = false;
-}
 
 //#pragma clang diagnostic pop
