@@ -115,11 +115,14 @@ void TapeFollow::loop() {
 	 // decide which direction to go in
 	 // turnDirection is either 0 (left), 1 (right), or 2 (straight)
 	 if (intersectionDetected[0] && intersectionDetected[1])
-	     this->turnDirection = static_cast<int>(random(3));
+	     // this->turnDirection = static_cast<int>(random(3));
+	     this->turnDirection = 1;
 	 else if (intersectionDetected[0])
-	     this->turnDirection = 2 * static_cast<int>(random(2));
+	     // this->turnDirection = 2 * static_cast<int>(random(2));
+	     this->turnDirection = 0;
 	 else if (intersectionDetected[1])
-	     this->turnDirection = 1 + static_cast<int>(random(2));
+	     // this->turnDirection = 1 + static_cast<int>(random(2));
+	     this->turnDirection = 1;
 	 else
 	     this->turnDirection = 2;
 	
