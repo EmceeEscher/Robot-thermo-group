@@ -18,7 +18,9 @@ void setup() {
     LCD.print("Are you ready?");
     delay(500);
     LCD.clear();
-    LCD.print("Press START to begin");
+    LCD.print("Press START to");
+    LCD.setCursor(0, 1);
+    LCD.print("begin");
     while (!(startbutton()))
         delay(100);
     LCD.clear();
