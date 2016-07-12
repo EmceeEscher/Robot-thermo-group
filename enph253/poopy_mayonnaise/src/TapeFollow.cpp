@@ -55,19 +55,19 @@ TapeFollow::TapeFollow()
 // Main loop function
 void TapeFollow::loop() {
     // declare static variables (runs only once)
-    static double propGain;        // proportional gain
-    static double dervGain;        // derivative gain
-    static double prop;            // proportional contribution to control
-    static double derv;            // derivative contribution to control
+    static double propGain;  // proportional gain
+    static double dervGain;  // derivative gain
+    static double prop;      // proportional contribution to control
+    static double derv;      // derivative contribution to control
     static int control;
     static float error;
     static bool intersectionDetected[2];
     static bool pinReadings[4];
     static bool onTape(false);
-    const static bool &mainL = pinReadings[1];             // main left reading
-    const static bool &mainR = pinReadings[2];             // main right reading
-    const static bool &intersectionL = pinReadings[0];     // left intersection reading
-    const static bool &intersectionR = pinReadings[3];     // right intersection reading
+    const static bool &mainL = pinReadings[1];          // main left reading
+    const static bool &mainR = pinReadings[2];          // main right reading
+    const static bool &intersectionL = pinReadings[0];  // left intersection reading
+    const static bool &intersectionR = pinReadings[3];  // right intersection reading
 
     // get proportional and dervative gains from knobs
     propGain = knob(this->propGainKnob) / 50;
@@ -87,8 +87,10 @@ void TapeFollow::loop() {
         error = this->smallError;
     else if (this->lastError > 0)
         error = this->largeError;
-    else
+    else if (this->lastError < 0)
         error = -this->largeError;
+    else
+	error = 0;
 
     if (error != this->lastError) {
         this->recentError = this->lastError;
@@ -97,7 +99,7 @@ void TapeFollow::loop() {
     }
 
     // do intersection stuff if on tape
-    if (onTape) {
+    if (mainL && mainR) {
 	// record intersection if seen
 	if (intersectionL && (this->lastError <= 0))
 	    this->prevIntersections[0] = true;
@@ -175,6 +177,8 @@ void TapeFollow::loop() {
 	LCD.print(propGain);
 	LCD.print(" ");
 	LCD.print(dervGain);
+	LCD.print(" ");
+	LCD.print(control);
     }
 }
 
