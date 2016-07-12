@@ -15,6 +15,8 @@ class TapeFollow {
  public:
     TapeFollow();
     void loop();
+    void stop();
+    void start();
  private:
     const float smallError;  // error for when 1 sensor is over tape
     const float largeError;  // error if both sensors are off tape
@@ -33,6 +35,7 @@ class TapeFollow {
     float lastError;
     float recentError;
     bool prevIntersections[2];    // L, R : previous intersection readings
+    bool stopped;
     int activePins[4];
 };
 

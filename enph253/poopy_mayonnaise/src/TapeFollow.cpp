@@ -39,7 +39,8 @@ TapeFollow::TapeFollow()
       error(0),
       lastError(0),
       recentError(0),
-      count(0)
+      count(0),
+      stopped(true)
 {
     portMode(0, INPUT);
     // set instance arrays
@@ -143,44 +144,44 @@ void TapeFollow::loop() {
     this->timeStep = this->timeStep + 1;
 
     // adjust motor speed
-    motor.speed(this->motorPinL, -this->motorSpeed + control);
-    motor.speed(this->motorPinR, this->motorSpeed + control);
+    if (!this->stopped) {
+	motor.speed(this->motorPinL, -this->motorSpeed + control);
+	motor.speed(this->motorPinR, this->motorSpeed + control);
+    }
     this->lastError = error;
 
     // print crap
     if (this->count % PRINT_PERIOD == 0) {
-        if (control < 0) {
-	        LCD.clear();
-	        LCD.print("<-- ");
-	        LCD.print(mainL);
-	        LCD.print(" ");
-	        LCD.print(mainR);
-	        LCD.setCursor(0,1);
-	        LCD.print(propGain);
-	        LCD.print(" ");
-	        LCD.print(dervGain);
-	    } else if (control > 0) {
-	        LCD.clear();
-	        LCD.print("--> ");
-	        LCD.print(mainL);
-	        LCD.print(" ");
-	        LCD.print(mainR);
-	        LCD.setCursor(0,1);
-	        LCD.print(propGain);
-	        LCD.print(" ");
-	        LCD.print(dervGain);
-	    } else {
-	        LCD.clear();
-	        LCD.print("-^- ");
-	        LCD.print(mainL);
-	        LCD.print(" ");
-	        LCD.print(mainR);
-	        LCD.setCursor(0,1);
-	        LCD.print(propGain);
-	        LCD.print(" ");
-	        LCD.print(dervGain);
-	    }
+	LCD.clear();
+        if (control < 0) 
+	    LCD.print("<-- ");
+	else if (control > 0) 
+	    LCD.print("--> ");
+	else 
+	    LCD.print(" ^  ");
+
+	LCD.print(intersectionL);
+	LCD.print(" ");
+	LCD.print(mainL);
+	LCD.print(" ");
+	LCD.print(mainR);
+	LCD.print(" ");
+	LCD.print(intersectionR);
+	LCD.setCursor(0,1);
+	LCD.print(propGain);
+	LCD.print(" ");
+	LCD.print(dervGain);
     }
+}
+
+void TapeFollow::stop() {
+    this->stopped = true;
+    motor.speed(this->motorPinL, 0);
+    motor.speed(this->motorPinR, 0);
+}
+
+void TapeFollow::start() {
+    this->stopped = false;
 }
 
 //#pragma clang diagnostic pop

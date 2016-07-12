@@ -30,19 +30,18 @@ void setup() {
 void loop() {
     if (startbutton() && !active) {
 	active = true;
+	tf.start();
 	LCD.clear();
     } else if (stopbutton() && active) {
 	active = false;
+	tf.stop();
 	LCD.clear();
 	LCD.print("Press START to");
 	LCD.setCursor(0, 1);
 	LCD.print("begin");
     }
 
-    if (active)
-	tf.loop();
-    else
-	delay(100);
+    tf.loop();
 }
 
 //#pragma clang diagnostic pop
