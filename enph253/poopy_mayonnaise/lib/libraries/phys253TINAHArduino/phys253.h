@@ -14,6 +14,12 @@
 // #include <Tone.cpp>
 #include <ServoTimer2.h>
 
+extern LiquidCrystal &LCD;
+extern motorClass &motor;
+extern ServoTimer2 &RCServo0;
+extern ServoTimer2 &RCServo1;
+extern ServoTimer2 &RCServo2;
+
 int knob(int value);
 void buzzer(int value);
 void buzzerOff();
@@ -37,14 +43,28 @@ void timer3PWMCOff(void);
 }
 #endif
 
-class Tinah {
+class TinahObjects {
 public:
     LiquidCrystal LCD;
     motorClass motor;
     ServoTimer2 RCServo0;
     ServoTimer2 RCServo1;
     ServoTimer2 RCServo2;
-    Tinah();
+    static TinahObjects& getInstance();
+private:
+    TinahObjects();
+    TinahObjects(const TinahObjects&);
+    TinahObjects& operator=(const TinahObjects&);
 };
+
+// class Tinah {
+//  public:
+//     LiquidCrystal &LCD;
+//     motorClass &motor;
+//     ServoTimer2 &RCServo0;
+//     ServoTimer2 &RCServo1;
+//     ServoTimer2 &RCServo2;
+//     Tinah();
+// };
 
 #endif

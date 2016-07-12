@@ -3,19 +3,13 @@
 //
 #include "TapeFollow.hpp"
 
-#pragma clang diagnostic push
+//#pragma clang diagnostic push
 #pragma ide diagnostic ignored "CannotResolve"
 
 // constants
 // sensors
-const int TAPE_SENSOR_FOL(0);  // front, outside, left
-const int TAPE_SENSOR_FIL(1);  // front, inside,  left
-const int TAPE_SENSOR_FIR(2);  // front, inside,  right
-const int TAPE_SENSOR_FOR(3);  // front, outside, right
-const int TAPE_SENSOR_BOL(4);  // back,  outside, left
-const int TAPE_SENSOR_BIL(5);  // back,  inside,  left
-const int TAPE_SENSOR_BIR(6);  // back,  inside,  right
-const int TAPE_SENSOR_BOR(7);  // back,  outside, right
+const int TAPE_SENSOR_PINS_FRONT[] {0, 1, 2, 3};
+const int TAPE_SENSOR_PINS_BACK[]  {4, 5, 6, 7};
 const int MOTOR_PIN_L(0);      // left motor pin
 const int MOTOR_PIN_R(3);      // right motor pin
 // knobs
@@ -26,16 +20,14 @@ const float SMALL_ERROR(1.0);
 const float LARGE_ERROR(10.0);
 const int MOTOR_SPEED(100);
 const int RESET_PERIOD(300);
-const int THRESHOLD(45);
-
+const int PRINT_PERIOD(270);
 
 // Class constructor
-TapeFollow::TapeFollow(Tinah &t)
+TapeFollow::TapeFollow()
     : smallError(SMALL_ERROR),
       largeError(LARGE_ERROR),
       motorSpeed(MOTOR_SPEED),
       resetPeriod(RESET_PERIOD),
-      threshold(THRESHOLD),
       propGainKnob(PROP_GAIN_KNOB),
       dervGainKnob(DERV_GAIN_KNOB),
       motorPinL(MOTOR_PIN_L),
@@ -47,52 +39,53 @@ TapeFollow::TapeFollow(Tinah &t)
       error(0),
       lastError(0),
       recentError(0),
-      tinah(t),
       count(0)
 {
     portMode(0, INPUT);
     // set instance arrays
-    this->intersections[0] = 0;
-    this->intersections[1] = 0;
+    this->prevIntersections[0] = false;
+    this->prevIntersections[1] = false;
     for (int i = 0; i < 4; ++i) {
-        this->activePins[i] = i;
-	    pinMode(i, INPUT);
+        this->activePins[i] = TAPE_SENSOR_PINS_FRONT[i];
+	pinMode(i, INPUT);
     }
-
 }
 
 // Main loop function
 void TapeFollow::loop() {
     // declare static variables (runs only once)
-    static double propGain;  // proportional gain
-    static double dervGain;  // derivative gain
-    static double prop;      // proportional contribution to control
-    static double derv;      // derivative contribution to control
-    static double mainL;     // main left reading
-    static double mainR;     // main right reading
-    static double intersectionL;   // left intersection reading
-    static double intersectionR;   // right intersection reading
-    static int control;      
+    static double propGain;        // proportional gain
+    static double dervGain;        // derivative gain
+    static double prop;            // proportional contribution to control
+    static double derv;            // derivative contribution to control
+    static int control;
     static float error;
-    
+    static bool intersectionDetected[2];
+    static bool pinReadings[4];
+    // TODO: make sure the following 4 lines are correct
+    const static bool &mainL = pinReadings[1];             // main left reading
+    const static bool &mainR = pinReadings[2];             // main right reading
+    const static bool &intersectionL = pinReadings[0];     // left intersection reading
+    const static bool &intersectionR = pinReadings[3];     // right intersection reading
+
     // get proportional and dervative gains from knobs
     propGain = knob(this->propGainKnob) / 50;
     dervGain = knob(this->dervGainKnob) / 50;
 
     // get readings from tape sensors
     for (int i = 0; i < 4; ++i)
-	this->pinReadings[i] = analogRead(this->activePins[i]);
-    mainL = this->pinReadings[1];
-    mainR = this->pinReadings[2];
-    intersectionL = this->pinReadings[0];
-    intersectionR = this->pinReadings[3];
+        pinReadings[i] = static_cast<bool>(digitalRead(this->activePins[i]));
+//    mainL = pinReadings[1];
+//    mainR = pinReadings[2];
+//    intersectionL = pinReadings[0];
+//    intersectionR = pinReadings[3];
 
     // determine error
-    if ((mainL > this->threshold) && (mainR > this->threshold))
+    if (mainL && mainR)  // both mains over tape
         error = 0;
-    else if (mainL > this->threshold)
+    else if (mainL)      // left main over tape
         error = -this->smallError;
-    else if (mainR > this->threshold)
+    else if (mainR)      // right main over tape
         error = this->smallError;
     else if (this->lastError > 0)
         error = this->largeError;
@@ -106,34 +99,38 @@ void TapeFollow::loop() {
     }
 
     // record intersection if seen
-    if ((intersectionL > this->threshold) && (this->lastError <= 0))
-        this->intersections[0] = 1;
-    else if ((intersectionR > this->threshold) && (this->lastError >= 0))
-        this->intersections[1] = 1;
+    if (intersectionL && (this->lastError <= 0))
+        this->prevIntersections[0] = true;
+    else if (intersectionR && (this->lastError >= 0))
+        this->prevIntersections[1] = true;
+    else if ((!(intersectionL)) && (this->prevIntersections[0]))
+        intersectionDetected[0] = true;
+    else if ((!(intersectionR)) && (this->prevIntersections[1]))
+        intersectionDetected[1] = true;
     else {
-        this->intersections[0] = 0;
-        this->intersections[1] = 0;
+        intersectionDetected[0] = false;
+        intersectionDetected[1] = false;
     }
 
-    // decide which direction to go in
-    // turnDirection is either 0 (left), 1 (right), or 2 (straight)
-    if (this->intersections[0] && this->intersections[1])
-        this->turnDirection = static_cast<int>(random(3));
-    else if (this->intersections[0])
-        this->turnDirection = 2 * static_cast<int>(random(2));
-    else if (this->intersections[1])
-        this->turnDirection = 1 + static_cast<int>(random(2));
-    else
-        this->turnDirection = 2;
+     // decide which direction to go in
+     // turnDirection is either 0 (left), 1 (right), or 2 (straight)
+     if (intersectionDetected[0] && intersectionDetected[1])
+         this->turnDirection = static_cast<int>(random(3));
+     else if (intersectionDetected[0])
+         this->turnDirection = 2 * static_cast<int>(random(2));
+     else if (intersectionDetected[1])
+         this->turnDirection = 1 + static_cast<int>(random(2));
+     else
+         this->turnDirection = 2;
 
-    // make turn by changing error
-    if (this->turnDirection == 0)
-        error = -this->largeError;
-    else if (this->turnDirection == 1)
-        error = this->largeError;
-    
+     // make turn by changing error
+     if (this->turnDirection == 0)
+         error = -this->largeError;
+     else if (this->turnDirection == 1)
+         error = this->largeError;
+
     // get net effect of proportional and derivative gains
-    prop = (propGain * this->error);
+    prop = (propGain * error);
     derv = (static_cast<float>(dervGain) *
 	    static_cast<float>(error - this->recentError)
 	    / static_cast<float>(this->prevTime - this->timeStep));
@@ -146,32 +143,44 @@ void TapeFollow::loop() {
     this->timeStep = this->timeStep + 1;
 
     // adjust motor speed
-    this->tinah.motor.speed(this->motorPinL, -this->motorSpeed + control);
-    this->tinah.motor.speed(this->motorPinR, this->motorSpeed + control);
+    motor.speed(this->motorPinL, -this->motorSpeed + control);
+    motor.speed(this->motorPinR, this->motorSpeed + control);
     this->lastError = error;
 
     // print crap
-    if (this->count % 270 == 0) {
-        if (control < 0.0) {
-	        this->tinah.LCD.clear();
-	        this->tinah.LCD.print("<-- ");
-	        this->tinah.LCD.print(mainL);
-	        this->tinah.LCD.print(" ");
-	        this->tinah.LCD.print(mainR);
-	    } else if (control > 0.0) {
-	        this->tinah.LCD.clear();
-	        this->tinah.LCD.print("--> ");
-	        this->tinah.LCD.print(mainL);
-	        this->tinah.LCD.print(" ");
-	        this->tinah.LCD.print(mainR);
+    if (this->count % PRINT_PERIOD == 0) {
+        if (control < 0) {
+	        LCD.clear();
+	        LCD.print("<-- ");
+	        LCD.print(mainL);
+	        LCD.print(" ");
+	        LCD.print(mainR);
+	        LCD.setCursor(0,1);
+	        LCD.print(propGain);
+	        LCD.print(" ");
+	        LCD.print(dervGain);
+	    } else if (control > 0) {
+	        LCD.clear();
+	        LCD.print("--> ");
+	        LCD.print(mainL);
+	        LCD.print(" ");
+	        LCD.print(mainR);
+	        LCD.setCursor(0,1);
+	        LCD.print(propGain);
+	        LCD.print(" ");
+	        LCD.print(dervGain);
 	    } else {
-	        this->tinah.LCD.clear();
-	        this->tinah.LCD.print("-^- ");
-	        this->tinah.LCD.print(mainL);
-	        this->tinah.LCD.print(" ");
-	        this->tinah.LCD.print(mainR);
+	        LCD.clear();
+	        LCD.print("-^- ");
+	        LCD.print(mainL);
+	        LCD.print(" ");
+	        LCD.print(mainR);
+	        LCD.setCursor(0,1);
+	        LCD.print(propGain);
+	        LCD.print(" ");
+	        LCD.print(dervGain);
 	    }
     }
 }
 
-#pragma clang diagnostic pop
+//#pragma clang diagnostic pop
