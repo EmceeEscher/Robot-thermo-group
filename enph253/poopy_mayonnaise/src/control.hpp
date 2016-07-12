@@ -14,6 +14,11 @@
 namespace control
 {
     /*
+     * Main setup function
+     */
+    void setup();
+    
+    /*
      * Main loop function to control the robot
      */
     void loop();
