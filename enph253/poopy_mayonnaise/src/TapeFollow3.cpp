@@ -11,8 +11,8 @@ const int MOTOR_PIN_R(3);
 const int KNOB_PROP_GAIN(6);
 const int KNOB_DER1_GAIN(7);
 const float EPSILON(0.01);
-const int MOTOR_SPEED(100);
-const int PRINT_PERIOD(96);
+const int MOTOR_SPEED(72);
+const int PRINT_PERIOD(256);
 const double ERROR_SMALL(2);
 const double ERROR_MEDIUM(4);
 const double ERROR_LARGE(8);
@@ -29,8 +29,6 @@ void TapeFollow3::init()
     this->lastError = 0.;
     this->turnDirection = 0;
     this->motorSpeed = MOTOR_SPEED;
-
-    // set errors
 
     for (int i(0); i < 2; ++i) {
 	this->errorArray[i] = 0;
