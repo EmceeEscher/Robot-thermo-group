@@ -7,7 +7,7 @@
 namespace control {
     static bool active(false);
 }
-TapeFollow tf;
+TapeFollow3 tf;
 
 
 void control::setup() {
@@ -41,7 +41,7 @@ void control::start() {
 
 void control::stop() {
     control::active = false; 
-    tf.stop();
+    tf.test();
     LCD.clear();
     LCD.print("Press START to");
     LCD.setCursor(0, 1);
