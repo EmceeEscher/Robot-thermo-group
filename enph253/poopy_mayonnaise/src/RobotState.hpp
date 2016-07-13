@@ -16,13 +16,28 @@
 // TODO
 class RobotState {
 private:
-    MajorMode activeMajorMode;                   // currently active major mode
-    std::map<MinorMode, bool> activeMinorModes;  // map MinorMode->bool that tells whether the given mode is active
-    std::vector<MajorMode> allMajorModes;        // all possible major modes
-    std::vector<MinorMode> allMinorModes;        // all possible minor modes
+    bool active;                              // whether the robot is active
+    std::vector<MajorMode> allMajorModes;     // all possible major modes
+    std::vector<MinorMode> allMinorModes;     // all possible minor modes
+    MajorMode activeMajorMode;                // currently active major mode
+    std::vector<MinorMode> activeMinorModes;  // currently active minor modes
 public:
     RobotState();
+
+    /*
+     * Return true if the robot is currently active (i.e. looping through 
+     * modes)
+     */
+    bool isActive();
+
+    /*
+     * Returns a reference to the currently active major mode
+     */
     MajorMode& getMajorMode();
+
+    /*
+     * Returns a reference to the vector of currently active minor modes
+     */
     std::vector<MinorMode>& getMinorModes();
 };
 
