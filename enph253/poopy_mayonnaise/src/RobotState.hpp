@@ -17,13 +17,11 @@ using std::vector;
 // TODO
 class RobotState {
 private:
-    bool active;                         // whether the robot is active
-    vector<MajorMode> allMajorModes;     // all possible major modes
-    vector<MinorMode> allMinorModes;     // all possible minor modes
-    MajorMode* activeMajorMode;
-    vector<MinorMode*> activeMinorModes;
-    // vector<bool> activeMajorMode;
-    // vector<bool> activeMinorModes;
+    bool active;                          // whether the robot is active
+    vector<MajorMode>  allMajorModes;     // all possible major modes
+    vector<MinorMode>  allMinorModes;     // all possible minor modes
+    MajorMode*         activeMajorMode;   // ponter to currently active major mode
+    vector<MinorMode*> activeMinorModes;  // vector of pointers to currently acive minor modes
 public:
     RobotState();
 
