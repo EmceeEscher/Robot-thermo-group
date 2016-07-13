@@ -22,7 +22,8 @@ The following should be done to prepare for usage:
 3. Move the contents of `./lib` to your sketchbook directory
 (`~/Documents/Arduino/` for OS X).  
 This contains my improved version
-of the phys253 library as well as *maniacbug*'s port of the standard C++
+of the phys253 library as well as [maniacbug](https://github.com/maniacbug)'s
+port of the standard C++
 library for Arduino.
 
 ### See also
