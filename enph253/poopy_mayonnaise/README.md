@@ -20,10 +20,6 @@ The following should be done to prepare for usage:
 
 3. Move the contents of `./lib` to `~/Documents/Arduino/`.
 
-### Examples
----
-See [`./examples`](./examples).
-
 ### See also
 ---
 * Arduino language: https://www.arduino.cc/en/Reference/HomePage
