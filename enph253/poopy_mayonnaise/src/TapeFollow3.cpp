@@ -190,7 +190,6 @@ void TapeFollow3::printLCD()
 	}
 	// print gains and control
 	LCD.setCursor(0,1);
-	LCD.print(" ");
 	LCD.print(this->gainProp);
 	LCD.print(" ");
 	LCD.print(this->gainDer1);

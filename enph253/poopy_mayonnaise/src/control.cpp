@@ -30,6 +30,8 @@ void control::loop() {
 	control::start();
     else if (stopbutton() && control::active) 
 	control::stop();
+    else if (stopbutton())
+	control::stop();
     tf.loop();
 }
 
@@ -40,10 +42,7 @@ void control::start() {
 }
 
 void control::stop() {
-    control::active = false; 
+    control::active = false;
     tf.test();
     LCD.clear();
-    LCD.print("Press START to");
-    LCD.setCursor(0, 1);
-    LCD.print("begin");
 }
