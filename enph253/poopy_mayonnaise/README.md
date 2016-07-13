@@ -3,7 +3,8 @@ Code for controlling competition robot.
 
 ### Dependencies
 ---
-* Improved [TINAH library](./lib)
+* *Included:* Improved [TINAH library](./lib)
+* *Included:* [Standard C++ library for Arduino](https://github.com/maniacbug/StandardCplusplus)
 * Arduino 1.6.2 or newer
 
 ### Setup
@@ -18,7 +19,11 @@ The following should be done to prepare for usage:
    git clone 'https://github.com/EmceeEscher/Robot-thermo-group.git'
    ```
 
-3. Move the contents of `./lib` to `~/Documents/Arduino/`.
+3. Move the contents of `./lib` to your sketchbook directory
+(`~/Documents/Arduino/` for OS X).  
+This contains my improved version
+of the phys253 library as well as maniacbug's port of the standard C++
+library for Arduino.
 
 ### See also
 ---
