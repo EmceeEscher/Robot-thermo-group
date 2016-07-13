@@ -60,7 +60,7 @@ void TapeFollow::loop() {
     static double prop;      // proportional contribution to control
     static double derv;      // derivative contribution to control
     static int control;
-    static float error;
+    static double error;
     static bool intersectionDetected[2];
     static bool pinReadings[4];
     static bool onTape(false);
@@ -90,7 +90,7 @@ void TapeFollow::loop() {
     else if (this->lastError < 0)
         error = -this->largeError;
     else
-	error = 0;
+	error = 0.;
 
     if (error != this->lastError) {
         this->recentError = this->lastError;

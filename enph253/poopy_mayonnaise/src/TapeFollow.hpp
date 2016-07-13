@@ -18,8 +18,8 @@ public:
     void start();
     void stop();
 private:
-    const float smallError;     // error for when 1 sensor is over tape
-    const float largeError;     // error if both sensors are off tape
+    const double smallError;     // error for when 1 sensor is over tape
+    const double largeError;     // error if both sensors are off tape
     const int resetPeriod;      // number of steps to resent `count`
     const int propGainKnob;     // knob for proportional gain
     const int dervGainKnob;     // knob for derivative gain
@@ -35,8 +35,8 @@ private:
     int timeStep;
     int error;
     int activePins[4];
-    float lastError;
-    float recentError;
+    double lastError;
+    double recentError;
 };
 
 //#pragma clang diagnostic pop
