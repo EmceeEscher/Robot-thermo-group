@@ -59,7 +59,8 @@ TapeFollow::TapeFollow()
 
 
 // Main loop function
-void TapeFollow::loop() {
+void TapeFollow::loop()
+{
     // declare static variables (runs only once)
     static double propGain;  // proportional gain
     static double dervGain;  // derivative gain
@@ -189,12 +190,14 @@ void TapeFollow::loop() {
 }
 
 
-void TapeFollow::start() {
+void TapeFollow::start()
+{
     this->motorsActive = true;
 }
 
 
-void TapeFollow::stop() {
+void TapeFollow::stop()
+{
     this->motorsActive = false;
     motor.speed(this->motorPinL, 0);
     motor.speed(this->motorPinR, 0);

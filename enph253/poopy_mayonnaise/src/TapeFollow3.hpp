@@ -15,6 +15,9 @@ private:
     double gainProp;           // set based on knobs for now
     double gainDer1;           // set based on knobs for now
     double gainDer2;           // set based on knobs for now
+    const double errorSmall;   // one main on tape
+    const double errorMedium;  // both mains off, one intersection on tape
+    const double errorLarge;   // all QRDs off tape
     double lastError;          // last calculated error
     double errorArray[2];      // array of last 2 distinct errors
     long etimeArray[2];        // array of times (since read) assoc with errorArray
@@ -23,8 +26,13 @@ private:
     bool turning;              // true= turning, false= straight
     float active;              // whether the loop is active
     int activePins[4];         // pin numbers (intL, mainL, mainR, intR)
+    bool lastPinReadings[4];   // previous pin readings
+    bool pinReadings[4];       // current readings on QRD pins
     int motorSpeed;            // speed to add to motors
     bool motorsActive;         // true if motors are active
+    int control;               // current control parameter
+    bool intersectSeen[2];     // true if an intersection was seen
+    bool intersectDetect[2];   // true when an intersection has been detected (seen and passed over)
 
     /*
      * Set all instance variables to their default starting values
