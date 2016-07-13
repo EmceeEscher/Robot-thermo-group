@@ -49,11 +49,7 @@ void loop() {
     i = 1;
   }
   
-  if(startbutton()){
-    settingsMenu();
-    lastTime = micros();
-    intErr = 0;
-  } else if(stopbutton()){
+  if(stopbutton()){
     serialMenu();
     lastTime = micros();
     intErr = 0;
