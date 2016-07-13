@@ -31,10 +31,12 @@ void TapeFollow3::init()
     }
 }
 
+
 void TapeFollow3::seekTape()
 {
     // TODO
 }
+
 
 // TODO
 void TapeFollow3::followTape()
@@ -112,10 +114,12 @@ void TapeFollow3::followTape()
     // TODO: set `turning` and `turnDirection` if making turn
 }
 
+
 void TapeFollow3::makeTurn()
 {
     // TODO
 }
+
 
 // TODO: generalize
 int TapeFollow3::chooseTurn(bool left, bool right, bool straight)
@@ -129,15 +133,18 @@ int TapeFollow3::chooseTurn(bool left, bool right, bool straight)
 	return 0;  // straight
 }
 
+
 // TODO
 void TapeFollow3::printLCD()
 {
 }
 
+
 TapeFollow3::TapeFollow3()
 {
     this->init();
 }
+
 
 void TapeFollow3::loop()
 {
@@ -151,10 +158,13 @@ void TapeFollow3::loop()
 	this->followTape();
 }
 
+
 void TapeFollow3::start()
 {
     this->active = true;
+    this->motorsActive = true;
 }
+
 
 void TapeFollow3::stop()
 {
@@ -162,7 +172,16 @@ void TapeFollow3::stop()
     this->active = false;
 }
 
+
 void TapeFollow3::pause()
 {
     this->active = false;
+}
+
+
+// TODO
+void TapeFollow3::test()
+{
+    this->active = true;
+    this->motorsActive = false;
 }

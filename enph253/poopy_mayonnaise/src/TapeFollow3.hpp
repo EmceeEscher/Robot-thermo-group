@@ -90,6 +90,12 @@ public:
      * Stop the loop, but keep the current state of all variables.
      */
     void pause();
+
+    /*
+     * Enter a mode where readings are still made, but motors are always
+     * at speed 0.
+     */
+    void test();
 };
 
 #endif // TAPE_FOLLOW_3_HPP

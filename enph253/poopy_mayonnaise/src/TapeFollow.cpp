@@ -1,10 +1,14 @@
 ///
 // TapeFollow.cpp
 //
+
+
 #include "TapeFollow.hpp"
+
 
 //#pragma clang diagnostic push
 //#pragma ide diagnostic ignored "CannotResolve"
+
 
 // constants
 // sensors
@@ -21,6 +25,7 @@ const float LARGE_ERROR(10.0);
 const int MOTOR_SPEED(100);
 const int RESET_PERIOD(300);
 const int PRINT_PERIOD(270);
+
 
 // Class constructor
 TapeFollow::TapeFollow()
@@ -51,6 +56,7 @@ TapeFollow::TapeFollow()
 	pinMode(i, INPUT);
     }
 }
+
 
 // Main loop function
 void TapeFollow::loop() {
@@ -182,9 +188,11 @@ void TapeFollow::loop() {
     }
 }
 
+
 void TapeFollow::start() {
     this->motorsActive = true;
 }
+
 
 void TapeFollow::stop() {
     this->motorsActive = false;
