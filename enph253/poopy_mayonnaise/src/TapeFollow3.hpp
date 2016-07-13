@@ -22,7 +22,7 @@ private:
     double error;               // current error
     double lastError;           // last calculated error
     double errorArray[2];       // array of last 2 distinct errors
-    long etimeArray[2];         // array of times (since read) assoc with errorArray
+    long   etimeArray[2];       // array of times (since read) assoc with errorArray
     int turnDirection;          // current direction (-1:left, 0:straight, 1:right)
     bool onTape;                // true= on tape, false= off tape
     bool lastOnTape;            // last value of onTape

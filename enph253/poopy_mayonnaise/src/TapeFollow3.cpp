@@ -4,8 +4,8 @@
 #include "TapeFollow3.hpp"
 
 
-const int TAPE_SENSORS_FRONT[] {0, 1, 2, 3};
-const int TAPE_SENSORS_BACK[] {4, 5, 6, 7};
+const int TAPE_SENSORS_FRONT[]  {0, 1, 2, 3};
+const int TAPE_SENSORS_BACK[]   {4, 5, 6, 7};
 const int MOTOR_PIN_L(0);
 const int MOTOR_PIN_R(3);
 const int KNOB_PROP_GAIN(6);
@@ -29,13 +29,16 @@ void TapeFollow3::init()
     this->lastError = 0.;
     this->turnDirection = 0;
     this->motorSpeed = MOTOR_SPEED;
+
     // set errors
+
     for (int i(0); i < 2; ++i) {
-	this->errorArray[i] = 0;  // {0, 0}
-	this->etimeArray[i] = i;  // {0, 1}
+	this->errorArray[i] = 0;
+	this->etimeArray[i] = i;
 	this->intersectSeen[i] = false;
 	this->intersectDetect[i] = false;
     }
+
     for (int i(0); i < 4; ++i) {
 	this->activePins[i] = TAPE_SENSORS_FRONT[i];
 	this->lastPinReadings[i] = false;
