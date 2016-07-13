@@ -9,18 +9,21 @@
 
 #include <StandardCplusplus.h>
 #include <vector>
-#include <map>
 #include "MajorMode.hpp"
 #include "MinorMode.hpp"
+
+using std::vector;
 
 // TODO
 class RobotState {
 private:
-    bool active;                              // whether the robot is active
-    std::vector<MajorMode> allMajorModes;     // all possible major modes
-    std::vector<MinorMode> allMinorModes;     // all possible minor modes
-    MajorMode activeMajorMode;                // currently active major mode
-    std::vector<MinorMode> activeMinorModes;  // currently active minor modes
+    bool active;                         // whether the robot is active
+    vector<MajorMode> allMajorModes;     // all possible major modes
+    vector<MinorMode> allMinorModes;     // all possible minor modes
+    MajorMode* activeMajorMode;
+    vector<MinorMode*> activeMinorModes;
+    // vector<bool> activeMajorMode;
+    // vector<bool> activeMinorModes;
 public:
     RobotState();
 
@@ -38,7 +41,12 @@ public:
     /*
      * Returns a reference to the vector of currently active minor modes
      */
-    std::vector<MinorMode>& getMinorModes();
+    vector<MinorMode*>& getMinorModes();
+
+    /*
+     * Loops through all of the currently active modes
+     */
+    void loop();
 };
 
 #endif // ROBOT_STATE_HPP
