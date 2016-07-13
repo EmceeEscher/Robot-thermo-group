@@ -28,13 +28,13 @@ library for Arduino.
 
 ### See also
 ---
-* Arduino language:  
-    https://www.arduino.cc/en/Reference/HomePage
-* TINAH board:  
-	http://projectlab.engphys.ubc.ca/enph-253-2016/tinah-2016/
-* Advanced Makefile setup:  
-	https://github.com/sudar/Arduino-Makefile
-* atmega128 bootloader setup:  
-	http://arduinoexplained.blogspot.ca/2012/03/how-arduino-download-programs-to-board.html
-* Standard C++ library for Arduino:  
-	https://github.com/maniacbug/StandardCplusplus
+**Arduino language:**  
+https://www.arduino.cc/en/Reference/HomePage
+**TINAH board:**  
+http://projectlab.engphys.ubc.ca/enph-253-2016/tinah-2016/
+**Advanced Makefile setup:**  
+https://github.com/sudar/Arduino-Makefile
+**atmega128 bootloader setup:**  
+http://arduinoexplained.blogspot.ca/2012/03/how-arduino-download-programs-to-board.html
+**Standard C++ library for Arduino:**  
+https://github.com/maniacbug/StandardCplusplus
