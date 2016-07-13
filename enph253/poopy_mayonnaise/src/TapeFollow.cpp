@@ -1,8 +1,6 @@
 ///
 // TapeFollow.cpp
 //
-
-
 #include "TapeFollow.hpp"
 
 
