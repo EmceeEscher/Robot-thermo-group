@@ -58,7 +58,7 @@ private:
 };
 
 // class Tinah {
-//  public:
+// public:
 //     LiquidCrystal &LCD;
 //     motorClass &motor;
 //     ServoTimer2 &RCServo0;

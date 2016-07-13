@@ -7,14 +7,20 @@
 #ifndef ROBOT_STATE_HPP
 #define ROBOT_STATE_HPP
 
+#include <StandardCplusplus.h>
+#include <vector>
 #include "MajorMode.hpp"
 #include "MinorMode.hpp"
 
+// TODO
 class RobotState {
+private:
+    MajorMode majorMode;
+    std::vector<MinorMode>& minorModes;
 public:
     RobotState();
     MajorMode& getMajorMode();
-    MinorMode& getMinorModes();
+    std::vector<MinorMode>& getMinorModes();
 };
 
 #endif // ROBOT_STATE_HPP

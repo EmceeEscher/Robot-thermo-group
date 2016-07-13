@@ -26,3 +26,4 @@ The following should be done to prepare for usage:
 * TINAH board: http://projectlab.engphys.ubc.ca/enph-253-2016/tinah-2016/
 * Advanced Makefile setup: https://github.com/sudar/Arduino-Makefile
 * atmega128 bootloader setup: http://arduinoexplained.blogspot.ca/2012/03/how-arduino-download-programs-to-board.html
+* Standard C++ library for Arduino: https://github.com/maniacbug/StandardCplusplus
