@@ -29,7 +29,7 @@ private:
     bool lastOnTape;            // last value of onTape
     bool turning;               // true= turning, false= straight
     bool halfTurn;              // if true, bot has turned far enough that mains are off tape
-    float active;               // whether the loop is active
+    bool active;                // whether the loop is active
     int activePins[4];          // pin numbers (intL, mainL, mainR, intR)
     bool lastPinReadings[4];    // previous pin readings
     bool pinReadings[4];        // current readings on QRD pins
@@ -103,6 +103,11 @@ public:
      * Stop the loop, but keep the current state of all variables.
      */
     void pause();
+
+    /*
+     * Return true if the mode is currently active, else false
+     */
+    bool isActive();
 
     /*
      * Enter a mode where readings are still made, but motors are always

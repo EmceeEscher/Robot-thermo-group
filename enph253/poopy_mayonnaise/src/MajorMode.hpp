@@ -27,6 +27,11 @@ public:
      * Stop looping but keep variables in current state
      */
     virtual void pause() = 0;
+
+    /*
+     * Return true if the mode is currently active
+     */
+    virtual bool isActive() = 0;
     
     /*
      * Enter next major mode

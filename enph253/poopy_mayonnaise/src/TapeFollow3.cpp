@@ -307,6 +307,12 @@ void TapeFollow3::pause()
 }
 
 
+bool TapeFollow3::isActive()
+{
+    return this->active;
+}
+
+
 void TapeFollow3::test()
 {
     this->active = true;

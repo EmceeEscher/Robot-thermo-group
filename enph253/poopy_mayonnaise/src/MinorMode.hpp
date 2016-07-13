@@ -28,6 +28,11 @@ public:
      * Stop looping but keep variables in current state
      */
     virtual void pause() = 0;
+
+    /*
+     * Returns true if the mode is currently active, else false
+     */
+    virtual bool isActive() = 0;
 };
 
 #endif // MINOR_MODE_HPP

@@ -9,14 +9,17 @@
 
 #include <StandardCplusplus.h>
 #include <vector>
+#include <map>
 #include "MajorMode.hpp"
 #include "MinorMode.hpp"
 
 // TODO
 class RobotState {
 private:
-    MajorMode majorMode;
-    std::vector<MinorMode>& minorModes;
+    MajorMode activeMajorMode;                   // currently active major mode
+    std::map<MinorMode, bool> activeMinorModes;  // map MinorMode->bool that tells whether the given mode is active
+    std::vector<MajorMode> allMajorModes;        // all possible major modes
+    std::vector<MinorMode> allMinorModes;        // all possible minor modes
 public:
     RobotState();
     MajorMode& getMajorMode();
