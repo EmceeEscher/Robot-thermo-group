@@ -12,7 +12,7 @@ const int KNOB_PROP_GAIN(6);
 const int KNOB_DER1_GAIN(7);
 const float EPSILON(0.01);
 const int MOTOR_SPEED(100);
-const int PRINT_PERIOD(48);
+const int PRINT_PERIOD(96);
 const double ERROR_SMALL(2);
 const double ERROR_MEDIUM(4);
 const double ERROR_LARGE(8);
@@ -223,6 +223,8 @@ void TapeFollow3::loop()
     if (!this->active)
 	return;
 
+    this->printLCD();
+
     // set gains
     // TODO move this to `init` once values are decided upon
     this->gainProp = knob(KNOB_PROP_GAIN) / 50;
@@ -304,6 +306,7 @@ void TapeFollow3::pause()
 {
     this->active = false;
     this->motorsActive = false;
+    this->printLCD();
 }
 
 
