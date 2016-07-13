@@ -16,6 +16,7 @@ const int PRINT_PERIOD(48);
 const double ERROR_SMALL(2);
 const double ERROR_MEDIUM(4);
 const double ERROR_LARGE(8);
+const double ERROR_TURNING(8);
 
 
 void TapeFollow3::init()
@@ -23,7 +24,9 @@ void TapeFollow3::init()
     this->active = false;
     this->onTape = false;
     this->turning = false;
-    this->lastError = 0;
+    this->halfTurn = false;
+    this->error = 0.;
+    this->lastError = 0.;
     this->turnDirection = 0;
     this->motorSpeed = MOTOR_SPEED;
     // set errors
@@ -41,22 +44,21 @@ void TapeFollow3::init()
 }
 
 
-// TODO
+// TODO make this more advanced
 void TapeFollow3::seekTape()
 {
+    if (this->lastError < 0.)              // off tape to the right
+	this->error = -this->errorLarge;
+    else if (this->lastError > 0.)         // off tape to the left
+	this->error = this->errorLarge;
+    else
+	this->error = 0.;
 }
 
 
-// TODO
 void TapeFollow3::followTape()
 {
     // declare static variables (runs once)
-    static double ctrlProp;
-    static double ctrlDer1;
-    static double ctrlDer2;
-    static double der1[2];
-    static double der2;
-    static double error;
     const static bool &intersectL = this->pinReadings[0];
     const static bool &mainL      = this->pinReadings[1];
     const static bool &mainR      = this->pinReadings[2];
@@ -64,57 +66,17 @@ void TapeFollow3::followTape()
 
     // determine error
     if (mainL && mainR)                    // both pins over tape
-	error = 0.;
+	this->error = 0.;
     else if (mainL)                       // left main over tape
-	error = -this->errorSmall;
+	this->error = -this->errorSmall;
     else if (mainR)                       // right main over tape
-	error = this->errorSmall;
+	this->error = this->errorSmall;
     else if (intersectL && (!intersectR))  // left intersection over tape
-	error = -this->errorMedium;
+	this->error = -this->errorMedium;
     else if (intersectR && (!intersectL))  // right intersection over tape
-	error = this->errorMedium;
-    else if (this->lastError < 0.)         // off tape to the right
-	error = -this->errorLarge;
-    else if (this->lastError > 0.)         // off tape to the left
-	error = this->errorLarge;
+	this->error = this->errorMedium;
     else
-	error = 0.;
-
-    // update previous error parameters
-    if (error != this->lastError) {
-	this->errorArray[1] = this->errorArray[0];
-	this->errorArray[0] = this->lastError;
-	this->etimeArray[1] = this->etimeArray[0];
-	this->etimeArray[0] = 1;
-	this->lastError = error;
-    }
-
-    // get error derivatives
-    der1[0] = (error - this->errorArray[0]) /
-	    static_cast<double>(etimeArray[0]);
-    der1[1] = (this->errorArray[0] - this->errorArray[1]) /
-	    static_cast<double>(etimeArray[1] - etimeArray[0]);
-    der2 = (der1[0] - der1[1]) /
-	    static_cast<double>(etimeArray[0]);
-
-    // get the effect of gains
-    ctrlProp = this->gainProp * error;
-    ctrlDer1 = this->gainDer1 * der1[0];
-    ctrlDer2 = this->gainDer2 * der2;
-    this->control = -static_cast<int>(ctrlProp + ctrlDer1 + ctrlDer2);
-
-    // adjust motor speed
-    if (this->motorsActive) {
-	motor.speed(MOTOR_PIN_L, -this->motorSpeed + this->control);
-	motor.speed(MOTOR_PIN_R, this->motorSpeed + this->control);
-    } else {
-	motor.speed(MOTOR_PIN_L, 0);
-	motor.speed(MOTOR_PIN_R, 0);
-    }
-
-    // increase time counters
-    for (int i(0); i < 2; ++i)
-	this->etimeArray[i] += 1;
+	this->error = 0.;
 
     // check if intersections seen
     if (intersectL && mainR)
@@ -146,9 +108,27 @@ void TapeFollow3::followTape()
 }
 
 
-// TODO
+// TODO make more advanced
 void TapeFollow3::makeTurn()
 {
+    // declare static variables (runs once)
+    static bool mainsOnTape;
+
+    mainsOnTape = (this->pinReadings[1] || this->pinReadings[2]);
+
+    // determine error
+    if (mainsOnTape)
+	this->error = 0.;
+    else 
+	this->error = this->turnDirection * this->errorTurning;
+
+    // determine whether end has bee reached
+    if ((!this->halfTurn) && this->lastOnTape && (!mainsOnTape))
+	this->halfTurn = true;
+    else if (this->halfTurn && (!this->lastOnTape) && mainsOnTape) {
+	this->halfTurn = false;
+	this->turning = false;  // exit to regular following
+    }
 }
 
 
@@ -165,7 +145,6 @@ int TapeFollow3::chooseTurn(bool left, bool right, bool straight)
 }
 
 
-// TODO
 void TapeFollow3::printLCD()
 {
     static int i(0);  // declaration runs once
@@ -222,7 +201,8 @@ void TapeFollow3::printLCD()
 TapeFollow3::TapeFollow3()
     : errorSmall(ERROR_SMALL),
       errorMedium(ERROR_MEDIUM),
-      errorLarge(ERROR_LARGE)
+      errorLarge(ERROR_LARGE),
+      errorTurning(ERROR_TURNING)
 {
     this->init();
 }
@@ -230,6 +210,13 @@ TapeFollow3::TapeFollow3()
 
 void TapeFollow3::loop()
 {
+    // declare static variables (runs only once)
+    static double ctrlProp;
+    static double ctrlDer1;
+    static double ctrlDer2;
+    static double der1[2];
+    static double der2;
+
     if (!this->active)
 	return;
 
@@ -245,14 +232,54 @@ void TapeFollow3::loop()
 	this->pinReadings[i] = static_cast<bool>(
 	        digitalRead(this->activePins[i]));
     }
-    this->onTape = (this->pinReadings[1] || this->pinReadings[2]);
+    this->lastOnTape = this->onTape;
+    this->onTape = false;
+    for (int i(0); i < 4; ++i)
+	this->onTape = this->onTape || this->pinReadings[i];
 
+    // get error based on current state
     if (!(this->turning || this->onTape))
 	this->seekTape();
     else if (this->turning)
 	this->makeTurn();
     else
 	this->followTape();
+
+    // update previous error parameters
+    if (this->error != this->lastError) {
+	this->errorArray[1] = this->errorArray[0];
+	this->errorArray[0] = this->lastError;
+	this->etimeArray[1] = this->etimeArray[0];
+	this->etimeArray[0] = 1;
+	this->lastError = this->error;
+    }
+
+    // get error derivatives
+    der1[0] = (this->error - this->errorArray[0]) /
+	    static_cast<double>(this->etimeArray[0]);
+    der1[1] = (this->errorArray[0] - this->errorArray[1]) /
+	    static_cast<double>(this->etimeArray[1] - this->etimeArray[0]);
+    der2 = (der1[0] - der1[1]) /
+	    static_cast<double>(this->etimeArray[0]);
+
+    // get the effect of gains
+    ctrlProp = this->gainProp * this->error;
+    ctrlDer1 = this->gainDer1 * der1[0];
+    ctrlDer2 = this->gainDer2 * der2;
+    this->control = -static_cast<int>(ctrlProp + ctrlDer1 + ctrlDer2);
+
+    // adjust motor speed
+    if (this->motorsActive) {
+	motor.speed(MOTOR_PIN_L, -this->motorSpeed + this->control);
+	motor.speed(MOTOR_PIN_R, this->motorSpeed + this->control);
+    } else {
+	motor.speed(MOTOR_PIN_L, 0);
+	motor.speed(MOTOR_PIN_R, 0);
+    }
+
+    // increase time counters
+    for (int i(0); i < 2; ++i)
+	this->etimeArray[i] += 1;
 }
 
 
