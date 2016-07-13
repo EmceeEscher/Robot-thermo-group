@@ -6,9 +6,10 @@
  * 
  */
 
+const int baseAnglePin = 0;
 
 float propGain, derivGain, intGain;
-float baseTarget;
+float baseTarget, midTarget;
 float propErr, derivErr, intErr, lastPropErr;
 float angle;
 float now, lastTime;
@@ -17,11 +18,14 @@ Tinah tinah;
 int i;
 
 void setup() {
+  Serial.begin(9600);
   propGain = 0.; 
   derivGain = 0.; 
   intGain = 0.;
   baseTarget = 45.;
+  midTarget = 0;
   lastPropErr = 0;
+  tinah.RCServo0.write(midTarget);
   i = 0;
 }
 
@@ -37,11 +41,11 @@ void loop() {
   lastTime = now;
   lastPropErr = propErr;
 
-  if(i % 50 == 0){
+  if(i % 250 == 0){
     tinah.LCD.clear();
     tinah.LCD.print(getControl());
     tinah.LCD.setCursor(0,1);
-    tinah.LCD.print((int) derivErr);
+    tinah.LCD.print((int) getAngle());
     i = 1;
   }
   
@@ -49,14 +53,20 @@ void loop() {
     settingsMenu();
     lastTime = micros();
     intErr = 0;
+  } else if(stopbutton()){
+    serialMenu();
+    lastTime = micros();
+    intErr = 0;
+    tinah.RCServo0.write(midTarget);
   }
 
   i++;
 }
 
 //TODO: Actually determine a formula to get the angle
-int getAngle() {
-  return analogRead(0)/100;
+float getAngle() {
+  float voltage = (float) analogRead(baseAnglePin) * 5./1024.;
+  return ((-142.857 * voltage) / (voltage - 5.));
 }
 
 //Wrapper function for setting motor speed
@@ -70,7 +80,7 @@ void setBaseMotor(int duty){
   tinah.motor.speed(0,duty);
 }
 
-//Retrusn the motor speed based on PID control
+//Returns the motor speed based on PID control
 float getControl(){
   float control = 0;
   control += propGain * propErr;
@@ -168,3 +178,110 @@ void settingsMenu(){
 
 }
 
+void serialMenu(){
+
+  tinah.LCD.clear();
+  tinah.LCD.print("Serial Menu");
+  delay(800);
+
+  //Proportional Gain
+  tinah.LCD.clear();
+  tinah.LCD.print("P:");
+  tinah.LCD.setCursor(0,1);
+  tinah.LCD.print("Orig: ");
+  tinah.LCD.print(propGain);
+  while(1){
+    if(Serial.available() > 0){
+      propGain = Serial.parseFloat();
+      break;
+    }
+    else{
+      delay(1);
+    }
+  }
+  tinah.LCD.clear();
+  tinah.LCD.print("P: ");
+  tinah.LCD.print(propGain);
+  delay(800);
+
+  //Integral Gain
+  tinah.LCD.clear();
+  tinah.LCD.print("I:");
+  tinah.LCD.setCursor(0,1);
+  tinah.LCD.print("Orig: ");
+  tinah.LCD.print(intGain);
+  while(1){
+    if(Serial.available() > 0){
+      intGain = Serial.parseFloat();
+      break;
+    }
+    else{
+      delay(1);
+    }
+  }
+  tinah.LCD.clear();
+  tinah.LCD.print("I: ");
+  tinah.LCD.print(intGain);
+  delay(800);
+
+  //Derivative Gain
+  tinah.LCD.clear();
+  tinah.LCD.print("D:");
+  tinah.LCD.setCursor(0,1);
+  tinah.LCD.print("Orig: ");
+  tinah.LCD.print(derivGain);
+  while(1){
+    if(Serial.available() > 0){
+      derivGain = Serial.parseFloat();
+      break;
+    }
+    else{
+      delay(1);
+    }
+  }
+  tinah.LCD.clear();
+  tinah.LCD.print("D: ");
+  tinah.LCD.print(derivGain);
+  delay(800);
+
+  //Base Target
+  tinah.LCD.clear();
+  tinah.LCD.print("Base:");
+  tinah.LCD.setCursor(0,1);
+  tinah.LCD.print("Orig: ");
+  tinah.LCD.print(baseTarget);
+  while(1){
+    if(Serial.available() > 0){
+      baseTarget = Serial.parseFloat();
+      break;
+    }
+    else{
+      delay(1);
+    }
+  }
+  tinah.LCD.clear();
+  tinah.LCD.print("Base: ");
+  tinah.LCD.print(baseTarget);
+  delay(800);
+
+  //Middle Joint Target
+  tinah.LCD.clear();
+  tinah.LCD.print("Mid:");
+  tinah.LCD.setCursor(0,1);
+  tinah.LCD.print("Orig: ");
+  tinah.LCD.print(midTarget);
+  while(1){
+    if(Serial.available() > 0){
+      midTarget = Serial.parseFloat();
+      break;
+    }
+    else{
+      delay(1);
+    }
+  }
+  tinah.LCD.clear();
+  tinah.LCD.print("Mid: ");
+  tinah.LCD.print(midTarget);
+  delay(800);
+  
+}
