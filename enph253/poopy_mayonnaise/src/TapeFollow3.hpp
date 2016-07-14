@@ -7,8 +7,11 @@
 #define TAPE_FOLLOW_3_HPP
 
 
+#include <StandardCplusplus.h>
+#include <vector>
 #include "MinorMode.hpp"
 
+using std::vector;
 
 class TapeFollow3 : MinorMode
 {
@@ -32,8 +35,10 @@ private:
     bool halfTurn;                // if true, bot has turned far enough that mains are off tape
     bool active;                  // whether the loop is active
     int activePins[4];            // pin numbers (intL, mainL, mainR, intR)
-    bool lastPinReadings[4];      // previous pin readings
-    bool pinReadings[4];          // current readings on QRD pins
+    // vector< vector<bool> > lastPinReadings;
+    // vector<bool> pinReadings;     // current readings on QRD pins
+    bool lastPinReadings[4];
+    bool pinReadings[4];
     int motorSpeed;               // speed to add to motors
     bool motorsActive;            // true if motors are active
     int control;                  // current control parameter

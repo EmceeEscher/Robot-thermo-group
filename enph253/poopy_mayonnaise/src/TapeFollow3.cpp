@@ -1,8 +1,13 @@
 ///
 // TapeFollow3.cpp
 //
+#include <StandardCplusplus.h>
+#include <vector>
 #include <phys253.h>
 #include "TapeFollow3.hpp"
+
+
+using std::vector;
 
 
 const int TAPE_SENSORS_FRONT[]  {0, 1, 2, 3};
@@ -23,6 +28,7 @@ const double GAIN_PROP(5.);
 const double GAIN_DER1(5.);
 // const double GAIN_DER2(0.);
 const double GAIN_DER2(.5*GAIN_DER1*GAIN_DER1/GAIN_PROP*(1.-EPSILON));
+const int NUM_PIN_READINGS(4);
 
 
 void TapeFollow3::init()
@@ -51,9 +57,13 @@ void TapeFollow3::init()
 
     for (int i(0); i < 4; ++i) {
 	this->activePins[i] = TAPE_SENSORS_FRONT[i];
-	this->lastPinReadings[i] = false;
 	this->pinReadings[i] = false;
+	this->lastPinReadings[i] = false; // TODO remove
     }
+
+    // for (int i(0); i < this->lastPinReadings.size(); ++i) 
+    // 	for (int j(0); j < 4; ++j)
+    // 	    this->lastPinReadings[i][j] = false;
 }
 
 
@@ -222,15 +232,17 @@ void TapeFollow3::printLCD()
 
 
 TapeFollow3::TapeFollow3()
-    : errorSmall     (ERROR_SMALL),
-      errorMedium    (ERROR_MEDIUM),
-      errorLarge     (ERROR_LARGE),
-      errorTurning   (ERROR_TURNING),
-      gainProp       (GAIN_PROP),
-      gainDer1       (GAIN_DER1),
-      gainDer2       (GAIN_DER2),
-      intersectDelay (INTERSECT_DELAY_PERIOD),
-      printPeriod    (PRINT_PERIOD)
+    : errorSmall      (ERROR_SMALL),
+      errorMedium     (ERROR_MEDIUM),
+      errorLarge      (ERROR_LARGE),
+      errorTurning    (ERROR_TURNING),
+      gainProp        (GAIN_PROP),
+      gainDer1        (GAIN_DER1),
+      gainDer2        (GAIN_DER2),
+      intersectDelay  (INTERSECT_DELAY_PERIOD),
+      printPeriod     (PRINT_PERIOD)
+      // pinReadings     (4, false),
+      // lastPinReadings (NUM_SAVED_READINGS, vector<bool>(4, false))
 {
     this->init();
 }
@@ -261,12 +273,19 @@ void TapeFollow3::loop()
     // this->gainDer1 = GAIN_DER1;//static_cast<double>(knob(KNOB_DER1_GAIN)) / 50.;
     // this->gainDer2 = 0.; //.5*this->gainDer1*this->gainDer1/this->gainProp*(1.-EPSILON);
 
+    for (int i(0); i < 4; ++i) 
+	this->lastPinReadings[i] = this->pinReadings[i];
+    
     // get readings from tape sensors
     for (int i(0); i < 4; ++i) {
-	this->lastPinReadings[i] = this->pinReadings[i];
 	this->pinReadings[i] = static_cast<bool>(
 	        digitalRead(this->activePins[i]));
     }
+
+    // // TODO update lastPinReadings array
+    // this->lastPinReadings.pop_back();
+    // this->lastPinReadings.push_front(this->pinReadings);
+    
     this->lastOnTape = this->onTape;
     this->onTape = false;
     for (int i(0); i < 4; ++i)
