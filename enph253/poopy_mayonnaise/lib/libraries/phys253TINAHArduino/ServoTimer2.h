@@ -50,9 +50,6 @@ The pulse width timing is accurate to within 1%
 #define DEFAULT_PULSE_WIDTH   750          // default pulse width when servo is attached
 #define FRAME_SYNC_PERIOD   10000 //20000  // total frame duration in microseconds
 #define NBR_CHANNELS            8          // the maximum number of channels, don't change this
-#define FRAME_SYNC_INDEX        0          // frame sync delay is the first entry in the channel array
-#define DELAY_ADJUST            8          // number of microseconds of calculation overhead to be subtracted from pulse timings
-#define FRAME_SYNC_DELAY   ((FRAME_SYNC_PERIOD - ( NBR_CHANNELS * DEFAULT_PULSE_WIDTH))/ 128) // number of iterations of the ISR to get the desired frame rate
 
 typedef uint8_t boolean;
 typedef uint8_t byte;
