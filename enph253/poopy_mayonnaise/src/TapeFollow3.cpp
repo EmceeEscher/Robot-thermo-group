@@ -19,10 +19,10 @@ const double ERROR_SMALL(2);
 const double ERROR_MEDIUM(4);
 const double ERROR_LARGE(8);
 const double ERROR_TURNING(8);
-const double GAIN_PROP = 5.;
-const double GAIN_DER1 = 5.;
-// const double GAIN_DER2 = 0.;
-const double GAIN_DER2 = .5*GAIN_DER1*GAIN_DER1/GAIN_PROP*(1.-EPSILON);
+const double GAIN_PROP(5.);
+const double GAIN_DER1(5.);
+// const double GAIN_DER2(0.);
+const double GAIN_DER2(.5*GAIN_DER1*GAIN_DER1/GAIN_PROP*(1.-EPSILON));
 
 void TapeFollow3::init()
 {
@@ -249,7 +249,7 @@ void TapeFollow3::loop()
 	++printCount;
 
     // // set gains
-    // // TODO move this to `init` once values are decided upon
+    // // TODO move this to constructor once values are decided upon
     // this->gainProp = GAIN_PROP;//static_cast<double>(knob(KNOB_PROP_GAIN)) / 50.;
     // this->gainDer1 = GAIN_DER1;//static_cast<double>(knob(KNOB_DER1_GAIN)) / 50.;
     // this->gainDer2 = 0.; //.5*this->gainDer1*this->gainDer1/this->gainProp*(1.-EPSILON);
