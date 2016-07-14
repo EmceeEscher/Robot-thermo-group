@@ -20,7 +20,6 @@ private:
     const double errorMedium;   // both mains off, one intersection on tape
     const double errorLarge;    // all QRDs off tape
     const double errorTurning;  // error to be applied during turning
-    double error;               // current error
     double lastError;           // last calculated error
     double errorArray[2];       // array of last 2 distinct errors
     unsigned long etimeArray[2];       // array of times (since read) assoc with errorArray
@@ -53,8 +52,9 @@ private:
      * Loop function for seeking tape. 
      * Intersection sensors are used to help find tape. When found,
      * `followTape` is entered.
+     * The appropriate error is returned.
      */
-    void seekTape();
+    double seekTape();
 
     /*
      * Look for intersection. If found, make decision and turn?
@@ -65,8 +65,9 @@ private:
      * Loop function for following tape with no intersections.
      * If an intersection is detected (and a turn is to be made) 
      * `makeTurn` is called.
+     * The appropriate error is returned.
      */
-    void followTape();
+    double followTape();
 
     /*
      * Function which chooses what direction to turn, based on its available
@@ -76,17 +77,20 @@ private:
      * param right: true if right is an option, false otherwise
      * param straight: true if straight is an option, false otherwise
      */
-    int chooseTurn(bool left, bool right, bool straight);
+    static int chooseTurn(bool left, bool right, bool straight);
 
     /*
      * Loop function for completing a turn in a single direction.
      * Continues until both main detecters loss current tape and find the
      * next, at which point `followTape` is entered.
+     * The appropriate error is returned.
      */
-    void makeTurn();
+    double makeTurn();
 
     /*
      * Print output to the LCD
+     *
+     * param control: the control for printing
      */
     void printLCD();
 

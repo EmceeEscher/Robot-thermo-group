@@ -11,7 +11,7 @@ const int MOTOR_PIN_L(0);
 const int MOTOR_PIN_R(3);
 const int KNOB_PROP_GAIN(6);
 const int KNOB_DER1_GAIN(7);
-const float EPSILON(0.01);
+const double EPSILON(0.01);
 const int MOTOR_SPEED(72);
 const int PRINT_PERIOD(16);
 const unsigned long INTERSECT_DELAY_PERIOD(10000);
@@ -21,7 +21,8 @@ const double ERROR_LARGE(8);
 const double ERROR_TURNING(8);
 const double GAIN_PROP = 5.;
 const double GAIN_DER1 = 5.;
-const double GAIN_DER2 = 0.;
+// const double GAIN_DER2 = 0.;
+const double GAIN_DER2 = .5*GAIN_DER1*GAIN_DER1/GAIN_PROP*(1.-EPSILON);
 
 void TapeFollow3::init()
 {
@@ -29,7 +30,6 @@ void TapeFollow3::init()
     this->onTape = false;
     this->turning = false;
     this->halfTurn = false;
-    this->error = 0.;
     this->lastError = 0.;
     this->turnDirection = 0;
     this->tapeFollowSteps = 0;
@@ -51,14 +51,14 @@ void TapeFollow3::init()
 
 
 // TODO make this more advanced
-void TapeFollow3::seekTape()
+double TapeFollow3::seekTape()
 {
     if (this->lastError < 0.)              // off tape to the right
-	this->error = this->errorLarge;
+	return this->errorLarge;
     else if (this->lastError > 0.)         // off tape to the left
-	this->error = -this->errorLarge;
+	return -this->errorLarge;
     else
-	this->error = 0.;
+	return 0.;
 }
 
 
@@ -100,41 +100,46 @@ void TapeFollow3::intersectionDetection()
 }
 
 
-void TapeFollow3::followTape()
+double TapeFollow3::followTape()
 {
     // declare static variables (runs once)
     const static bool &intersectL = this->pinReadings[0];
     const static bool &mainL      = this->pinReadings[1];
     const static bool &mainR      = this->pinReadings[2];
     const static bool &intersectR = this->pinReadings[3];
+    static double error = 0.;
 
     // determine error
     if (mainL && mainR)                    // both pins over tape
-	this->error = 0.;
+	error = 0.;
     else if (mainL)                       // left main over tape
-	this->error = this->errorSmall;
+	error = this->errorSmall;
     else if (mainR)                       // right main over tape
-	this->error = -this->errorSmall;
+	error = -this->errorSmall;
     else if (intersectL && (!intersectR))  // left intersection over tape
-	this->error = this->errorMedium;
+	error = this->errorMedium;
     else if (intersectR && (!intersectL))  // right intersection over tape
-	this->error = -this->errorMedium;
+	error = -this->errorMedium;
     else
-	this->error = 0.;
+	error = 0.;
 
     if (this->tapeFollowSteps > this->intersectDelay)
 	this->intersectionDetection();
+
+    return error;
 }
 
 
 // TODO make more advanced
-void TapeFollow3::makeTurn()
+double TapeFollow3::makeTurn()
 {
+    static double error(0.);
+
     // determine error
-    if (mainsOnTape)
-	this->error = 0.;
+    if (this->mainsOnTape)
+	error = 0.;
     else 
-	this->error = -this->turnDirection * this->errorTurning;
+	error = -this->turnDirection * this->errorTurning;
 
     // determine whether end has bee reached
     if ((!this->halfTurn) && this->lastMainsOnTape && (!this->mainsOnTape))
@@ -143,6 +148,8 @@ void TapeFollow3::makeTurn()
 	this->halfTurn = false;
 	this->turning = false;  // exit to regular following
     }
+
+    return error;
 }
 
 
@@ -230,6 +237,7 @@ void TapeFollow3::loop()
     static double der1[2];
     static double der2;
     static int printCount(0);
+    static double error(0.);
 
     if (!this->active)
 	return;
@@ -262,26 +270,26 @@ void TapeFollow3::loop()
     // get error based on current state
     if (!(this->turning || this->onTape)) {
 	this->tapeFollowSteps = 0;
-	this->seekTape();
+	error = this->seekTape();
     } else if (this->turning) {
 	this->tapeFollowSteps = 0;
-	this->makeTurn();
+	error = makeTurn();
     } else {
 	this->tapeFollowSteps += 1;
-	this->followTape();
+	error = followTape();
     }
 
     // update previous error parameters
-    if (this->error != this->lastError) {
+    if (error != this->lastError) {
 	this->errorArray[1] = this->errorArray[0];
 	this->errorArray[0] = this->lastError;
 	this->etimeArray[1] = this->etimeArray[0];
 	this->etimeArray[0] = 1;
-	this->lastError = this->error;
+	this->lastError = error;
     }
 
     // get error derivatives
-    der1[0] = (this->error - this->errorArray[0]) /
+    der1[0] = (error - this->errorArray[0]) /
 	    static_cast<double>(this->etimeArray[0]);
     der1[1] = (this->errorArray[0] - this->errorArray[1]) /
 	    static_cast<double>(this->etimeArray[1] - this->etimeArray[0]);
@@ -289,7 +297,7 @@ void TapeFollow3::loop()
 	    static_cast<double>(this->etimeArray[0]);
 
     // get the effect of gains
-    ctrlProp = this->gainProp * this->error;
+    ctrlProp = this->gainProp * error;
     ctrlDer1 = this->gainDer1 * der1[0];
     ctrlDer2 = this->gainDer2 * der2;
     this->control = -static_cast<int>(ctrlProp + ctrlDer1 + ctrlDer2);
