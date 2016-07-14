@@ -6,12 +6,10 @@
 #ifndef TAPE_FOLLOW_HPP
 #define TAPE_FOLLOW_HPP
 
-//#pragma clang diagnostic push
-//#pragma ide diagnostic ignored "CannotResolve"
-
 #include <phys253.h>
 
-class TapeFollow {
+class TapeFollow
+{
 public:
     TapeFollow();
     void loop();
@@ -38,7 +36,5 @@ private:
     double lastError;
     double recentError;
 };
-
-//#pragma clang diagnostic pop
 
 #endif // TAPE_FOLLOW_HPP

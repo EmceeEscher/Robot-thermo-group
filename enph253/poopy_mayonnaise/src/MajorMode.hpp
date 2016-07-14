@@ -6,7 +6,8 @@
 #ifndef MAJOR_MODE_HPP
 #define MAJOR_MODE_HPP
 
-class MajorMode {
+class MajorMode
+{
 public:
     /*
      * Major loop function for mode

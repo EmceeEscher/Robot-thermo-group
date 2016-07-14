@@ -15,7 +15,8 @@
 using std::vector;
 
 // TODO
-class RobotState {
+class RobotState
+{
 private:
     bool active;                          // whether the robot is active
     vector<MajorMode>  allMajorModes;     // all possible major modes

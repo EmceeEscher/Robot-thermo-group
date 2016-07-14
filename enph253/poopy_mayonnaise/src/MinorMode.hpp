@@ -7,7 +7,8 @@
 #ifndef MINOR_MODE_HPP
 #define MINOR_MODE_HPP
 
-class MinorMode {
+class MinorMode
+{
 public:
     /*
      * Major loop function for mode
