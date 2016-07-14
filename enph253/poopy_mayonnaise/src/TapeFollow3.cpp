@@ -1,13 +1,8 @@
 ///
 // TapeFollow3.cpp
 //
-#include <StandardCplusplus.h>
-#include <vector>
 #include <phys253.h>
 #include "TapeFollow3.hpp"
-
-
-using std::vector;
 
 
 const int TAPE_SENSORS_FRONT[]  {0, 1, 2, 3};
@@ -59,9 +54,9 @@ void TapeFollow3::init()
 
     for (int i(0); i < 4; ++i) {
 	this->activePins[i] = TAPE_SENSORS_FRONT[i];
+	this->lastPinReadings[i] = false;
 	this->pinReadings[i] = false;
     }
-
     for (unsigned int i(0); i < this->lastPinReadings.size(); ++i) 
     	for (int j(0); j < 4; ++j)
     	    this->lastPinReadings[i][j] = false;
@@ -233,17 +228,15 @@ void TapeFollow3::printLCD()
 
 
 TapeFollow3::TapeFollow3()
-    : gainProp        (GAIN_PROP),
-      gainDer1        (GAIN_DER1),
-      gainDer2        (GAIN_DER2),
-      errorSmall      (ERROR_SMALL),
-      errorMedium     (ERROR_MEDIUM),
-      errorLarge      (ERROR_LARGE),
-      errorTurning    (ERROR_TURNING),
-      intersectDelay  (INTERSECT_DELAY_PERIOD),
-      printPeriod     (PRINT_PERIOD),
-      pinReadings     (4, false),
-      lastPinReadings (NUM_SAVED_READINGS, vector<bool>(4, false))
+    : errorSmall     (ERROR_SMALL),
+      errorMedium    (ERROR_MEDIUM),
+      errorLarge     (ERROR_LARGE),
+      errorTurning   (ERROR_TURNING),
+      gainProp       (GAIN_PROP),
+      gainDer1       (GAIN_DER1),
+      gainDer2       (GAIN_DER2),
+      intersectDelay (INTERSECT_DELAY_PERIOD),
+      printPeriod    (PRINT_PERIOD)
 {
     this->init();
 }
@@ -276,6 +269,7 @@ void TapeFollow3::loop()
 
     // get readings from tape sensors
     for (int i(0); i < 4; ++i) {
+	this->lastPinReadings[i] = this->pinReadings[i];
 	this->pinReadings[i] = static_cast<bool>(
 	        digitalRead(this->activePins[i]));
     }

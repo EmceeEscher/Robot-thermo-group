@@ -7,6 +7,7 @@
 #define TAPE_FOLLOW_3_HPP
 
 
+<<<<<<< HEAD
 #include <StandardCplusplus.h>
 #include <vector>
 #include <deque>
@@ -14,6 +15,10 @@
 
 using std::vector;
 using std::deque;
+=======
+#include "MinorMode.hpp"
+
+>>>>>>> parent of 5d3416e... stuff
 
 class TapeFollow3 : MinorMode
 {
@@ -38,6 +43,14 @@ private:
     bool lastMainsOnTape;         // whether one of the mains was on the tape in the last step
     bool turning;                 // true= turning, false= straight
     bool halfTurn;                // if true, bot has turned far enough that mains are off tape
+<<<<<<< HEAD
+=======
+    bool active;                  // whether the loop is active
+    int activePins[4];            // pin numbers (intL, mainL, mainR, intR)
+    bool lastPinReadings[4];      // previous pin readings
+    bool pinReadings[4];          // current readings on QRD pins
+    int motorSpeed;               // speed to add to motors
+>>>>>>> parent of 5d3416e... stuff
     bool motorsActive;            // true if motors are active
 
     int turnDirection;            // current direction (-1:left, 0:straight, 1:right)
