@@ -19,18 +19,12 @@ const double ERROR_SMALL(2);
 const double ERROR_MEDIUM(4);
 const double ERROR_LARGE(8);
 const double ERROR_TURNING(8);
-<<<<<<< HEAD
-const double GAIN_PROP(5.);
-const double GAIN_DER1(5.);
-// const double GAIN_DER2(0.);
-const double GAIN_DER2(.5*GAIN_DER1*GAIN_DER1/GAIN_PROP*(1.-EPSILON));
 const int NUM_SAVED_READINGS(4);
-=======
 const double GAIN_PROP = 5.;
 const double GAIN_DER1 = 5.;
 // const double GAIN_DER2 = 0.;
 const double GAIN_DER2 = .5*GAIN_DER1*GAIN_DER1/GAIN_PROP*(1.-EPSILON);
->>>>>>> parent of 52dda12... cleanup
+
 
 void TapeFollow3::init()
 {
@@ -58,9 +52,6 @@ void TapeFollow3::init()
 	this->lastPinReadings[i] = false;
 	this->pinReadings[i] = false;
     }
-    for (unsigned int i(0); i < this->lastPinReadings.size(); ++i) 
-    	for (int j(0); j < 4; ++j)
-    	    this->lastPinReadings[i][j] = false;
 }
 
 
@@ -274,11 +265,6 @@ void TapeFollow3::loop()
 	this->pinReadings[i] = static_cast<bool>(
 	        digitalRead(this->activePins[i]));
     }
-
-    // TODO update lastPinReadings array
-    this->lastPinReadings.pop_back();
-    this->lastPinReadings.push_front(this->pinReadings);
-    
     this->lastOnTape = this->onTape;
     this->onTape = false;
     for (int i(0); i < 4; ++i)
