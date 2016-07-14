@@ -1,5 +1,17 @@
 #include <phys253.h>
 
+static ServoTimer2 servo0;
+static ServoTimer2 servo1;
+static ServoTimer2 servo2;
+
+
+TinahObjects &t = TinahObjects::getInstance();
+LiquidCrystal &LCD = t.LCD;
+motorClass &motor = t.motor;
+ServoTimer2 &RCServo0 = *t.RCServo0;
+ServoTimer2 &RCServo1 = *t.RCServo1;
+ServoTimer2 &RCServo2 = *t.RCServo2;
+
 
 // Tinah methods
 TinahObjects::TinahObjects()
@@ -9,22 +21,22 @@ TinahObjects::TinahObjects()
     portMode(0, INPUT);      //   ***** from 253 template file
     portMode(1, INPUT);      //   ***** from 253 template file
     this->LCD.begin(16,2);
-    this->RCServo0.attach(RCServo0Output);    // attaching the digital inputs to the RC servo pins on the board.  
-    this->RCServo1.attach(RCServo1Output);
-    this->RCServo2.attach(RCServo2Output);
+
+    servo0.attach(RCServo0Output);
+    servo1.attach(RCServo1Output);
+    servo2.attach(RCServo2Output);
+
+    this->RCServo0 = &servo0;
+    this->RCServo1 = &servo1;
+    this->RCServo2 = &servo2;
 }
+
 
 TinahObjects& TinahObjects::getInstance() {
     static TinahObjects t;  // runs only once
     return t;
 }
 
-TinahObjects &t = TinahObjects::getInstance();
-LiquidCrystal &LCD = t.LCD;
-motorClass &motor = t.motor;
-ServoTimer2 &RCServo0 = t.RCServo0;
-ServoTimer2 &RCServo1 = t.RCServo1;
-ServoTimer2 &RCServo2 = t.RCServo2;
 
 // Tinah::Tinah()
 //     : LCD(LCD),

@@ -47,9 +47,9 @@ class TinahObjects {
 public:
     LiquidCrystal LCD;
     motorClass motor;
-    ServoTimer2 RCServo0;
-    ServoTimer2 RCServo1;
-    ServoTimer2 RCServo2;
+    ServoTimer2 *RCServo0;
+    ServoTimer2 *RCServo1;
+    ServoTimer2 *RCServo2;
     static TinahObjects& getInstance();
 private:
     TinahObjects();
