@@ -10,6 +10,11 @@ extern "C" {
 #include "ServoTimer2.h"
 
 
+#define FRAME_SYNC_INDEX        0          // frame sync delay is the first entry in the channel array
+#define DELAY_ADJUST            8          // number of microseconds of calculation overhead to be subtracted from pulse timings
+#define FRAME_SYNC_DELAY   ((FRAME_SYNC_PERIOD - ( NBR_CHANNELS * DEFAULT_PULSE_WIDTH))/ 128) // number of iterations of the ISR to get the desired frame rate
+
+
 static void initISR();
 static void writeChan(uint8_t chan, int pulsewidth);
 static servo_t servos[NBR_CHANNELS+1];    // static array holding servo data for all channels
