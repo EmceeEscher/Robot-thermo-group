@@ -8,10 +8,10 @@ TinahObjects::TinahObjects()
     //setup the variables and classes used throughout phys 253.
     portMode(0, INPUT);      //   ***** from 253 template file
     portMode(1, INPUT);      //   ***** from 253 template file
-    LCD.begin(16,2);
-    RCServo0.attach(RCServo0Output);    // attaching the digital inputs to the RC servo pins on the board.  
-    RCServo1.attach(RCServo1Output);
-    RCServo2.attach(RCServo2Output);
+    this->LCD.begin(16,2);
+    this->RCServo0.attach(RCServo0Output);    // attaching the digital inputs to the RC servo pins on the board.  
+    this->RCServo1.attach(RCServo1Output);
+    this->RCServo2.attach(RCServo2Output);
 }
 
 TinahObjects& TinahObjects::getInstance() {

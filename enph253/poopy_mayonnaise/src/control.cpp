@@ -5,7 +5,7 @@
 
 
 namespace control {
-    static bool active(false);
+    static bool active(false);  // replace this with RobotState instance var
 }
 TapeFollow3 tf;
 
@@ -25,6 +25,7 @@ void control::setup() {
     LCD.print("begin");
 }
 
+
 void control::loop() {
     if (startbutton() && !control::active) 
 	control::start();
@@ -35,11 +36,13 @@ void control::loop() {
     tf.loop();
 }
 
+
 void control::start() {
     control::active = true;
     tf.start();
     LCD.clear();
 }
+
 
 void control::stop() {
     control::active = false;

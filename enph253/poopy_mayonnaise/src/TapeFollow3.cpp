@@ -12,12 +12,15 @@ const int KNOB_PROP_GAIN(6);
 const int KNOB_DER1_GAIN(7);
 const float EPSILON(0.01);
 const int MOTOR_SPEED(72);
-const int PRINT_PERIOD(256);
+const int PRINT_PERIOD(16);
+const unsigned long INTERSECT_DELAY_PERIOD(10000);
 const double ERROR_SMALL(2);
 const double ERROR_MEDIUM(4);
 const double ERROR_LARGE(8);
 const double ERROR_TURNING(8);
-
+const double GAIN_PROP = 5.;
+const double GAIN_DER1 = 5.;
+const double GAIN_DER2 = 0.;
 
 void TapeFollow3::init()
 {
@@ -28,6 +31,7 @@ void TapeFollow3::init()
     this->error = 0.;
     this->lastError = 0.;
     this->turnDirection = 0;
+    this->tapeFollowSteps = 0;
     this->motorSpeed = MOTOR_SPEED;
 
     for (int i(0); i < 2; ++i) {
@@ -49,35 +53,21 @@ void TapeFollow3::init()
 void TapeFollow3::seekTape()
 {
     if (this->lastError < 0.)              // off tape to the right
-	this->error = -this->errorLarge;
-    else if (this->lastError > 0.)         // off tape to the left
 	this->error = this->errorLarge;
+    else if (this->lastError > 0.)         // off tape to the left
+	this->error = -this->errorLarge;
     else
 	this->error = 0.;
 }
 
 
-void TapeFollow3::followTape()
+void TapeFollow3::intersectionDetection()
 {
     // declare static variables (runs once)
     const static bool &intersectL = this->pinReadings[0];
     const static bool &mainL      = this->pinReadings[1];
     const static bool &mainR      = this->pinReadings[2];
     const static bool &intersectR = this->pinReadings[3];
-
-    // determine error
-    if (mainL && mainR)                    // both pins over tape
-	this->error = 0.;
-    else if (mainL)                       // left main over tape
-	this->error = -this->errorSmall;
-    else if (mainR)                       // right main over tape
-	this->error = this->errorSmall;
-    else if (intersectL && (!intersectR))  // left intersection over tape
-	this->error = -this->errorMedium;
-    else if (intersectR && (!intersectL))  // right intersection over tape
-	this->error = this->errorMedium;
-    else
-	this->error = 0.;
 
     // check if intersections seen
     if (intersectL && mainR)
@@ -109,24 +99,46 @@ void TapeFollow3::followTape()
 }
 
 
+void TapeFollow3::followTape()
+{
+    // declare static variables (runs once)
+    const static bool &intersectL = this->pinReadings[0];
+    const static bool &mainL      = this->pinReadings[1];
+    const static bool &mainR      = this->pinReadings[2];
+    const static bool &intersectR = this->pinReadings[3];
+
+    // determine error
+    if (mainL && mainR)                    // both pins over tape
+	this->error = 0.;
+    else if (mainL)                       // left main over tape
+	this->error = this->errorSmall;
+    else if (mainR)                       // right main over tape
+	this->error = -this->errorSmall;
+    else if (intersectL && (!intersectR))  // left intersection over tape
+	this->error = this->errorMedium;
+    else if (intersectR && (!intersectL))  // right intersection over tape
+	this->error = -this->errorMedium;
+    else
+	this->error = 0.;
+
+    if (this->tapeFollowSteps > this->intersectDelay)
+	this->intersectionDetection();
+}
+
+
 // TODO make more advanced
 void TapeFollow3::makeTurn()
 {
-    // declare static variables (runs once)
-    static bool mainsOnTape;
-
-    mainsOnTape = (this->pinReadings[1] || this->pinReadings[2]);
-
     // determine error
     if (mainsOnTape)
 	this->error = 0.;
     else 
-	this->error = this->turnDirection * this->errorTurning;
+	this->error = -this->turnDirection * this->errorTurning;
 
     // determine whether end has bee reached
-    if ((!this->halfTurn) && this->lastOnTape && (!mainsOnTape))
+    if ((!this->halfTurn) && this->lastMainsOnTape && (!this->mainsOnTape))
 	this->halfTurn = true;
-    else if (this->halfTurn && (!this->lastOnTape) && mainsOnTape) {
+    else if (this->halfTurn && (!this->lastMainsOnTape) && this->mainsOnTape) {
 	this->halfTurn = false;
 	this->turning = false;  // exit to regular following
     }
@@ -148,10 +160,7 @@ int TapeFollow3::chooseTurn(bool left, bool right, bool straight)
 
 void TapeFollow3::printLCD()
 {
-    static int i(0);  // declaration runs once
-    if (i % PRINT_PERIOD == 0)
-	i = 0;
-    else if (!this->active) {
+    if (!this->active) {
 	LCD.clear();
 	LCD.print("Press START to");
 	LCD.setCursor(0,1);
@@ -194,7 +203,6 @@ void TapeFollow3::printLCD()
 	LCD.print(" ");
 	LCD.print(this->control);
     }
-    ++i;
 }
 
 
@@ -202,7 +210,11 @@ TapeFollow3::TapeFollow3()
     : errorSmall(ERROR_SMALL),
       errorMedium(ERROR_MEDIUM),
       errorLarge(ERROR_LARGE),
-      errorTurning(ERROR_TURNING)
+      errorTurning(ERROR_TURNING),
+      gainProp(GAIN_PROP),
+      gainDer1(GAIN_DER1),
+      gainDer2(GAIN_DER2),
+      intersectDelay(INTERSECT_DELAY_PERIOD)
 {
     this->init();
 }
@@ -216,17 +228,22 @@ void TapeFollow3::loop()
     static double ctrlDer2;
     static double der1[2];
     static double der2;
+    static int printCount(0);
 
     if (!this->active)
 	return;
 
-    this->printLCD();
+    if (printCount % PRINT_PERIOD == 0) {
+	this->printLCD();
+	printCount = 1;
+    } else
+	++printCount;
 
-    // set gains
-    // TODO move this to `init` once values are decided upon
-    this->gainProp = knob(KNOB_PROP_GAIN) / 50;
-    this->gainDer1 = knob(KNOB_DER1_GAIN) / 50;
-    this->gainDer2 = .5*this->gainDer1*this->gainDer1/this->gainProp*(1.-EPSILON);
+    // // set gains
+    // // TODO move this to `init` once values are decided upon
+    // this->gainProp = GAIN_PROP;//static_cast<double>(knob(KNOB_PROP_GAIN)) / 50.;
+    // this->gainDer1 = GAIN_DER1;//static_cast<double>(knob(KNOB_DER1_GAIN)) / 50.;
+    // this->gainDer2 = 0.; //.5*this->gainDer1*this->gainDer1/this->gainProp*(1.-EPSILON);
 
     // get readings from tape sensors
     for (int i(0); i < 4; ++i) {
@@ -238,14 +255,20 @@ void TapeFollow3::loop()
     this->onTape = false;
     for (int i(0); i < 4; ++i)
 	this->onTape = this->onTape || this->pinReadings[i];
+    this->lastMainsOnTape = this->mainsOnTape;
+    this->mainsOnTape = (this->pinReadings[1] || this->pinReadings[2]);
 
     // get error based on current state
-    if (!(this->turning || this->onTape))
+    if (!(this->turning || this->onTape)) {
+	this->tapeFollowSteps = 0;
 	this->seekTape();
-    else if (this->turning)
+    } else if (this->turning) {
+	this->tapeFollowSteps = 0;
 	this->makeTurn();
-    else
+    } else {
+	this->tapeFollowSteps += 1;
 	this->followTape();
+    }
 
     // update previous error parameters
     if (this->error != this->lastError) {
