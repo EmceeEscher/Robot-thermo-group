@@ -29,24 +29,11 @@ void TapeFollow3::init()
 {
     this->active = false;
     this->onTape = false;
-<<<<<<< HEAD
-    this->lastOnTape = false;
-    this->mainsOnTape = false;
-    this->lastMainsOnTape = false;
-    this->turning = false;
-    this->halfTurn = false;
-    this->motorsActive = false;
-
-    this->turnDirection = 0;
-    this->control = 0;
-    this->printCount = 0;
-=======
     this->turning = false;
     this->halfTurn = false;
     this->lastError = 0.;
     this->turnDirection = 0;
     this->tapeFollowSteps = 0;
->>>>>>> parent of e9f1388... Iniitialize all non-constant class members in
     this->motorSpeed = MOTOR_SPEED;
     this->tapeFollowSteps = 0;
 
