@@ -65,7 +65,6 @@ void TapeFollow::loop()
     static double error;
     static bool intersectionDetected[2];
     static bool pinReadings[4];
-    static bool onTape(false);
     const static bool &mainL = pinReadings[1];          // main left reading
     const static bool &mainR = pinReadings[2];          // main right reading
     const static bool &intersectionL = pinReadings[0];  // left intersection reading
@@ -78,7 +77,6 @@ void TapeFollow::loop()
     // get readings from tape sensors
     for (int i = 0; i < 4; ++i)
         pinReadings[i] = static_cast<bool>(digitalRead(this->activePins[i]));
-    onTape = (mainL || mainR);
 
     // determine error
     if (mainL && mainR)  // both mains over tape

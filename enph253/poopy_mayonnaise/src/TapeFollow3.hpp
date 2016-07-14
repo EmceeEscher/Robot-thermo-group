@@ -9,9 +9,11 @@
 
 #include <StandardCplusplus.h>
 #include <vector>
+#include <deque>
 #include "MinorMode.hpp"
 
 using std::vector;
+using std::deque;
 
 class TapeFollow3 : MinorMode
 {
@@ -35,10 +37,8 @@ private:
     bool halfTurn;                // if true, bot has turned far enough that mains are off tape
     bool active;                  // whether the loop is active
     int activePins[4];            // pin numbers (intL, mainL, mainR, intR)
-    // vector< vector<bool> > lastPinReadings;
-    // vector<bool> pinReadings;     // current readings on QRD pins
-    bool lastPinReadings[4];
-    bool pinReadings[4];
+    deque< vector<bool> > lastPinReadings;
+    vector<bool> pinReadings;     // current readings on QRD pins
     int motorSpeed;               // speed to add to motors
     bool motorsActive;            // true if motors are active
     int control;                  // current control parameter
