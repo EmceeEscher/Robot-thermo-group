@@ -26,6 +26,7 @@ private:
     const double errorLarge;      // all QRDs off tape
     const double errorTurning;    // error to be applied during turning
     const unsigned long intersectDelay;  // while tape following, waits for this many steps before searching for intersections
+    const int intersectPeriod;    // number of consecutive readings required to see an intersection
     const int printPeriod;        // number of iterations per printout
 
     vector<bool> pinReadings;     // current readings on QRD pins
@@ -67,6 +68,13 @@ private:
      * The appropriate error is returned.
      */
     double seekTape();
+
+    /*
+     * Based on the lastPinReadings array, determines whether an
+     * intersection has been seen and updates the intersectSeen
+     * array
+     */
+    void intersectionSeen();
 
     /*
      * Look for intersection. If found, make decision and turn?
