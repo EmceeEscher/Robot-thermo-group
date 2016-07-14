@@ -25,29 +25,34 @@ private:
     const double errorMedium;     // both mains off, one intersection on tape
     const double errorLarge;      // all QRDs off tape
     const double errorTurning;    // error to be applied during turning
-    double lastError;             // last calculated error
-    double errorArray[2];         // array of last 2 distinct errors
-    unsigned long etimeArray[2];  // array of times (since read) assoc with errorArray
-    int turnDirection;            // current direction (-1:left, 0:straight, 1:right)
+    const unsigned long intersectDelay;  // while tape following, waits for this many steps before searching for intersections
+    const int printPeriod;        // number of iterations per printout
+
+    vector<bool> pinReadings;     // current readings on QRD pins
+    deque< vector<bool> > lastPinReadings;  // array of previous time readings
+
+    bool active;                  // whether the loop is active
     bool onTape;                  // true= on tape, false= off tape
     bool lastOnTape;              // last value of onTape
     bool mainsOnTape;             // whether one of the mains in on the tape
     bool lastMainsOnTape;         // whether one of the mains was on the tape in the last step
     bool turning;                 // true= turning, false= straight
     bool halfTurn;                // if true, bot has turned far enough that mains are off tape
-    bool active;                  // whether the loop is active
-    int activePins[4];            // pin numbers (intL, mainL, mainR, intR)
-    deque< vector<bool> > lastPinReadings;
-    vector<bool> pinReadings;     // current readings on QRD pins
-    int motorSpeed;               // speed to add to motors
     bool motorsActive;            // true if motors are active
+
+    int turnDirection;            // current direction (-1:left, 0:straight, 1:right)
     int control;                  // current control parameter
+    int printCount;
+    int motorSpeed;               // speed to add to motors
+    unsigned long tapeFollowSteps;
+    double lastError;             // last calculated error
+
     bool intersectSeen[2];        // true if an intersection was seen
     bool intersectDetect[2];      // true when an intersection has been detected (seen and passed over)
-    const unsigned long intersectDelay; 
-    unsigned long tapeFollowSteps;
-    const int printPeriod;
-    int printCount;
+    double errorArray[2];         // array of last 2 distinct errors
+    unsigned long etimeArray[2];  // array of times (since read) assoc with errorArray
+
+    int activePins[4];            // pin numbers (intL, mainL, mainR, intR)
     
 
     /*

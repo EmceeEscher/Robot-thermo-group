@@ -36,23 +36,25 @@ void TapeFollow3::init()
     this->active = false;
     this->onTape = false;
     this->lastOnTape = false;
+    this->mainsOnTape = false;
+    this->lastMainsOnTape = false;
     this->turning = false;
     this->halfTurn = false;
     this->motorsActive = false;
 
-    this->lastError = 0.;
     this->turnDirection = 0;
-    this->tapeFollowSteps = 0;
     this->control = 0;
-    this->tapeFollowSteps = 0;
     this->printCount = 0;
     this->motorSpeed = MOTOR_SPEED;
+    this->tapeFollowSteps = 0;
+
+    this->lastError = 0.;
 
     for (int i(0); i < 2; ++i) {
-	this->errorArray[i] = 0;
-	this->etimeArray[i] = i;
 	this->intersectSeen[i] = false;
 	this->intersectDetect[i] = false;
+	this->etimeArray[i] = i;
+	this->errorArray[i] = 0.;
     }
 
     for (int i(0); i < 4; ++i) {
@@ -231,13 +233,13 @@ void TapeFollow3::printLCD()
 
 
 TapeFollow3::TapeFollow3()
-    : errorSmall      (ERROR_SMALL),
+    : gainProp        (GAIN_PROP),
+      gainDer1        (GAIN_DER1),
+      gainDer2        (GAIN_DER2),
+      errorSmall      (ERROR_SMALL),
       errorMedium     (ERROR_MEDIUM),
       errorLarge      (ERROR_LARGE),
       errorTurning    (ERROR_TURNING),
-      gainProp        (GAIN_PROP),
-      gainDer1        (GAIN_DER1),
-      gainDer2        (GAIN_DER2),
       intersectDelay  (INTERSECT_DELAY_PERIOD),
       printPeriod     (PRINT_PERIOD),
       pinReadings     (4, false),
