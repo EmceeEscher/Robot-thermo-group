@@ -1,6 +1,8 @@
 ///
 // control.cpp
 //
+#include <phys253.h>
+#include "TapeFollow3.hpp"
 #include "control.hpp"
 
 

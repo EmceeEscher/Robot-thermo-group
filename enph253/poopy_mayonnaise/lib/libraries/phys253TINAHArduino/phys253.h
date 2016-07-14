@@ -1,24 +1,23 @@
 #ifndef phys253_h
 #define phys253_h
 
-
 // include all of the h-file headers used in general Phys 253 programs
 // added by Jon Nakane, 2009 March 23
 // edit 2010 May 3 - removed WConstants.h from here and motor.h for Wiring-0026.
 
 #include <Arduino.h>
-#include <phys253pins.h>
 #include <LiquidCrystal.h>
 #include <motor.h>
 #include <phys253pins.h>
 //#include <Tone.cpp>
 #include <ServoTimer2.h>
 
+// Global reference variables to be used throughout program
 extern LiquidCrystal &LCD;
-extern motorClass &motor;
-extern ServoTimer2 &RCServo0;
-extern ServoTimer2 &RCServo1;
-extern ServoTimer2 &RCServo2;
+extern motorClass    &motor;
+extern ServoTimer2   &RCServo0;
+extern ServoTimer2   &RCServo1;
+extern ServoTimer2   &RCServo2;
 
 int knob(int value);
 void buzzer(int value);
@@ -43,28 +42,28 @@ void timer3PWMCOff(void);
 }
 #endif
 
-class TinahObjects {
+/*
+ * Singleton object to ensure LCD, motor, and servos are defined only once
+ */
+class TinahObjects
+{
+
 public:
     LiquidCrystal LCD;
     motorClass motor;
-    ServoTimer2 *RCServo0;
-    ServoTimer2 *RCServo1;
-    ServoTimer2 *RCServo2;
-    static TinahObjects& getInstance();
-private:
-    TinahObjects();
-    TinahObjects(const TinahObjects&);
-    TinahObjects& operator=(const TinahObjects&);
-};
+    ServoTimer2 RCServo0;
+    ServoTimer2 RCServo1;
+    ServoTimer2 RCServo2;
 
-// class Tinah {
-// public:
-//     LiquidCrystal &LCD;
-//     motorClass &motor;
-//     ServoTimer2 &RCServo0;
-//     ServoTimer2 &RCServo1;
-//     ServoTimer2 &RCServo2;
-//     Tinah();
-// };
+    /*
+     * Get reference to the single TinahObjects declaration
+     */
+    static TinahObjects& getInstance();
+
+private:
+    TinahObjects();                               // hide public constructor
+    TinahObjects(const TinahObjects&);            // hide copy constructor
+    TinahObjects& operator=(const TinahObjects&);   // hide assignment operator
+};
 
 #endif

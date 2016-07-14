@@ -1,10 +1,10 @@
 #ifndef phys253setup_txt
 #define phys253setup_txt
-  extern LiquidCrystal LCD;
-  extern motorClass motor;
-  extern ServoTimer2 RCServo0;
-  extern ServoTimer2 RCServo1;
-  extern ServoTimer2 RCServo2;
+  extern LiquidCrystal &LCD;
+  extern motorClass    &motor;
+  extern ServoTimer2   &RCServo0;
+  extern ServoTimer2   &RCServo1;
+  extern ServoTimer2   &RCServo2;
 
   portMode(0, INPUT) ;      //   ***** from 253 template file
   portMode(1, INPUT) ;      //   ***** from 253 template file

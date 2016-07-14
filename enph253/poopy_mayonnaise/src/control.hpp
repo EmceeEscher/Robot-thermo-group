@@ -6,11 +6,6 @@
 #ifndef CONTROL_HPP
 #define CONTROL_HPP
 
-
-#include <phys253.h>
-#include "TapeFollow3.hpp"
-
-
 namespace control
 {
     /*

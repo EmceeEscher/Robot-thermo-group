@@ -1,6 +1,10 @@
 ///
 // RobotState.cpp
 //
+#include <StandardCplusplus.h>
+#include <vector>
+#include "MajorMode.hpp"
+#include "MinorMode.hpp"
 #include "RobotState.hpp"
 
 

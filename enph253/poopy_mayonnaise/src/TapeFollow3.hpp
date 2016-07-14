@@ -7,11 +7,11 @@
 #define TAPE_FOLLOW_3_HPP
 
 
-#include <phys253.h>
 #include "MinorMode.hpp"
 
 
-class TapeFollow3 : MinorMode {
+class TapeFollow3 : MinorMode
+{
 private:
     const double gainProp;      // TODO: set const; set based on knobs for now
     const double gainDer1;      // TODO: set const; set based on knobs for now

@@ -1,16 +1,18 @@
+#include <Arduino.h>
+#include <LiquidCrystal.h>
+#include <motor.h>
+#include <phys253pins.h>
+//#include <Tone.cpp>
+#include <ServoTimer2.h>
 #include <phys253.h>
 
-static ServoTimer2 servo0;
-static ServoTimer2 servo1;
-static ServoTimer2 servo2;
 
-
-TinahObjects &t = TinahObjects::getInstance();
-LiquidCrystal &LCD = t.LCD;
-motorClass &motor = t.motor;
-ServoTimer2 &RCServo0 = *t.RCServo0;
-ServoTimer2 &RCServo1 = *t.RCServo1;
-ServoTimer2 &RCServo2 = *t.RCServo2;
+static TinahObjects  &t = TinahObjects::getInstance();  // internal
+extern LiquidCrystal &LCD      = t.LCD;                 // external
+extern motorClass    &motor    = t.motor;               // external
+extern ServoTimer2   &RCServo0 = t.RCServo0;            // external
+extern ServoTimer2   &RCServo1 = t.RCServo1;            // external
+extern ServoTimer2   &RCServo2 = t.RCServo2;            // external
 
 
 // Tinah methods
@@ -22,13 +24,9 @@ TinahObjects::TinahObjects()
     portMode(1, INPUT);      //   ***** from 253 template file
     this->LCD.begin(16,2);
 
-    servo0.attach(RCServo0Output);
-    servo1.attach(RCServo1Output);
-    servo2.attach(RCServo2Output);
-
-    this->RCServo0 = &servo0;
-    this->RCServo1 = &servo1;
-    this->RCServo2 = &servo2;
+    this->RCServo0.attach(RCServo0Output);
+    this->RCServo1.attach(RCServo1Output);
+    this->RCServo2.attach(RCServo2Output);
 }
 
 
@@ -36,16 +34,6 @@ TinahObjects& TinahObjects::getInstance() {
     static TinahObjects t;  // runs only once
     return t;
 }
-
-
-// Tinah::Tinah()
-//     : LCD(LCD),
-//       motor(motor),
-//       RCServo0(RCServo0),
-//       RCServo1(RCServo1),
-//       RCServo2(RCServo2)
-// {
-// }
 
 
 // functions

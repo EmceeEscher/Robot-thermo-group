@@ -1,11 +1,9 @@
 ///
 // TapeFollow2Disc.cpp
 //
-#include "TapeFollow2Disc.hpp"
 #include <math.h>
-
-//#pragma clang diagnostic push
-//#pragma ide diagnostic ignored "CannotResolve"
+#include <phys253.h>
+#include "TapeFollow2Disc.hpp"
 
 
 // constants
@@ -121,5 +119,3 @@ void TapeFollow2Disc::stop() {
     motor.speed(this->motorPinL, 0);
     motor.speed(this->motorPinR, 0);
 }
-
-//#pragma clang diagnostic pop

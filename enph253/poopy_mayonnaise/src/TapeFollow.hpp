@@ -6,8 +6,6 @@
 #ifndef TAPE_FOLLOW_HPP
 #define TAPE_FOLLOW_HPP
 
-#include <phys253.h>
-
 class TapeFollow
 {
 public:

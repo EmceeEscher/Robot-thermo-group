@@ -1,11 +1,8 @@
 ///
 // TapeFollow.cpp
 //
+#include <phys253.h>
 #include "TapeFollow.hpp"
-
-
-//#pragma clang diagnostic push
-//#pragma ide diagnostic ignored "CannotResolve"
 
 
 // constants
@@ -200,6 +197,3 @@ void TapeFollow::stop()
     motor.speed(this->motorPinL, 0);
     motor.speed(this->motorPinR, 0);
 }
-
-
-//#pragma clang diagnostic pop

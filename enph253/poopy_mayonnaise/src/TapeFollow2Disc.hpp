@@ -6,8 +6,6 @@
 #ifndef TAPE_FOLLOW_2_DISC_H
 #define TAPE_FOLLOW_2_DISC_H
 
-#include <phys253.h>
-
 class TapeFollow2Disc
 {
 public:
