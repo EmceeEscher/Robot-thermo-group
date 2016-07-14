@@ -25,11 +25,11 @@ const double GAIN_DER1(5.);
 const double GAIN_DER2(.5*GAIN_DER1*GAIN_DER1/GAIN_PROP*(1.-EPSILON));
 const int NUM_SAVED_READINGS(4);
 
-
 void TapeFollow3::init()
 {
     this->active = false;
     this->onTape = false;
+<<<<<<< HEAD
     this->lastOnTape = false;
     this->mainsOnTape = false;
     this->lastMainsOnTape = false;
@@ -40,6 +40,13 @@ void TapeFollow3::init()
     this->turnDirection = 0;
     this->control = 0;
     this->printCount = 0;
+=======
+    this->turning = false;
+    this->halfTurn = false;
+    this->lastError = 0.;
+    this->turnDirection = 0;
+    this->tapeFollowSteps = 0;
+>>>>>>> parent of e9f1388... Iniitialize all non-constant class members in
     this->motorSpeed = MOTOR_SPEED;
     this->tapeFollowSteps = 0;
 
@@ -228,15 +235,14 @@ void TapeFollow3::printLCD()
 
 
 TapeFollow3::TapeFollow3()
-    : errorSmall     (ERROR_SMALL),
-      errorMedium    (ERROR_MEDIUM),
-      errorLarge     (ERROR_LARGE),
-      errorTurning   (ERROR_TURNING),
-      gainProp       (GAIN_PROP),
-      gainDer1       (GAIN_DER1),
-      gainDer2       (GAIN_DER2),
-      intersectDelay (INTERSECT_DELAY_PERIOD),
-      printPeriod    (PRINT_PERIOD)
+    : errorSmall(ERROR_SMALL),
+      errorMedium(ERROR_MEDIUM),
+      errorLarge(ERROR_LARGE),
+      errorTurning(ERROR_TURNING),
+      gainProp(GAIN_PROP),
+      gainDer1(GAIN_DER1),
+      gainDer2(GAIN_DER2),
+      intersectDelay(INTERSECT_DELAY_PERIOD)
 {
     this->init();
 }
@@ -250,16 +256,17 @@ void TapeFollow3::loop()
     static double ctrlDer2;
     static double der1[2];
     static double der2;
+    static int printCount(0);
     static double error(0.);
 
     if (!this->active)
 	return;
 
-    if (this->printCount % this->printPeriod == 0) {
+    if (printCount % PRINT_PERIOD == 0) {
 	this->printLCD();
-	this->printCount = 1;
+	printCount = 1;
     } else
-	++this->printCount;
+	++printCount;
 
     // // set gains
     // // TODO move this to constructor once values are decided upon

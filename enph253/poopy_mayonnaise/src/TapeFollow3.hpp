@@ -23,6 +23,7 @@ using std::deque;
 class TapeFollow3 : MinorMode
 {
 private:
+<<<<<<< HEAD
     const double gainProp;        // TODO: set const; set based on knobs for now
     const double gainDer1;        // TODO: set const; set based on knobs for now
     const double gainDer2;        // TODO: set const; set based on knobs for now
@@ -66,6 +67,36 @@ private:
     unsigned long etimeArray[2];  // array of times (since read) assoc with errorArray
 
     int activePins[4];            // pin numbers (intL, mainL, mainR, intR)
+=======
+    const double gainProp;      // TODO: set const; set based on knobs for now
+    const double gainDer1;      // TODO: set const; set based on knobs for now
+    const double gainDer2;      // TODO: set const; set based on knobs for now
+    const double errorSmall;    // one main on tape
+    const double errorMedium;   // both mains off, one intersection on tape
+    const double errorLarge;    // all QRDs off tape
+    const double errorTurning;  // error to be applied during turning
+    double lastError;           // last calculated error
+    double errorArray[2];       // array of last 2 distinct errors
+    unsigned long etimeArray[2];       // array of times (since read) assoc with errorArray
+    int turnDirection;          // current direction (-1:left, 0:straight, 1:right)
+    bool onTape;                // true= on tape, false= off tape
+    bool lastOnTape;            // last value of onTape
+    bool mainsOnTape;           // whether one of the mains in on the tape
+    bool lastMainsOnTape;       // whether one of the mains was on the tape in the last step
+    bool turning;               // true= turning, false= straight
+    bool halfTurn;              // if true, bot has turned far enough that mains are off tape
+    bool active;                // whether the loop is active
+    int activePins[4];          // pin numbers (intL, mainL, mainR, intR)
+    bool lastPinReadings[4];    // previous pin readings
+    bool pinReadings[4];        // current readings on QRD pins
+    int motorSpeed;             // speed to add to motors
+    bool motorsActive;          // true if motors are active
+    int control;                // current control parameter
+    bool intersectSeen[2];      // true if an intersection was seen
+    bool intersectDetect[2];    // true when an intersection has been detected (seen and passed over)
+    const unsigned long intersectDelay; 
+    unsigned long tapeFollowSteps;
+>>>>>>> parent of e9f1388... Iniitialize all non-constant class members in
     
 
     /*
