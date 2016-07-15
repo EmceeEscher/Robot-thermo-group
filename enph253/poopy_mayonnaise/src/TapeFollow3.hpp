@@ -48,12 +48,12 @@ private:
     unsigned long tapeFollowSteps;
     double lastError;             // last calculated error
 
-    bool intersectSeen[2];        // true if an intersection was seen
-    bool intersectDetect[2];      // true when an intersection has been detected (seen and passed over)
-    double errorArray[2];         // array of last 2 distinct errors
-    unsigned long etimeArray[2];  // array of times (since read) assoc with errorArray
+    vector<bool> intersectSeen;        // true if an intersection was seen
+    vector<bool> intersectDetect;      // true when an intersection has been detected (seen and passed over)
 
-    int activePins[4];            // pin numbers (intL, mainL, mainR, intR)
+    vector<double> errorArray;         // array of last 2 distinct errors
+    vector<unsigned long> etimeArray;  // array of times (since read) assoc with errorArray
+    vector<int> activePins;            // pin numbers (intL, mainL, mainR, intR)
     
 
     /*

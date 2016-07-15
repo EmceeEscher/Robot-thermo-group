@@ -3,6 +3,7 @@
 //
 #include <StandardCplusplus.h>
 #include <vector>
+#include <algorithm>
 #include <phys253.h>
 #include "TapeFollow3.hpp"
 
@@ -10,8 +11,8 @@
 using std::vector;
 
 
-const int TAPE_SENSORS_FRONT[]  {0, 1, 2, 3};
-const int TAPE_SENSORS_BACK[]   {4, 5, 6, 7};
+const vector<int> TAPE_SENSORS_FRONT  {0, 1, 2, 3};
+const vector<int> TAPE_SENSORS_BACK   {4, 5, 6, 7};
 const int MOTOR_PIN_L(0);
 const int MOTOR_PIN_R(3);
 const int KNOB_PROP_GAIN(6);
@@ -51,21 +52,17 @@ void TapeFollow3::init()
 
     this->lastError = 0.;
 
-    for (int i(0); i < 2; ++i) {
-	this->intersectSeen[i] = false;
-	this->intersectDetect[i] = false;
-	this->etimeArray[i] = i;
-	this->errorArray[i] = 0.;
-    }
+    this->intersectSeen =   {false, false};
+    this->intersectDetect = {false, false};
 
-    for (int i(0); i < 4; ++i) {
-	this->activePins[i] = TAPE_SENSORS_FRONT[i];
-	this->pinReadings[i] = false;
-    }
+    this->etimeArray = {0, 1};
+    this->errorArray = {0., 0.};
 
-    for (unsigned int i(0); i < this->lastPinReadings.size(); ++i) 
-    	for (int j(0); j < 4; ++j)
-    	    this->lastPinReadings[i][j] = false;
+    this->pinReadings = {false, false, false, false};
+    this->activePins = TAPE_SENSORS_FRONT;
+
+    for (auto &x : this->lastPinReadings)
+	x = {false, false, false, false};
 }
 
 
@@ -84,12 +81,16 @@ double TapeFollow3::seekTape()
 // TODO
 void TapeFollow3::intersectionSeen()
 {
-    bool intersectSeenL = true;
-    bool intersectSeenR = true;
-    for (int i(0); i < this->intersectPeriod; ++i) {
-	const vector<bool> read = this->lastPinReadings[i];
+    // bool intersectSeenL = true;
+    bool intersectSeenL(true);
+    bool intersectSeenR(true);
+    int i(0);
+    for (auto &read : this->lastPinReadings) {
+	if (i >= this->intersectPeriod)
+	    break;
 	intersectSeenL = (intersectSeenL && read[0] && read[2]);
 	intersectSeenR = (intersectSeenR && read[1] && read[3]);
+	++i;
     }
 
     // if seen, update instance variable
@@ -127,10 +128,8 @@ void TapeFollow3::intersectionDetection()
 	if (this->turnDirection != 0)
 	    this->turning = true;  // activates `makeTurn` function
 	// reset intersection arrays
-	for (int i(0); i < 2; ++i) {
-	    this->intersectSeen[i] = false;
-	    this->intersectDetect[i] = false;
-	}
+	this->intersectSeen =   {false, false};
+	this->intersectDetect = {false, false};
     }
 }
 
@@ -227,9 +226,9 @@ void TapeFollow3::printLCD()
 		LCD.print(" ^ ");
 	}
 	// print QRD readings
-	for (int j(0); j < 4; ++j) {
+	for (auto &read : this->pinReadings) {
 	    LCD.print(" ");
-	    LCD.print(this->pinReadings[j]);
+	    LCD.print(read);
 	}
 	// print gains and control
 	LCD.setCursor(0,1);
@@ -278,19 +277,23 @@ void TapeFollow3::loop()
     // this->gainDer2 = 0.; //.5*this->gainDer1*this->gainDer1/this->gainProp*(1.-EPSILON);
 
     // get readings from tape sensors
-    for (int i(0); i < 4; ++i) {
-	this->pinReadings[i] = static_cast<bool>(
-	        digitalRead(this->activePins[i]));
-    }
+    std::transform(
+            this->activePins.begin(), this->activePins.end(),
+	    this->pinReadings.begin(),
+	    digitalRead
+    );
 
     // TODO update lastPinReadings array
     this->lastPinReadings.pop_back();
     this->lastPinReadings.push_front(this->pinReadings);
     
     this->lastOnTape = this->onTape;
-    this->onTape = false;
-    for (int i(0); i < 4; ++i)
-	this->onTape = this->onTape || this->pinReadings[i];
+
+    bool isOnTape(false);
+    for (auto &read : this->pinReadings)
+	isOnTape = isOnTape || read;
+    this->onTape = isOnTape;
+
     this->lastMainsOnTape = this->mainsOnTape;
     this->mainsOnTape = (this->pinReadings[1] || this->pinReadings[2]);
 
@@ -309,10 +312,8 @@ void TapeFollow3::loop()
 
     // update previous error parameters
     if (error != this->lastError) {
-	this->errorArray[1] = this->errorArray[0];
-	this->errorArray[0] = this->lastError;
-	this->etimeArray[1] = this->etimeArray[0];
-	this->etimeArray[0] = 1;
+	this->errorArray = {this->lastError, this->errorArray[0]};
+	this->etimeArray = {1, this->etimeArray[0]};
 	this->lastError = error;
     }
 
@@ -326,9 +327,9 @@ void TapeFollow3::loop()
 	    static_cast<double>(this->etimeArray[0]);
 
     // get the effect of gains
-    double ctrlProp = this->gainProp * error;
-    double ctrlDer1 = this->gainDer1 * der1[0];
-    double ctrlDer2 = this->gainDer2 * der2;
+    double ctrlProp (this->gainProp * error);
+    double ctrlDer1 (this->gainDer1 * der1[0]);
+    double ctrlDer2 (this->gainDer2 * der2);
     this->control = -static_cast<int>(ctrlProp + ctrlDer1 + ctrlDer2);
 
     // adjust motor speed
@@ -341,8 +342,8 @@ void TapeFollow3::loop()
     }
 
     // increase time counters
-    for (int i(0); i < 2; ++i)
-	this->etimeArray[i] += 1;
+    for (auto &t : etimeArray)
+	++t;
 }
 
 
