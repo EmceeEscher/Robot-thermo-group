@@ -12,16 +12,19 @@ extern "C" {
 
 #define FRAME_SYNC_INDEX        0          // frame sync delay is the first entry in the channel array
 #define DELAY_ADJUST            8          // number of microseconds of calculation overhead to be subtracted from pulse timings
+#define FRAME_SYNC_PERIOD   10000 //20000  // total frame duration in microseconds
 #define FRAME_SYNC_DELAY   ((FRAME_SYNC_PERIOD - ( NBR_CHANNELS * DEFAULT_PULSE_WIDTH))/ 128) // number of iterations of the ISR to get the desired frame rate
 
 
-static void initISR();
-static void writeChan(uint8_t chan, int pulsewidth);
 static servo_t servos[NBR_CHANNELS+1];    // static array holding servo data for all channels
 static volatile uint8_t Channel;   // counter holding the channel being pulsed
 static volatile uint8_t ISRCount;  // iteration counter used in the interrupt routines;
 uint8_t ChannelCount = 0;           // counter holding the number of attached channels
 static boolean isStarted = false;  // flag to indicate if the ISR has been initialised
+
+
+static void initISR();
+static void writeChan(uint8_t chan, int pulsewidth);
 
 
 ISR (TIMER2_OVF_vect)
@@ -38,7 +41,7 @@ ISR (TIMER2_OVF_vect)
 	TCNT2 = 0;    // reset the clock counter register
 	if ((Channel != FRAME_SYNC_INDEX) && (Channel <= NBR_CHANNELS)) {  // check if we need to pulse this channel
 	    if (servos[Channel].Pin.isActive)                           // check if activated
-		digitalWrite( servos[Channel].Pin.nbr,HIGH);            // its an active channel so pulse it high
+		digitalWrite(servos[Channel].Pin.nbr,HIGH);            // its an active channel so pulse it high
 	} else if (Channel > NBR_CHANNELS) 
 	    Channel = 0; // all done so start over
     }
@@ -48,7 +51,7 @@ ISR (TIMER2_OVF_vect)
 ServoTimer2::ServoTimer2()
 {
     if (ChannelCount < NBR_CHANNELS) {
-	ChannelCount += 1;
+	++ChannelCount;
         this->chanIndex = ChannelCount;  // assign a channel number to this instance
     } else
         this->chanIndex = 0;  // todo   // too many channels, assigning 0 inhibits this instance from functioning
