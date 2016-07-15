@@ -277,11 +277,9 @@ void TapeFollow3::loop()
     // this->gainDer2 = 0.; //.5*this->gainDer1*this->gainDer1/this->gainProp*(1.-EPSILON);
 
     // get readings from tape sensors
-    std::transform(
-            this->activePins.begin(), this->activePins.end(),
-	    this->pinReadings.begin(),
-	    digitalRead
-    );
+    for (auto i(0); i < 4; ++i)
+	this->pinReadings[i] = static_cast<bool>(
+                digitalRead(this->activePins[i]));
 
     // TODO update lastPinReadings array
     this->lastPinReadings.pop_back();
