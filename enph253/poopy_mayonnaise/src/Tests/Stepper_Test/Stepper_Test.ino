@@ -8,7 +8,7 @@ const double ratio = 250.0/1024.0;
 unsigned long prevTime;
 unsigned long milliTime;
 const int pulsePin = 0; 
-const int delayPeriod = 200; //Microseconds
+const int delayPeriod = 1000; //Microseconds
 
 void setup()
 {
@@ -28,7 +28,7 @@ void loop()
   pulses = (double) value * ratio;
   LCD.clear();
   LCD.print(pulses);
-  if((milliTime - prevTime) >= 3000){
+  if(startbutton()){
     LCD.clear();
     LCD.print("Pulsing");
     for(int i = 0; i < (int) pulses; i++){

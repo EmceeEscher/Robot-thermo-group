@@ -13,11 +13,11 @@ float baseTarget, midTarget;
 float propErr, derivErr, intErr, lastPropErr;
 float angle;
 float now, lastTime;
-Tinah tinah;
 
 int i;
 
 void setup() {
+  #include <phys253setup.txt>
   Serial.begin(9600);
   propGain = 0.; 
   derivGain = 0.; 
@@ -25,7 +25,7 @@ void setup() {
   baseTarget = 45.;
   midTarget = 0;
   lastPropErr = 0;
-  tinah.RCServo0.write(midTarget);
+  RCServo0.write(midTarget);
   i = 0;
 }
 
@@ -41,11 +41,11 @@ void loop() {
   lastTime = now;
   lastPropErr = propErr;
 
-  if(i % 250 == 0){
-    tinah.LCD.clear();
-    tinah.LCD.print(getControl());
-    tinah.LCD.setCursor(0,1);
-    tinah.LCD.print((int) getAngle());
+  if(i % 25 == 0){
+    LCD.clear();
+    LCD.print(getControl());
+    LCD.setCursor(0,1);
+    LCD.print((int) getAngle());
     i = 1;
   }
   
@@ -53,10 +53,11 @@ void loop() {
     serialMenu();
     lastTime = micros();
     intErr = 0;
-    tinah.RCServo0.write(midTarget);
+    RCServo0.write(midTarget);
   }
 
   i++;
+  delay(10);
 }
 
 //TODO: Actually determine a formula to get the angle
@@ -73,7 +74,7 @@ void setBaseMotor(int duty){
   else if(duty < -255){
     duty = -255;
   }
-  tinah.motor.speed(0,duty);
+  motor.speed(0,duty);
 }
 
 //Returns the motor speed based on PID control
@@ -95,25 +96,25 @@ void settingsMenu(){
   float origDerivGain = derivGain;
   float origIntGain = intGain;
   
-  tinah.LCD.clear();
-  tinah.LCD.print("Settings");
+  LCD.clear();
+  LCD.print("Settings");
   while(startbutton()){}// Wait until button is released
 
-  tinah.LCD.clear();
-  tinah.LCD.print("P: ");
-  tinah.LCD.print(propGain);
-  tinah.LCD.setCursor(0,1);
-  tinah.LCD.print("Orig: ");
-  tinah.LCD.print(origPropGain);
+  LCD.clear();
+  LCD.print("P: ");
+  LCD.print(propGain);
+  LCD.setCursor(0,1);
+  LCD.print("Orig: ");
+  LCD.print(origPropGain);
   while(1){
     propGain = (float) knob(6) / 200; //Determine new propGain
     if(propGain != lastPropGain){
-      tinah.LCD.clear();
-      tinah.LCD.print("P: ");
-      tinah.LCD.print(propGain);
-      tinah.LCD.setCursor(0,1);
-      tinah.LCD.print("Orig: ");
-      tinah.LCD.print(origPropGain);
+      LCD.clear();
+      LCD.print("P: ");
+      LCD.print(propGain);
+      LCD.setCursor(0,1);
+      LCD.print("Orig: ");
+      LCD.print(origPropGain);
 
       lastPropGain = propGain;
     }
@@ -121,23 +122,23 @@ void settingsMenu(){
       break;
     }
   }
-  tinah.LCD.clear();
+  LCD.clear();
   while(startbutton()){}
 
-  tinah.LCD.print("I: ");
-  tinah.LCD.print(intGain);
-  tinah.LCD.setCursor(0,1);
-  tinah.LCD.print("Orig: ");
-  tinah.LCD.print(origIntGain);
+  LCD.print("I: ");
+  LCD.print(intGain);
+  LCD.setCursor(0,1);
+  LCD.print("Orig: ");
+  LCD.print(origIntGain);
   while(1){
     intGain = (float) knob(6) / 200; //Determine new intGain
     if(intGain != lastIntGain){
-      tinah.LCD.clear();
-      tinah.LCD.print("I: ");
-      tinah.LCD.print(intGain);
-      tinah.LCD.setCursor(0,1);
-      tinah.LCD.print("Orig: ");
-      tinah.LCD.print(origIntGain);
+      LCD.clear();
+      LCD.print("I: ");
+      LCD.print(intGain);
+      LCD.setCursor(0,1);
+      LCD.print("Orig: ");
+      LCD.print(origIntGain);
 
       lastIntGain = intGain;
     }
@@ -145,23 +146,23 @@ void settingsMenu(){
       break;
     }
   }
-  tinah.LCD.clear();
+  LCD.clear();
   while(startbutton()){}
 
-  tinah.LCD.print("D: ");
-  tinah.LCD.print(derivGain);
-  tinah.LCD.setCursor(0,1);
-  tinah.LCD.print("Orig: ");
-  tinah.LCD.print(origDerivGain);
+  LCD.print("D: ");
+  LCD.print(derivGain);
+  LCD.setCursor(0,1);
+  LCD.print("Orig: ");
+  LCD.print(origDerivGain);
   while(1){
     derivGain = (float) knob(6) / 200; //Determine new derivGain
     if(derivGain != lastDerivGain){
-      tinah.LCD.clear();
-      tinah.LCD.print("D: ");
-      tinah.LCD.print(derivGain);
-      tinah.LCD.setCursor(0,1);
-      tinah.LCD.print("Orig: ");
-      tinah.LCD.print(origDerivGain);
+      LCD.clear();
+      LCD.print("D: ");
+      LCD.print(derivGain);
+      LCD.setCursor(0,1);
+      LCD.print("Orig: ");
+      LCD.print(origDerivGain);
 
       lastDerivGain = derivGain;
     }
@@ -169,23 +170,23 @@ void settingsMenu(){
       break;
     }
   }
-  tinah.LCD.clear();
+  LCD.clear();
   while(startbutton()){}
 
 }
 
 void serialMenu(){
 
-  tinah.LCD.clear();
-  tinah.LCD.print("Serial Menu");
+  LCD.clear();
+  LCD.print("Serial Menu");
   delay(800);
 
   //Proportional Gain
-  tinah.LCD.clear();
-  tinah.LCD.print("P:");
-  tinah.LCD.setCursor(0,1);
-  tinah.LCD.print("Orig: ");
-  tinah.LCD.print(propGain);
+  LCD.clear();
+  LCD.print("P:");
+  LCD.setCursor(0,1);
+  LCD.print("Orig: ");
+  LCD.print(propGain);
   while(1){
     if(Serial.available() > 0){
       propGain = Serial.parseFloat();
@@ -195,17 +196,17 @@ void serialMenu(){
       delay(1);
     }
   }
-  tinah.LCD.clear();
-  tinah.LCD.print("P: ");
-  tinah.LCD.print(propGain);
+  LCD.clear();
+  LCD.print("P: ");
+  LCD.print(propGain);
   delay(800);
 
   //Integral Gain
-  tinah.LCD.clear();
-  tinah.LCD.print("I:");
-  tinah.LCD.setCursor(0,1);
-  tinah.LCD.print("Orig: ");
-  tinah.LCD.print(intGain);
+  LCD.clear();
+  LCD.print("I:");
+  LCD.setCursor(0,1);
+  LCD.print("Orig: ");
+  LCD.print(intGain);
   while(1){
     if(Serial.available() > 0){
       intGain = Serial.parseFloat();
@@ -215,17 +216,17 @@ void serialMenu(){
       delay(1);
     }
   }
-  tinah.LCD.clear();
-  tinah.LCD.print("I: ");
-  tinah.LCD.print(intGain);
+  LCD.clear();
+  LCD.print("I: ");
+  LCD.print(intGain);
   delay(800);
 
   //Derivative Gain
-  tinah.LCD.clear();
-  tinah.LCD.print("D:");
-  tinah.LCD.setCursor(0,1);
-  tinah.LCD.print("Orig: ");
-  tinah.LCD.print(derivGain);
+  LCD.clear();
+  LCD.print("D:");
+  LCD.setCursor(0,1);
+  LCD.print("Orig: ");
+  LCD.print(derivGain);
   while(1){
     if(Serial.available() > 0){
       derivGain = Serial.parseFloat();
@@ -235,17 +236,17 @@ void serialMenu(){
       delay(1);
     }
   }
-  tinah.LCD.clear();
-  tinah.LCD.print("D: ");
-  tinah.LCD.print(derivGain);
+  LCD.clear();
+  LCD.print("D: ");
+  LCD.print(derivGain);
   delay(800);
 
   //Base Target
-  tinah.LCD.clear();
-  tinah.LCD.print("Base:");
-  tinah.LCD.setCursor(0,1);
-  tinah.LCD.print("Orig: ");
-  tinah.LCD.print(baseTarget);
+  LCD.clear();
+  LCD.print("Base:");
+  LCD.setCursor(0,1);
+  LCD.print("Orig: ");
+  LCD.print(baseTarget);
   while(1){
     if(Serial.available() > 0){
       baseTarget = Serial.parseFloat();
@@ -255,17 +256,17 @@ void serialMenu(){
       delay(1);
     }
   }
-  tinah.LCD.clear();
-  tinah.LCD.print("Base: ");
-  tinah.LCD.print(baseTarget);
+  LCD.clear();
+  LCD.print("Base: ");
+  LCD.print(baseTarget);
   delay(800);
 
   //Middle Joint Target
-  tinah.LCD.clear();
-  tinah.LCD.print("Mid:");
-  tinah.LCD.setCursor(0,1);
-  tinah.LCD.print("Orig: ");
-  tinah.LCD.print(midTarget);
+  LCD.clear();
+  LCD.print("Mid:");
+  LCD.setCursor(0,1);
+  LCD.print("Orig: ");
+  LCD.print(midTarget);
   while(1){
     if(Serial.available() > 0){
       midTarget = Serial.parseFloat();
@@ -275,9 +276,9 @@ void serialMenu(){
       delay(1);
     }
   }
-  tinah.LCD.clear();
-  tinah.LCD.print("Mid: ");
-  tinah.LCD.print(midTarget);
+  LCD.clear();
+  LCD.print("Mid: ");
+  LCD.print(midTarget);
   delay(800);
   
 }
