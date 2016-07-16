@@ -13,6 +13,7 @@ TapeFollow3 tf;
 
 
 void control::setup() {
+#include <phys253setup.txt>
     Serial.begin(9600);
     randomSeed(analogRead(0));
     LCD.clear();
