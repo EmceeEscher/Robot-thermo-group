@@ -62,7 +62,8 @@ void TapeFollow3::init()
     this->activePins = TAPE_SENSORS_FRONT;
 
     for (auto &x : this->lastPinReadings)
-	x = {false, false, false, false};
+	for (auto i(0); i < 4; ++i)
+	    x[i] = false;
 }
 
 
@@ -85,7 +86,7 @@ void TapeFollow3::intersectionSeen()
     bool intersectSeenL(true);
     bool intersectSeenR(true);
     int i(0);
-    for (auto &read : this->lastPinReadings) {
+    for (const auto &read : this->lastPinReadings) {
 	if (i >= this->intersectPeriod)
 	    break;
 	intersectSeenL = (intersectSeenL && read[0] && read[2]);
@@ -277,9 +278,10 @@ void TapeFollow3::loop()
     // this->gainDer2 = 0.; //.5*this->gainDer1*this->gainDer1/this->gainProp*(1.-EPSILON);
 
     // get readings from tape sensors
-    for (auto i(0); i < 4; ++i)
+    for (auto i(0); i < 4; ++i) {
 	this->pinReadings[i] = static_cast<bool>(
                 digitalRead(this->activePins[i]));
+    }
 
     // TODO update lastPinReadings array
     this->lastPinReadings.pop_back();
