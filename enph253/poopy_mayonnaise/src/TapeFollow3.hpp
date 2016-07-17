@@ -9,11 +9,10 @@
 
 #include <StandardCplusplus.h>
 #include <vector>
-#include <deque>
 #include "MinorMode.hpp"
 
 using std::vector;
-using std::deque;
+
 
 class TapeFollow3 : MinorMode
 {
@@ -30,7 +29,7 @@ private:
     const int printPeriod;        // number of iterations per printout
 
     vector<bool> pinReadings;     // current readings on QRD pins
-    deque< vector<bool> > lastPinReadings;  // array of previous time readings
+    vector< vector<bool> > lastPinReadings;  // array of previous time readings
 
     bool active;                  // whether the loop is active
     bool onTape;                  // true= on tape, false= off tape

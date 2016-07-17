@@ -19,7 +19,7 @@ const int KNOB_PROP_GAIN(6);
 const int KNOB_DER1_GAIN(7);
 const double EPSILON(0.01);
 const int MOTOR_SPEED(72);
-const int PRINT_PERIOD(16);
+const int PRINT_PERIOD(200);
 const unsigned long INTERSECT_DELAY(10000); 
 const double ERROR_SMALL(2);
 const double ERROR_MEDIUM(4);
@@ -29,8 +29,8 @@ const double GAIN_PROP(5.);
 const double GAIN_DER1(5.);
 // const double GAIN_DER2(0.);
 const double GAIN_DER2(.5*GAIN_DER1*GAIN_DER1/GAIN_PROP*(1.-EPSILON));
-const int NUM_SAVED_READINGS(4);
-const int INTERSECT_PERIOD(3);
+const int NUM_SAVED_READINGS(10);
+const int INTERSECT_PERIOD(9);
 
 
 void TapeFollow3::init()
@@ -62,8 +62,9 @@ void TapeFollow3::init()
     this->activePins = TAPE_SENSORS_FRONT;
 
     for (auto &x : this->lastPinReadings)
-	for (auto i(0); i < 4; ++i)
-	    x[i] = false;
+	x = {false, false, false, false};
+	// for (auto i(0); i < 4; ++i)
+	//     x[i] = false;
 }
 
 
@@ -89,8 +90,8 @@ void TapeFollow3::intersectionSeen()
     for (const auto &read : this->lastPinReadings) {
 	if (i >= this->intersectPeriod)
 	    break;
-	intersectSeenL = (intersectSeenL && read[0] && read[2]);
-	intersectSeenR = (intersectSeenR && read[1] && read[3]);
+	intersectSeenL = (intersectSeenL && read[0] && this->mainsOnTape);
+	intersectSeenR = (intersectSeenR && read[3] && this->mainsOnTape);
 	++i;
     }
 
@@ -197,47 +198,47 @@ int TapeFollow3::chooseTurn(bool left, bool right, bool straight)
 void TapeFollow3::printLCD()
 {
     if (!this->active) {
-	LCD.clear();
-	LCD.print("Press START to");
-	LCD.setCursor(0,1);
-	LCD.print("begin");
+    	LCD.clear();
+    	LCD.print("Press START to");
+    	LCD.setCursor(0,1);
+    	LCD.print("begin");
     } else {
-	LCD.clear();
-	// print letter
-	if (!(this->turning || this->onTape))
-	    LCD.print("S ");  // seeking
-	else if (this->turning)
-	    LCD.print("T ");  // turning
-	else
-	    LCD.print("F ");  // following
-	// print arrow
-	if (this->turning) {
-	    if (this->turnDirection == -1)
-		LCD.print("<--");
-	    else if (this->turnDirection == 1)
-		LCD.print("-->");
-	    else
-		LCD.print(" ^ ");
-	} else {
-	    if (this->control < 0)
-		LCD.print("<  ");
-	    else if (this->control > 0)
-		LCD.print("  >");
-	    else
-		LCD.print(" ^ ");
-	}
-	// print QRD readings
-	for (auto &read : this->pinReadings) {
-	    LCD.print(" ");
-	    LCD.print(read);
-	}
-	// print gains and control
-	LCD.setCursor(0,1);
-	LCD.print(this->gainProp);
-	LCD.print(" ");
-	LCD.print(this->gainDer1);
-	LCD.print(" ");
-	LCD.print(this->control);
+    	LCD.clear();
+    	// print letter
+    	if (!(this->turning || this->onTape))
+    	    LCD.print("S ");  // seeking
+    	else if (this->turning)
+    	    LCD.print("T ");  // turning
+    	else
+    	    LCD.print("F ");  // following
+    	// print arrow
+    	if (this->turning) {
+    	    if (this->turnDirection == -1)
+    		LCD.print("<--");
+    	    else if (this->turnDirection == 1)
+    		LCD.print("-->");
+    	    else
+    		LCD.print(" ^ ");
+    	} else {
+    	    if (this->control < 0)
+    		LCD.print("<  ");
+    	    else if (this->control > 0)
+    		LCD.print("  >");
+    	    else
+    		LCD.print(" ^ ");
+    	}
+    	// print QRD readings
+    	for (auto &read : this->pinReadings) {
+    	    LCD.print(" ");
+    	    LCD.print(read);
+    	}
+    	// print gains and control
+    	LCD.setCursor(0,1);
+    	LCD.print(this->gainProp);
+    	LCD.print(" ");
+    	LCD.print(this->gainDer1);
+    	LCD.print(" ");
+    	LCD.print(this->control);
     }
 }
 
@@ -267,9 +268,9 @@ void TapeFollow3::loop()
 
     if (this->printCount % this->printPeriod == 0) {
 	this->printLCD();
-	this->printCount = 1;
-    } else
-	++this->printCount;
+	this->printCount = 0;
+    }
+    ++this->printCount;
 
     // // set gains
     // // TODO move this to constructor once values are decided upon
@@ -283,9 +284,12 @@ void TapeFollow3::loop()
                 digitalRead(this->activePins[i]));
     }
 
-    // TODO update lastPinReadings array
-    this->lastPinReadings.pop_back();
-    this->lastPinReadings.push_front(this->pinReadings);
+    // update lastPinReadings array
+    std::rotate(
+            this->lastPinReadings.begin(), this->lastPinReadings.end()-1,
+	    this->lastPinReadings.end()
+    );
+    this->lastPinReadings[0] = this->pinReadings;
     
     this->lastOnTape = this->onTape;
 
