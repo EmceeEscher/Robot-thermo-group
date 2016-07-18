@@ -60,14 +60,16 @@ void TapeFollow3::init()
 
     this->pinReadings     = {false, false, false, false};
 
+    for (auto &x : this->lastPinReadings)
+	x = {false, false, false, false};
+
+    // assign active pins
     for (auto i(0); i < 4; ++i) 
 	this->activePins[i] = TAPE_SENSORS_FRONT[i];
 
+    // declare active pins as inputs
     for (auto &pin : this->activePins)
 	pinMode(pin, INPUT);
-
-    for (auto &x : this->lastPinReadings)
-	x = {false, false, false, false};
 }
 
 
