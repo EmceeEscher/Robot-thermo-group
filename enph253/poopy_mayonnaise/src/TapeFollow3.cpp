@@ -24,10 +24,10 @@ const double ERROR_SMALL   {2};
 const double ERROR_MEDIUM  {4};
 const double ERROR_LARGE   {8};
 const double ERROR_TURNING {8};
-const double EPSILON   {0.01};
-const double GAIN_PROP {5.};
-const double GAIN_DER1 {5.};
-const double GAIN_DER2 {.5*GAIN_DER1*GAIN_DER1/GAIN_PROP*(1.-EPSILON)};
+const double EPSILON       {0.01};
+const double GAIN_PROP     {5.};
+const double GAIN_DER1     {5.};
+const double GAIN_DER2     {.5*GAIN_DER1*GAIN_DER1/GAIN_PROP*(1.-EPSILON)};
 // const double GAIN_DER2 {0.};
 const int NUM_SAVED_READINGS {10};
 const int INTERSECT_PERIOD {9};
@@ -55,7 +55,7 @@ void TapeFollow3::init()
     this->intersectSeen   = {false, false};
     this->intersectDetect = {false, false};
 
-    this->etimeArray      = {0, 1};
+    this->etimeArray      = {0,  1};
     this->errorArray      = {0., 0.};
 
     this->pinReadings     = {false, false, false, false};
