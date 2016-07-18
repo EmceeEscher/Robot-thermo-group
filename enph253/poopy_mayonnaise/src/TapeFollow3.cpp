@@ -30,7 +30,7 @@ const double GAIN_DER1     {5.};
 const double GAIN_DER2     {.5*GAIN_DER1*GAIN_DER1/GAIN_PROP*(1.-EPSILON)};
 // const double GAIN_DER2 {0.};
 const int NUM_SAVED_READINGS {10};
-const int INTERSECT_PERIOD {9};
+const int INTERSECT_PERIOD {5};
 
 
 void TapeFollow3::init()
