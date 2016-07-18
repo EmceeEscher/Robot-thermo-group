@@ -13,9 +13,9 @@
 class TapeFollow3 : MinorMode
 {
 private:
-    const double gainProp;      // TODO: set const; set based on knobs for now
-    const double gainDer1;      // TODO: set const; set based on knobs for now
-    const double gainDer2;      // TODO: set const; set based on knobs for now
+    double gainProp;      // TODO: set const; set based on knobs for now
+    double gainDer1;      // TODO: set const; set based on knobs for now
+    double gainDer2;      // TODO: set const; set based on knobs for now
     const double errorSmall;    // one main on tape
     const double errorMedium;   // both mains off, one intersection on tape
     const double errorLarge;    // all QRDs off tape

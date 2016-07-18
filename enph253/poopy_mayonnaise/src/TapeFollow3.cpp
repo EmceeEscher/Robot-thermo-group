@@ -253,11 +253,13 @@ void TapeFollow3::loop()
     } else
 	++printCount;
 
-    // // set gains
-    // // TODO move this to `init` once values are decided upon
-    // this->gainProp = GAIN_PROP;//static_cast<double>(knob(KNOB_PROP_GAIN)) / 50.;
-    // this->gainDer1 = GAIN_DER1;//static_cast<double>(knob(KNOB_DER1_GAIN)) / 50.;
-    // this->gainDer2 = 0.; //.5*this->gainDer1*this->gainDer1/this->gainProp*(1.-EPSILON);
+    // set gains
+    // TODO move this to `init` once values are decided upon
+    if (!this->motorsActive) {
+	this->gainProp = static_cast<double>(knob(KNOB_PROP_GAIN)) / 50.;
+	this->gainDer1 = static_cast<double>(knob(KNOB_DER1_GAIN)) / 50.;
+	this->gainDer2 = .5*this->gainDer1*this->gainDer1/this->gainProp*(1.-EPSILON);
+    }
 
     // get readings from tape sensors
     for (int i(0); i < 4; ++i) {
