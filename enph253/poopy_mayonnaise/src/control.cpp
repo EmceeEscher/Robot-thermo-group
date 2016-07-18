@@ -14,6 +14,8 @@ TapeFollow3 tf;
 
 void control::setup() {
 #include <phys253setup.txt>
+    for (int i(0); i < 4; ++i)
+	pinMode(i, INPUT);
     Serial.begin(9600);
     randomSeed(analogRead(0));
     LCD.clear();

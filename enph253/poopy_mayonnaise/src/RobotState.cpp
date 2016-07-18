@@ -9,6 +9,18 @@
 
 
 // TODO
+void RobotState::initMajorModes()
+{
+}
+
+
+// TODO
+void RobotState::initMinorModes()
+{
+}
+
+
+// TODO
 RobotState::RobotState()
 {
 }
