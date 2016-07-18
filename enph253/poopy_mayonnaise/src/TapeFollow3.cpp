@@ -298,7 +298,7 @@ void TapeFollow3::loop()
 	    this->lastPinReadings.end()
     );
     std::copy(
-            this->pinReadings.begi(), this->pinReadings.end(),
+            this->pinReadings.begin(), this->pinReadings.end(),
 	    this->lastPinReadings[0].begin()
     );
     
