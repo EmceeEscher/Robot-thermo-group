@@ -35,13 +35,13 @@ bool RobotState::isActive()
 }
 
 
-MajorMode& RobotState::getMajorMode()
+MajorMode* RobotState::getMajorMode()
 {
-    return *this->activeMajorMode;
+    return this->activeMajorMode;
 }
 
 
-std::vector<MinorMode*>& RobotState::getMinorModes()
+std::vector< MinorMode* >& RobotState::getMinorModes()
 {
     return this->activeMinorModes;
 }
