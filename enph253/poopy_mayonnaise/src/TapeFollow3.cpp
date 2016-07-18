@@ -68,7 +68,7 @@ void TapeFollow3::init()
 	this->activePins[i] = TAPE_SENSORS_FRONT[i];
 
     // declare active pins as inputs
-    for (auto &pin : this->activePins)
+    for (auto pin : this->activePins)
 	pinMode(pin, INPUT);
 }
 
@@ -92,11 +92,11 @@ void TapeFollow3::intersectionSeen()
     bool intersectSeenL(true);
     bool intersectSeenR(true);
     int i(0);
-    for (const auto &read : this->lastPinReadings) {
+    for (auto &reads : this->lastPinReadings) {
 	if (i >= this->intersectPeriod)
 	    break;
-	intersectSeenL = (intersectSeenL && read[0] && this->mainsOnTape);
-	intersectSeenR = (intersectSeenR && read[3] && this->mainsOnTape);
+	intersectSeenL = (intersectSeenL && reads[0] && this->mainsOnTape);
+	intersectSeenR = (intersectSeenR && reads[3] && this->mainsOnTape);
 	++i;
     }
 
@@ -233,7 +233,7 @@ void TapeFollow3::printLCD()
     		LCD.print(" ^ ");
     	}
     	// print QRD readings
-    	for (auto &read : this->pinReadings) {
+    	for (auto read : this->pinReadings) {
     	    LCD.print(" ");
     	    LCD.print(read);
     	}
@@ -303,7 +303,7 @@ void TapeFollow3::loop()
     this->lastOnTape = this->onTape;
 
     bool isOnTape(false);
-    for (auto &read : this->pinReadings) 
+    for (auto read : this->pinReadings) 
 	if (read) {
 	    isOnTape = true;
 	    break;
