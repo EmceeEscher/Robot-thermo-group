@@ -38,6 +38,11 @@ private:
      */
     void initMinorModes();
 
+    /*
+     * (Re)initializes any state variables
+     */
+    void init();
+
 public:
 
     RobotState();
@@ -62,6 +67,21 @@ public:
      * Loops through all of the currently active modes
      */
     void loop();
+
+    /*
+     * Makes the robot actively loop
+     */
+    void start();
+
+    /*
+     * Halts the looping of the robot and reinitializes constants
+     */
+    void stop();
+
+    /*
+     * Halts the looping of the robot
+     */
+    void pause();
 
 };
 

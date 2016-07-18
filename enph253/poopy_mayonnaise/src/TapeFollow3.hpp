@@ -15,7 +15,7 @@
 using std::vector;
 
 
-class TapeFollow3 : MinorMode
+class TapeFollow3 : public MinorMode
 {
 private:
     double gainProp;        // TODO: set const; set based on knobs for now
