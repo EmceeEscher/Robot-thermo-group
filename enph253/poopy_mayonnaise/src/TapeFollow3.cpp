@@ -275,7 +275,8 @@ void TapeFollow3::loop()
     if (!this->motorsActive) {
 	this->gainProp = static_cast<double>(knob(KNOB_PROP_GAIN)) / 50.;
 	this->gainDer1 = static_cast<double>(knob(KNOB_DER1_GAIN)) / 50.;
-	this->gainDer2 = .5*this->gainDer1*this->gainDer1/this->gainProp*(1.-EPSILON);
+	this->gainDer2 = .5*this->gainDer1*this->gainDer1 /
+	        this->gainProp*(1.-EPSILON);
     }
 
     // get readings from tape sensors
@@ -291,13 +292,18 @@ void TapeFollow3::loop()
     );
     this->lastPinReadings[0] = this->pinReadings;
     
+    // determine whether on tape
     this->lastOnTape = this->onTape;
 
     bool isOnTape(false);
-    for (auto &read : this->pinReadings)
-	isOnTape = isOnTape || read;
+    for (auto &read : this->pinReadings) 
+	if (read) {
+	    isOnTape = true;
+	    break;
+	}
     this->onTape = isOnTape;
 
+    // determine whether mains on tape
     this->lastMainsOnTape = this->mainsOnTape;
     this->mainsOnTape = (this->pinReadings[1] || this->pinReadings[2]);
 
@@ -317,8 +323,8 @@ void TapeFollow3::loop()
     // update previous error parameters
     if (error != this->lastError) {
 	this->errorArray = {this->lastError, this->errorArray[0]};
-	this->etimeArray = {1, this->etimeArray[0]};
-	this->lastError = error;
+	this->etimeArray = {1,              this->etimeArray[0]};
+	this->lastError  = error;
     }
 
     // get error derivatives
@@ -338,8 +344,8 @@ void TapeFollow3::loop()
 
     // adjust motor speed
     if (this->motorsActive) {
-	motor.speed(MOTOR_PIN_L, -this->motorSpeed + this->control);
-	motor.speed(MOTOR_PIN_R, this->motorSpeed + this->control);
+	motor.speed(MOTOR_PIN_L, this->control - this->motorSpeed);
+	motor.speed(MOTOR_PIN_R, this->control + this->motorSpeed);
     } else {
 	motor.speed(MOTOR_PIN_L, 0);
 	motor.speed(MOTOR_PIN_R, 0);
