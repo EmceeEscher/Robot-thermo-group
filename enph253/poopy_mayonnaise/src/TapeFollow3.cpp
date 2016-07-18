@@ -50,16 +50,16 @@ void TapeFollow3::init()
     this->motorSpeed      = MOTOR_SPEED;
     this->tapeFollowSteps = 0;
 
-    this->lastError = 0.;
+    this->lastError       = 0.;
 
     this->intersectSeen   = {false, false};
     this->intersectDetect = {false, false};
 
-    this->etimeArray = {0, 1};
-    this->errorArray = {0., 0.};
+    this->etimeArray      = {0, 1};
+    this->errorArray      = {0., 0.};
 
-    this->pinReadings = {false, false, false, false};
-    this->activePins  = TAPE_SENSORS_FRONT;
+    this->pinReadings     = {false, false, false, false};
+    this->activePins      = TAPE_SENSORS_FRONT;
 
     for (auto &x : this->lastPinReadings)
 	x = {false, false, false, false};
