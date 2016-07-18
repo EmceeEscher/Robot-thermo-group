@@ -59,7 +59,9 @@ void TapeFollow3::init()
     this->errorArray      = {0., 0.};
 
     this->pinReadings     = {false, false, false, false};
-    this->activePins      = TAPE_SENSORS_FRONT;
+
+    for (auto i(0); i < 4; ++i)
+	this->activePins[i] = TAPE_SENSORS_FRONT[i];
 
     for (auto &x : this->lastPinReadings)
 	x = {false, false, false, false};
