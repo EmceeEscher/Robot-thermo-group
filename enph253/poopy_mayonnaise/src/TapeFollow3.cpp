@@ -11,8 +11,8 @@
 using std::vector;
 
 
-const vector<int> TAPE_SENSORS_FRONT  {0, 1, 2, 3};
-const vector<int> TAPE_SENSORS_BACK   {4, 5, 6, 7};
+const vector<int> TAPE_SENSORS_FRONT {0, 1, 2, 3};
+const vector<int> TAPE_SENSORS_BACK  {4, 5, 6, 7};
 const int MOTOR_PIN_L {0};
 const int MOTOR_PIN_R {3};
 const int KNOB_PROP_GAIN {6};
@@ -61,14 +61,14 @@ void TapeFollow3::init()
     this->pinReadings     = {false, false, false, false};
 
     for (auto &x : this->lastPinReadings)
-	x = {false, false, false, false};
+	std::fill(x.begin(), x.end(), false);
 
     // assign active pins
     for (auto i(0); i < 4; ++i) 
 	this->activePins[i] = TAPE_SENSORS_FRONT[i];
 
     // declare active pins as inputs
-    for (auto pin : this->activePins)
+    for (const auto pin : this->activePins)
 	pinMode(pin, INPUT);
 }
 
@@ -92,7 +92,7 @@ void TapeFollow3::intersectionSeen()
     bool intersectSeenL(true);
     bool intersectSeenR(true);
     int i(0);
-    for (auto &reads : this->lastPinReadings) {
+    for (const auto &reads : this->lastPinReadings) {
 	if (i >= this->intersectPeriod)
 	    break;
 	intersectSeenL = (intersectSeenL && reads[0] && this->mainsOnTape);
@@ -233,7 +233,7 @@ void TapeFollow3::printLCD()
     		LCD.print(" ^ ");
     	}
     	// print QRD readings
-    	for (auto read : this->pinReadings) {
+    	for (const auto read : this->pinReadings) {
     	    LCD.print(" ");
     	    LCD.print(read);
     	}
@@ -303,7 +303,7 @@ void TapeFollow3::loop()
     this->lastOnTape = this->onTape;
 
     bool isOnTape(false);
-    for (auto read : this->pinReadings) 
+    for (const auto read : this->pinReadings) 
 	if (read) {
 	    isOnTape = true;
 	    break;
