@@ -11,8 +11,8 @@
 using std::vector;
 
 
-const vector<int> TAPE_SENSORS_FRONT {0, 1, 2, 3};
-const vector<int> TAPE_SENSORS_BACK  {4, 5, 6, 7};
+const int TAPE_SENSORS_FRONT[] {0, 1, 2, 3};
+const int TAPE_SENSORS_BACK[]  {4, 5, 6, 7};
 const int MOTOR_PIN_L {0};
 const int MOTOR_PIN_R {3};
 const int KNOB_PROP_GAIN {6};
@@ -297,7 +297,10 @@ void TapeFollow3::loop()
             this->lastPinReadings.begin(), this->lastPinReadings.end()-1,
 	    this->lastPinReadings.end()
     );
-    this->lastPinReadings[0] = this->pinReadings;
+    std::copy(
+            this->pinReadings.begi(), this->pinReadings.end(),
+	    this->lastPinReadings[0].begin()
+    );
     
     // determine whether on tape
     this->lastOnTape = this->onTape;
