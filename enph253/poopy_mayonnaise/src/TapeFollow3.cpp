@@ -35,36 +35,34 @@ const int INTERSECT_PERIOD {9};
 
 void TapeFollow3::init()
 {
-    this->active = false;
-    this->onTape = false;
-    this->lastOnTape = false;
-    this->mainsOnTape = false;
+    this->active          = false;
+    this->onTape          = false;
+    this->lastOnTape      = false;
+    this->mainsOnTape     = false;
     this->lastMainsOnTape = false;
-    this->turning = false;
-    this->halfTurn = false;
-    this->motorsActive = false;
+    this->turning         = false;
+    this->halfTurn        = false;
+    this->motorsActive    = false;
 
-    this->turnDirection = 0;
-    this->control = 0;
-    this->printCount = 0;
-    this->motorSpeed = MOTOR_SPEED;
+    this->turnDirection   = 0;
+    this->control         = 0;
+    this->printCount      = 0;
+    this->motorSpeed      = MOTOR_SPEED;
     this->tapeFollowSteps = 0;
 
     this->lastError = 0.;
 
-    this->intersectSeen =   {false, false};
+    this->intersectSeen   = {false, false};
     this->intersectDetect = {false, false};
 
     this->etimeArray = {0, 1};
     this->errorArray = {0., 0.};
 
     this->pinReadings = {false, false, false, false};
-    this->activePins = TAPE_SENSORS_FRONT;
+    this->activePins  = TAPE_SENSORS_FRONT;
 
     for (auto &x : this->lastPinReadings)
 	x = {false, false, false, false};
-	// for (auto i(0); i < 4; ++i)
-	//     x[i] = false;
 }
 
 
