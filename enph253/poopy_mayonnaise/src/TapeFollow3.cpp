@@ -49,6 +49,7 @@ void TapeFollow3::init()
 
     for (int i(0); i < 4; ++i) {
 	this->activePins[i] = TAPE_SENSORS_FRONT[i];
+	pinMode(this->activePins[i], INPUT);
 	this->lastPinReadings[i] = false;
 	this->pinReadings[i] = false;
     }
