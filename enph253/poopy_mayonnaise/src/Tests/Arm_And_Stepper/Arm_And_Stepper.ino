@@ -1,7 +1,7 @@
 #include <phys253.h>
 #include <phys253pins.h>
 
-//Analog pin to detect measure potentiometer
+//Analog pin for base angle potentiometer signal
 const int baseAnglePin = 0;
 //Base GBBC motor output number
 const int baseMotorNumber = 0;
@@ -15,10 +15,12 @@ const int noCatchSwitch = 1;
 //Amount of time to run motor to drop animal
 const int dropTime = 400; // Milliseconds
 
+//SPECIFIED GAIN VALUES
 const float propGain = 6.;
 const float intGain = 0.;
 const float derivGain = 0.;
 
+//Dynamic Control Variables
 float baseTarget, midTarget;
 float propErr, derivErr, intErr, lastPropErr;
 float angle;
@@ -31,14 +33,14 @@ const float midRestPosition = 50;
 //Iterator for LCD output
 int i;
 
-//Stepper Variables
+//Stepper Constants
 const int stepperDirPin = 8;
 const int stepperPulsePin = 9;
 const int COUNTERCLOCKWISE = HIGH;
 const int CLOCKWISE = LOW;
 const int stepperMicrosDelay = 4000; //Time delay between pulses in microseconds
 
-//reachAndGrab/reachAndDrop Variables
+//reachAndGrab/reachAndDrop function Constants
 const float initialAdjMidTarget = 45;
 const float initialAdjBaseTarget = 40;
 const float finalAdjMidTarget = 0;
@@ -60,12 +62,24 @@ void loop() {
   doControl();
 
   if(startbutton()){
-    reachAndGrab();
+    if(knob(7) > 900){
+      turnAndReach(true,true);
+    } else if(knob(7) < 150){
+      turnAndReach(false,true);
+    } else{
+      reachAndGrab();
+    }
   } else if (stopbutton()){
-    reachAndDrop();
-  } else if(knob(6) > 950){
+    if(knob(7) > 900){
+      turnAndReach(true,false);
+    } else if(knob(7) < 150){
+      turnAndReach(false,false);
+    } else{
+      reachAndDrop();
+    }
+  } else if(knob(6) > 900){
     stepperTurn(true,10);
-  } else if(knob(6) < 100){
+  } else if(knob(6) < 150){
     stepperTurn(false,10);
   }
 
@@ -75,6 +89,11 @@ void loop() {
   delay(10);
 }
 
+// The control loop. Should be implemented wherever the code
+//be for extended perids of time to prevent arm from overcorrecting,
+//grinding gears, etc.
+// Should be repeated with several millisecond delays for integral/
+//derivative control purposes
 void doControl(){
   angle = getAngle();
 
@@ -96,6 +115,7 @@ void doControl(){
   i++;
 }
 
+//Converts base potentiometer voltage to corresponding angle
 float getAngle() {
   float voltage = (float) analogRead(baseAnglePin) * 5./1024.;
   return ((-142.857 * voltage) / (voltage - 5.));
@@ -103,6 +123,7 @@ float getAngle() {
 }
 
 //Wrapper function for setting motor speed
+//Prevents values larger than 255 in either direction
 void setBaseMotor(int duty){
   if(duty > 255){
     duty = 255;
@@ -122,16 +143,20 @@ float getControlValue(){
   return control;
 }
 
+//Closes the claw until something is detected in claw, the claw
+//closes on itself or a timeout is reached
 void grabShit(){
+
+  //If switches are already triggered, then do nothing
+  if(!digitalRead(catchSwitch) || !digitalRead(noCatchSwitch)){}
   
-  if(!digitalRead(catchSwitch) || !digitalRead(noCatchSwitch)){
-    
-  } else{
+  else{
     LCD.clear();
     LCD.print("Grabbing");
     motor.speed(babyMotorNum,140);
     unsigned long startTime = millis();
     while(1){
+      doControl();
       if(!digitalRead(catchSwitch)){
         break;
       }
@@ -146,19 +171,29 @@ void grabShit(){
   }
 }
 
+//Opens the claw for specified time
 void dropShit(){
   motor.speed(babyMotorNum,-140);
   delay(dropTime);
   motor.speed(babyMotorNum,0);
 }
 
-
+//Function to update the LCD periodically
 void printState(){
   LCD.clear();
   LCD.print("A");
   LCD.print(getAngle());
+  LCD.print(" TaR:");
+  if(knob(7) > 900){
+    LCD.print("R");
+  } else if (knob(7) < 150){
+    LCD.print("L");
+  } else {
+    LCD.print("S");
+  }
 }
 
+//Extends arm over two periods and calls grab function
 void reachAndGrab(){
   
   baseTarget = initialAdjBaseTarget; 
@@ -178,6 +213,7 @@ void reachAndGrab(){
   setRestPosition();
 }
 
+//equivalent to reachAndGrab, but calls drop function
 void reachAndDrop(){
   
   baseTarget = initialAdjBaseTarget; 
@@ -197,11 +233,13 @@ void reachAndDrop(){
   setRestPosition();
 }
 
+//Sets the control target values to rest position
 void setRestPosition(){
   baseTarget = baseRestPosition;
   midTarget = midRestPosition;
 }
 
+//Turns the stepper motor a specified number of steps
 void stepperTurn(bool CW,int count){
   if(CW){
     digitalWrite(stepperDirPin,CLOCKWISE);
