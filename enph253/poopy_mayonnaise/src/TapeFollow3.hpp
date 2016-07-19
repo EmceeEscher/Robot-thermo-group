@@ -14,7 +14,7 @@
 
 using std::vector;
 
-using readingFn = bool(*)(vector<bool>);
+using readingFn_t = bool(*)(vector<bool>);
 
 
 class TapeFollow3 : public MinorMode
@@ -112,13 +112,13 @@ private:
      * Returns true if readingFn is true for all of lastPinReadings in
      * [0, period)
      */
-    bool fnAllLastReadings(int period, readingFn fn);
+    bool fnAllLastReadings(int period, readingFn_t fn);
 
     /*
      * Returns true if readingFn is true for any of lastPinReadings in
      * [0, period)
      */
-    bool fnAnyLastReadings(int period, readingFn fn);
+    bool fnAnyLastReadings(int period, readingFn_t fn);
     
     /*
      * Returns true if the given reading is all false

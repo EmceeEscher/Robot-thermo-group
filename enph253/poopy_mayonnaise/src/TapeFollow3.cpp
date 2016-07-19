@@ -181,7 +181,7 @@ double TapeFollow3::followTape()
 }
 
 
-bool TapeFollow3::fnAllLastReadings(int period, readingFn fn)
+bool TapeFollow3::fnAllLastReadings(int period, readingFn_t fn)
 {
     for (int i(0); i < period; ++i) {
 	auto &reading = this->lastPinReadings[i];
@@ -192,7 +192,7 @@ bool TapeFollow3::fnAllLastReadings(int period, readingFn fn)
 }
 
 
-bool TapeFollow3::fnAnyLastReadings(int period, readingFn fn)
+bool TapeFollow3::fnAnyLastReadings(int period, readingFn_t fn)
 {
     for (int i(0); i < period; ++i) {
 	auto &reading = this->lastPinReadings[i];
