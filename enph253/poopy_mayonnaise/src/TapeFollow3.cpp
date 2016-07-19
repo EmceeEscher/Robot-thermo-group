@@ -362,7 +362,7 @@ void TapeFollow3::loop()
     if (!this->active)
 	return;
 
-    if (printCount % PRINT_PERIOD == 0) {
+    if (this->printCount % this->printPeriod == 0) {
 	this->printLCD();
 	this->printCount = 0;
     }

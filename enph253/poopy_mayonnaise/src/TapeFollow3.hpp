@@ -63,6 +63,7 @@ private:
     vector<double> errorArray;         // array of last 2 distinct errors
     vector<unsigned long> etimeArray;  // array of times (since read) assoc with errorArray
     vector<int> activePins;            // pin numbers (intL, mainL, mainR, intR)
+    
 
     /*
      * Set all instance variables to their default starting values
