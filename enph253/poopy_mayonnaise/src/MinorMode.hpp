@@ -35,6 +35,12 @@ public:
     virtual void pause() = 0;
 
     /*
+     * Enter a testing mode, where active looping is engaged but hardware
+     * (i.e. motors, etc) is not activated.
+     */
+    virtual void test() = 0;
+
+    /*
      * Returns true if the mode is currently active, else false
      */
     virtual bool isActive() = 0;

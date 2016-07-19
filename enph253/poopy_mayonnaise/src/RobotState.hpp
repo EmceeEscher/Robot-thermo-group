@@ -24,10 +24,11 @@ class RobotState
 private:
 
     bool active;                                // whether the robot is active
-    vector< const MajorMode* >  allMajorModes;        // all possible major modes
-    vector< const MinorMode* >  allMinorModes;        // all possible minor modes
-    MajorMode*                  activeMajorMode;      // pointer to currently active major mode
-    vector< const MinorMode* >  activeMinorModes;     // vector of pointers to currently acive minor modes
+    int mainLoopDelay;                          // delay for the main loop
+    vector< MajorMode* >  allMajorModes;        // all possible major modes
+    vector< MinorMode* >  allMinorModes;        // all possible minor modes
+    MajorMode*            activeMajorMode;      // pointer to currently active major mode
+    vector< MinorMode* >  activeMinorModes;     // vector of pointers to currently acive minor modes
 
     /*
      * Initialize the allMajorModes member with all necessary major modes.
@@ -76,7 +77,7 @@ public:
     /*
      * Returns a reference to the vector of currently active minor modes
      */
-    vector< const MinorMode* >& getMinorModes();
+    vector< MinorMode* >& getMinorModes();
 
     /*
      * Loops through all of the currently active modes
@@ -97,6 +98,11 @@ public:
      * Halts the looping of the robot
      */
     void pause();
+
+    /*
+     * Cause all mode to enter a testing mode
+     */
+    void test();
 
 };
 

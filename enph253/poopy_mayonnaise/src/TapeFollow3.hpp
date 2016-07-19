@@ -30,12 +30,12 @@ private:
     const double errorSeeking;    // error to apply while seeking tape
     const double errorTurning;    // error to be applied during turning
     const unsigned long intersectDelay;  // while tape following, waits for this many steps before searching for intersections
-    const int intersectPeriod;    // number of consecutive readings required to see an intersection
-    const int turningPeriod;      // number of consecutive readings required to register start of turning
-    const int turnWaitPeriod;     // number of iterations to wait after detecting intersections before making decision
-    const int offTapePeriod;      // number of consecutive readings required to signal that the robot has lost the tape
-    const int onTapePeriod;       // number of consecutive readings required to confirm that the robot is back on the tape after turning
-    const int printPeriod;        // number of iterations per printout
+    const int intersectPeriod;       // number of consecutive readings required to see an intersection
+    const int turningPeriod;         // number of consecutive readings required to register start of turning
+    const int turnWaitPeriod;        // number of iterations to wait after detecting intersections before making decision
+    const int offTapePeriod;         // number of consecutive readings required to signal that the robot has lost the tape
+    const int onTapePeriod;          // number of consecutive readings required to confirm that the robot is back on the tape after turning
+    const int printPeriod;           // number of iterations per printout
     const int motorSpeedFollowing;   // motor speed for following tape
     const int motorSpeedTurning;     // motor speed for making turn
 

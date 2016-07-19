@@ -21,7 +21,6 @@ const int MOTOR_SPEED_FOLLOWING {120};
 const int MOTOR_SPEED_TURNING   {32};
 const int PRINT_PERIOD {200};
 const unsigned long INTERSECT_DELAY {100};  // steps following before intersection seeking
-const unsigned long MAIN_LOOP_DELAY {1};     // milliseconds
 const double ERROR_SMALL   {.02};
 const double ERROR_MEDIUM  {.04};
 const double ERROR_LARGE   {.08};
@@ -260,6 +259,7 @@ double TapeFollow3::makeTurn()
 // TODO: generalize
 int TapeFollow3::chooseTurn(bool left, bool right, bool straight)
 {
+    // for now, random
     if (left && right && straight)
 	return random(3) - 1;
     else if (left && right)
@@ -471,9 +471,6 @@ void TapeFollow3::loop()
     // increase time counters
     for (auto &t : etimeArray)
 	++t;
-
-    // delay
-    delay(MAIN_LOOP_DELAY);
 }
 
 

@@ -3,10 +3,14 @@
 //
 #include <StandardCplusplus.h>
 #include <vector>
+#include <phys253.h>
 #include "MajorMode.hpp"
 #include "MinorMode.hpp"
 #include "modes.hpp"
 #include "RobotState.hpp"
+
+
+const unsigned long MAIN_LOOP_DELAY {1};     // milliseconds
 
 
 // TODO
@@ -18,7 +22,7 @@ void RobotState::initMajorModes()
 // TODO
 void RobotState::destroyMajorModes()
 {
-    for (const MajorMode *mm : this->allMajorModes)
+    for (MajorMode *mm : this->allMajorModes)
 	delete mm;
 }
 
@@ -26,8 +30,7 @@ void RobotState::destroyMajorModes()
 // TODO
 void RobotState::initMinorModes()
 {
-    // constant pointer to non-constant data
-    const MinorMode *tapeFollow = new TapeFollow3;
+    MinorMode *tapeFollow = new TapeFollow3;
     this->allMinorModes.push_back(tapeFollow);
 }
 
@@ -35,13 +38,14 @@ void RobotState::initMinorModes()
 // TODO
 void RobotState::destroyMinorModes()
 {
-    for (const MinorMode *mm : this->allMinorModes)
+    for (MinorMode *mm : this->allMinorModes)
     	delete mm;
 }
 
 
 // TODO
 RobotState::RobotState()
+    :mainLoopDelay(MAIN_LOOP_DELAY)
 {
     this->initMajorModes();
     this->initMinorModes();
@@ -68,7 +72,7 @@ MajorMode* RobotState::getMajorMode()
 }
 
 
-std::vector< const MinorMode* >& RobotState::getMinorModes()
+std::vector< MinorMode* >& RobotState::getMinorModes()
 {
     return this->activeMinorModes;
 }
@@ -77,6 +81,10 @@ std::vector< const MinorMode* >& RobotState::getMinorModes()
 // TODO
 void RobotState::loop()
 {
+    // for now, run each minor mode in no particular order
+    for (auto *mm : this->allMinorModes)
+	mm->loop();
+    delay(this->mainLoopDelay);
 }
 
 
@@ -84,6 +92,9 @@ void RobotState::loop()
 void RobotState::start()
 {
     this->active = true;
+    // for now, begin all minor modes
+    for (auto *mm : this->allMinorModes)
+	mm->start();
 }
 
 
@@ -92,6 +103,9 @@ void RobotState::stop()
 {
     this->active = false;
     this->init();
+    // for now, stop all minor modes
+    for (auto *mm : this->allMinorModes)
+	mm->stop();
 }
 
 
@@ -99,4 +113,16 @@ void RobotState::stop()
 void RobotState::pause()
 {
     this->active = false;
+    // for now, pause all minor modes
+    for (auto *mm : this->allMinorModes)
+	mm->pause();
+}
+
+
+void RobotState::test()
+{
+    this->active = true;
+    // for now, test all minor modes
+    for (auto *mm : this->allMinorModes)
+	mm->test();
 }
