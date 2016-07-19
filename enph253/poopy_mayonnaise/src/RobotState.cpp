@@ -16,8 +16,27 @@ void RobotState::initMajorModes()
 
 
 // TODO
+void RobotState::destroyMajorModes()
+{
+    for (const MajorMode *mm : this->allMajorModes)
+	delete mm;
+}
+
+
+// TODO
 void RobotState::initMinorModes()
 {
+    // constant pointer to non-constant data
+    const MinorMode *tapeFollow = new TapeFollow3;
+    this->allMinorModes.push_back(tapeFollow);
+}
+
+
+// TODO
+void RobotState::destroyMinorModes()
+{
+    for (const MinorMode *mm : this->allMinorModes)
+    	delete mm;
 }
 
 
@@ -26,6 +45,14 @@ RobotState::RobotState()
 {
     this->initMajorModes();
     this->initMinorModes();
+}
+
+
+// TODO
+RobotState::~RobotState()
+{
+    this->destroyMinorModes();
+    this->destroyMajorModes();
 }
 
 
@@ -41,7 +68,7 @@ MajorMode* RobotState::getMajorMode()
 }
 
 
-std::vector< MinorMode* >& RobotState::getMinorModes()
+std::vector< const MinorMode* >& RobotState::getMinorModes()
 {
     return this->activeMinorModes;
 }

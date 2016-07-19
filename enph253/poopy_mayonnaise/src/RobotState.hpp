@@ -20,11 +20,11 @@ class RobotState
 
 private:
 
-    bool active;                          // whether the robot is active
-    // vector< MajorMode* >  allMajorModes;     // all possible major modes
-    // vector< MinorMode* >  allMinorModes;     // all possible minor modes
-    MajorMode*            activeMajorMode;      // pointer to currently active major mode
-    vector< MinorMode* >  activeMinorModes;     // vector of pointers to currently acive minor modes
+    bool active;                                // whether the robot is active
+    vector< const MajorMode* >  allMajorModes;        // all possible major modes
+    vector< const MinorMode* >  allMinorModes;        // all possible minor modes
+    MajorMode*                  activeMajorMode;      // pointer to currently active major mode
+    vector< const MinorMode* >  activeMinorModes;     // vector of pointers to currently acive minor modes
 
     /*
      * Initialize the allMajorModes member with all necessary major modes.
@@ -33,10 +33,20 @@ private:
     void initMajorModes();
 
     /*
+     * Deallocate all major mode objects
+     */
+    void destroyMajorModes();
+
+    /*
      * Initialize the allMinorModes member with all necessary minor modes.
      * Fill activeMinorModes with the initially-active minor modes.
      */
     void initMinorModes();
+
+    /*
+     * Deallocate all minor mode objects
+     */
+    void destroyMinorModes();
 
     /*
      * (Re)initializes any state variables
@@ -45,7 +55,9 @@ private:
 
 public:
 
-    RobotState();
+    RobotState();   // constructor
+
+    ~RobotState();  // deconstructor
 
     /*
      * Return true if the robot is currently active (i.e. looping through 
@@ -61,7 +73,7 @@ public:
     /*
      * Returns a reference to the vector of currently active minor modes
      */
-    vector< MinorMode* >& getMinorModes();
+    vector< const MinorMode* >& getMinorModes();
 
     /*
      * Loops through all of the currently active modes

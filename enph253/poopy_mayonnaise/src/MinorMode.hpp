@@ -9,7 +9,11 @@
 
 class MinorMode
 {
+
 public:
+
+    virtual ~MinorMode() {};
+    
     /*
      * Major loop function for mode
      */
@@ -34,6 +38,7 @@ public:
      * Returns true if the mode is currently active, else false
      */
     virtual bool isActive() = 0;
+
 };
 
 #endif // MINOR_MODE_HPP

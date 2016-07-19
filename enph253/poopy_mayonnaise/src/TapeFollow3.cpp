@@ -357,6 +357,11 @@ TapeFollow3::TapeFollow3()
 }
 
 
+TapeFollow3::~TapeFollow3()
+{
+}
+
+
 void TapeFollow3::loop()
 {
     if (!this->active)

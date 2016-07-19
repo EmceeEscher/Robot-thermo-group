@@ -161,7 +161,10 @@ private:
     void printLCD();
 
 public:
-    TapeFollow3();
+
+    TapeFollow3();   // constructor
+
+    ~TapeFollow3();  // deconstructor
 
     /*
      * Main loop funciton to follow tape. Uses `seekTape`, `followTape`,
@@ -194,6 +197,7 @@ public:
      * at speed 0.
      */
     void test();
+
 };
 
 #endif // TAPE_FOLLOW_3_HPP
