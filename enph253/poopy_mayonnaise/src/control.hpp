@@ -31,12 +31,6 @@ namespace control
      */
     void stop();
 
-    /*
-     * Function that halts the loop and maintains the current state
-     * of all modes
-     */
-    void pause();
-
 }
 
 #endif // CONTROL_HPP
