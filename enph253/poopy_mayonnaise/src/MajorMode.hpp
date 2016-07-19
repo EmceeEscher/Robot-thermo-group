@@ -9,6 +9,9 @@
 class MajorMode
 {
 public:
+
+    ~MajorMode() {}
+    
     /*
      * Major loop function for mode
      */
@@ -38,6 +41,7 @@ public:
      * Enter next major mode
      */
     virtual void nextMode() = 0;
+
 };
 
 #endif // MAJOR_MODE_HPP
