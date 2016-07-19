@@ -30,7 +30,7 @@ void RobotState::destroyMajorModes()
 // TODO
 void RobotState::initMinorModes()
 {
-    MinorMode *tapeFollow = new TapeFollow3;
+    MinorMode *tapeFollow = new TapeFollow;
     this->allMinorModes.push_back(tapeFollow);
 }
 

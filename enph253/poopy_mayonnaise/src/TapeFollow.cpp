@@ -1,11 +1,11 @@
 ///
-// TapeFollow3.cpp
+// TapeFollow.cpp
 //
 #include <StandardCplusplus.h>
 #include <vector>
 #include <algorithm>
 #include <phys253.h>
-#include "TapeFollow3.hpp"
+#include "TapeFollow.hpp"
 
 
 using std::vector;
@@ -39,7 +39,7 @@ const int OFF_TAPE_PERIOD    {50};
 const int ON_TAPE_PERIOD     {10};
 
 
-void TapeFollow3::init()
+void TapeFollow::init()
 {
     this->active          = false;
     this->onTape          = false;
@@ -80,7 +80,7 @@ void TapeFollow3::init()
 
 
 // TODO make this more advanced
-double TapeFollow3::seekTape()
+double TapeFollow::seekTape()
 {
     if (this->lastError < 0.)              // off tape to the right
 	return -this->errorSeeking;
@@ -92,7 +92,7 @@ double TapeFollow3::seekTape()
 
 
 // TODO
-void TapeFollow3::intersectionSeen()
+void TapeFollow::intersectionSeen()
 {
     // bool intersectSeenL = true;
     bool intersectSeenL(true);
@@ -114,7 +114,7 @@ void TapeFollow3::intersectionSeen()
 }
 
 
-void TapeFollow3::intersectionDetection()
+void TapeFollow::intersectionDetection()
 {
     // declare static variables (runs once)
     const static bool &intersectL = this->pinReadings[0];
@@ -133,7 +133,7 @@ void TapeFollow3::intersectionDetection()
 
     // if intersection(s) detected, make move decision
     if (this->fnAllLastReadings(
-            this->turnWaitPeriod, &TapeFollow3::intsOffTape)) {
+            this->turnWaitPeriod, &TapeFollow::intsOffTape)) {
 	// wait until both intersections crossed over
 	this->turnDirection = this->chooseTurn(
 	        this->intersectDetect[0],
@@ -149,7 +149,7 @@ void TapeFollow3::intersectionDetection()
 }
 
 
-double TapeFollow3::followTape()
+double TapeFollow::followTape()
 {
     // declare static variables (runs once)
     const static bool &intersectL = this->pinReadings[0];
@@ -180,7 +180,7 @@ double TapeFollow3::followTape()
 }
 
 
-bool TapeFollow3::fnAllLastReadings(int period, readingFn_t fn)
+bool TapeFollow::fnAllLastReadings(int period, readingFn_t fn)
 {
     for (int i(0); i < period; ++i) {
 	auto &reading = this->lastPinReadings[i];
@@ -191,7 +191,7 @@ bool TapeFollow3::fnAllLastReadings(int period, readingFn_t fn)
 }
 
 
-bool TapeFollow3::fnAnyLastReadings(int period, readingFn_t fn)
+bool TapeFollow::fnAnyLastReadings(int period, readingFn_t fn)
 {
     for (int i(0); i < period; ++i) {
 	auto &reading = this->lastPinReadings[i];
@@ -202,7 +202,7 @@ bool TapeFollow3::fnAnyLastReadings(int period, readingFn_t fn)
 }
 
 
-bool TapeFollow3::offTape(vector<bool> reading)
+bool TapeFollow::offTape(vector<bool> reading)
 {
     for (const bool read : reading)
 	if (read)
@@ -211,39 +211,39 @@ bool TapeFollow3::offTape(vector<bool> reading)
 }
 
 
-bool TapeFollow3::mainsOffTape(vector<bool> reading)
+bool TapeFollow::mainsOffTape(vector<bool> reading)
 {
     return !(reading[1] || reading[2]);
 }
 
 
-bool TapeFollow3::intsOffTape(vector<bool> reading)
+bool TapeFollow::intsOffTape(vector<bool> reading)
 {
     return !(reading[0] || reading[3]);
 }
 
 
-bool TapeFollow3::intLOnTape(vector<bool> reading)
+bool TapeFollow::intLOnTape(vector<bool> reading)
 {
     return reading[0];
 }
 
 
-bool TapeFollow3::intROnTape(vector<bool> reading)
+bool TapeFollow::intROnTape(vector<bool> reading)
 {
     return reading[3];
 }
 
 
 // TODO make more advanced
-double TapeFollow3::makeTurn()
+double TapeFollow::makeTurn()
 {
     // determine whether end has bee reached
     if ((!this->halfTurn) && this->fnAllLastReadings(
-            this->turningPeriod, &TapeFollow3::mainsOffTape))
+            this->turningPeriod, &TapeFollow::mainsOffTape))
     	this->halfTurn = true;
     else if (this->halfTurn && !(this->fnAnyLastReadings(
-            this->onTapePeriod, &TapeFollow3::mainsOffTape))) {
+            this->onTapePeriod, &TapeFollow::mainsOffTape))) {
 	this->halfTurn = false;
 	this->turning = false;  // exit to regular following
     }
@@ -257,7 +257,7 @@ double TapeFollow3::makeTurn()
 
 
 // TODO: generalize
-int TapeFollow3::chooseTurn(bool left, bool right, bool straight)
+int TapeFollow::chooseTurn(bool left, bool right, bool straight)
 {
     // for now, random
     if (left && right && straight)
@@ -284,7 +284,7 @@ int TapeFollow3::chooseTurn(bool left, bool right, bool straight)
 }
 
 
-void TapeFollow3::printLCD()
+void TapeFollow::printLCD()
 {
     if (!this->active) {
     	LCD.clear();
@@ -332,7 +332,7 @@ void TapeFollow3::printLCD()
 }
 
 
-TapeFollow3::TapeFollow3()
+TapeFollow::TapeFollow()
     : gainProp        (GAIN_PROP),
       gainDer1        (GAIN_DER1),
       gainDer2        (GAIN_DER2),
@@ -357,10 +357,10 @@ TapeFollow3::TapeFollow3()
 }
 
 
-TapeFollow3::~TapeFollow3() {}
+TapeFollow::~TapeFollow() {}
 
 
-void TapeFollow3::loop()
+void TapeFollow::loop()
 {
     if (!this->active)
 	return;
@@ -414,7 +414,7 @@ void TapeFollow3::loop()
     // get error based on current state
     double error(0.);
     if ((!(this->turning)) && this->fnAllLastReadings(
-            this->offTapePeriod, &TapeFollow3::offTape)) {
+            this->offTapePeriod, &TapeFollow::offTape)) {
 	this->motorSpeed = this->motorSpeedTurning;
 	this->tapeFollowSteps = 0;
 	error = this->seekTape();
@@ -474,21 +474,21 @@ void TapeFollow3::loop()
 }
 
 
-void TapeFollow3::start()
+void TapeFollow::start()
 {
     this->active = true;
     this->motorsActive = true;
 }
 
 
-void TapeFollow3::stop()
+void TapeFollow::stop()
 {
     this->init();
     this->pause();
 }
 
 
-void TapeFollow3::pause()
+void TapeFollow::pause()
 {
     this->active = false;
     this->motorsActive = false;
@@ -496,13 +496,13 @@ void TapeFollow3::pause()
 }
 
 
-bool TapeFollow3::isActive()
+bool TapeFollow::isActive()
 {
     return this->active;
 }
 
 
-void TapeFollow3::test()
+void TapeFollow::test()
 {
     this->active = true;
     this->motorsActive = false;

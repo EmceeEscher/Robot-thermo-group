@@ -1,10 +1,10 @@
 ///
-// TapeFollow3.hpp
+// TapeFollow.hpp
 //
 // A third try for a tape follower where distinct actions are separated
 //
-#ifndef TAPE_FOLLOW_3_HPP
-#define TAPE_FOLLOW_3_HPP
+#ifndef TAPE_FOLLOW_HPP
+#define TAPE_FOLLOW_HPP
 
 
 #include <StandardCplusplus.h>
@@ -16,7 +16,7 @@ using std::vector;
 using readingFn_t = bool(*)(vector<bool>);
 
 
-class TapeFollow3 : public MinorMode
+class TapeFollow : public MinorMode
 {
 
 private:
@@ -160,9 +160,9 @@ private:
 
 public:
 
-    TapeFollow3();   // constructor
+    TapeFollow();   // constructor
 
-    ~TapeFollow3();  // deconstructor
+    ~TapeFollow();  // deconstructor
 
     /*
      * Main loop funciton to follow tape. Uses `seekTape`, `followTape`,
@@ -198,4 +198,4 @@ public:
 
 };
 
-#endif // TAPE_FOLLOW_3_HPP
+#endif // TAPE_FOLLOW_HPP

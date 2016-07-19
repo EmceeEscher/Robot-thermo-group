@@ -9,6 +9,6 @@
 // MAJOR MODES
     
 // MINOR MODES
-#include "TapeFollow3.hpp"
+#include "TapeFollow.hpp"
 
 #endif // MODES_HPP
