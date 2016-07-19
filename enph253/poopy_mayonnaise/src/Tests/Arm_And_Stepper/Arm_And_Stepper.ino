@@ -36,6 +36,13 @@ const int stepperDirPin = 8;
 const int stepperPulsePin = 9;
 const int COUNTERCLOCKWISE = HIGH;
 const int CLOCKWISE = LOW;
+const int stepperMicrosDelay = 4000; //Time delay between pulses in microseconds
+
+//reachAndGrab/reachAndDrop Variables
+const float initialAdjMidTarget = 45;
+const float initialAdjBaseTarget = 40;
+const float finalAdjMidTarget = 0;
+const float finalAdjBaseTarget = 5;
 
 void setup() {
   #include <phys253setup.txt>
@@ -53,7 +60,7 @@ void loop() {
   doControl();
 
   if(startbutton()){
-    fullGrabMotion();
+    reachAndGrab();
   } else if (stopbutton()){
     reachAndDrop();
   } else if(knob(6) > 950){
@@ -152,15 +159,17 @@ void printState(){
   LCD.print(getAngle());
 }
 
-void fullGrabMotion(){
+void reachAndGrab(){
   
-  baseTarget = 40; midTarget = 45;
+  baseTarget = initialAdjBaseTarget; 
+  midTarget = initialAdjMidTarget;
   unsigned long startTime = millis();
   while(millis() - startTime < 500){
     doControl();
   }
 
-  baseTarget = 5; midTarget = 0;
+  baseTarget = finalAdjBaseTarget; 
+  midTarget = finalAdjMidTarget;
   startTime = millis();
   while(millis() - startTime < 3000){
     doControl();
@@ -171,13 +180,15 @@ void fullGrabMotion(){
 
 void reachAndDrop(){
   
-  baseTarget = 40; midTarget = 45;
+  baseTarget = initialAdjBaseTarget; 
+  midTarget = initialAdjMidTarget;
   unsigned long startTime = millis();
   while(millis() - startTime < 500){
     doControl();
   }
 
-  baseTarget = 5; midTarget = 0;
+  baseTarget = finalAdjBaseTarget; 
+  midTarget = finalAdjMidTarget;
   startTime = millis();
   while(millis() - startTime < 3000){
     doControl();
@@ -200,9 +211,21 @@ void stepperTurn(bool CW,int count){
   for(i = 0; i < count; i++){
     digitalWrite(stepperPulsePin,HIGH);
     doControl();
-    delay(5);
+    delayMicroseconds(stepperMicrosDelay);
+    
     digitalWrite(stepperPulsePin,LOW);
     doControl();
-    delay(5);
+    delayMicroseconds(stepperMicrosDelay);
   }
 }
+
+/* 
+ * Parameter: turnRight - Turn right if true, left otherwise
+ * Parameter: grab - grab if true, drop otherwise
+ */
+void turnAndReach(bool turnRight, bool grab){
+  stepperTurn(turnRight, 250);
+  grab ? reachAndGrab() : reachAndDrop();
+  stepperTurn(!turnRight, 250);
+}
+
