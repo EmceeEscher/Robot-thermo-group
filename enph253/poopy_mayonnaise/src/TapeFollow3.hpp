@@ -21,26 +21,23 @@ class TapeFollow3 : public MinorMode
 
 private:
 
-    double gainProp;        // TODO: set const; set based on knobs for now
-    double gainDer1;        // TODO: set const; set based on knobs for now
-    double gainDer2;        // TODO: set const; set based on knobs for now
+    double gainProp;              // TODO: set const; set based on knobs for now
+    double gainDer1;              // TODO: set const; set based on knobs for now
+    double gainDer2;              // TODO: set const; set based on knobs for now
     const double errorSmall;      // one main on tape
     const double errorMedium;     // both mains off, one intersection on tape
     const double errorLarge;      // all QRDs off tape
-    const double errorSeeking;
+    const double errorSeeking;    // error to apply while seeking tape
     const double errorTurning;    // error to be applied during turning
     const unsigned long intersectDelay;  // while tape following, waits for this many steps before searching for intersections
     const int intersectPeriod;    // number of consecutive readings required to see an intersection
     const int turningPeriod;      // number of consecutive readings required to register start of turning
     const int turnWaitPeriod;     // number of iterations to wait after detecting intersections before making decision
     const int offTapePeriod;      // number of consecutive readings required to signal that the robot has lost the tape
-    const int onTapePeriod;
+    const int onTapePeriod;       // number of consecutive readings required to confirm that the robot is back on the tape after turning
     const int printPeriod;        // number of iterations per printout
-    const int motorSpeedFollowing;
-    const int motorSpeedTurning;
-
-    vector<bool> pinReadings;     // current readings on QRD pins
-    vector< vector<bool> > lastPinReadings;  // array of previous time readings
+    const int motorSpeedFollowing;   // motor speed for following tape
+    const int motorSpeedTurning;     // motor speed for making turn
 
     bool active;                  // whether the loop is active
     bool onTape;                  // true= on tape, false= off tape
@@ -58,14 +55,14 @@ private:
     unsigned long tapeFollowSteps;
     double lastError;             // last calculated error
 
-    vector<bool> intersectSeen;        // true if an intersection was seen
-    vector<bool> intersectDetect;      // true when an intersection has been detected (seen and passed over)
-
-    vector<double> errorArray;         // array of last 2 distinct errors
-    vector<unsigned long> etimeArray;  // array of times (since read) assoc with errorArray
-    vector<int> activePins;            // pin numbers (intL, mainL, mainR, intR)
+    vector<bool> pinReadings;                // current readings on QRD pins
+    vector< vector<bool> > lastPinReadings;  // array of previous time readings
+    vector<bool> intersectSeen;              // true if an intersection was seen
+    vector<bool> intersectDetect;            // true when an intersection has been detected (seen and passed over)
+    vector<double> errorArray;               // array of last 2 distinct errors
+    vector<unsigned long> etimeArray;        // array of times (since read) assoc with errorArray
+    vector<int> activePins;                  // pin numbers (intL, mainL, mainR, intR)
     
-
     /*
      * Set all instance variables to their default starting values
      */
