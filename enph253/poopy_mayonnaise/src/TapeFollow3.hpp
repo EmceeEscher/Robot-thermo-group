@@ -13,13 +13,14 @@
 
 
 using std::vector;
-
 using readingFn_t = bool(*)(vector<bool>);
 
 
 class TapeFollow3 : public MinorMode
 {
+
 private:
+
     double gainProp;        // TODO: set const; set based on knobs for now
     double gainDer1;        // TODO: set const; set based on knobs for now
     double gainDer2;        // TODO: set const; set based on knobs for now
