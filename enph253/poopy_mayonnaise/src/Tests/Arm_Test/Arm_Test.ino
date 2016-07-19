@@ -63,7 +63,8 @@ void loop() {
 //TODO: Actually determine a formula to get the angle
 float getAngle() {
   float voltage = (float) analogRead(baseAnglePin) * 5./1024.;
-  return ((-142.857 * voltage) / (voltage - 5.));
+  return 9.*((-142.857 * voltage) / (voltage - 5.));
+  //return ((-142.857 * voltage) / (voltage - 5.));
 }
 
 //Wrapper function for setting motor speed
