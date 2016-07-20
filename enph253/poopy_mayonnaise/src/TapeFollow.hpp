@@ -36,9 +36,11 @@ private:
     const int offTapePeriod;         // number of consecutive readings required to signal that the robot has lost the tape
     const int onTapePeriod;          // number of consecutive readings required to confirm that the robot is back on the tape after turning
     const int printPeriod;           // number of iterations per printout
-    const int motorSpeedFollowing;   // motor speed for following tape
     const int motorSpeedTurning;     // motor speed for making turn
     const int motorSpeedSeeking;     // motor speed for seeking tape
+    const int motorSpeedFollowingDefault;
+    const int motorSpeedPassengerSeek;
+    int motorSpeedFollowing;  // current motor speed for following tape
 
     bool active;                  // whether the loop is active
     bool onTape;                  // true= on tape, false= off tape
@@ -192,6 +194,16 @@ public:
      * at speed 0.
      */
     void test();
+
+    /*
+     * Changes the motor following speed to the given value
+     */
+    void setMotorSpeedPassengerSeek();
+
+    /*
+     * Resets the following speed to the default value
+     */
+    void resetMotorSpeed();
 
 };
 

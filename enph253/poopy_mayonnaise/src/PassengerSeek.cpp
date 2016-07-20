@@ -35,3 +35,17 @@ void PassengerSeek::test()
 {
     MinorMode::test();
 }
+
+
+// TODO
+bool approachingPassenger()
+{
+    return false;  // stub
+}
+
+
+// TODO
+bool atPassenger()
+{
+    return false;  // stub
+}

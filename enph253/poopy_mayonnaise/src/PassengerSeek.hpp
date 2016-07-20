@@ -6,12 +6,21 @@
 #ifndef PASSENGER_SEEK_HPP
 #define PASSENGER_SEEK_HPP
 
+#include <StandardCplusplus.h>
+#include <vector>
 #include "MinorMode.hpp"
+
+using std::vector;
 
 class PassengerSeek : public MinorMode
 {
 
 private:
+
+    const vector<int> qsdPinsSides;        // left-back, left-mid, left-front, right-front, right-mid, right-back
+
+    vector<bool> atMax;                    // true if the associated pin is at a maximum
+    vector< vector<double> > pinReadings;  // vector of 6-vectors containing historical pin reading data
 
     /*
      * (Re)initialize all state variables
@@ -35,6 +44,17 @@ public:
      * are not active
      */
     void test();
+
+    /*
+     * Returns true if one of the front side pins is at a maximum
+     */
+    bool approachingPassenger();
+
+    /*
+     * Returns true if the middle (arm) pin is at a maximum after, the
+     * front maximum was seen
+     */
+    bool atPassenger();
     
 };
 

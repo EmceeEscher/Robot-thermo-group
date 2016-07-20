@@ -17,9 +17,10 @@ const int MOTOR_PIN_L    {0};
 const int MOTOR_PIN_R    {3};
 const int KNOB_PROP_GAIN {6};
 const int KNOB_DER1_GAIN {7};
-const int MOTOR_SPEED_FOLLOWING {120};
-const int MOTOR_SPEED_TURNING    {32};
-const int MOTOR_SPEED_SEEKING     {8};
+const int MOTOR_SPEED_FOLLOWING      {120};
+const int MOTOR_SPEED_PASSENGER_SEEK  {64};
+const int MOTOR_SPEED_TURNING         {32};
+const int MOTOR_SPEED_SEEKING          {8};
 const int PRINT_PERIOD {200};
 const unsigned long INTERSECT_DELAY {100};  // steps following before intersection seeking
 const double ERROR_SMALL     {.02};
@@ -44,29 +45,30 @@ void TapeFollow::init()
 {
     MinorMode::init();
 
-    this->onTape          = false;
-    this->lastOnTape      = false;
-    this->mainsOnTape     = false;
-    this->lastMainsOnTape = false;
-    this->turning         = false;
-    this->halfTurn        = false;
-    this->motorsActive    = false;
+    this->onTape              = false;
+    this->lastOnTape          = false;
+    this->mainsOnTape         = false;
+    this->lastMainsOnTape     = false;
+    this->turning             = false;
+    this->halfTurn            = false;
+    this->motorsActive        = false;
 
-    this->turnDirection   = 0;
-    this->control         = 0;
-    this->printCount      = 0;
-    this->motorSpeed      = this->motorSpeedFollowing;
-    this->tapeFollowSteps = 0;
+    this->turnDirection       = 0;
+    this->control             = 0;
+    this->printCount          = 0;
+    this->motorSpeedFollowing = this->motorSpeedFollowingDefault;
+    this->motorSpeed          = this->motorSpeedFollowing;
+    this->tapeFollowSteps     = 0;
 
-    this->lastError       = 0.;
+    this->lastError           = 0.;
 
-    this->intersectSeen   = {false, false};
-    this->intersectDetect = {false, false};
+    this->intersectSeen       = {false, false};
+    this->intersectDetect     = {false, false};
 
-    this->etimeArray      = {0,  1};
-    this->errorArray      = {0., 0.};
+    this->etimeArray          = {0,  1};
+    this->errorArray          = {0., 0.};
 
-    this->pinReadings     = {false, false, false, false};
+    this->pinReadings         = {false, false, false, false};
 
     for (auto &x : this->lastPinReadings)
 	std::fill(x.begin(), x.end(), false);
@@ -351,9 +353,10 @@ TapeFollow::TapeFollow()
       offTapePeriod   (OFF_TAPE_PERIOD),
       onTapePeriod    (ON_TAPE_PERIOD),
       printPeriod     (PRINT_PERIOD),
-      motorSpeedFollowing (MOTOR_SPEED_FOLLOWING),
-      motorSpeedTurning   (MOTOR_SPEED_TURNING),
-      motorSpeedSeeking   (MOTOR_SPEED_SEEKING),
+      motorSpeedFollowingDefault (MOTOR_SPEED_FOLLOWING),
+      motorSpeedTurning          (MOTOR_SPEED_TURNING),
+      motorSpeedSeeking          (MOTOR_SPEED_SEEKING),
+      motorSpeedPassengerSeek    (MOTOR_SPEED_PASSENGER_SEEK),
       pinReadings     (4, false),
       lastPinReadings (NUM_SAVED_READINGS, vector<bool>(4, false))
 {
@@ -496,4 +499,16 @@ void TapeFollow::test()
 {
     MinorMode::test();
     this->motorsActive = false;
+}
+
+
+void TapeFollow::setMotorSpeedPassengerSeek()
+{
+    this->motorSpeedFollowing = this->motorSpeedPassengerSeek;
+}
+
+
+void TapeFollow::resetMotorSpeed()
+{
+    this->motorSpeedFollowing = this->motorSpeedFollowingDefault;
 }
