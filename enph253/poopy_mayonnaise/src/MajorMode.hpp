@@ -24,57 +24,54 @@ protected:
 
     vector< MinorMode* > allMinorModes;
 
-    MajorMode()
-	: active(false)
-    {
-	this->init();
-    }
+    /*
+     * Default major mode `init` method. Sets active to false.
+     */
+    virtual void init();
 
-    virtual void init()
-    {
-	this->active = false;
-    }
+    /*
+     * Default major mode initializer, which calls the most derived `init`.
+     */
+    MajorMode();
     
 public:
 
-    virtual ~MajorMode()
-    {
-	for (auto *mm : this->allMinorModes)
-	    delete mm;
-    }
+    /*
+     * Deallocates all MinorMode objects pointed to by `allMinorModes`
+     */
+    virtual ~MajorMode();
 
-    virtual void loop()
-    {
-	for (auto *mm : this->allMinorModes)
-	    if (mm->isActive())
-		mm->loop();
-    }
+    /*
+     * Default MajorMode `loop` function, which calls the `loop` method
+     * of each active minor mode in `allMinorModes`
+     */
+    virtual void loop();
 
-    virtual void start()
-    {
-	this->active = true;
-    }
+    /*
+     * Default `start` for MajorMode. Sets `active` to true.
+     */
+    virtual void start();
 
-    virtual void stop()
-    {
-	this->init();
-	this->pause();
-    }
+    /*
+     * Default `stop` method for a MajorMode. Calls the most derived `init`
+     * and then the most derived `pause`.
+     */
+    virtual void stop();
 
-    virtual void pause()
-    {
-	this->active = false;
-    }
+    /*
+     * Default `pause` method for a MinorMode. Sets `active` to false.
+     */
+    virtual void pause();
 
-    virtual void test()
-    {
-	this->active = true;
-    }
+    /*
+     * Default `test` method for a MajorMode. Sets `active` to true.
+     */
+    virtual void test();
 
-    virtual bool isActive()
-    {
-	return active;
-    }
+    /*
+     * Returns true if the MajorMode is active.
+     */
+    virtual bool isActive();
 
 };
 

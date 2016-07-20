@@ -2,7 +2,7 @@
 // MinorMode.hpp
 //
 // Minor mode (sub-objective to be run concurrently with a MajorMode)
-// interface class
+// abstract class
 //
 #ifndef MINOR_MODE_HPP
 #define MINOR_MODE_HPP
@@ -16,46 +16,46 @@ protected:
 
     bool active;
 
-    MinorMode()
-	: active(false)
-    {
-	this->init();
-    }
-    
-    virtual void init()
-    {
-	this->active = false;
-    }
+    /*
+     * Default `init()` method for a MinorMode. Deactivates the mode.
+     */
+    virtual void init();
+
+    /*
+     * Default constructor for a MinorMode. Initializes state variables.
+     */
+    MinorMode();
 
 public:
 
-    virtual ~MinorMode() {};
+    virtual ~MinorMode();
 
-    virtual void start()
-    {
-	this->active = true;
-    }
+    /*
+     * Default `start()` method for a MinorMode. Activates the mode.
+     */
+    virtual void start();
 
-    virtual void stop()
-    {
-	this->init();
-	this->pause();
-    }
+    /*
+     * Default `stop()` method for a MinorMode. Resets the state variables
+     * and pauses the mode.
+     */
+    virtual void stop();
 
-    virtual void pause()
-    {
-	this->active = false;
-    }
+    /*
+     * Default `pause()` method for a MinorMode. Deactivates the mode but
+     * maintains the current state.
+     */
+    virtual void pause();
 
-    virtual void test()
-    {
-	this->active = true;
-    }
+    /*
+     * Default `test()` method for a MinorMode. Activates the mode.
+     */
+    virtual void test();
 
-    virtual bool isActive()
-    {
-	return active;
-    }
+    /*
+     * Return true if the MinorMode is active
+     */
+    virtual bool isActive();
     
 };
 
