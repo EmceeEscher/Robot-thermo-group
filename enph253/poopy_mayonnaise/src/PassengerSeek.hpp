@@ -6,9 +6,7 @@
 #ifndef PASSENGER_SEEK_HPP
 #define PASSENGER_SEEK_HPP
 
-
 #include "MinorMode.hpp"
-
 
 class PassengerSeek : public MinorMode
 {
@@ -61,6 +59,5 @@ public:
     bool isActive();
     
 };
-
 
 #endif  // PASSENGER_SEEK_HPP

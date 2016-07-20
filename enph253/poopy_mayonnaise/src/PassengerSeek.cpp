@@ -52,14 +52,14 @@ void PassengerSeek::pause()
 }
 
 
-bool PassengerSeek::isActive()
-{
-    return this->active;
-}
-
-
 // TODO
 void PassengerSeek::test()
 {
     this->active = true;
+}
+
+
+bool PassengerSeek::isActive()
+{
+    return this->active;
 }
