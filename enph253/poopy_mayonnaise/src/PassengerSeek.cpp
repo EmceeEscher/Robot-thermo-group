@@ -21,6 +21,9 @@ void PassengerSeek::init()
 
     using std::fill;
 
+    this->approachingPassenger = false;
+    this->atPassenger = false;
+
     fill(this->atMax.begin(), this->atMax.end(), false);
     fill(this->pinReadings.begin(), this->pinReadings.end(), 0.);
 
@@ -29,6 +32,20 @@ void PassengerSeek::init()
 
     for (auto &x : this->lastPinReadingsDeriv)
 	fill(x.begin(), x.end(), 0.);
+}
+
+
+// TODO
+bool PassengerSeek::atMaxSideFront()
+{
+    return false;  // stub
+}
+
+
+// TODO
+bool PassengerSeek::atMaxSideMiddle()
+{
+    return false;  // stub
 }
 
 
@@ -73,6 +90,13 @@ void PassengerSeek::loop()
 	    (this->lastPinReadings[0][i] - this->lastPinReadings[1][i]);
 
     // TODO: If at a maximum, stop tape following
+    if (this->atMaxSideFront())
+	this->approachingPassenger = true;
+    else if (this->atMaxSideMiddle()) {
+	this->approachingPassenger = false;
+	this->atPassenger = true;
+	this->stop();
+    }
 }
 
 
@@ -84,14 +108,14 @@ void PassengerSeek::test()
 
 
 // TODO
-bool approachingPassenger()
+bool PassengerSeek::isApproachingPassenger()
 {
     return false;  // stub
 }
 
 
 // TODO
-bool atPassenger()
+bool PassengerSeek::isAtPassenger()
 {
     return false;  // stub
 }

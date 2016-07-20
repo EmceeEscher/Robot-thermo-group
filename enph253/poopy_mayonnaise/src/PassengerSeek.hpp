@@ -19,6 +19,9 @@ private:
 
     const vector<int> qsdPinsSides;                 // left-back, left-mid, left-front, right-front, right-mid, right-back
 
+    bool approachingPassenger;
+    bool atPassenger;
+
     vector<bool> atMax;                             // true if the associated pin is at a maximum
     vector<double> pinReadings;                     // current pin readings
     vector< vector<double> > lastPinReadings;       // vector of 6-vectors containing historical pin reading data
@@ -28,6 +31,16 @@ private:
      * (Re)initialize all state variables
      */
     void init();
+
+    /*
+     * Return true if one of the front side readings is at a maximum
+     */
+    bool atMaxSideFront();
+
+    /*
+     * Return true if one of the middle side readings is at a maximum
+     */
+    bool atMaxSideMiddle();
 
 public:
     
@@ -50,13 +63,13 @@ public:
     /*
      * Returns true if one of the front side pins is at a maximum
      */
-    bool approachingPassenger();
+    bool isApproachingPassenger();
 
     /*
      * Returns true if the middle (arm) pin is at a maximum after, the
      * front maximum was seen
      */
-    bool atPassenger();
+    bool isAtPassenger();
     
 };
 
