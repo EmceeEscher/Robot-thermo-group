@@ -14,52 +14,38 @@ const unsigned long MAIN_LOOP_DELAY {1};     // milliseconds
 
 
 // TODO
-void RobotState::initMajorModes()
+RobotState::RobotState()
+    : mainLoopDelay(MAIN_LOOP_DELAY)
 {
-}
-
-
-// TODO
-void RobotState::destroyMajorModes()
-{
-    for (MajorMode *mm : this->allMajorModes)
-	delete mm;
-}
-
-
-// TODO
-void RobotState::initMinorModes()
-{
+    // MINOR MODES
     MinorMode *tapeFollow = new TapeFollow;
     this->allMinorModes.push_back(tapeFollow);
 
     MinorMode *passengerSeek = new PassengerSeek;
     this->allMinorModes.push_back(passengerSeek);
-}
 
+    // MAJOR MODES
+    // this->mFindPassenger = new MFindPassenger;
+    // this->allMajorModes.push_back(this->mFindPassenger);
 
-// TODO
-void RobotState::destroyMinorModes()
-{
-    for (MinorMode *mm : this->allMinorModes)
-    	delete mm;
-}
+    // this->mLoadPassenger = new MLoadPassenger;
+    // this->allMajorModes.push_back(this->mLoadPassenger);
 
+    // this->mToDestination = new MToDestination;
+    // this->allMajorModes.push_back(this->mToDestination);
 
-// TODO
-RobotState::RobotState()
-    : mainLoopDelay(MAIN_LOOP_DELAY)
-{
-    this->initMajorModes();
-    this->initMinorModes();
+    // this->mDropPassenger = new MDropPassenger;
+    // this->allMajorModes.push_back(this->mDropPassenger);
 }
 
 
 // TODO
 RobotState::~RobotState()
 {
-    this->destroyMinorModes();
-    this->destroyMajorModes();
+    for (MinorMode *mm : this->allMinorModes)
+    	delete mm;
+    for (MajorMode *mm : this->allMajorModes)
+	delete mm;
 }
 
 

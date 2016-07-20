@@ -34,28 +34,6 @@ private:
     MajorMode *currentMajorMode;
 
     /*
-     * Initialize the allMajorModes member with all necessary major modes.
-     * Fill activeMajorMode with the first major mode
-     */
-    void initMajorModes();
-
-    /*
-     * Deallocate all major mode objects
-     */
-    void destroyMajorModes();
-
-    /*
-     * Initialize the allMinorModes member with all necessary minor modes.
-     * Fill activeMinorModes with the initially-active minor modes.
-     */
-    void initMinorModes();
-
-    /*
-     * Deallocate all minor mode objects
-     */
-    void destroyMinorModes();
-
-    /*
      * (Re)initializes any state variables
      */
     void init();
