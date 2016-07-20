@@ -42,12 +42,18 @@ void MajorMode::stop()
 {
     this->init();
     this->pause();
+    // stop all minor modes
+    for (auto *mm : this->allMinorModes)
+	mm->stop();
 }
 
 
 void MajorMode::pause()
 {
     this->active = false;
+    // pause all minor modes
+    for (auto *mm : this->allMinorModes)
+	mm->pause();
 }
 
 

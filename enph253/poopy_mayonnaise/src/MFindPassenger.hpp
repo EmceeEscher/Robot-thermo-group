@@ -38,6 +38,11 @@ public:
     void loop();
 
     /*
+     * Start initial minor modes
+     */
+    void start();
+
+    /*
      * Enter a testing mode, in which hardware is not active
      */
     void test();
