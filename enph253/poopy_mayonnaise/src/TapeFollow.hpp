@@ -38,6 +38,7 @@ private:
     const int printPeriod;           // number of iterations per printout
     const int motorSpeedFollowing;   // motor speed for following tape
     const int motorSpeedTurning;     // motor speed for making turn
+    const int motorSpeedSeeking;     // motor speed for seeking tape
 
     bool active;                  // whether the loop is active
     bool onTape;                  // true= on tape, false= off tape

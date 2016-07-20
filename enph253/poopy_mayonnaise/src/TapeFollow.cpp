@@ -19,6 +19,7 @@ const int KNOB_PROP_GAIN {6};
 const int KNOB_DER1_GAIN {7};
 const int MOTOR_SPEED_FOLLOWING {120};
 const int MOTOR_SPEED_TURNING    {32};
+const int MOTOR_SPEED_SEEKING     {8};
 const int PRINT_PERIOD {200};
 const unsigned long INTERSECT_DELAY {100};  // steps following before intersection seeking
 const double ERROR_SMALL     {.02};
@@ -351,6 +352,7 @@ TapeFollow::TapeFollow()
       printPeriod     (PRINT_PERIOD),
       motorSpeedFollowing (MOTOR_SPEED_FOLLOWING),
       motorSpeedTurning   (MOTOR_SPEED_TURNING),
+      motorSpeedSeeking   (MOTOR_SPEED_SEEKING),
       pinReadings     (4, false),
       lastPinReadings (NUM_SAVED_READINGS, vector<bool>(4, false))
 {
@@ -416,7 +418,7 @@ void TapeFollow::loop()
     double error(0.);
     if ((!(this->turning)) && this->fnAllLastReadings(
             this->offTapePeriod, &TapeFollow::offTape)) {
-	this->motorSpeed = this->motorSpeedTurning;
+	this->motorSpeed = this->motorSpeedSeeking;
 	this->tapeFollowSteps = 0;
 	error = this->seekTape();
     } else if (this->turning) {
