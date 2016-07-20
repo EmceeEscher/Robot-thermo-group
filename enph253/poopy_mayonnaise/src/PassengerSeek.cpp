@@ -107,15 +107,13 @@ void PassengerSeek::test()
 }
 
 
-// TODO
 bool PassengerSeek::isApproachingPassenger()
 {
-    return false;  // stub
+    return this->approachingPassenger;
 }
 
 
-// TODO
 bool PassengerSeek::isAtPassenger()
 {
-    return false;  // stub
+    return this->atPassenger;
 }
