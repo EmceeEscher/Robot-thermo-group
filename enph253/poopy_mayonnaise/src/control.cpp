@@ -40,7 +40,9 @@ void control::loop()
 	control::stop();
     else if (stopbutton())
 	control::stop();
-    s.loop();
+
+    if (s.isActive())
+	s.loop();
 }
 
 
