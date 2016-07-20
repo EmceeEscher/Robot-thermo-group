@@ -8,6 +8,10 @@
 
 
 // MAJOR MODES
+#include "MFindPassenger.hpp"
+#include "MLoadPassenger.hpp"
+#include "MToDestination.hpp"
+#include "MDropPassenger.hpp"
 
     
 // MINOR MODES

@@ -6,8 +6,10 @@
 #ifndef MAJOR_MODE_HPP
 #define MAJOR_MODE_HPP
 
+
 class MajorMode
 {
+
 public:
 
     ~MajorMode() {}

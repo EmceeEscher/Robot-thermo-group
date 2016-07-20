@@ -25,6 +25,9 @@ PassengerSeek::~PassengerSeek() {}
 // TODO
 void PassengerSeek::loop()
 {
+    // TODO: Update QSD readings array
+    // TODO: Determine derivatives
+    // TODO: If at a maximum, stop tape following
 }
 
 

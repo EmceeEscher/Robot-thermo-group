@@ -25,8 +25,13 @@ private:
 
     bool active;                                // whether the robot is active
     int mainLoopDelay;                          // delay for the main loop
-    vector< MajorMode* >  allMajorModes;        // all possible major modes
-    vector< MinorMode* >  allMinorModes;        // all possible minor modes
+    vector< MajorMode* > allMajorModes;        // all possible major modes
+    vector< MinorMode* > allMinorModes;        // all possible minor modes
+    MajorMode *mFindPassenger;
+    MajorMode *mLoadPassenger;
+    MajorMode *mToDestination;
+    MajorMode *mDropPassenger;
+    MajorMode *currentMajorMode;
 
     /*
      * Initialize the allMajorModes member with all necessary major modes.

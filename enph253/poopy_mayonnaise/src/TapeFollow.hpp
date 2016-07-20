@@ -110,12 +110,18 @@ private:
     /*
      * Returns true if readingFn is true for all of lastPinReadings in
      * [0, period)
+     *
+     * param period: number of readings back to look at
+     * param fn: reading->bool function to test on readings
      */
     bool fnAllLastReadings(int period, readingFn_t fn);
 
     /*
      * Returns true if readingFn is true for any of lastPinReadings in
      * [0, period)
+     *
+     * param period: number of readings back to look at
+     * param fn: reading->bool function to test on readings
      */
     bool fnAnyLastReadings(int period, readingFn_t fn);
     
