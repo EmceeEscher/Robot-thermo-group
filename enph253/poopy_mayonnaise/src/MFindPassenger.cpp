@@ -62,7 +62,6 @@ void MFindPassenger::start()
 
     // Start intial minor modes
     this->mmTapeFollow->start();
-    this->mmPassengerSeek->start();
     this->mmCollisionWatch->start();
 }
 
