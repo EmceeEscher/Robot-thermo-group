@@ -5,6 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include <phys253.h>
+#include "myalgs.hpp"
 #include "pins.hpp"
 #include "TapeFollow.hpp"
 
@@ -184,25 +185,25 @@ double TapeFollow::followTape()
 }
 
 
+// TODO: just use `all_of` in place of this method
 bool TapeFollow::fnAllLastReadings(int period, readingFn_t fn)
 {
-    for (int i(0); i < period; ++i) {
-	auto &reading = this->lastPinReadings[i];
-	if (!(fn(reading)))
-	    return false;
-    }
-    return true;
+    return std::all_of(
+            this->lastPinReadings.begin(),
+	    this->lastPinReadings.begin()+period,
+	    fn
+    );
 }
 
 
+// TODO: just use `any_of` in place of this method
 bool TapeFollow::fnAnyLastReadings(int period, readingFn_t fn)
 {
-    for (int i(0); i < period; ++i) {
-	auto &reading = this->lastPinReadings[i];
-	if (fn(reading))
-	    return true;
-    }
-    return false;
+    return std::any_of(
+            this->lastPinReadings.begin(),
+	    this->lastPinReadings.begin()+period,
+	    fn
+    );
 }
 
 

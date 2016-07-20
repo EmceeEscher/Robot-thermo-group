@@ -17,9 +17,9 @@ const int NUM_SAVED_READINGS {20};
 // TODO
 void PassengerSeek::init()
 {
-    using std::fill;
-    
     MinorMode::init();
+
+    using std::fill;
 
     fill(this->atMax.begin(), this->atMax.end(), false);
     fill(this->pinReadings.begin(), this->pinReadings.end(), 0.);
