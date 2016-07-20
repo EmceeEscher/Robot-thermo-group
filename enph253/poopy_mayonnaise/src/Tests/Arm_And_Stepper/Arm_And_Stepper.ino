@@ -12,6 +12,8 @@ const int babyMotorNum = 1;
 const int catchSwitch = 0;
 //Digital pin indicating a claw closing on itself
 const int noCatchSwitch = 1;
+//Digital pin to detect when an animal is in the claw
+const int innerClawSwitch = 2;
 //Amount of time to run motor to drop animal
 const int dropTime = 400; // Milliseconds
 
@@ -208,6 +210,10 @@ void reachAndGrab(){
   startTime = millis();
   while(millis() - startTime < 3000){
     doControl();
+    if(!digitalRead(innerClawSwitch)){
+      baseTarget = getAngle() + 5;
+      break;
+    }
   }
   grabShit();
   setRestPosition();
