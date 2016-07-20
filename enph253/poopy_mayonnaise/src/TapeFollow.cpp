@@ -398,12 +398,10 @@ void TapeFollow::loop()
     // update lastPinReadings array
     std::rotate(
             this->lastPinReadings.begin(), this->lastPinReadings.end()-1,
-	    this->lastPinReadings.end()
-    );
+	    this->lastPinReadings.end());
     std::copy(
             this->pinReadings.begin(), this->pinReadings.end(),
-	    this->lastPinReadings[0].begin()
-    );
+	    this->lastPinReadings.front().begin());
     
     // determine whether on tape
     this->lastOnTape = this->onTape;

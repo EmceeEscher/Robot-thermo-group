@@ -22,6 +22,7 @@ namespace pins
     const vector<int> TAPE_SENSORS_BACK  {4, 5, 6, 7};
     
     // Analog in
+    const vector<int> PASSENGER_SENSORS_SIDES {0, 1, 2, 3, 4, 5};
 
     // Digital out
     const int MOTOR_PIN_L {0};

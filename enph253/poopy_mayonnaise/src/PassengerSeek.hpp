@@ -17,10 +17,12 @@ class PassengerSeek : public MinorMode
 
 private:
 
-    const vector<int> qsdPinsSides;        // left-back, left-mid, left-front, right-front, right-mid, right-back
+    const vector<int> qsdPinsSides;                 // left-back, left-mid, left-front, right-front, right-mid, right-back
 
-    vector<bool> atMax;                    // true if the associated pin is at a maximum
-    vector< vector<double> > pinReadings;  // vector of 6-vectors containing historical pin reading data
+    vector<bool> atMax;                             // true if the associated pin is at a maximum
+    vector<double> pinReadings;                     // current pin readings
+    vector< vector<double> > lastPinReadings;       // vector of 6-vectors containing historical pin reading data
+    vector< vector<double> > lastPinReadingsDeriv;  // vector of 6-vectors containing derivatives of lastPinReadings
 
     /*
      * (Re)initialize all state variables
