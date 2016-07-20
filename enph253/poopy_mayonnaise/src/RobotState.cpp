@@ -32,6 +32,9 @@ void RobotState::initMinorModes()
 {
     MinorMode *tapeFollow = new TapeFollow;
     this->allMinorModes.push_back(tapeFollow);
+
+    MinorMode *passengerSeek = new PassengerSeek;
+    this->allMinorModes.push_back(passengerSeek);
 }
 
 
@@ -45,7 +48,7 @@ void RobotState::destroyMinorModes()
 
 // TODO
 RobotState::RobotState()
-    :mainLoopDelay(MAIN_LOOP_DELAY)
+    : mainLoopDelay(MAIN_LOOP_DELAY)
 {
     this->initMajorModes();
     this->initMinorModes();
@@ -66,24 +69,14 @@ bool RobotState::isActive()
 }
 
 
-MajorMode* RobotState::getMajorMode()
-{
-    return this->activeMajorMode;
-}
-
-
-std::vector< MinorMode* >& RobotState::getMinorModes()
-{
-    return this->activeMinorModes;
-}
-
-
 // TODO
 void RobotState::loop()
 {
     // for now, run each minor mode in no particular order
     for (auto *mm : this->allMinorModes)
-	mm->loop();
+	if (mm->isActive())
+	    mm->loop();
+    // TODO update activeMinorModes vector
     delay(this->mainLoopDelay);
 }
 
@@ -103,9 +96,10 @@ void RobotState::stop()
 {
     this->active = false;
     this->init();
-    // for now, stop all minor modes
+    // for now, stop all active minor modes
     for (auto *mm : this->allMinorModes)
-	mm->stop();
+	if (mm->isActive())
+	    mm->stop();
 }
 
 
@@ -113,9 +107,10 @@ void RobotState::stop()
 void RobotState::pause()
 {
     this->active = false;
-    // for now, pause all minor modes
+    // for now, pause all active minor modes
     for (auto *mm : this->allMinorModes)
-	mm->pause();
+	if (mm->isActive())
+	    mm->pause();
 }
 
 

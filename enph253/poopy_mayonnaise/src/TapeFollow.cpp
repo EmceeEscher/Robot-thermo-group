@@ -333,7 +333,8 @@ void TapeFollow::printLCD()
 
 
 TapeFollow::TapeFollow()
-    : gainProp        (GAIN_PROP),
+    : active          (false),
+      gainProp        (GAIN_PROP),
       gainDer1        (GAIN_DER1),
       gainDer2        (GAIN_DER2),
       errorSmall      (ERROR_SMALL),

@@ -27,8 +27,6 @@ private:
     int mainLoopDelay;                          // delay for the main loop
     vector< MajorMode* >  allMajorModes;        // all possible major modes
     vector< MinorMode* >  allMinorModes;        // all possible minor modes
-    MajorMode*            activeMajorMode;      // pointer to currently active major mode
-    vector< MinorMode* >  activeMinorModes;     // vector of pointers to currently acive minor modes
 
     /*
      * Initialize the allMajorModes member with all necessary major modes.
@@ -68,16 +66,6 @@ public:
      * modes)
      */
     bool isActive();
-
-    /*
-     * Returns a pointer to the currently active major mode
-     */
-    MajorMode* getMajorMode();
-
-    /*
-     * Returns a reference to the vector of currently active minor modes
-     */
-    vector< MinorMode* >& getMinorModes();
 
     /*
      * Loops through all of the currently active modes

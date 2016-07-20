@@ -176,7 +176,7 @@ public:
     void start();
 
     /*
-     * Stop the loop and reset all variables.
+     * Stop the loop, and reset all variables.
      */
     void stop();
 
@@ -186,15 +186,15 @@ public:
     void pause();
 
     /*
-     * Return true if the mode is currently active, else false
-     */
-    bool isActive();
-
-    /*
      * Enter a mode where readings are still made, but motors are always
      * at speed 0.
      */
     void test();
+
+    /*
+     * Return true if the mode is currently active, else false
+     */
+    bool isActive();
 
 };
 
