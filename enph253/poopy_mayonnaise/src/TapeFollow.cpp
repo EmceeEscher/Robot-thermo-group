@@ -265,28 +265,29 @@ double TapeFollow::makeTurn()
 // TODO: generalize
 int TapeFollow::chooseTurn(bool left, bool right, bool straight)
 {
-    // for now, random
-    if (left && right && straight)
-	return random(3) - 1;
-    else if (left && right)
-	return 2*random(2) - 1;
-    else if (left && straight)
-	return random(2) - 1;
-    else if (right && straight)
-	return random(2);
-    else if (left)
-	return -1;
-    else if (right)
-	return 1;
-    else
-	return 0;
-    // // for now, prefer right, then left, then straight
-    // if (right)
-    // 	return 1;  // right
+    // // for now, random
+    // if (left && right && straight)
+    // 	return random(3) - 1;
+    // else if (left && right)
+    // 	return 2*random(2) - 1;
+    // else if (left && straight)
+    // 	return random(2) - 1;
+    // else if (right && straight)
+    // 	return random(2);
     // else if (left)
-    // 	return -1; // left
+    // 	return -1;
+    // else if (right)
+    // 	return 1;
     // else
-    // 	return 0;  // straight
+    // 	return 0;
+
+    // for now, prefer left, then right, then straight
+    if (left)
+    	return -1;  // left
+    else if (right)
+    	return 1;   // right
+    else
+    	return 0;   // straight
 }
 
 
