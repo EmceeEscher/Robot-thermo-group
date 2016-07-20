@@ -21,6 +21,9 @@ class TapeFollow : public MinorMode
 
 private:
 
+    const vector<int> tapeSensorsFront;
+    const vector<int> tapeSensorsBack;
+
     double gainProp;              // TODO: set const; set based on knobs for now
     double gainDer1;              // TODO: set const; set based on knobs for now
     double gainDer2;              // TODO: set const; set based on knobs for now

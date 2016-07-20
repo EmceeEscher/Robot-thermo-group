@@ -5,18 +5,13 @@
 #include <vector>
 #include <algorithm>
 #include <phys253.h>
+#include "pins.hpp"
 #include "TapeFollow.hpp"
 
 
 using std::vector;
 
 
-const int TAPE_SENSORS_FRONT[] {0, 1, 2, 3};
-const int TAPE_SENSORS_BACK[]  {4, 5, 6, 7};
-const int MOTOR_PIN_L    {0};
-const int MOTOR_PIN_R    {3};
-const int KNOB_PROP_GAIN {6};
-const int KNOB_DER1_GAIN {7};
 const int MOTOR_SPEED_FOLLOWING      {120};
 const int MOTOR_SPEED_PASSENGER_SEEK  {64};
 const int MOTOR_SPEED_TURNING         {32};
@@ -74,8 +69,13 @@ void TapeFollow::init()
 	std::fill(x.begin(), x.end(), false);
 
     // assign active pins
-    for (auto i(0); i < 4; ++i) 
-	this->activePins[i] = TAPE_SENSORS_FRONT[i];
+    std::copy(
+            this->tapeSensorsFront.begin(),
+	    this->tapeSensorsFront.end(),
+	    this->activePins.begin()
+    );
+    // for (auto i(0); i < 4; ++i) 
+    // 	this->activePins[i] = pins::TAPE_SENSORS_FRONT[i];
 
     // declare active pins as inputs
     for (const auto pin : this->activePins)
@@ -338,21 +338,24 @@ void TapeFollow::printLCD()
 
 TapeFollow::TapeFollow()
     : MinorMode(),
-      gainProp        (GAIN_PROP),
-      gainDer1        (GAIN_DER1),
-      gainDer2        (GAIN_DER2),
-      errorSmall      (ERROR_SMALL),
-      errorMedium     (ERROR_MEDIUM),
-      errorLarge      (ERROR_LARGE),
-      errorSeeking    (ERROR_SEEKING),
-      errorTurning    (ERROR_TURNING),
-      intersectDelay  (INTERSECT_DELAY),
-      intersectPeriod (INTERSECT_PERIOD),
-      turningPeriod   (TURNING_PERIOD),
-      turnWaitPeriod  (TURN_WAIT_PERIOD),
-      offTapePeriod   (OFF_TAPE_PERIOD),
-      onTapePeriod    (ON_TAPE_PERIOD),
-      printPeriod     (PRINT_PERIOD),
+      tapeSensorsFront (pins::TAPE_SENSORS_FRONT),
+      tapeSensorsBack  (pins::TAPE_SENSORS_BACK),
+      activePins       (4),
+      gainProp         (GAIN_PROP),
+      gainDer1         (GAIN_DER1),
+      gainDer2         (GAIN_DER2),
+      errorSmall       (ERROR_SMALL),
+      errorMedium      (ERROR_MEDIUM),
+      errorLarge       (ERROR_LARGE),
+      errorSeeking     (ERROR_SEEKING),
+      errorTurning     (ERROR_TURNING),
+      intersectDelay   (INTERSECT_DELAY),
+      intersectPeriod  (INTERSECT_PERIOD),
+      turningPeriod    (TURNING_PERIOD),
+      turnWaitPeriod   (TURN_WAIT_PERIOD),
+      offTapePeriod    (OFF_TAPE_PERIOD),
+      onTapePeriod     (ON_TAPE_PERIOD),
+      printPeriod      (PRINT_PERIOD),
       motorSpeedFollowingDefault (MOTOR_SPEED_FOLLOWING),
       motorSpeedTurning          (MOTOR_SPEED_TURNING),
       motorSpeedSeeking          (MOTOR_SPEED_SEEKING),
@@ -380,8 +383,8 @@ void TapeFollow::loop()
     // set gains
     // TODO move this to constructor once values are decided upon
     if (!this->motorsActive) {
-	this->gainProp = static_cast<double>(knob(KNOB_PROP_GAIN)) / 50.;
-	this->gainDer1 = static_cast<double>(knob(KNOB_DER1_GAIN)) / 50.;
+	this->gainProp = static_cast<double>(knob(pins::KNOB_PROP_GAIN)) / 50.;
+	this->gainDer1 = static_cast<double>(knob(pins::KNOB_DER1_GAIN)) / 50.;
 	this->gainDer2 = .5*this->gainDer1*this->gainDer1 /
 	        this->gainProp*(1.-EPSILON);
     }
@@ -467,11 +470,11 @@ void TapeFollow::loop()
 
     // adjust motor speed
     if (this->motorsActive) {
-	motor.speed(MOTOR_PIN_L, dSpeed - this->motorSpeed);
-	motor.speed(MOTOR_PIN_R, dSpeed + this->motorSpeed);
+	motor.speed(pins::MOTOR_PIN_L, dSpeed - this->motorSpeed);
+	motor.speed(pins::MOTOR_PIN_R, dSpeed + this->motorSpeed);
     } else {
-	motor.speed(MOTOR_PIN_L, 0);
-	motor.speed(MOTOR_PIN_R, 0);
+	motor.speed(pins::MOTOR_PIN_L, 0);
+	motor.speed(pins::MOTOR_PIN_R, 0);
     }
 
     // increase time counters
