@@ -7,15 +7,14 @@
 // TODO
 void PassengerSeek::init()
 {
-    this->active = false;
+    MinorMode::init();
 }
 
 
 // TODO
 PassengerSeek::PassengerSeek()
-    : active(false)
+    : MinorMode()
 {
-    this->init();
 }
 
 
@@ -32,34 +31,7 @@ void PassengerSeek::loop()
 
 
 // TODO
-void PassengerSeek::start()
-{
-    this->active = true;
-}
-
-
-void PassengerSeek::stop()
-{
-    this->init();
-    this->pause();
-}
-
-
-// TODO
-void PassengerSeek::pause()
-{
-    this->active = false;
-}
-
-
-// TODO
 void PassengerSeek::test()
 {
-    this->active = true;
-}
-
-
-bool PassengerSeek::isActive()
-{
-    return this->active;
+    MinorMode::test();
 }

@@ -7,44 +7,56 @@
 #ifndef MINOR_MODE_HPP
 #define MINOR_MODE_HPP
 
-class MinorMode
+#include "IMode.hpp"
+
+class MinorMode : public IMode
 {
+
+protected:
+
+    bool active;
+
+    MinorMode()
+	: active(false)
+    {
+	this->init();
+    }
+    
+    virtual void init()
+    {
+	this->active = false;
+    }
 
 public:
 
     virtual ~MinorMode() {};
+
+    virtual void start()
+    {
+	this->active = true;
+    }
+
+    virtual void stop()
+    {
+	this->init();
+	this->pause();
+    }
+
+    virtual void pause()
+    {
+	this->active = false;
+    }
+
+    virtual void test()
+    {
+	this->active = true;
+    }
+
+    virtual bool isActive()
+    {
+	return active;
+    }
     
-    /*
-     * Major loop function for mode
-     */
-    virtual void loop() = 0;
-
-    /*
-     * Begin looping
-     */
-    virtual void start() = 0;
-
-    /*
-     * Stop looping (and reset variables)
-     */
-    virtual void stop() = 0;
-
-    /*
-     * Stop looping but keep variables in current state
-     */
-    virtual void pause() = 0;
-
-    /*
-     * Enter a testing mode, where active looping is engaged but hardware
-     * (i.e. motors, etc) is not activated.
-     */
-    virtual void test() = 0;
-
-    /*
-     * Returns true if the mode is currently active, else false
-     */
-    virtual bool isActive() = 0;
-
 };
 
 #endif // MINOR_MODE_HPP

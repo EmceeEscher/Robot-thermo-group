@@ -6,6 +6,7 @@
 #ifndef M_FIND_PASSENGER_HPP
 #define M_FIND_PASSENGER_HPP
 
+#include "MinorMode.hpp"
 #include "MajorMode.hpp"
 
 
@@ -14,7 +15,10 @@ class MFindPassenger : public MajorMode
 
 private:
 
-    bool active;
+    // Named minor modes
+    MinorMode *mmTapeFollow;
+    MinorMode *mmPassengerSeek;
+    MinorMode *mmCollisionWatch;
 
     /*
      * (Re)initialize state variables
@@ -33,29 +37,9 @@ public:
     void loop();
 
     /*
-     * Make active (i.e. begin looping)
+     * Enter a testing mode, in which hardware is not active
      */
-    void start();
-
-    /*
-     * Make inactive (i.e. halt looping), and discard current state
-     */
-    void stop();
-
-    /*
-     * Make inactive, but keep current state
-     */
-    void pause();
-
-    /*
-     * Return true if the mode is currently active
-     */
-    bool isActive();
-
-    /*
-     * Enter the next major mode
-     */
-    void nextMode();
+    void test();
 
 };
 

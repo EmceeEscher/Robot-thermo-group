@@ -42,7 +42,8 @@ const int ON_TAPE_PERIOD     {10};
 
 void TapeFollow::init()
 {
-    this->active          = false;
+    MinorMode::init();
+
     this->onTape          = false;
     this->lastOnTape      = false;
     this->mainsOnTape     = false;
@@ -334,7 +335,7 @@ void TapeFollow::printLCD()
 
 
 TapeFollow::TapeFollow()
-    : active          (false),
+    : MinorMode(),
       gainProp        (GAIN_PROP),
       gainDer1        (GAIN_DER1),
       gainDer2        (GAIN_DER2),
@@ -356,7 +357,6 @@ TapeFollow::TapeFollow()
       pinReadings     (4, false),
       lastPinReadings (NUM_SAVED_READINGS, vector<bool>(4, false))
 {
-    this->init();
 }
 
 
@@ -479,34 +479,21 @@ void TapeFollow::loop()
 
 void TapeFollow::start()
 {
-    this->active = true;
+    MinorMode::start();
     this->motorsActive = true;
-}
-
-
-void TapeFollow::stop()
-{
-    this->init();
-    this->pause();
 }
 
 
 void TapeFollow::pause()
 {
-    this->active = false;
+    MinorMode::pause();
     this->motorsActive = false;
     this->printLCD();
 }
 
 
-bool TapeFollow::isActive()
-{
-    return this->active;
-}
-
-
 void TapeFollow::test()
 {
-    this->active = true;
+    MinorMode::test();
     this->motorsActive = false;
 }

@@ -1,48 +1,80 @@
 ///
 // MajorMode.hpp
 //
-// Major mode (singular objective) controller interface class
+// Major mode (singular objective) controller abstract class.
+// Method implemenations contain the default action to be done for any
+// major mode.
 //
 #ifndef MAJOR_MODE_HPP
 #define MAJOR_MODE_HPP
 
+#include <StandardCplusplus.h>
+#include <vector>
+#include "IMode.hpp"
+#include "MinorMode.hpp"
 
-class MajorMode
+using std::vector;
+
+class MajorMode : public IMode
 {
 
+protected:
+
+    bool active;
+
+    vector< MinorMode* > allMinorModes;
+
+    MajorMode()
+	: active(false)
+    {
+	this->init();
+    }
+
+    virtual void init()
+    {
+	this->active = false;
+    }
+    
 public:
 
-    ~MajorMode() {}
-    
-    /*
-     * Major loop function for mode
-     */
-    virtual void loop() = 0;
+    virtual ~MajorMode()
+    {
+	for (auto *mm : this->allMinorModes)
+	    delete mm;
+    }
 
-    /*
-     * Begin looping
-     */
-    virtual void start() = 0;
+    virtual void loop()
+    {
+	for (auto *mm : this->allMinorModes)
+	    if (mm->isActive())
+		mm->loop();
+    }
 
-    /*
-     * Stop looping (and reset variables)
-     */
-    virtual void stop() = 0;
+    virtual void start()
+    {
+	this->active = true;
+    }
 
-    /*
-     * Stop looping but keep variables in current state
-     */
-    virtual void pause() = 0;
+    virtual void stop()
+    {
+	this->init();
+	this->pause();
+    }
 
-    /*
-     * Return true if the mode is currently active
-     */
-    virtual bool isActive() = 0;
-    
-    /*
-     * Enter next major mode
-     */
-    virtual void nextMode() = 0;
+    virtual void pause()
+    {
+	this->active = false;
+    }
+
+    virtual void test()
+    {
+	this->active = true;
+    }
+
+    virtual bool isActive()
+    {
+	return active;
+    }
 
 };
 

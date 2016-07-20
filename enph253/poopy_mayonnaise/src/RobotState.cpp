@@ -13,20 +13,20 @@
 const unsigned long MAIN_LOOP_DELAY {1};     // milliseconds
 
 
+void RobotState::init()
+{
+    this->active = false;
+    this->currentMajorMode = this->mFindPassenger;
+}
+
+
 // TODO
 RobotState::RobotState()
     : mainLoopDelay(MAIN_LOOP_DELAY)
 {
-    // MINOR MODES
-    MinorMode *tapeFollow = new TapeFollow;
-    this->allMinorModes.push_back(tapeFollow);
-
-    MinorMode *passengerSeek = new PassengerSeek;
-    this->allMinorModes.push_back(passengerSeek);
-
     // MAJOR MODES
-    // this->mFindPassenger = new MFindPassenger;
-    // this->allMajorModes.push_back(this->mFindPassenger);
+    this->mFindPassenger = new MFindPassenger;
+    this->allMajorModes.push_back(this->mFindPassenger);
 
     // this->mLoadPassenger = new MLoadPassenger;
     // this->allMajorModes.push_back(this->mLoadPassenger);
@@ -36,14 +36,14 @@ RobotState::RobotState()
 
     // this->mDropPassenger = new MDropPassenger;
     // this->allMajorModes.push_back(this->mDropPassenger);
+
+    this->init();
 }
 
 
 // TODO
 RobotState::~RobotState()
 {
-    for (MinorMode *mm : this->allMinorModes)
-    	delete mm;
     for (MajorMode *mm : this->allMajorModes)
 	delete mm;
 }
@@ -58,11 +58,9 @@ bool RobotState::isActive()
 // TODO
 void RobotState::loop()
 {
-    // for now, run each minor mode in no particular order
-    for (auto *mm : this->allMinorModes)
-	if (mm->isActive())
-	    mm->loop();
-    // TODO update activeMinorModes vector
+    // for now, just loop a single mode, without moving on to the next
+    if (this->currentMajorMode->isActive())
+	this->currentMajorMode->loop();
     delay(this->mainLoopDelay);
 }
 
@@ -71,9 +69,7 @@ void RobotState::loop()
 void RobotState::start()
 {
     this->active = true;
-    // for now, begin all minor modes
-    for (auto *mm : this->allMinorModes)
-	mm->start();
+    this->currentMajorMode->start();
 }
 
 
@@ -82,10 +78,9 @@ void RobotState::stop()
 {
     this->active = false;
     this->init();
-    // for now, stop all active minor modes
-    for (auto *mm : this->allMinorModes)
-	if (mm->isActive())
-	    mm->stop();
+    for (auto *m : this->allMajorModes)
+	if (m->isActive())
+	    m->stop();
 }
 
 
@@ -94,9 +89,9 @@ void RobotState::pause()
 {
     this->active = false;
     // for now, pause all active minor modes
-    for (auto *mm : this->allMinorModes)
-	if (mm->isActive())
-	    mm->pause();
+    for (auto *m : this->allMajorModes)
+	if (m->isActive())
+	    m->pause();
 }
 
 
@@ -104,6 +99,7 @@ void RobotState::test()
 {
     this->active = true;
     // for now, test all minor modes
-    for (auto *mm : this->allMinorModes)
-	mm->test();
+    for (auto *m : this->allMajorModes)
+	if (m->isActive())
+	    m->test();
 }

@@ -13,8 +13,6 @@ class PassengerSeek : public MinorMode
 
 private:
 
-    bool active;  // whether the loop is active
-
     /*
      * (Re)initialize all state variables
      */
@@ -33,30 +31,10 @@ public:
     void loop();
 
     /*
-     * Begin the loop
-     */
-    void start();
-
-    /*
-     * Stop the loop, and reset all variables
-     */
-    void stop();
-
-    /*
-     * Stop the loop, but keep the current state of all variables
-     */
-    void pause();
-
-    /*
      * Enter a mode where readings are still made, but hardware (i.e. motors)
      * are not active
      */
     void test();
-
-    /*
-     * Return true if the mode is currently active, else false
-     */
-    bool isActive();
     
 };
 

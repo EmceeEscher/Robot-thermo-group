@@ -1,7 +1,7 @@
 ///
 // TapeFollow.hpp
 //
-// A third try for a tape follower where distinct actions are separated
+// Minor mode for following tape
 //
 #ifndef TAPE_FOLLOW_HPP
 #define TAPE_FOLLOW_HPP
@@ -183,11 +183,6 @@ public:
     void start();
 
     /*
-     * Stop the loop, and reset all variables.
-     */
-    void stop();
-
-    /*
      * Stop the loop, but keep the current state of all variables.
      */
     void pause();
@@ -197,11 +192,6 @@ public:
      * at speed 0.
      */
     void test();
-
-    /*
-     * Return true if the mode is currently active, else false
-     */
-    bool isActive();
 
 };
 

@@ -17,6 +17,7 @@
 // MINOR MODES
 #include "TapeFollow.hpp"
 #include "PassengerSeek.hpp"
+#include "CollisionWatch.hpp"
 
 
 #endif // MODES_HPP
