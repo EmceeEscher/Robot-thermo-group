@@ -50,6 +50,7 @@ private:
     bool lastOnTape;              // last value of onTape
     bool mainsOnTape;             // whether one of the mains in on the tape
     bool lastMainsOnTape;         // whether one of the mains was on the tape in the last step
+    bool seeking;                 // whether the robot is currently seeking tape
     bool turning;                 // true= turning, false= straight
     bool halfTurn;                // if true, bot has turned far enough that mains are off tape
     bool motorsActive;            // true if motors are active
@@ -207,6 +208,16 @@ public:
      * Resets the following speed to the default value
      */
     void resetMotorSpeed();
+
+    /*
+     * Return true if the robot is currently turning; else false
+     */
+    bool isTurning();
+
+    /*
+     * Return true if the robot is currently seeking tape
+     */
+    bool isSeeking();
 
 };
 

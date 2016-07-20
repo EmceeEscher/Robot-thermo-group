@@ -6,7 +6,7 @@
 #include <phys253.h>
 #include "MajorMode.hpp"
 #include "MinorMode.hpp"
-#include "modes.hpp"
+#include "allmajormodes.hpp"
 #include "RobotState.hpp"
 
 

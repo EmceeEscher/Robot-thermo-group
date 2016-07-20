@@ -6,6 +6,7 @@
 #ifndef M_FIND_PASSENGER_HPP
 #define M_FIND_PASSENGER_HPP
 
+#include "allminormodes.hpp"
 #include "MinorMode.hpp"
 #include "MajorMode.hpp"
 
@@ -16,9 +17,9 @@ class MFindPassenger : public MajorMode
 private:
 
     // Named minor modes
-    MinorMode *mmTapeFollow;
-    MinorMode *mmPassengerSeek;
-    MinorMode *mmCollisionWatch;
+    TapeFollow     *mmTapeFollow;
+    PassengerSeek  *mmPassengerSeek;
+    CollisionWatch *mmCollisionWatch;
 
     /*
      * (Re)initialize state variables

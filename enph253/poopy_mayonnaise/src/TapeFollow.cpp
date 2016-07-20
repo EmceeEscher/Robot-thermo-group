@@ -45,6 +45,7 @@ void TapeFollow::init()
     this->lastOnTape          = false;
     this->mainsOnTape         = false;
     this->lastMainsOnTape     = false;
+    this->seeking             = false;
     this->turning             = false;
     this->halfTurn            = false;
     this->motorsActive        = false;
@@ -420,9 +421,10 @@ void TapeFollow::loop()
     this->mainsOnTape = (this->pinReadings[1] || this->pinReadings[2]);
 
     // get error based on current state
+    this->seeking = (!this->turning) &&
+	(this->fnAllLastReadings(this->offTapePeriod, &TapeFollow::offTape));
     double error(0.);
-    if ((!(this->turning)) && this->fnAllLastReadings(
-            this->offTapePeriod, &TapeFollow::offTape)) {
+    if (this->seeking) {
 	this->motorSpeed = this->motorSpeedSeeking;
 	this->tapeFollowSteps = 0;
 	error = this->seekTape();
@@ -513,4 +515,16 @@ void TapeFollow::setMotorSpeedPassengerSeek()
 void TapeFollow::resetMotorSpeed()
 {
     this->motorSpeedFollowing = this->motorSpeedFollowingDefault;
+}
+
+
+bool TapeFollow::isTurning()
+{
+    return this->turning;
+}
+
+
+bool TapeFollow::isSeeking()
+{
+    return this->seeking;
 }
