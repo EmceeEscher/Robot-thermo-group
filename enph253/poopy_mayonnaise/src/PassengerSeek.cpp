@@ -54,17 +54,17 @@ bool PassengerSeek::atMaxSideMiddle()
 // TODO
 void PassengerSeek::updateMax()
 {
-    for (int i(0); i < this->pinReadings.size(); ++i) {
+    for (unsigned int i(0); i < this->pinReadings.size(); ++i) {
 	// determine if all above threshold
 	bool allAboveThreshold = true;
-	for (int j(0); j < 2*this->maxRegisterPeriod; ++j)
+	for (auto j(0); j < 2 * this->maxRegisterPeriod; ++j)
 	    if (this->lastPinReadings[j][i] <= this->maxRegisterThreshold) {
 		allAboveThreshold = false;
 		break;
 	    }
 	// determine if at a max
 	bool imax = true;
-	for (int j(0); j < this->maxRegisterPeriod; ++j) {
+	for (auto j(0); j < this->maxRegisterPeriod; ++j) {
 	    if (this->lastPinReadingsDeriv[j][i] >= 0) {
 		imax = false;
 		break;

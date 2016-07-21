@@ -352,7 +352,6 @@ TapeFollow::TapeFollow()
     : MinorMode(),
       tapeSensorsFront (pins::TAPE_SENSORS_FRONT),
       tapeSensorsBack  (pins::TAPE_SENSORS_BACK),
-      activePins       (4),
       gainProp         (GAIN_PROP),
       gainDer1         (GAIN_DER1),
       gainDer2         (GAIN_DER2),
@@ -368,12 +367,13 @@ TapeFollow::TapeFollow()
       offTapePeriod    (OFF_TAPE_PERIOD),
       onTapePeriod     (ON_TAPE_PERIOD),
       printPeriod      (PRINT_PERIOD),
-      motorSpeedFollowingDefault (MOTOR_SPEED_FOLLOWING),
       motorSpeedTurning          (MOTOR_SPEED_TURNING),
       motorSpeedSeeking          (MOTOR_SPEED_SEEKING),
+      motorSpeedFollowingDefault (MOTOR_SPEED_FOLLOWING),
       motorSpeedPassengerSeek    (MOTOR_SPEED_PASSENGER_SEEK),
       pinReadings     (4, false),
-      lastPinReadings (NUM_SAVED_READINGS, vector<bool>(4, false))
+      lastPinReadings (NUM_SAVED_READINGS, vector<bool>(4, false)),
+      activePins      (4)
 {
 }
 
