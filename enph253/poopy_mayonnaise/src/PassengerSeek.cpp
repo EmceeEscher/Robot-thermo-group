@@ -5,13 +5,16 @@
 #include <vector>
 #include <phys253.h>
 #include "pins.hpp"
+#include "myalgs.hpp"
 #include "PassengerSeek.hpp"
 
 
 using std::vector;
 
 
-const int NUM_SAVED_READINGS {20};
+const int NUM_SAVED_READINGS {24};
+const int MAX_REGISTER_PERIOD {10};
+const double MAX_REGISTER_THRESHOLD {0.};
 
 
 // TODO
@@ -23,6 +26,7 @@ void PassengerSeek::init()
 
     this->approachingPassenger = false;
     this->atPassenger = false;
+    this->passengerSide = 0;  // undefined
 
     fill(this->atMax.begin(), this->atMax.end(), false);
     fill(this->pinReadings.begin(), this->pinReadings.end(), 0.);
@@ -35,23 +39,52 @@ void PassengerSeek::init()
 }
 
 
-// TODO
 bool PassengerSeek::atMaxSideFront()
 {
-    return false;  // stub
+    return this->atMax[2] || this->atMax[3];
+}
+
+
+bool PassengerSeek::atMaxSideMiddle()
+{
+    return this->atMax[1] || this->atMax[4];
 }
 
 
 // TODO
-bool PassengerSeek::atMaxSideMiddle()
+void PassengerSeek::updateMax()
 {
-    return false;  // stub
+    for (int i(0); i < this->pinReadings.size(); ++i) {
+	// determine if all above threshold
+	bool allAboveThreshold = true;
+	for (int j(0); j < 2*this->maxRegisterPeriod; ++j)
+	    if (this->lastPinReadings[j][i] <= this->maxRegisterThreshold) {
+		allAboveThreshold = false;
+		break;
+	    }
+	// determine if at a max
+	bool imax = true;
+	for (int j(0); j < this->maxRegisterPeriod; ++j) {
+	    if (this->lastPinReadingsDeriv[j][i] >= 0) {
+		imax = false;
+		break;
+	    }
+	    if (this->lastPinReadingsDeriv[j+this->maxRegisterPeriod][i] <= 0) {
+		imax = false;
+		break;
+	    }
+	}
+	// set array
+	this->atMax[i] = allAboveThreshold && imax;
+    }
 }
 
 
 // TODO
 PassengerSeek::PassengerSeek()
     : MinorMode(),
+      maxRegisterPeriod    (MAX_REGISTER_PERIOD),
+      maxRegisterThreshold (MAX_REGISTER_THRESHOLD),
       qsdPinsSides         (pins::PASSENGER_SENSORS_SIDES),
       atMax                (6, false),
       pinReadings          (6, 0.),
@@ -89,13 +122,16 @@ void PassengerSeek::loop()
 	this->lastPinReadingsDeriv.front()[i] =
 	    (this->lastPinReadings[0][i] - this->lastPinReadings[1][i]);
 
-    // TODO: If at a maximum, stop tape following
+    // Update atMax array
+    this->updateMax();
+
+    // If at a maximum, signal to stop tape following
     if (this->atMaxSideFront())
 	this->approachingPassenger = true;
     else if (this->atMaxSideMiddle()) {
 	this->approachingPassenger = false;
 	this->atPassenger = true;
-	this->stop();
+	this->stop();  // TODO: Should this be moved outside?
     }
 }
 
@@ -116,4 +152,10 @@ bool PassengerSeek::isApproachingPassenger()
 bool PassengerSeek::isAtPassenger()
 {
     return this->atPassenger;
+}
+
+
+int PassengerSeek::getPassengerSide()
+{
+    return this->passengerSide;
 }

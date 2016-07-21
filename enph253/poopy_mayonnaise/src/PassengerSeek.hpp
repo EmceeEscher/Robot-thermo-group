@@ -17,10 +17,13 @@ class PassengerSeek : public MinorMode
 
 private:
 
+    const int maxRegisterPeriod;                    // number of consecutive (+) derivatives to be increasing and (-) derivative to be decreasing
+    const double maxRegisterThreshold;              // threshold that readings must be above to register
     const vector<int> qsdPinsSides;                 // left-back, left-mid, left-front, right-front, right-mid, right-back
 
-    bool approachingPassenger;
-    bool atPassenger;
+    bool approachingPassenger;                      // true when approaching a passenger
+    bool atPassenger;                               // true when adjacent to a passenger
+    int passengerSide;                              // if atPassenger, specifies the side (-1=left, 1=right)
 
     vector<bool> atMax;                             // true if the associated pin is at a maximum
     vector<double> pinReadings;                     // current pin readings
@@ -41,6 +44,11 @@ private:
      * Return true if one of the middle side readings is at a maximum
      */
     bool atMaxSideMiddle();
+
+    /*
+     * Update the atMax array to reflect the latest readings
+     */
+    void updateMax();
 
 public:
     
@@ -70,6 +78,13 @@ public:
      * front maximum was seen
      */
     bool isAtPassenger();
+
+    /*
+     * If at passenger, returns 1 if the passenger is on the right and -1
+     * if the passenger is on the left.
+     * Behavior is undefined if we are not at a passenger.
+     */
+    int getPassengerSide();
     
 };
 
