@@ -6,12 +6,22 @@
 #ifndef COLLISION_WATCH_HPP
 #define COLLISION_WATCH_HPP
 
+#include <StandardCplusplus.h>
+#include <vector>
+#include "Direction.hpp"
 #include "MinorMode.hpp"
+
+using std::vector;
 
 class CollisionWatch : public MinorMode
 {
 
 private:
+
+    const vector<int> sensorPins;  // left, front, right, back
+
+    bool collision;  // true if collision just occurred
+    Direction dir;   // direction of collision reading
 
     /*
      * (Re)initializes all state variables

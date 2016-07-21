@@ -7,6 +7,7 @@
 #include <phys253.h>
 #include "myalgs.hpp"
 #include "pins.hpp"
+#include "Direction.hpp"
 #include "TapeFollow.hpp"
 
 
@@ -50,7 +51,7 @@ void TapeFollow::init()
     this->halfTurn            = false;
     this->motorsActive        = false;
 
-    this->turnDirection       = 0;
+    this->turnDirection       = Direction::FRONT;  // not turning
     this->control             = 0;
     this->printCount          = 0;
     this->motorSpeedFollowing = this->motorSpeedFollowingDefault;
@@ -146,7 +147,7 @@ void TapeFollow::intersectionDetection()
 		this->intersectDetect[1],
 		(mainL || mainR)
         );
-	if (this->turnDirection != 0)
+	if (this->turnDirection != Direction::FRONT)
 	    this->turning = true;  // activates `makeTurn` function
 	// reset intersection arrays
 	this->intersectSeen =   {false, false};
@@ -258,12 +259,12 @@ double TapeFollow::makeTurn()
     if (!this->turning)
 	return 0.;
     else
-	return -this->turnDirection * this->errorTurning;
+	return -(static_cast<int>(this->turnDirection)-1) * this->errorTurning;
 }
 
 
 // TODO: generalize
-int TapeFollow::chooseTurn(bool left, bool right, bool straight)
+Direction TapeFollow::chooseTurn(bool left, bool right, bool straight)
 {
     // // for now, random
     // if (left && right && straight)
@@ -283,11 +284,11 @@ int TapeFollow::chooseTurn(bool left, bool right, bool straight)
 
     // for now, prefer left, then right, then straight
     if (left)
-    	return -1;  // left
+    	return Direction::LEFT;  // left
     else if (right)
-    	return 1;   // right
+    	return Direction::RIGHT;   // right
     else
-    	return 0;   // straight
+    	return Direction::FRONT;   // straight
 }
 
 
@@ -309,12 +310,20 @@ void TapeFollow::printLCD()
     	    LCD.print("F ");  // following
     	// print arrow
     	if (this->turning) {
-    	    if (this->turnDirection == -1)
-    		LCD.print("<--");
-    	    else if (this->turnDirection == 1)
-    		LCD.print("-->");
-    	    else
-    		LCD.print(" ^ ");
+	    switch (this->turnDirection) {
+	    case Direction::LEFT:
+		LCD.print("<--");
+		break;
+	    case Direction::FRONT:
+		LCD.print(" ^ ");
+		break;
+	    case Direction::RIGHT:
+		LCD.print("-->");
+		break;
+	    case Direction::BACK:
+		LCD.print(" v ");
+		break;
+	    }
     	} else {
     	    if (this->control < 0)
     		LCD.print("<  ");

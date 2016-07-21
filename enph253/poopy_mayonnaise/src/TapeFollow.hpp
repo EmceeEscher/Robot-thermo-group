@@ -9,6 +9,7 @@
 
 #include <StandardCplusplus.h>
 #include <vector>
+#include "Direction.hpp"
 #include "MinorMode.hpp"
 
 
@@ -55,7 +56,7 @@ private:
     bool halfTurn;                // if true, bot has turned far enough that mains are off tape
     bool motorsActive;            // true if motors are active
 
-    int turnDirection;            // current direction (-1:left, 0:straight, 1:right)
+    Direction turnDirection;      // current turn direction
     int control;                  // current control parameter
     int printCount;
     int motorSpeed;               // speed to add to motors
@@ -111,7 +112,7 @@ private:
      * param right: true if right is an option, false otherwise
      * param straight: true if straight is an option, false otherwise
      */
-    static int chooseTurn(bool left, bool right, bool straight);
+    static Direction chooseTurn(bool left, bool right, bool straight);
 
     /*
      * Returns true if readingFn is true for all of lastPinReadings in
