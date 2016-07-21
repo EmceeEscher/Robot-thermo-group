@@ -26,7 +26,9 @@ const float derivGain = 0.;
 float baseTarget, midTarget;
 float propErr, derivErr, intErr, lastPropErr;
 float angle;
+float currAngle = 0;
 float now, lastTime;
+int hasInitialized = 0;
 
 //Rest Positions
 const float baseRestPosition = 80;
@@ -120,8 +122,20 @@ void doControl(){
 //Converts base potentiometer voltage to corresponding angle
 float getAngle() {
   float voltage = (float) analogRead(baseAnglePin) * 5./1024.;
-  return ((-142.857 * voltage) / (voltage - 5.));
-  //return ((-142.857 * voltage) / (voltage - 5.));
+  float newAngle = ((180.*(3.*voltage - 10.))/(voltage - 5.))+38.39;
+  float returnVal = newAngle;
+  float detectVal = newAngle - currAngle;
+  if(hasInitialized == 0){
+    currAngle = newAngle;
+    hasInitialized = 1;
+  }else{
+    if(abs(detectVal) > 15){
+      returnVal = currAngle;
+    }else{
+      currAngle = newAngle;
+    }
+  }
+  return returnVal;
 }
 
 //Wrapper function for setting motor speed
