@@ -37,6 +37,10 @@ MFindPassenger::~MFindPassenger() {}
 // TODO
 void MFindPassenger::loop()
 {
+    LCD.clear();  // TODO: remove this crap
+    LCD.print("mLOOPY");
+    delay(500);
+
     MajorMode::loop();  // does loop for each active minor mode
 
     // only seek passengers when not turning or seeking

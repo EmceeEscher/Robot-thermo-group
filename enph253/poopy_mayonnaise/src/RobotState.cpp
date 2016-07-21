@@ -58,6 +58,10 @@ bool RobotState::isActive()
 // TODO
 void RobotState::loop()
 {
+    LCD.clear();  // TODO: remove this crap
+    LCD.print("LOOPY");
+    delay(500);
+
     // for now, just loop a single mode, without moving on to the next
     if (this->currentMajorMode->isActive())
 	this->currentMajorMode->loop();
