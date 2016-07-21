@@ -487,6 +487,11 @@ void TapeFollow::loop()
 
 void TapeFollow::start()
 {
+    // TODO: remove this junk
+    LCD.clear();
+    LCD.print("Starting mMI...");
+    delay(1000);
+
     MinorMode::start();
     this->motorsActive = true;
 }

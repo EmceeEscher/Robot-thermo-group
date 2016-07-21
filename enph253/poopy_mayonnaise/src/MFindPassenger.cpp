@@ -1,6 +1,7 @@
 ///
 // MFindPassenger.cpp
 //
+#include <phys253.h>
 #include "MinorMode.hpp"
 #include "allminormodes.hpp"
 #include "MFindPassenger.hpp"
@@ -58,8 +59,13 @@ void MFindPassenger::loop()
 
 void MFindPassenger::start()
 {
-    MajorMode::start();
+    // TODO: remove this junk
+    LCD.clear();
+    LCD.print("Starting MI");
+    delay(1000);
 
+    MajorMode::start();
+    
     // Start intial minor modes
     this->mmTapeFollow->start();
     this->mmCollisionWatch->start();
@@ -70,4 +76,5 @@ void MFindPassenger::start()
 void MFindPassenger::test()
 {
     MajorMode::test();  // default major mode method
+    this->mmTapeFollow->test();
 }

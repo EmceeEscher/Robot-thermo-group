@@ -68,6 +68,9 @@ void RobotState::loop()
 // TODO
 void RobotState::start()
 {
+    LCD.clear();
+    LCD.print("STARTING...");
+    delay(1000);
     this->active = true;
     this->currentMajorMode->start();
 }
@@ -76,6 +79,9 @@ void RobotState::start()
 // TODO
 void RobotState::stop()
 {
+    LCD.clear();
+    LCD.print("STOPPED");
+    delay(1000);
     this->active = false;
     this->init();
     for (auto *m : this->allMajorModes)
@@ -87,8 +93,11 @@ void RobotState::stop()
 // TODO
 void RobotState::pause()
 {
+    LCD.clear();
+    LCD.print("PAUSED");
+    delay(1000);
     this->active = false;
-    // for now, pause all active minor modes
+    // for now, pause active major mode
     for (auto *m : this->allMajorModes)
 	if (m->isActive())
 	    m->pause();
@@ -97,8 +106,11 @@ void RobotState::pause()
 
 void RobotState::test()
 {
+    LCD.clear();
+    LCD.print("TESTING...");
+    delay(1000);
     this->active = true;
-    // for now, test all minor modes
+    // for now, test active major mode
     for (auto *m : this->allMajorModes)
 	if (m->isActive())
 	    m->test();
