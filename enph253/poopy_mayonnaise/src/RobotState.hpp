@@ -7,7 +7,6 @@
 #ifndef ROBOT_STATE_HPP
 #define ROBOT_STATE_HPP
 
-
 #include <StandardCplusplus.h>
 #include <vector>
 #include "MajorMode.hpp"
@@ -29,6 +28,7 @@ private:
     MajorMode *currentMajorMode;         // current major mode
 
     // explicitly named major modes
+    // TODO: Should these necessarily be degraded into their base?
     MajorMode *mFindPassenger;
     MajorMode *mLoadPassenger;
     MajorMode *mToDestination;
