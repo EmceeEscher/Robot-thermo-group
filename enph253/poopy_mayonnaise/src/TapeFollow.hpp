@@ -211,6 +211,11 @@ public:
     void resetMotorSpeed();
 
     /*
+     * Turn around procedure
+     */
+    void turnAround();
+
+    /*
      * Return true if the robot is currently turning; else false
      */
     bool isTurning();

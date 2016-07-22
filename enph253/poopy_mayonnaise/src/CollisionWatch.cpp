@@ -9,7 +9,6 @@
 const int COLLISION_DETECT_PERIOD {5};
 
 
-// TODO
 void CollisionWatch::init()
 {
     MinorMode::init();
@@ -19,7 +18,6 @@ void CollisionWatch::init()
 }
 
 
-// TODO
 CollisionWatch::CollisionWatch()
     : MinorMode(),
       collisionDetectPeriod(COLLISION_DETECT_PERIOD),
@@ -31,7 +29,6 @@ CollisionWatch::CollisionWatch()
 CollisionWatch::~CollisionWatch() {}
 
 
-// TODO
 void CollisionWatch::loop()
 {
     // Read collision sensors and update numReads array

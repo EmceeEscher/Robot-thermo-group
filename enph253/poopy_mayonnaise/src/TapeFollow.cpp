@@ -528,6 +528,17 @@ void TapeFollow::resetMotorSpeed()
 }
 
 
+// TODO
+void TapeFollow::turnAround()
+{
+    // TODO: reverse robot
+
+    // TODO: set `motorSpeed` to tape-seeking speed
+    
+    // TODO: set `turnDirection` and call `makeTurn()`
+}
+
+
 bool TapeFollow::isTurning()
 {
     return this->turning;
