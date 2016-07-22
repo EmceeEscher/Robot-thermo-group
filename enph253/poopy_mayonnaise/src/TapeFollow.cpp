@@ -386,10 +386,6 @@ void TapeFollow::loop()
     if (!this->active)
 	return;
 
-    LCD.clear();  // TODO: remove this crap
-    LCD.print("mmLOOPY");
-    delay(1000);
-
     if (this->printCount % this->printPeriod == 0) {
 	this->printLCD();
 	this->printCount = 0;
@@ -500,11 +496,6 @@ void TapeFollow::loop()
 
 void TapeFollow::start()
 {
-    // TODO: remove this junk
-    LCD.clear();
-    LCD.print("Starting mMI...");
-    delay(1000);
-
     MinorMode::start();
     this->motorsActive = true;
 }

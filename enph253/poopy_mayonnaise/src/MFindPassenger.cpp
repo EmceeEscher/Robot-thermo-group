@@ -23,11 +23,11 @@ MFindPassenger::MFindPassenger()
     this->mmTapeFollow = new TapeFollow;
     this->allMinorModes.push_back(mmTapeFollow);
 
-    this->mmPassengerSeek = new PassengerSeek;
-    this->allMinorModes.push_back(mmPassengerSeek);
+    // this->mmPassengerSeek = new PassengerSeek;
+    // this->allMinorModes.push_back(mmPassengerSeek);
 
-    // this->mmCollisionWatch = new CollisionWatch;
-    // this->allMinorModes.push_back(mmCollisionWatch);
+    this->mmCollisionWatch = new CollisionWatch;
+    this->allMinorModes.push_back(mmCollisionWatch);
 }
 
 
@@ -37,10 +37,6 @@ MFindPassenger::~MFindPassenger() {}
 // TODO
 void MFindPassenger::loop()
 {
-    LCD.clear();  // TODO: remove this crap
-    LCD.print("mLOOPY");
-    delay(1000);
-
     MajorMode::loop();  // does loop for each active minor mode
 
     // only seek passengers when not turning or seeking
@@ -63,17 +59,12 @@ void MFindPassenger::loop()
 
 void MFindPassenger::start()
 {
-    // TODO: remove this junk
-    LCD.clear();
-    LCD.print("Starting MI");
-    delay(1000);
-
     MajorMode::start();
     
     // Start intial minor modes
     this->mmTapeFollow->start();
-    this->mmPassengerSeek->start();
-    // this->mmCollisionWatch->start();
+    // this->mmPassengerSeek->start();
+    this->mmCollisionWatch->start();
 }
 
 
