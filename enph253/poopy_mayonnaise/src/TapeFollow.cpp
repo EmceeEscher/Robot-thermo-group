@@ -538,7 +538,7 @@ void TapeFollow::turnAround()
 
     // Set `turnDirection` and call `makeTurn()`
     this->turnDirection = Direction::BACK;
-    this->makeTurn();
+    this->turning = true;
 }
 
 
