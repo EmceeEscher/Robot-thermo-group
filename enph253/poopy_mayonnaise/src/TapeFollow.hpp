@@ -71,6 +71,9 @@ private:
     vector<float> errorArray;               // array of last 2 distinct errors
     vector<unsigned long> etimeArray;        // array of times (since read) assoc with errorArray
     vector<int> activePins;                  // pin numbers (intL, mainL, mainR, intR)
+
+    vector<int> onTapeCounter;               // counts the number of consecutive onTape reads for each pin
+    vector<int> offTapeCounter;              // counts the number of consecutive offTape reads for each pin
     
     /*
      * Set all instance variables to their default starting values

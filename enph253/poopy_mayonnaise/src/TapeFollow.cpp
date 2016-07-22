@@ -69,6 +69,9 @@ void TapeFollow::init()
 
     this->pinReadings         = {false, false, false, false};
 
+    this->onTapeCounter       = {0, 0, 0, 0};
+    this->offTapeCounter      = {0, 0, 0, 0};
+
     for (auto &x : this->lastPinReadings)
 	std::fill(x.begin(), x.end(), false);
 
@@ -78,8 +81,6 @@ void TapeFollow::init()
 	    this->tapeSensorsFront.end(),
 	    this->activePins.begin()
     );
-    // for (auto i(0); i < 4; ++i) 
-    // 	this->activePins[i] = pins::TAPE_SENSORS_FRONT[i];
 
     // declare active pins as inputs
     for (const auto pin : this->activePins)
@@ -408,6 +409,19 @@ void TapeFollow::loop()
 	this->pinReadings[i] = static_cast<bool>(
                 digitalRead(this->activePins[i]));
     }
+
+    // update counters
+    for (int i(0); i < 4; ++i)
+	if (this->pinReadings[i]) {
+	    this->offTapeCounter[i] = 0;
+	    if (this->onTapeCounter[i] <= this->onTapePeriod)
+		this->onTapeCounter[i] += 1;
+	} else {
+	    this->onTapeCounter[i] = 0;
+	    if (this->offTapeCounter[i] <= this->offTapePeriod)
+		this->offTapeCounter[i] += 1;
+	}
+
 
     // update lastPinReadings array
     std::rotate(
