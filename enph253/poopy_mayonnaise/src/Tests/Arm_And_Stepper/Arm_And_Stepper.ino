@@ -27,7 +27,9 @@ const float derivGain = 0.5;
 float baseTarget, midTarget;
 float propErr, derivErr, intErr, lastPropErr;
 float angle;
+float currAngle = 0;
 float now, lastTime;
+int hasInitialized = 0;
 
 //Rest Positions
 const float baseRestPosition = 75;
@@ -129,7 +131,6 @@ void doControl(){
 float getAngle() {
   float voltage = (float) analogRead(baseAnglePin) * 5./1024.;
   return 130.814*(3.*voltage - 10.)/(voltage-5.)+27.5;
-  //return ((-142.857 * voltage) / (voltage - 5.));
 }
 
 //Wrapper function for setting motor speed
