@@ -20,9 +20,7 @@ private:
     const int collisionDetectPeriod;  // number of consecutive reads to detect a collision
     const vector<int> sensorPins;     // left, front, right, back
 
-    vector<bool> pinReadings;
     vector<bool> collisionDetected;   // true if a collision has been detected
-
     vector<int> numCollisionReads;    // number of consecutive times  a collision has been read
 
     /*

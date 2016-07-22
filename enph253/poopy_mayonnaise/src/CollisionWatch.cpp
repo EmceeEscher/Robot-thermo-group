@@ -14,9 +14,7 @@ void CollisionWatch::init()
 {
     MinorMode::init();
 
-    this->pinReadings       = {false, false, false, false};
     this->collisionDetected = {false, false, false, false};
-
     this->numCollisionReads = {0, 0, 0, 0};
 }
 
