@@ -1,6 +1,7 @@
 ///
 // MajorMode.cpp
 //
+#include <phys253.h>
 #include "MajorMode.hpp"
 
 
@@ -26,6 +27,12 @@ MajorMode::~MajorMode()
 
 void MajorMode::loop()
 {
+    LCD.clear();  // TODO: remove this crap
+    LCD.print("ABSmLOOPY");
+    LCD.setCursor(0,1);
+    LCD.print(this->allMinorModes.size());
+    delay(1000);
+
     for (auto *mm : this->allMinorModes)
 	if (mm->isActive())
 	    mm->loop();

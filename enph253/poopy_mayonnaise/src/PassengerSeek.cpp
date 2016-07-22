@@ -2,6 +2,7 @@
 // PassengerSeek.cpp
 //
 #include <StandardCplusplus.h>
+#include <algorithm>
 #include <vector>
 #include <phys253.h>
 #include "pins.hpp"
@@ -100,39 +101,59 @@ PassengerSeek::~PassengerSeek() {}
 // TODO
 void PassengerSeek::loop()
 {
+    LCD.clear();
     // Get pin readings
-    for (auto i(0); i < this->qsdPinsSides.size(); ++i)
-	this->pinReadings[i] = analogRead(this->qsdPinsSides[i]);
+    LCD.print("0");
+    delay(500);
+    for (int i(0); i < 6; ++i)
+	this->pinReadings[i] = 1.;  // TODO: fixme
+	// this->pinReadings[i] = analogRead(this->qsdPinsSides[i]);
     
     // Update QSD readings array
+    LCD.print("1");
+    delay(500);
     std::rotate(
             this->lastPinReadings.begin(), this->lastPinReadings.end()-1,
-	    this->lastPinReadings.end());
+	    this->lastPinReadings.end()
+    );
+    LCD.print("2");
+    delay(500);
     std::copy(
             this->pinReadings.begin(), this->pinReadings.end(),
-	    this->lastPinReadings.front().begin());
+    	    this->lastPinReadings.front().begin()
+    );
 
     // Update QSD derivative array
+    LCD.print("3");
+    delay(500);
     std::rotate(
             this->lastPinReadingsDeriv.begin(),
-	    this->lastPinReadingsDeriv.end()-1,
-	    this->lastPinReadingsDeriv.end()
+    	    this->lastPinReadingsDeriv.end()-1,
+    	    this->lastPinReadingsDeriv.end()
     );
-    for (auto i(0); i < this->lastPinReadingsDeriv.front().size(); ++i)
+    LCD.print("4");
+    delay(500);
+    for (auto i(0); i < 6; ++i)
 	this->lastPinReadingsDeriv.front()[i] =
 	    (this->lastPinReadings[0][i] - this->lastPinReadings[1][i]);
 
     // Update atMax array
+    LCD.print("5");
+    delay(500);
     this->updateMax();
 
     // If at a maximum, signal to stop tape following
+    LCD.print("6");
+    delay(500);
     if (this->atMaxSideFront())
 	this->approachingPassenger = true;
     else if (this->atMaxSideMiddle()) {
 	this->approachingPassenger = false;
 	this->atPassenger = true;
-	this->stop();  // TODO: Should this be moved outside?
     }
+
+    LCD.print("7");
+    delay(1000);
 }
 
 

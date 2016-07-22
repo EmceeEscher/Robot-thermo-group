@@ -388,7 +388,7 @@ void TapeFollow::loop()
 
     LCD.clear();  // TODO: remove this crap
     LCD.print("mmLOOPY");
-    delay(500);
+    delay(1000);
 
     if (this->printCount % this->printPeriod == 0) {
 	this->printLCD();
