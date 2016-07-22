@@ -537,7 +537,7 @@ void TapeFollow::turnAround()
     this->motorSpeed = this->motorSpeedReverse;
 
     // Set `turnDirection` and call `makeTurn()`
-    this->turnDirection = 2;
+    this->turnDirection = Direction::BACK;
     this->makeTurn();
 }
 
