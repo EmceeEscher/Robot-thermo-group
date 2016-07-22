@@ -18,18 +18,19 @@ const int MOTOR_SPEED_FOLLOWING      {120};
 const int MOTOR_SPEED_PASSENGER_SEEK  {64};
 const int MOTOR_SPEED_TURNING         {32};
 const int MOTOR_SPEED_SEEKING          {8};
+const int MOTOR_SPEED_REVERSE        {-12};
 const int PRINT_PERIOD {200};
 const unsigned long INTERSECT_DELAY {100};  // steps following before intersection seeking
-const double ERROR_SMALL     {.02};
-const double ERROR_MEDIUM    {.04};
-const double ERROR_LARGE     {.08};
-const double ERROR_SEEKING   {.64};
-const double ERROR_TURNING {12.80};
-const double EPSILON         {.10};
-const double GAIN_PROP      {4.68};
-const double GAIN_DER1      {9.54};
-const double GAIN_DER2     {.5*GAIN_DER1*GAIN_DER1/GAIN_PROP*(1.-EPSILON)};
-// const double GAIN_DER2 {0.};
+const float ERROR_SMALL     {.02};
+const float ERROR_MEDIUM    {.04};
+const float ERROR_LARGE     {.08};
+const float ERROR_SEEKING   {.64};
+const float ERROR_TURNING {12.80};
+const float EPSILON         {.10};
+const float GAIN_PROP      {4.68};
+const float GAIN_DER1      {9.54};
+const float GAIN_DER2     {.5*GAIN_DER1*GAIN_DER1/GAIN_PROP*(1.-EPSILON)};
+// const float GAIN_DER2 {0.};
 const int NUM_SAVED_READINGS {52};
 const int INTERSECT_PERIOD    {5};  
 const int TURNING_PERIOD     {10}; 
@@ -87,7 +88,7 @@ void TapeFollow::init()
 
 
 // TODO make this more advanced
-double TapeFollow::seekTape()
+float TapeFollow::seekTape()
 {
     if (this->lastError < 0.)              // off tape to the right
 	return -this->errorSeeking;
@@ -156,7 +157,7 @@ void TapeFollow::intersectionDetection()
 }
 
 
-double TapeFollow::followTape()
+float TapeFollow::followTape()
 {
     // declare static variables (runs once)
     const static bool &intersectL = this->pinReadings[0];
@@ -243,7 +244,7 @@ bool TapeFollow::intROnTape(vector<bool> reading)
 
 
 // TODO make more advanced
-double TapeFollow::makeTurn()
+float TapeFollow::makeTurn()
 {
     // determine whether end has bee reached
     if ((!this->halfTurn) && this->fnAllLastReadings(
@@ -371,6 +372,7 @@ TapeFollow::TapeFollow()
       motorSpeedSeeking          (MOTOR_SPEED_SEEKING),
       motorSpeedFollowingDefault (MOTOR_SPEED_FOLLOWING),
       motorSpeedPassengerSeek    (MOTOR_SPEED_PASSENGER_SEEK),
+      motorSpeedReverse          (MOTOR_SPEED_REVERSE),
       pinReadings     (4, false),
       lastPinReadings (NUM_SAVED_READINGS, vector<bool>(4, false)),
       activePins      (4)
@@ -395,8 +397,8 @@ void TapeFollow::loop()
     // set gains
     // TODO move this to constructor once values are decided upon
     if (!this->motorsActive) {
-	this->gainProp = static_cast<double>(knob(pins::KNOB_PROP_GAIN)) / 50.;
-	this->gainDer1 = static_cast<double>(knob(pins::KNOB_DER1_GAIN)) / 50.;
+	this->gainProp = static_cast<float>(knob(pins::KNOB_PROP_GAIN)) / 50.;
+	this->gainDer1 = static_cast<float>(knob(pins::KNOB_DER1_GAIN)) / 50.;
 	this->gainDer2 = .5*this->gainDer1*this->gainDer1 /
 	        this->gainProp*(1.-EPSILON);
     }
@@ -433,7 +435,7 @@ void TapeFollow::loop()
     // get error based on current state
     this->seeking = (!this->turning) &&
 	(this->fnAllLastReadings(this->offTapePeriod, &TapeFollow::offTape));
-    double error(0.);
+    float error(0.);
     if (this->seeking) {
 	this->motorSpeed = this->motorSpeedSeeking;
 	this->tapeFollowSteps = 0;
@@ -457,18 +459,18 @@ void TapeFollow::loop()
     }
 
     // get error derivatives
-    double der1[2];
+    float der1[2];
     der1[0] = (error - this->errorArray[0]) /
-  	    static_cast<double>(this->etimeArray[0]);
+  	    static_cast<float>(this->etimeArray[0]);
     der1[1] = (this->errorArray[0] - this->errorArray[1]) /
-	    static_cast<double>(this->etimeArray[1] - this->etimeArray[0]);
-    double der2 = (der1[0] - der1[1]) /
-	    static_cast<double>(this->etimeArray[0]);
+	    static_cast<float>(this->etimeArray[1] - this->etimeArray[0]);
+    float der2 = (der1[0] - der1[1]) /
+	    static_cast<float>(this->etimeArray[0]);
 
     // get the effect of gains
-    double ctrlProp (this->gainProp * error);
-    double ctrlDer1 (this->gainDer1 * der1[0]);
-    double ctrlDer2 (this->gainDer2 * der2);
+    float ctrlProp (this->gainProp * error);
+    float ctrlDer1 (this->gainDer1 * der1[0]);
+    float ctrlDer2 (this->gainDer2 * der2);
     this->control = -static_cast<int>(ctrlProp + ctrlDer1 + ctrlDer2);
 
     int controlMax = 1.5 * this->motorSpeedFollowing;
@@ -531,11 +533,12 @@ void TapeFollow::resetMotorSpeed()
 // TODO
 void TapeFollow::turnAround()
 {
-    // TODO: reverse robot
+    // Reverse robot
+    this->motorSpeed = this->motorSpeedReverse;
 
-    // TODO: set `motorSpeed` to tape-seeking speed
-    
-    // TODO: set `turnDirection` and call `makeTurn()`
+    // Set `turnDirection` and call `makeTurn()`
+    this->turnDirection = 2;
+    this->makeTurn();
 }
 
 

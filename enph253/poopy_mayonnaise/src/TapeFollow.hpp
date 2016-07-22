@@ -25,14 +25,14 @@ private:
     const vector<int> tapeSensorsFront;
     const vector<int> tapeSensorsBack;
 
-    double gainProp;              // TODO: set const; set based on knobs for now
-    double gainDer1;              // TODO: set const; set based on knobs for now
-    double gainDer2;              // TODO: set const; set based on knobs for now
-    const double errorSmall;      // one main on tape
-    const double errorMedium;     // both mains off, one intersection on tape
-    const double errorLarge;      // all QRDs off tape
-    const double errorSeeking;    // error to apply while seeking tape
-    const double errorTurning;    // error to be applied during turning
+    float gainProp;              // TODO: set const; set based on knobs for now
+    float gainDer1;              // TODO: set const; set based on knobs for now
+    float gainDer2;              // TODO: set const; set based on knobs for now
+    const float errorSmall;      // one main on tape
+    const float errorMedium;     // both mains off, one intersection on tape
+    const float errorLarge;      // all QRDs off tape
+    const float errorSeeking;    // error to apply while seeking tape
+    const float errorTurning;    // error to be applied during turning
     const unsigned long intersectDelay;  // while tape following, waits for this many steps before searching for intersections
     const int intersectPeriod;       // number of consecutive readings required to see an intersection
     const int turningPeriod;         // number of consecutive readings required to register start of turning
@@ -40,10 +40,11 @@ private:
     const int offTapePeriod;         // number of consecutive readings required to signal that the robot has lost the tape
     const int onTapePeriod;          // number of consecutive readings required to confirm that the robot is back on the tape after turning
     const int printPeriod;           // number of iterations per printout
-    const int motorSpeedTurning;     // motor speed for making turn
-    const int motorSpeedSeeking;     // motor speed for seeking tape
-    const int motorSpeedFollowingDefault;
-    const int motorSpeedPassengerSeek;
+    const int motorSpeedTurning;           // motor speed for making turn
+    const int motorSpeedSeeking;           // motor speed for seeking tape
+    const int motorSpeedFollowingDefault;  // default motor speed for tape following
+    const int motorSpeedPassengerSeek;     // motor speed for following after initial passenger sighting
+    const int motorSpeedReverse;           // motor speed for backing up
     int motorSpeedFollowing;  // current motor speed for following tape
 
     bool active;                  // whether the loop is active
@@ -61,13 +62,13 @@ private:
     int printCount;
     int motorSpeed;               // speed to add to motors
     unsigned long tapeFollowSteps;
-    double lastError;             // last calculated error
+    float lastError;             // last calculated error
 
     vector<bool> pinReadings;                // current readings on QRD pins
     vector< vector<bool> > lastPinReadings;  // array of previous time readings
     vector<bool> intersectSeen;              // true if an intersection was seen
     vector<bool> intersectDetect;            // true when an intersection has been detected (seen and passed over)
-    vector<double> errorArray;               // array of last 2 distinct errors
+    vector<float> errorArray;               // array of last 2 distinct errors
     vector<unsigned long> etimeArray;        // array of times (since read) assoc with errorArray
     vector<int> activePins;                  // pin numbers (intL, mainL, mainR, intR)
     
@@ -82,7 +83,7 @@ private:
      * `followTape` is entered.
      * The appropriate error is returned.
      */
-    double seekTape();
+    float seekTape();
 
     /*
      * Based on the lastPinReadings array, determines whether an
@@ -102,7 +103,7 @@ private:
      * `makeTurn` is called.
      * The appropriate error is returned.
      */
-    double followTape();
+    float followTape();
 
     /*
      * Function which chooses what direction to turn, based on its available
@@ -163,7 +164,7 @@ private:
      * next, at which point `followTape` is entered.
      * The appropriate error is returned.
      */
-    double makeTurn();
+    float makeTurn();
 
     /*
      * Print output to the LCD
