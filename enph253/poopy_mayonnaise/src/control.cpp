@@ -17,10 +17,12 @@ void control::setup() {
     Serial.begin(9600);
     randomSeed(analogRead(0));
     LCD.clear();
-    LCD.print("ROBLOX 101");
+    LCD.print("THE GOLDEN PEPE");
     delay(500);
     LCD.clear();
-    LCD.print("Are you ready?");
+    LCD.print("Hfeflflfo!");
+    LCD.setCursor(0, 1);
+    LCD.print("Feels good man!");
     delay(500);
     LCD.clear();
     LCD.print("Press START to");
