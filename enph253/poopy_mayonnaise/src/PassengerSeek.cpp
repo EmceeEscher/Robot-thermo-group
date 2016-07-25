@@ -29,8 +29,13 @@ void PassengerSeek::init()
     this->atPassenger = false;
     this->passengerSide = 0;  // undefined
 
-    fill(this->atMax.begin(), this->atMax.end(), false);
-    fill(this->pinReadings.begin(), this->pinReadings.end(), 0.);
+    this->atMax.reset();  // reset bits to 000000
+
+    for (int i(0); i < 6; ++i) {
+	this->pinReadings[i] = 0.;
+	this->lastTimePinReadings[i] = 0.;
+	this->numAboveThreshold[i] = 0;
+    }
 
     for (auto &x : this->lastPinReadings)
 	fill(x.begin(), x.end(), 0.);
@@ -55,14 +60,9 @@ bool PassengerSeek::atMaxSideMiddle()
 // TODO
 void PassengerSeek::updateMax()
 {
-    for (unsigned int i(0); i < this->pinReadings.size(); ++i) {
-	// determine if all above threshold
-	bool allAboveThreshold = true;
-	for (auto j(0); j < 2 * this->maxRegisterPeriod; ++j)
-	    if (this->lastPinReadings[j][i] <= this->maxRegisterThreshold) {
-		allAboveThreshold = false;
-		break;
-	    }
+    for (int i(0); i < 6; ++i) {
+	bool aboveThreshold =
+	    (this->numAboveThreshold[i]) > (this->maxRegisterPeriod);
 	// determine if at a max
 	bool imax = true;
 	for (auto j(0); j < this->maxRegisterPeriod; ++j) {
@@ -76,7 +76,7 @@ void PassengerSeek::updateMax()
 	    }
 	}
 	// set array
-	this->atMax[i] = allAboveThreshold && imax;
+	this->atMax[i] = aboveThreshold && imax;
     }
 }
 
@@ -87,10 +87,9 @@ PassengerSeek::PassengerSeek()
       maxRegisterPeriod    (MAX_REGISTER_PERIOD),
       maxRegisterThreshold (MAX_REGISTER_THRESHOLD),
       qsdPinsSides         (pins::PASSENGER_SENSORS_SIDES),
-      atMax                (6, false),
-      pinReadings          (6, 0.),
-      lastPinReadings      (NUM_SAVED_READINGS,   vector<double>(6, 0.)),
-      lastPinReadingsDeriv (NUM_SAVED_READINGS-1, vector<double>(6, 0.))
+      pinReadings          {0., 0., 0., 0., 0., 0.},
+      lastPinReadings      (NUM_SAVED_READINGS,   vector<float>(6, 0.)),
+      lastPinReadingsDeriv (NUM_SAVED_READINGS-1, vector<float>(6, 0.))
 {
 }
 
@@ -101,59 +100,48 @@ PassengerSeek::~PassengerSeek() {}
 // TODO
 void PassengerSeek::loop()
 {
-    LCD.clear();
     // Get pin readings
-    LCD.print("0");
-    delay(500);
-    for (int i(0); i < 6; ++i)
-	this->pinReadings[i] = 1.;  // TODO: fixme
-	// this->pinReadings[i] = analogRead(this->qsdPinsSides[i]);
+    for (int i(0); i < 6; ++i) {
+	this->lastTimePinReadings[i] = this->pinReadings[i];
+	this->pinReadings[i] = analogRead(this->qsdPinsSides[i]);
+    }
     
     // Update QSD readings array
-    LCD.print("1");
-    delay(500);
     std::rotate(
             this->lastPinReadings.begin(), this->lastPinReadings.end()-1,
 	    this->lastPinReadings.end()
     );
-    LCD.print("2");
-    delay(500);
-    std::copy(
-            this->pinReadings.begin(), this->pinReadings.end(),
-    	    this->lastPinReadings.front().begin()
-    );
+    for (int i(0); i < 6; ++i)
+	this->lastPinReadings.front()[i] = this->pinReadings[i];
 
     // Update QSD derivative array
-    LCD.print("3");
-    delay(500);
     std::rotate(
             this->lastPinReadingsDeriv.begin(),
     	    this->lastPinReadingsDeriv.end()-1,
     	    this->lastPinReadingsDeriv.end()
     );
-    LCD.print("4");
-    delay(500);
     for (auto i(0); i < 6; ++i)
 	this->lastPinReadingsDeriv.front()[i] =
 	    (this->lastPinReadings[0][i] - this->lastPinReadings[1][i]);
 
+    // Update counters
+    for (int i(0); i < 6; ++i)
+	if (this->pinReadings[i] > this->maxRegisterThreshold) {
+	    if (this->numAboveThreshold[i] < this->maxRegisterPeriod)
+		this->numAboveThreshold[i] += 1;
+	} else
+	    this->numAboveThreshold[i] = 0;
+
     // Update atMax array
-    LCD.print("5");
-    delay(500);
     this->updateMax();
 
     // If at a maximum, signal to stop tape following
-    LCD.print("6");
-    delay(500);
     if (this->atMaxSideFront())
 	this->approachingPassenger = true;
     else if (this->atMaxSideMiddle()) {
 	this->approachingPassenger = false;
 	this->atPassenger = true;
     }
-
-    LCD.print("7");
-    delay(1000);
 }
 
 

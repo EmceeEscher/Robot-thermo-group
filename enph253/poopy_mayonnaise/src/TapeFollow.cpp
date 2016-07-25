@@ -4,6 +4,7 @@
 #include <StandardCplusplus.h>
 #include <vector>
 #include <algorithm>
+#include <string>
 #include <phys253.h>
 #include "myalgs.hpp"
 #include "pins.hpp"

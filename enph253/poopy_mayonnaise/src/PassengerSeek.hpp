@@ -7,10 +7,12 @@
 #define PASSENGER_SEEK_HPP
 
 #include <StandardCplusplus.h>
+#include <bitset>
 #include <vector>
 #include "MinorMode.hpp"
 
 using std::vector;
+using std::bitset;
 
 class PassengerSeek : public MinorMode
 {
@@ -18,17 +20,25 @@ class PassengerSeek : public MinorMode
 private:
 
     const int maxRegisterPeriod;                    // number of consecutive (+) derivatives to be increasing and (-) derivative to be decreasing
-    const double maxRegisterThreshold;              // threshold that readings must be above to register
-    const vector<int> qsdPinsSides;                 // left-back, left-mid, left-front, right-front, right-mid, right-back
+    const float maxRegisterThreshold;               // threshold that readings must be above to register
+    const int *qsdPinsSides;                        // left-back, left-mid, left-front, right-front, right-mid, right-back
 
     bool approachingPassenger;                      // true when approaching a passenger
     bool atPassenger;                               // true when adjacent to a passenger
     int passengerSide;                              // if atPassenger, specifies the side (-1=left, 1=right)
 
-    vector<bool> atMax;                             // true if the associated pin is at a maximum
-    vector<double> pinReadings;                     // current pin readings
-    vector< vector<double> > lastPinReadings;       // vector of 6-vectors containing historical pin reading data
-    vector< vector<double> > lastPinReadingsDeriv;  // vector of 6-vectors containing derivatives of lastPinReadings
+    bitset<6> atMax;                                // true if the associated pin is at a maximum
+    float pinReadings[6];                           // current pin readings
+    float lastTimePinReadings[6];                       // pin readings from last loop
+
+    int numAboveThreshold[6];                       // number of consecutive reads above threshold for each pin
+    int numPosDeriv[6];                             // number of consecutive positive derivatives THE LAST TIME A POSITIVE DERIVATIVE WAS READ
+    int numNegDeriv[6];                             // number of consecutive negative derivatives THE LAST TIME A NEGATIVE DERIVATIVE WAS READ
+    bool lastDerivNegative;                         // true if the last derivative was negative
+
+    // TODO: get rid of these
+    vector< vector<float> > lastPinReadings;       // vector of 6-vectors containing historical pin reading data
+    vector< vector<float> > lastPinReadingsDeriv;  // vector of 6-vectors containing derivatives of lastPinReadings
 
     /*
      * (Re)initialize all state variables

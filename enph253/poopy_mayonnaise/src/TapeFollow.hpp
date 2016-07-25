@@ -8,12 +8,14 @@
 
 
 #include <StandardCplusplus.h>
+#include <bitset>
 #include <vector>
 #include "Direction.hpp"
 #include "MinorMode.hpp"
 
 
 using std::vector;
+using std::bitset;
 using readingFn_t = bool(*)(vector<bool>);
 
 
@@ -22,8 +24,8 @@ class TapeFollow : public MinorMode
 
 private:
 
-    const vector<int> tapeSensorsFront;
-    const vector<int> tapeSensorsBack;
+    const int tapeSensorsFront[4];
+    const int tapeSensorsBack[4];
 
     float gainProp;              // TODO: set const; set based on knobs for now
     float gainDer1;              // TODO: set const; set based on knobs for now
@@ -64,16 +66,17 @@ private:
     unsigned long tapeFollowSteps;
     float lastError;             // last calculated error
 
-    vector<bool> pinReadings;                // current readings on QRD pins
+    bitset<4> pinReadings;       // current readings on QRD pins
+    bitset<2> intersectSeen;     // true if an intersection was seen
+    bitset<2> intersectDetect;   // true when an intersection has been detected (seen and passed over)
+
     vector< vector<bool> > lastPinReadings;  // array of previous time readings
-    vector<bool> intersectSeen;              // true if an intersection was seen
-    vector<bool> intersectDetect;            // true when an intersection has been detected (seen and passed over)
     vector<float> errorArray;               // array of last 2 distinct errors
     vector<unsigned long> etimeArray;        // array of times (since read) assoc with errorArray
-    vector<int> activePins;                  // pin numbers (intL, mainL, mainR, intR)
+    int activePins[4];                      // pin numbers (intL, mainL, mainR, intR)
 
-    vector<int> onTapeCounter;               // counts the number of consecutive onTape reads for each pin
-    vector<int> offTapeCounter;              // counts the number of consecutive offTape reads for each pin
+    int onTapeCounter[4];               // counts the number of consecutive onTape reads for each pin
+    int offTapeCounter[4];              // counts the number of consecutive offTape reads for each pin
     
     /*
      * Set all instance variables to their default starting values

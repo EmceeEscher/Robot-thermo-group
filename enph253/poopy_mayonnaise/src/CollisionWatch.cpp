@@ -1,6 +1,8 @@
 ///
 // CollisionWatch.cpp
 //
+#include <StandardCplusplus.h>
+#include <string>
 #include <phys253.h>
 #include "pins.hpp"
 #include "CollisionWatch.hpp"
@@ -13,15 +15,16 @@ void CollisionWatch::init()
 {
     MinorMode::init();
 
-    this->collisionDetected = {false, false, false, false};
-    this->numCollisionReads = {0, 0, 0, 0};
+    this->collisionDetected.reset();  // bits reset to 0000
+    for (int i(0); i < 4; ++i)
+	this->numCollisionReads[i] = 0;
 }
 
 
 CollisionWatch::CollisionWatch()
     : MinorMode(),
-      collisionDetectPeriod(COLLISION_DETECT_PERIOD),
-      sensorPins(pins::COLLISION_SENSORS)
+      sensorPins(pins::COLLISION_SENSORS),
+      collisionDetectPeriod(COLLISION_DETECT_PERIOD)
 {
 }
 
@@ -33,7 +36,7 @@ void CollisionWatch::loop()
 {
     // Read collision sensors and update numReads array
     for (int i(0); i < 4; ++i) {
-	if (static_cast<bool>(digitalRead(this->sensorPins[i])))
+	if (digitalRead(this->sensorPins[i]))
 	    this->numCollisionReads[i] += 1;
 	else 
 	    this->numCollisionReads[i] = 0;
@@ -41,8 +44,10 @@ void CollisionWatch::loop()
 
     // Check if number of collisions has reached detect period
     for (int i(0); i < 4; ++i)
-	this->collisionDetected[i] =
-	        (this->numCollisionReads[i] >= this->collisionDetectPeriod);
+	if (this->numCollisionReads[i] >= this->collisionDetectPeriod)
+	    this->collisionDetected[i] = 1;
+	else
+	    this->collisionDetected[i] = 0;
 }
 
 
@@ -55,10 +60,7 @@ void CollisionWatch::test()
 
 bool CollisionWatch::collisionHasOccurred()
 {
-    for (bool b : this->collisionDetected)
-	if (b)
-	    return true;
-    return false;
+    return this->collisionDetected.any();
 }
 
 
