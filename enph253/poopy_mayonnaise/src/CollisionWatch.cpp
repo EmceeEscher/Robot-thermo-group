@@ -36,10 +36,10 @@ void CollisionWatch::loop()
 {
     // Read collision sensors and update numReads array
     for (int i(0); i < 4; ++i) {
-	if (digitalRead(this->sensorPins[i]))
-	    this->numCollisionReads[i] += 1;
-	else 
+	if (!digitalRead(this->sensorPins[i]))
 	    this->numCollisionReads[i] = 0;
+	else if (this->numCollisionReads[i] < this->collisionDetectPeriod)
+	    this->numCollisionReads[i] += 1;
     }
 
     // Check if number of collisions has reached detect period

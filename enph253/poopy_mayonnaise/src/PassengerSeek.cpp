@@ -108,11 +108,10 @@ void PassengerSeek::loop()
 
     // Update counters
     for (int i(0); i < 6; ++i)
-	if (this->pinReadings[i] > this->maxRegisterThreshold) {
-	    if (this->numAboveThreshold[i] < this->maxRegisterPeriod)
-		this->numAboveThreshold[i] += 1;
-	} else
+	if (this->pinReadings[i] <= this->maxRegisterThreshold) {
 	    this->numAboveThreshold[i] = 0;
+	} else if (this->numAboveThreshold[i] < this->maxRegisterPeriod)
+	    this->numAboveThreshold[i] += 1;
 
     // Update atMax array
     this->updateMax();
