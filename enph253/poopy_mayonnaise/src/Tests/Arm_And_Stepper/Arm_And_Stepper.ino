@@ -185,7 +185,11 @@ void grabShit(){
         break;
       }
     }
-    motor.speed(babyMotorNum,0);
+    if(holding){
+      motor.speed(babyMotorNum,20);
+    }else{
+      dropShit();
+    }
   }
 }
 
