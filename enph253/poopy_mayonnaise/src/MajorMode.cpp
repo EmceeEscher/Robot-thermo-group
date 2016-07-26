@@ -14,7 +14,6 @@ void MajorMode::init()
 MajorMode::MajorMode()
     : active(false)
 {
-    this->init();
 }
 
 

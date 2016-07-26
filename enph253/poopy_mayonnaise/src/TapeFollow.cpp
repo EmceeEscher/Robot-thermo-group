@@ -9,6 +9,7 @@
 #include "myalgs.hpp"
 #include "pins.hpp"
 #include "Direction.hpp"
+#include "debug.hpp"
 #include "TapeFollow.hpp"
 
 
@@ -43,7 +44,7 @@ const int INTERSECT_DELAY_PERIOD {100};
 void TapeFollow::init()
 {
     MinorMode::init();
-
+    
     this->onTape              = false;
     this->lastOnTape          = false;
     this->mainsOnTape         = false;
@@ -250,25 +251,25 @@ void TapeFollow::printLCD()
     	if (this->turning) {
 	    switch (this->turnDirection) {
 	    case Direction::LEFT:
-		LCD.print("<--");
+		LCD.print("<");
 		break;
 	    case Direction::FRONT:
-		LCD.print(" ^ ");
+		LCD.print("^");
 		break;
 	    case Direction::RIGHT:
-		LCD.print("-->");
+		LCD.print(">");
 		break;
 	    case Direction::BACK:
-		LCD.print(" v ");
+		LCD.print("v");
 		break;
 	    }
     	} else {
     	    if (this->control < 0)
-    		LCD.print("<  ");
+    		LCD.print("<");
     	    else if (this->control > 0)
-    		LCD.print("  >");
+    		LCD.print(">");
     	    else
-    		LCD.print(" ^ ");
+    		LCD.print("^");
     	}
 
     	// print QRD readings
@@ -276,6 +277,10 @@ void TapeFollow::printLCD()
 	    LCD.print(" ");
 	    LCD.print(this->pinReadings[i]);
 	}
+
+	// print current available RAM
+	LCD.print(" ");
+	LCD.print(freeRam());
 
     	// print gains and control
     	LCD.setCursor(0,1);
@@ -313,8 +318,10 @@ TapeFollow::TapeFollow()
       motorSpeedSeeking          (MOTOR_SPEED_SEEKING),
       motorSpeedFollowingDefault (MOTOR_SPEED_FOLLOWING),
       motorSpeedPassengerSeek    (MOTOR_SPEED_PASSENGER_SEEK),
-      motorSpeedReverse          (MOTOR_SPEED_REVERSE)
+      motorSpeedReverse          (MOTOR_SPEED_REVERSE),
+      motorSpeedFollowing        (MOTOR_SPEED_FOLLOWING)
 {
+    this->init();
 }
 
 
@@ -325,6 +332,46 @@ void TapeFollow::loop()
 {
     if (!this->active)
 	return;
+
+    // LCD.clear();
+    // LCD.print("MOTOR SPEEDS:");
+    // delay(1000);
+
+    // LCD.clear();
+    // LCD.print("Turning:");
+    // LCD.setCursor(0, 1);
+    // LCD.print(this->motorSpeedTurning);
+    // delay(1000);
+
+    // LCD.clear();
+    // LCD.print("Tape seeking:");
+    // LCD.setCursor(0, 1);
+    // LCD.print(this->motorSpeedSeeking);
+    // delay(1000);
+
+    // LCD.clear();
+    // LCD.print("Tape following:");
+    // LCD.setCursor(0, 1);
+    // LCD.print(this->motorSpeedFollowing);
+    // delay(1000);
+
+    // LCD.clear();
+    // LCD.print("Def tape following:");
+    // LCD.setCursor(0, 1);
+    // LCD.print(this->motorSpeedFollowingDefault);
+    // delay(1000);
+
+    // LCD.clear();
+    // LCD.print("Passenger seek:");
+    // LCD.setCursor(0, 1);
+    // LCD.print(this->motorSpeedPassengerSeek);
+    // delay(1000);
+
+    // LCD.clear();
+    // LCD.print("Reverse:");
+    // LCD.setCursor(0, 1);
+    // LCD.print(this->motorSpeedReverse);
+    // delay(1000);
 
     if (this->printCount % this->printPeriod == 0) {
 	this->printLCD();
@@ -410,11 +457,20 @@ void TapeFollow::loop()
     float ctrlDer2 (this->gainDer2 * der2);
     this->control = -static_cast<int>(ctrlProp + ctrlDer1 + ctrlDer2);
 
-    int controlMax = 1.5 * this->motorSpeedFollowing;
+    // LCD.clear();
+    // LCD.print(this->motorSpeedFollowing);
+    // LCD.setCursor(0, 1);
+    // LCD.print(this->control);
+
+    int controlMax = this->motorSpeedFollowing * 3 / 2;
     if (this->control > controlMax)
 	this->control = controlMax;
     else if (this->control < -controlMax)
 	this->control = -controlMax;
+
+    // LCD.print(" ");
+    // LCD.print(this->control);
+    // delay(100);
 
     int dSpeed = this->control;
 

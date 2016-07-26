@@ -25,14 +25,8 @@ public:
 
     ~MLoadPassenger();  // deconstructor
 
-    /*
-     * Major loop function for handling associated minor modes
-     */
     void loop();
 
-    /*
-     * Enter a testing mode, in which hardware is not active
-     */
     void test();
 
 };

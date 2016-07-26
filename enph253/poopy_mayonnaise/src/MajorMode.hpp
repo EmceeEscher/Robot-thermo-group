@@ -30,7 +30,7 @@ protected:
     virtual void init();
 
     /*
-     * Default major mode initializer, which calls the most derived `init`.
+     * Default major mode initializer. Sets active to false.
      */
     MajorMode();
     

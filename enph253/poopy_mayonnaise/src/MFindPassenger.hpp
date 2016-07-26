@@ -32,19 +32,10 @@ public:
 
     ~MFindPassenger();  // deconstructor
 
-    /*
-     * Major loop function for handling associated minor modes
-     */
     void loop();
 
-    /*
-     * Start initial minor modes
-     */
     void start();
 
-    /*
-     * Enter a testing mode, in which hardware is not active
-     */
     void test();
 
 };

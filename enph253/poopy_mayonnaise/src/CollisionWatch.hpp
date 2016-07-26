@@ -17,11 +17,11 @@ class CollisionWatch : public MinorMode
 
 private:
 
-    const int *sensorPins;          // left, front, right, back
+    const int *sensorPins;            // left, front, right, back
     const int collisionDetectPeriod;  // number of consecutive reads to detect a collision
 
-    bitset<4> collisionDetected;   // true if a collision has been detected
-    int numCollisionReads[4];    // number of consecutive times  a collision has been read
+    bitset<4> collisionDetected;      // true if a collision has been detected
+    int numCollisionReads[4];         // number of consecutive times  a collision has been read
 
     /*
      * (Re)initializes all state variables

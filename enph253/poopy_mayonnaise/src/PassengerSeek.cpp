@@ -74,6 +74,7 @@ PassengerSeek::PassengerSeek()
       numPosDeriv          {0, 0, 0, 0, 0, 0},
       numNegDeriv          {0, 0, 0, 0, 0, 0}
 {
+    this->init();
 }
 
 

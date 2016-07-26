@@ -14,7 +14,7 @@ const int COLLISION_DETECT_PERIOD {5};
 void CollisionWatch::init()
 {
     MinorMode::init();
-
+    
     this->collisionDetected.reset();  // bits reset to 0000
     for (int i(0); i < 4; ++i)
 	this->numCollisionReads[i] = 0;
@@ -26,6 +26,7 @@ CollisionWatch::CollisionWatch()
       sensorPins(pins::COLLISION_SENSORS),
       collisionDetectPeriod(COLLISION_DETECT_PERIOD)
 {
+    this->init();
 }
 
 

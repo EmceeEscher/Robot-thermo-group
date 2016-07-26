@@ -7,6 +7,7 @@
 #include "MajorMode.hpp"
 #include "MinorMode.hpp"
 #include "allmajormodes.hpp"
+#include "debug.hpp"
 #include "RobotState.hpp"
 
 

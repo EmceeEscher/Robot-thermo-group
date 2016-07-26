@@ -29,21 +29,21 @@ private:
     const int *tapeSensorsFront;
     const int *tapeSensorsBack;
 
-    float gainProp;              // TODO: set const; set based on knobs for now
-    float gainDer1;              // TODO: set const; set based on knobs for now
-    float gainDer2;              // TODO: set const; set based on knobs for now
-    const float errorSmall;      // one main on tape
-    const float errorMedium;     // both mains off, one intersection on tape
-    const float errorLarge;      // all QRDs off tape
-    const float errorSeeking;    // error to apply while seeking tape
-    const float errorTurning;    // error to be applied during turning
-    const unsigned long intersectDelay;  // while tape following, waits for this many steps before searching for intersections
-    const int intersectPeriod;       // number of consecutive readings required to see an intersection
-    const int turningPeriod;         // number of consecutive readings required to register start of turning
-    const int turnWaitPeriod;        // number of iterations to wait after detecting intersections before making decision
-    const int offTapePeriod;         // number of consecutive readings required to signal that the robot has lost the tape
-    const int onTapePeriod;          // number of consecutive readings required to confirm that the robot is back on the tape after turning
-    const int printPeriod;           // number of iterations per printout
+    float gainProp;                        // TODO: set const; set based on knobs for now
+    float gainDer1;                        // TODO: set const; set based on knobs for now
+    float gainDer2;                        // TODO: set const; set based on knobs for now
+    const float errorSmall;                // one main on tape
+    const float errorMedium;               // both mains off, one intersection on tape
+    const float errorLarge;                // all QRDs off tape
+    const float errorSeeking;              // error to apply while seeking tape
+    const float errorTurning;              // error to be applied during turning
+    const unsigned long intersectDelay;    // while tape following, waits for this many steps before searching for intersections
+    const int intersectPeriod;             // number of consecutive readings required to see an intersection
+    const int turningPeriod;               // number of consecutive readings required to register start of turning
+    const int turnWaitPeriod;              // number of iterations to wait after detecting intersections before making decision
+    const int offTapePeriod;               // number of consecutive readings required to signal that the robot has lost the tape
+    const int onTapePeriod;                // number of consecutive readings required to confirm that the robot is back on the tape after turning
+    const int printPeriod;                 // number of iterations per printout
     const int motorSpeedTurning;           // motor speed for making turn
     const int motorSpeedSeeking;           // motor speed for seeking tape
     const int motorSpeedFollowingDefault;  // default motor speed for tape following
@@ -51,7 +51,6 @@ private:
     const int motorSpeedReverse;           // motor speed for backing up
     int motorSpeedFollowing;  // current motor speed for following tape
 
-    bool active;                  // whether the loop is active
     bool onTape;                  // true= on tape, false= off tape
     bool lastOnTape;              // last value of onTape
     bool mainsOnTape;             // whether one of the mains in on the tape
@@ -73,7 +72,7 @@ private:
     bitset<2> intersectDetect;   // true when an intersection has been detected (seen and passed over)
 
     vector<float> errorArray;           // array of last 2 distinct errors
-    vector<int> etimeArray;             // array of times (since read) assoc with errorArray
+    vector<unsigned long> etimeArray;   // array of times (since read) assoc with errorArray
     int activePins[4];                  // pin numbers (intL, mainL, mainR, intR)
 
     int onTapeCounter[4];               // counts the number of consecutive onTape reads for each pin

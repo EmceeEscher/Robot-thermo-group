@@ -19,6 +19,8 @@ void MFindPassenger::init()
 MFindPassenger::MFindPassenger()
     : MajorMode()
 {
+    this->init();
+
     // TODO: initialize specific minor modes
     this->mmTapeFollow = new TapeFollow;
     this->allMinorModes.push_back(mmTapeFollow);
@@ -66,10 +68,10 @@ void MFindPassenger::loop()
 void MFindPassenger::start()
 {
     MajorMode::start();
-    
+
     // Start intial minor modes
     this->mmTapeFollow->start();
-    this->mmCollisionWatch->start();
+    // this->mmCollisionWatch->start();
     // this->mmPassengerSeek->start();
 }
 
@@ -77,6 +79,7 @@ void MFindPassenger::start()
 // TODO
 void MFindPassenger::test()
 {
-    MajorMode::test();  // default major mode method
+    MajorMode::test();
+
     this->mmTapeFollow->test();
 }

@@ -14,6 +14,8 @@ class MToDestination : public MajorMode
 
 private:
 
+    bool active;
+    
     /*
      * (Re)initialize state variables
      */
@@ -25,15 +27,17 @@ public:
 
     ~MToDestination();  // deconstructor
 
-    /*
-     * Major loop function for handling associated minor modes
-     */
     void loop();
 
-    /*
-     * Enter a testing mode, in which hardware is not active
-     */
+    void start();
+
+    void stop();
+
+    void pause();
+
     void test();
+
+    bool isActive();
 
 };
 

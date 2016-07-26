@@ -22,7 +22,7 @@ protected:
     virtual void init();
 
     /*
-     * Default constructor for a MinorMode. Initializes state variables.
+     * Default constructor for a MinorMode. Initializes active to false
      */
     MinorMode();
 

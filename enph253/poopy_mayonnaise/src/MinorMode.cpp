@@ -14,7 +14,6 @@ void MinorMode::init()
 MinorMode::MinorMode()
     : active(false)
 {
-    this->init();
 }
 
 
