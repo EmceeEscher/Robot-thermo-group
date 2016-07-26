@@ -20,8 +20,6 @@ const int MOTOR_SPEED_PASSENGER_SEEK  {64};
 const int MOTOR_SPEED_TURNING         {32};
 const int MOTOR_SPEED_SEEKING          {8};
 const int MOTOR_SPEED_REVERSE        {-12};
-const int PRINT_PERIOD {200};
-const unsigned long INTERSECT_DELAY {100};  // steps following before intersection seeking
 const float ERROR_SMALL     {.02};
 const float ERROR_MEDIUM    {.04};
 const float ERROR_LARGE     {.08};
@@ -32,12 +30,14 @@ const float GAIN_PROP      {4.68};
 const float GAIN_DER1      {9.54};
 const float GAIN_DER2     {.5*GAIN_DER1*GAIN_DER1/GAIN_PROP*(1.-EPSILON)};
 // const float GAIN_DER2 {0.};
-const int NUM_SAVED_READINGS {52};
-const int INTERSECT_PERIOD    {5};  
-const int TURNING_PERIOD     {10}; 
-const int TURN_WAIT_PERIOD   {45};
-const int OFF_TAPE_PERIOD    {50};
-const int ON_TAPE_PERIOD     {10};
+const int PRINT_PERIOD           {200};
+const int NUM_SAVED_READINGS      {52};
+const int INTERSECT_PERIOD         {5};  
+const int TURNING_PERIOD          {10}; 
+const int TURN_WAIT_PERIOD        {45};
+const int OFF_TAPE_PERIOD         {50};
+const int ON_TAPE_PERIOD          {10};
+const int INTERSECT_DELAY_PERIOD {100};
 
 
 void TapeFollow::init()
@@ -62,30 +62,24 @@ void TapeFollow::init()
 
     this->lastError           = 0.;
 
-    this->intersectSeen       = {false, false};
-    this->intersectDetect     = {false, false};
+    this->intersectSeen.reset();    // 00
+    this->intersectDetect.reset();  // 00
+    this->pinReadings.reset();      // 0000
 
     this->etimeArray          = {0,  1};
     this->errorArray          = {0., 0.};
 
-    this->pinReadings         = {false, false, false, false};
-
-    this->onTapeCounter       = {0, 0, 0, 0};
-    this->offTapeCounter      = {0, 0, 0, 0};
-
-    for (auto &x : this->lastPinReadings)
-	std::fill(x.begin(), x.end(), false);
-
-    // assign active pins
-    std::copy(
-            this->tapeSensorsFront.begin(),
-	    this->tapeSensorsFront.end(),
-	    this->activePins.begin()
-    );
+    for (int i(0); i < 4; ++i) {
+	// reset counters
+	this->onTapeCounter[i] = 0;
+	this->offTapeCounter[i] = 0;
+	// assign active pins
+	this->activePins[i] = this->tapeSensorsFront[i];
+    }
 
     // declare active pins as inputs
-    for (const auto pin : this->activePins)
-	pinMode(pin, INPUT);
+    for (int i(0); i < 4; ++i)
+	pinMode(this->activePins[i], INPUT);
 }
 
 
@@ -104,23 +98,16 @@ float TapeFollow::seekTape()
 // TODO
 void TapeFollow::intersectionSeen()
 {
-    // bool intersectSeenL = true;
-    bool intersectSeenL(true);
-    bool intersectSeenR(true);
-    int i(0);
-    for (const auto &reads : this->lastPinReadings) {
-	if (i >= this->intersectPeriod)
-	    break;
-	intersectSeenL = (intersectSeenL && reads[0] && this->mainsOnTape);
-	intersectSeenR = (intersectSeenR && reads[3] && this->mainsOnTape);
-	++i;
-    }
+    bool intersectSeenL = (this->mainsOnTape &&
+            (this->onTapeCounter[0] >= this->intersectPeriod));
+    bool intersectSeenR = (this->mainsOnTape &&
+            (this->onTapeCounter[3] >= this->intersectPeriod));
 
     // if seen, update instance variable
     if (intersectSeenL)
-	this->intersectSeen[0] = true;
+	this->intersectSeen[0] = 1;
     if (intersectSeenR)
-	this->intersectSeen[1] = true;
+	this->intersectSeen[1] = 1;
 }
 
 
@@ -137,13 +124,14 @@ void TapeFollow::intersectionDetection()
 
     // check if intersection detected
     if ((!intersectL) && this->intersectSeen[0])
-	this->intersectDetect[0] = true;
+	this->intersectDetect[0] = 1;
     if ((!intersectR) && this->intersectSeen[1])
-	this->intersectDetect[1] = true;
+	this->intersectDetect[1] = 1;
 
     // if intersection(s) detected, make move decision
-    if (this->fnAllLastReadings(
-            this->turnWaitPeriod, &TapeFollow::intsOffTape)) {
+    if ((this->onTapeCounter[0] >= this->turnWaitPeriod) &&
+	(this->onTapeCounter[3] >= this->turnWaitPeriod)) {
+
 	// wait until both intersections crossed over
 	this->turnDirection = this->chooseTurn(
 	        this->intersectDetect[0],
@@ -153,8 +141,8 @@ void TapeFollow::intersectionDetection()
 	if (this->turnDirection != Direction::FRONT)
 	    this->turning = true;  // activates `makeTurn` function
 	// reset intersection arrays
-	this->intersectSeen =   {false, false};
-	this->intersectDetect = {false, false};
+	this->intersectSeen.reset();    // 00
+	this->intersectDetect.reset();  // 00
     }
 }
 
@@ -190,70 +178,17 @@ float TapeFollow::followTape()
 }
 
 
-// TODO: just use `all_of` in place of this method
-bool TapeFollow::fnAllLastReadings(int period, readingFn_t fn)
-{
-    return std::all_of(
-            this->lastPinReadings.begin(),
-	    this->lastPinReadings.begin()+period,
-	    fn
-    );
-}
-
-
-// TODO: just use `any_of` in place of this method
-bool TapeFollow::fnAnyLastReadings(int period, readingFn_t fn)
-{
-    return std::any_of(
-            this->lastPinReadings.begin(),
-	    this->lastPinReadings.begin()+period,
-	    fn
-    );
-}
-
-
-bool TapeFollow::offTape(vector<bool> reading)
-{
-    for (const bool read : reading)
-	if (read)
-	    return false;
-    return true;
-}
-
-
-bool TapeFollow::mainsOffTape(vector<bool> reading)
-{
-    return !(reading[1] || reading[2]);
-}
-
-
-bool TapeFollow::intsOffTape(vector<bool> reading)
-{
-    return !(reading[0] || reading[3]);
-}
-
-
-bool TapeFollow::intLOnTape(vector<bool> reading)
-{
-    return reading[0];
-}
-
-
-bool TapeFollow::intROnTape(vector<bool> reading)
-{
-    return reading[3];
-}
-
-
 // TODO make more advanced
 float TapeFollow::makeTurn()
 {
     // determine whether end has bee reached
-    if ((!this->halfTurn) && this->fnAllLastReadings(
-            this->turningPeriod, &TapeFollow::mainsOffTape))
+    if ((!this->halfTurn) &&
+	    (this->offTapeCounter[1] >= this->turningPeriod) &&
+	    (this->offTapeCounter[2] >= this->turningPeriod)) {
     	this->halfTurn = true;
-    else if (this->halfTurn && !(this->fnAnyLastReadings(
-            this->onTapePeriod, &TapeFollow::mainsOffTape))) {
+    } else if (this->halfTurn &&
+            (this->onTapeCounter[1] >= this->onTapePeriod) &&
+	    (this->onTapeCounter[2] >= this->onTapePeriod)) {
 	this->halfTurn = false;
 	this->turning = false;  // exit to regular following
     }
@@ -335,11 +270,13 @@ void TapeFollow::printLCD()
     	    else
     		LCD.print(" ^ ");
     	}
+
     	// print QRD readings
-    	for (const auto read : this->pinReadings) {
-    	    LCD.print(" ");
-    	    LCD.print(read);
-    	}
+	for (int i(0); i < 4; ++i) {
+	    LCD.print(" ");
+	    LCD.print(this->pinReadings[i]);
+	}
+
     	// print gains and control
     	LCD.setCursor(0,1);
     	LCD.print(this->gainProp);
@@ -353,6 +290,8 @@ void TapeFollow::printLCD()
 
 TapeFollow::TapeFollow()
     : MinorMode(),
+      motorPinL        (pins::MOTOR_PIN_L),
+      motorPinR        (pins::MOTOR_PIN_R),
       tapeSensorsFront (pins::TAPE_SENSORS_FRONT),
       tapeSensorsBack  (pins::TAPE_SENSORS_BACK),
       gainProp         (GAIN_PROP),
@@ -363,7 +302,7 @@ TapeFollow::TapeFollow()
       errorLarge       (ERROR_LARGE),
       errorSeeking     (ERROR_SEEKING),
       errorTurning     (ERROR_TURNING),
-      intersectDelay   (INTERSECT_DELAY),
+      intersectDelay   (INTERSECT_DELAY_PERIOD),
       intersectPeriod  (INTERSECT_PERIOD),
       turningPeriod    (TURNING_PERIOD),
       turnWaitPeriod   (TURN_WAIT_PERIOD),
@@ -374,10 +313,7 @@ TapeFollow::TapeFollow()
       motorSpeedSeeking          (MOTOR_SPEED_SEEKING),
       motorSpeedFollowingDefault (MOTOR_SPEED_FOLLOWING),
       motorSpeedPassengerSeek    (MOTOR_SPEED_PASSENGER_SEEK),
-      motorSpeedReverse          (MOTOR_SPEED_REVERSE),
-      pinReadings     (4, false),
-      lastPinReadings (NUM_SAVED_READINGS, vector<bool>(4, false)),
-      activePins      (4)
+      motorSpeedReverse          (MOTOR_SPEED_REVERSE)
 {
 }
 
@@ -406,50 +342,36 @@ void TapeFollow::loop()
     }
 
     // get readings from tape sensors
-    for (auto i(0); i < 4; ++i) {
-	this->pinReadings[i] = static_cast<bool>(
-                digitalRead(this->activePins[i]));
-    }
+    for (auto i(0); i < 4; ++i) 
+	this->pinReadings[i] = digitalRead(this->activePins[i]);
+    
 
     // update counters
     for (int i(0); i < 4; ++i)
 	if (this->pinReadings[i]) {
 	    this->offTapeCounter[i] = 0;
-	    if (this->onTapeCounter[i] <= this->onTapePeriod)
+	    if (this->onTapeCounter[i] < this->onTapePeriod)
 		this->onTapeCounter[i] += 1;
 	} else {
 	    this->onTapeCounter[i] = 0;
-	    if (this->offTapeCounter[i] <= this->offTapePeriod)
+	    if (this->offTapeCounter[i] < this->offTapePeriod)
 		this->offTapeCounter[i] += 1;
 	}
 
-
-    // update lastPinReadings array
-    std::rotate(
-            this->lastPinReadings.begin(), this->lastPinReadings.end()-1,
-	    this->lastPinReadings.end());
-    std::copy(
-            this->pinReadings.begin(), this->pinReadings.end(),
-	    this->lastPinReadings.front().begin());
-    
     // determine whether on tape
     this->lastOnTape = this->onTape;
-
-    bool isOnTape(false);
-    for (const auto read : this->pinReadings) 
-	if (read) {
-	    isOnTape = true;
-	    break;
-	}
-    this->onTape = isOnTape;
+    this->onTape = this->pinReadings.any();
 
     // determine whether mains on tape
     this->lastMainsOnTape = this->mainsOnTape;
     this->mainsOnTape = (this->pinReadings[1] || this->pinReadings[2]);
 
     // get error based on current state
-    this->seeking = (!this->turning) &&
-	(this->fnAllLastReadings(this->offTapePeriod, &TapeFollow::offTape));
+    bool amOffTape(true);
+    for (int i(0); i < 4; ++i)
+	amOffTape = amOffTape && (this->offTapeCounter[i] > this->offTapePeriod);
+    this->seeking = (!this->turning) && (amOffTape);
+    
     float error(0.);
     if (this->seeking) {
 	this->motorSpeed = this->motorSpeedSeeking;
@@ -498,11 +420,11 @@ void TapeFollow::loop()
 
     // adjust motor speed
     if (this->motorsActive) {
-	motor.speed(pins::MOTOR_PIN_L, dSpeed - this->motorSpeed);
-	motor.speed(pins::MOTOR_PIN_R, dSpeed + this->motorSpeed);
+	motor.speed(this->motorPinL, dSpeed - this->motorSpeed);
+	motor.speed(this->motorPinR, dSpeed + this->motorSpeed);
     } else {
-	motor.speed(pins::MOTOR_PIN_L, 0);
-	motor.speed(pins::MOTOR_PIN_R, 0);
+	motor.speed(this->motorPinL, 0);
+	motor.speed(this->motorPinR, 0);
     }
 
     // increase time counters

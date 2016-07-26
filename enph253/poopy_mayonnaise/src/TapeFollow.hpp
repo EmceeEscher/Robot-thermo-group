@@ -24,8 +24,10 @@ class TapeFollow : public MinorMode
 
 private:
 
-    const int tapeSensorsFront[4];
-    const int tapeSensorsBack[4];
+    const int motorPinL;
+    const int motorPinR;
+    const int *tapeSensorsFront;
+    const int *tapeSensorsBack;
 
     float gainProp;              // TODO: set const; set based on knobs for now
     float gainDer1;              // TODO: set const; set based on knobs for now
@@ -70,10 +72,9 @@ private:
     bitset<2> intersectSeen;     // true if an intersection was seen
     bitset<2> intersectDetect;   // true when an intersection has been detected (seen and passed over)
 
-    vector< vector<bool> > lastPinReadings;  // array of previous time readings
-    vector<float> errorArray;               // array of last 2 distinct errors
-    vector<unsigned long> etimeArray;        // array of times (since read) assoc with errorArray
-    int activePins[4];                      // pin numbers (intL, mainL, mainR, intR)
+    vector<float> errorArray;           // array of last 2 distinct errors
+    vector<int> etimeArray;             // array of times (since read) assoc with errorArray
+    int activePins[4];                  // pin numbers (intL, mainL, mainR, intR)
 
     int onTapeCounter[4];               // counts the number of consecutive onTape reads for each pin
     int offTapeCounter[4];              // counts the number of consecutive offTape reads for each pin
@@ -138,31 +139,6 @@ private:
      * param fn: reading->bool function to test on readings
      */
     bool fnAnyLastReadings(int period, readingFn_t fn);
-    
-    /*
-     * Returns true if the given reading is all false
-     */
-    static bool offTape(vector<bool> reading);
-
-    /*
-     * Returns true if both of the mains are off of the tape
-     */
-    static bool mainsOffTape(vector<bool> reading);
-
-    /*
-     * Return true if both of the intersections are off of the tape
-     */
-    static bool intsOffTape(vector<bool> reading);
-
-    /*
-     * Return true if the left intersection is on the tape
-     */
-    static bool intLOnTape(vector<bool> reading);
-
-    /*
-     * Return true if the right intersection is on the tape
-     */
-    static bool intROnTape(vector<bool> reading);
     
     /*
      * Loop function for completing a turn in a single direction.

@@ -1,16 +1,10 @@
 ///
 // PassengerSeek.cpp
 //
-#include <StandardCplusplus.h>
-#include <algorithm>
-#include <vector>
 #include <phys253.h>
 #include "pins.hpp"
 #include "myalgs.hpp"
 #include "PassengerSeek.hpp"
-
-
-using std::vector;
 
 
 const int NUM_SAVED_READINGS {24};
@@ -23,25 +17,20 @@ void PassengerSeek::init()
 {
     MinorMode::init();
 
-    using std::fill;
-
     this->approachingPassenger = false;
     this->atPassenger = false;
     this->passengerSide = 0;  // undefined
 
-    this->atMax.reset();  // reset bits to 000000
+    this->atMax.reset();              // reset bits to 000000
+    this->lastDerivPositive.reset();  // reset bits to 000000
 
     for (int i(0); i < 6; ++i) {
 	this->pinReadings[i] = 0.;
-	this->lastTimePinReadings[i] = 0.;
+	this->lastPinReadings[i] = 0.;
 	this->numAboveThreshold[i] = 0;
+	this->numPosDeriv[i] = 0;
+	this->numNegDeriv[i] = 1;
     }
-
-    for (auto &x : this->lastPinReadings)
-	fill(x.begin(), x.end(), 0.);
-
-    for (auto &x : this->lastPinReadingsDeriv)
-	fill(x.begin(), x.end(), 0.);
 }
 
 
@@ -61,22 +50,14 @@ bool PassengerSeek::atMaxSideMiddle()
 void PassengerSeek::updateMax()
 {
     for (int i(0); i < 6; ++i) {
-	bool aboveThreshold =
-	    (this->numAboveThreshold[i]) > (this->maxRegisterPeriod);
-	// determine if at a max
-	bool imax = true;
-	for (auto j(0); j < this->maxRegisterPeriod; ++j) {
-	    if (this->lastPinReadingsDeriv[j][i] >= 0) {
-		imax = false;
-		break;
-	    }
-	    if (this->lastPinReadingsDeriv[j+this->maxRegisterPeriod][i] <= 0) {
-		imax = false;
-		break;
-	    }
-	}
+	bool aboveThreshold = (
+                this->numAboveThreshold[i] >= 2*this->maxRegisterPeriod);
+	bool imax = (
+	        (!this->lastDerivPositive[i]) &&
+	        (this->numPosDeriv[i] >= this->maxRegisterPeriod) &&
+	        (this->numNegDeriv[i] >= this->maxRegisterPeriod));
 	// set array
-	this->atMax[i] = aboveThreshold && imax;
+	this->atMax[i] = static_cast<int>(aboveThreshold && imax);
     }
 }
 
@@ -88,8 +69,10 @@ PassengerSeek::PassengerSeek()
       maxRegisterThreshold (MAX_REGISTER_THRESHOLD),
       qsdPinsSides         (pins::PASSENGER_SENSORS_SIDES),
       pinReadings          {0., 0., 0., 0., 0., 0.},
-      lastPinReadings      (NUM_SAVED_READINGS,   vector<float>(6, 0.)),
-      lastPinReadingsDeriv (NUM_SAVED_READINGS-1, vector<float>(6, 0.))
+      lastPinReadings      {0., 0., 0., 0., 0., 0.},
+      numAboveThreshold    {0, 0, 0, 0, 0, 0},
+      numPosDeriv          {0, 0, 0, 0, 0, 0},
+      numNegDeriv          {0, 0, 0, 0, 0, 0}
 {
 }
 
@@ -102,27 +85,26 @@ void PassengerSeek::loop()
 {
     // Get pin readings
     for (int i(0); i < 6; ++i) {
-	this->lastTimePinReadings[i] = this->pinReadings[i];
+	this->lastPinReadings[i] = this->pinReadings[i];
 	this->pinReadings[i] = analogRead(this->qsdPinsSides[i]);
     }
     
-    // Update QSD readings array
-    std::rotate(
-            this->lastPinReadings.begin(), this->lastPinReadings.end()-1,
-	    this->lastPinReadings.end()
-    );
-    for (int i(0); i < 6; ++i)
-	this->lastPinReadings.front()[i] = this->pinReadings[i];
-
-    // Update QSD derivative array
-    std::rotate(
-            this->lastPinReadingsDeriv.begin(),
-    	    this->lastPinReadingsDeriv.end()-1,
-    	    this->lastPinReadingsDeriv.end()
-    );
-    for (auto i(0); i < 6; ++i)
-	this->lastPinReadingsDeriv.front()[i] =
-	    (this->lastPinReadings[0][i] - this->lastPinReadings[1][i]);
+    // Update derivative counts
+    for (auto i(0); i < 6; ++i) {
+	if ((this->pinReadings[i] - this->lastPinReadings[i]) <= 0) {
+	    if (this->lastDerivPositive[i])
+		this->numNegDeriv[i] = 1;
+	    else if (this->numNegDeriv[i] < this->maxRegisterPeriod)
+		this->numNegDeriv[i] += 1;
+	    this->lastDerivPositive[i] = 0;
+	} else {
+	    if (!this->lastDerivPositive[i])
+		this->numPosDeriv[i] = 1;
+	    else if (this->numPosDeriv[i] < this->maxRegisterPeriod)
+		this->numPosDeriv[i] += 1;
+	    this->lastDerivPositive = 1;
+	}
+    }
 
     // Update counters
     for (int i(0); i < 6; ++i)
