@@ -23,10 +23,6 @@ MinorMode::~MinorMode() {}
 
 void MinorMode::start()
 {
-    LCD.clear();  // TODO: remove this crap
-    LCD.print("Starting ABSmm...");
-    delay(1000);
-
     this->active = true;
 }
 
