@@ -18,35 +18,44 @@ const int innerClawSwitch = 2;
 const int dropTime = 400; // Milliseconds
 
 //SPECIFIED GAIN VALUES
-const float propGain = 6.;
+const float propGain = 10.;
+const float holdPropGain = 17.;
 const float intGain = 0.;
-const float derivGain = 0.;
+const float derivGain = 0.5;
 
 //Dynamic Control Variables
 float baseTarget, midTarget;
 float propErr, derivErr, intErr, lastPropErr;
 float angle;
+float currAngle = 0;
 float now, lastTime;
+int hasInitialized = 0;
 
 //Rest Positions
-const float baseRestPosition = 80;
-const float midRestPosition = 50;
+const float baseRestPosition = 75;
+const float midRestPosition = 120;
+const float baseHoldPosition = 85;
+const float midHoldPosition = 170;
 
-//Iterator for LCD output
-int i;
+//Iterator for LCD printing
+int LCDControl;
 
 //Stepper Constants
 const int stepperDirPin = 8;
 const int stepperPulsePin = 9;
 const int COUNTERCLOCKWISE = HIGH;
 const int CLOCKWISE = LOW;
-const int stepperMicrosDelay = 4000; //Time delay between pulses in microseconds
+const int stepperMicrosDelay = 40000; //Time delay between pulses in microseconds
+const int numPulses = 700;
 
 //reachAndGrab/reachAndDrop function Constants
-const float initialAdjMidTarget = 45;
+const float initialAdjMidTarget = 180;
 const float initialAdjBaseTarget = 40;
-const float finalAdjMidTarget = 0;
-const float finalAdjBaseTarget = 5;
+const float finalAdjMidTarget = 180;
+const float finalAdjBaseTarget = 25;
+
+//Holding a passenger?
+bool holding = false;
 
 void setup() {
   #include <phys253setup.txt>
@@ -54,10 +63,10 @@ void setup() {
   pinMode(stepperDirPin,OUTPUT);
   pinMode(stepperPulsePin,OUTPUT);
   Serial.begin(9600);
-  baseTarget = 80.;
-  midTarget = 90.;
+  baseTarget = baseRestPosition;
+  midTarget = midRestPosition;
   lastPropErr = 0.;
-  i = 1;
+  LCDControl = 1;
 }
 
 void loop() {
@@ -80,9 +89,9 @@ void loop() {
       reachAndDrop();
     }
   } else if(knob(6) > 900){
-    stepperTurn(true,10);
+    stepperTurn(true, 20);
   } else if(knob(6) < 150){
-    stepperTurn(false,10);
+    stepperTurn(false, 20);
   }
 
   if(Serial.available() > 0){
@@ -110,18 +119,18 @@ void doControl(){
   lastTime = now;
   lastPropErr = propErr;
 
-  if(i % 25 == 0){
+  
+  if(LCDControl % 25 == 0){
     printState();
-    i = 1;
+    LCDControl = 1;
   }
-  i++;
+  LCDControl++;
 }
 
 //Converts base potentiometer voltage to corresponding angle
 float getAngle() {
   float voltage = (float) analogRead(baseAnglePin) * 5./1024.;
-  return ((-142.857 * voltage) / (voltage - 5.));
-  //return ((-142.857 * voltage) / (voltage - 5.));
+  return 130.814*(3.*voltage - 10.)/(voltage-5.)+27.5;
 }
 
 //Wrapper function for setting motor speed
@@ -139,7 +148,11 @@ void setBaseMotor(int duty){
 //Returns the motor speed based on PID control
 float getControlValue(){
   float control = 0;
-  control += propGain * propErr;
+  if(holding){
+    control += holdPropGain * propErr;
+  }else{
+    control += propGain * propErr;
+  }
   control += derivGain * derivErr;
   control += intGain * intErr;
   return control;
@@ -160,22 +173,30 @@ void grabShit(){
     while(1){
       doControl();
       if(!digitalRead(catchSwitch)){
+        holding = true;
         break;
       }
       if(!digitalRead(noCatchSwitch)){
+        holding = false;
         break;
       }
       if(millis() - startTime > 2000){
+        holding = true;
         break;
       }
     }
-    motor.speed(babyMotorNum,0);
+    if(holding){
+      motor.speed(babyMotorNum,20);
+    }else{
+      dropShit();
+    }
   }
 }
 
 //Opens the claw for specified time
 void dropShit(){
   motor.speed(babyMotorNum,-140);
+  holding = false;
   delay(dropTime);
   motor.speed(babyMotorNum,0);
 }
@@ -198,17 +219,23 @@ void printState(){
 //Extends arm over two periods and calls grab function
 void reachAndGrab(){
   
-  baseTarget = initialAdjBaseTarget; 
+  //baseTarget = initialAdjBaseTarget; 
   midTarget = initialAdjMidTarget;
   unsigned long startTime = millis();
   while(millis() - startTime < 500){
     doControl();
   }
 
+  baseTarget = initialAdjBaseTarget;
+
+  while(millis() - startTime < 1000){
+    doControl();
+  }
+  
   baseTarget = finalAdjBaseTarget; 
   midTarget = finalAdjMidTarget;
   startTime = millis();
-  while(millis() - startTime < 3000){
+  while(millis() - startTime < 2500){
     doControl();
     if(!digitalRead(innerClawSwitch)){
       baseTarget = getAngle() + 5;
@@ -222,17 +249,22 @@ void reachAndGrab(){
 //equivalent to reachAndGrab, but calls drop function
 void reachAndDrop(){
   
-  baseTarget = initialAdjBaseTarget; 
+  //baseTarget = initialAdjBaseTarget; 
   midTarget = initialAdjMidTarget;
   unsigned long startTime = millis();
   while(millis() - startTime < 500){
     doControl();
   }
 
+  baseTarget = initialAdjBaseTarget;
+  while(millis() - startTime < 1000){
+    doControl();
+  }
+  
   baseTarget = finalAdjBaseTarget; 
   midTarget = finalAdjMidTarget;
   startTime = millis();
-  while(millis() - startTime < 3000){
+  while(millis() - startTime < 2500){
     doControl();
   }
   dropShit();
@@ -241,8 +273,14 @@ void reachAndDrop(){
 
 //Sets the control target values to rest position
 void setRestPosition(){
-  baseTarget = baseRestPosition;
-  midTarget = midRestPosition;
+  if(holding){
+    baseTarget = baseHoldPosition;
+    midTarget = midHoldPosition;
+  }else{
+    baseTarget = baseRestPosition;
+    midTarget = midRestPosition;
+  }
+  
 }
 
 //Turns the stepper motor a specified number of steps
@@ -252,13 +290,17 @@ void stepperTurn(bool CW,int count){
   } else{
     digitalWrite(stepperDirPin,COUNTERCLOCKWISE);
   }
+  int i;
+  unsigned long prevTime = millis();
   for(i = 0; i < count; i++){
+    if(millis() - prevTime > 10){
+      doControl();
+      prevTime = millis();
+    }
     digitalWrite(stepperPulsePin,HIGH);
-    doControl();
     delayMicroseconds(stepperMicrosDelay);
     
     digitalWrite(stepperPulsePin,LOW);
-    doControl();
     delayMicroseconds(stepperMicrosDelay);
   }
 }
@@ -268,8 +310,8 @@ void stepperTurn(bool CW,int count){
  * Parameter: grab - grab if true, drop otherwise
  */
 void turnAndReach(bool turnRight, bool grab){
-  stepperTurn(turnRight, 250);
+  stepperTurn(turnRight, numPulses);
   grab ? reachAndGrab() : reachAndDrop();
-  stepperTurn(!turnRight, 250);
+  stepperTurn(!turnRight, numPulses);
 }
 
