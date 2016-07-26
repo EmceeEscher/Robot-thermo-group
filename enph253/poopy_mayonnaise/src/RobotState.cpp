@@ -2,12 +2,8 @@
 // RobotState.cpp
 //
 #include <StandardCplusplus.h>
-#include <vector>
 #include <phys253.h>
-#include "MajorMode.hpp"
-#include "MinorMode.hpp"
 #include "allmajormodes.hpp"
-#include "debug.hpp"
 #include "RobotState.hpp"
 
 
@@ -45,7 +41,7 @@ RobotState::RobotState()
 // TODO
 RobotState::~RobotState()
 {
-    for (MajorMode *mm : this->allMajorModes)
+    for (auto *mm : this->allMajorModes)
 	delete mm;
 }
 

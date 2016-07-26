@@ -1,5 +1,5 @@
 ///
-// MUnloadPassenger.hpp
+// MDropPassenger.hpp
 //
 // Major mode for unloading passengers
 //
@@ -7,7 +7,6 @@
 #define M_DROP_PASSENGER_HPP
 
 #include "MajorMode.hpp"
-
 
 class MDropPassenger : public MajorMode
 {

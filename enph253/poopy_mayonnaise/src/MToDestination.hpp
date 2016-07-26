@@ -8,7 +8,6 @@
 
 #include "MajorMode.hpp"
 
-
 class MToDestination : public MajorMode
 {
 
@@ -40,6 +39,5 @@ public:
     bool isActive();
 
 };
-
 
 #endif  // M_TO_DESTINATION_HPP

@@ -6,7 +6,6 @@
 #ifndef CONTROL_HPP
 #define CONTROL_HPP
 
-
 namespace control
 {
 

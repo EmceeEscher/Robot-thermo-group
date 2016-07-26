@@ -7,9 +7,7 @@
 #define M_FIND_PASSENGER_HPP
 
 #include "allminormodes.hpp"
-#include "MinorMode.hpp"
 #include "MajorMode.hpp"
-
 
 class MFindPassenger : public MajorMode
 {

@@ -8,7 +8,6 @@
 
 #include "MajorMode.hpp"
 
-
 class MLoadPassenger : public MajorMode
 {
 

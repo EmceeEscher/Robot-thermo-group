@@ -2,18 +2,11 @@
 // TapeFollow.cpp
 //
 #include <StandardCplusplus.h>
-#include <vector>
-#include <algorithm>
-#include <string>
 #include <phys253.h>
-#include "myalgs.hpp"
 #include "pins.hpp"
 #include "Direction.hpp"
 #include "debug.hpp"
 #include "TapeFollow.hpp"
-
-
-using std::vector;
 
 
 const int MOTOR_SPEED_FOLLOWING      {120};

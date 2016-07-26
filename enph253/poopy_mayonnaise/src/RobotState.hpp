@@ -12,11 +12,8 @@
 #include "MajorMode.hpp"
 #include "MinorMode.hpp"
 
-
 using std::vector;
 
-
-// TODO
 class RobotState
 {
 

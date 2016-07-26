@@ -6,8 +6,6 @@
 #ifndef PINS_HPP
 #define PINS_HPP
 
-#include <StandardCplusplus.h>
-
 namespace pins
 {
     // Knobs
