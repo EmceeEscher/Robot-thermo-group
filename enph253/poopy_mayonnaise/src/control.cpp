@@ -20,7 +20,7 @@ void control::setup() {
     LCD.print("THE GOLDEN PEPE");
     delay(500);
     LCD.clear();
-    LCD.print("Hfeflflfo!");
+    LCD.print("Hfeflflfo, LSD!");
     LCD.setCursor(0, 1);
     LCD.print("Feels good man!");
     delay(500);
