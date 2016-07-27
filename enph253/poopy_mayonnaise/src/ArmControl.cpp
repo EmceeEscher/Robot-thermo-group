@@ -112,29 +112,6 @@ ArmControl::ArmControl()
 void ArmControl::loop() {
   doControl();
 
-  if(startbutton()){
-    if(knob(7) > 900){
-      turnAndReach(true,true);
-    } else if(knob(7) < 150){
-      turnAndReach(false,true);
-    } else{
-      reachAndClaw(true);
-    }
-  } else if (stopbutton()){
-    if(knob(7) > 900){
-      turnAndReach(true,false);
-    } else if(knob(7) < 150){
-      turnAndReach(false,false);
-    } else{
-      reachAndClaw(false);
-    }
-  } else if(knob(6) > 900){
-    stepperTurn(true, 20);
-  } else if(knob(6) < 150){
-    stepperTurn(false, 20);
-  }
-
-
   delay(10);
 }
 
