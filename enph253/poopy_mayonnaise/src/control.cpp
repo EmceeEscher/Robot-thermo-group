@@ -17,12 +17,14 @@ void control::setup() {
     Serial.begin(9600);
     randomSeed(analogRead(0));
     LCD.clear();
-    LCD.print("THE GOLDEN PEPE");
+    LCD.print("Beefing tears of");
+    LCD.setCursor(0, 1);
+    LCD.print("soy from my     ");
     delay(500);
     LCD.clear();
-    LCD.print("Hfeflflfo, LSD!");
+    LCD.print("heart of cold   ");
     LCD.setCursor(0, 1);
-    LCD.print("Feels good man!");
+    LCD.print("aardvark fluids!");
     delay(500);
     LCD.clear();
     LCD.print("Press START to");
