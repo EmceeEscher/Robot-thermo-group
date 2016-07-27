@@ -1,7 +1,6 @@
 ///
 // RobotState.cpp
 //
-#include <StandardCplusplus.h>
 #include <phys253.h>
 #include "allmajormodes.hpp"
 #include "allminormodes.hpp"
@@ -22,22 +21,19 @@ void RobotState::init()
 RobotState::RobotState()
     : mainLoopDelay(MAIN_LOOP_DELAY)
 {
-    LCD.clear();
     // Minor modes
-    LCD.print("0");
-    TapeFollow     *mmTapeFollow     = new TapeFollow;
+    TapeFollow *mmTapeFollow = new TapeFollow;
     this->allMinorModes.push_back(mmTapeFollow);
 
-    LCD.print("1");
-    PassengerSeek  *mmPassengerSeek  = new PassengerSeek;
+
+    PassengerSeek *mmPassengerSeek = new PassengerSeek;
     this->allMinorModes.push_back(mmPassengerSeek);
 
-    LCD.print("2");
+
     CollisionWatch *mmCollisionWatch = new CollisionWatch;
     this->allMinorModes.push_back(mmCollisionWatch);
    
     // Major modes
-    LCD.print("3");
     this->mFindPassenger = new MFindPassenger(
             mmTapeFollow,
 	    mmPassengerSeek,
@@ -46,7 +42,6 @@ RobotState::RobotState()
     this->allMajorModes.push_back(this->mFindPassenger);
     
     // Initialization
-    LCD.print("4");
     this->init();
 }
 

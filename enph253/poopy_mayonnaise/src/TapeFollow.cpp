@@ -1,7 +1,6 @@
 ///
 // TapeFollow.cpp
 //
-#include <StandardCplusplus.h>
 #include <phys253.h>
 #include "pins.hpp"
 #include "Direction.hpp"
@@ -339,6 +338,11 @@ TapeFollow::TapeFollow()
       motorSpeedReverse          (MOTOR_SPEED_REVERSE),
       motorSpeedFollowing        (MOTOR_SPEED_FOLLOWING)
 {
+    LCD.clear();
+    LCD.print("TapeFollow");
+    LCD.setCursor(0, 1);
+    LCD.print("constructor");
+    delay(1000);
     this->init();
 }
 
