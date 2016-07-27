@@ -1,7 +1,7 @@
 #include <phys253.h>
 #include <phys253pins.h>
 
-const int motorNum = 1;
+const int motorNum = 0;
 int pwm;
 
 void setup() {
