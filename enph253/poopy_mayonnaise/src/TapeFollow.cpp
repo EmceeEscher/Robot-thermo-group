@@ -32,6 +32,10 @@ const int TURN_WAIT_PERIOD        {45};
 const int OFF_TAPE_PERIOD         {50};
 const int ON_TAPE_PERIOD          {10};
 const int INTERSECT_DELAY_PERIOD {100};
+const int TapeFollow::motorPinL         {pins::MOTOR_PIN_L};
+const int TapeFollow::motorPinR         {pins::MOTOR_PIN_R};
+const int *TapeFollow::tapeSensorsFront {pins::TAPE_SENSORS_FRONT};
+const int *TapeFollow::tapeSensorsBack  {pins::TAPE_SENSORS_BACK};
 
 
 void TapeFollow::init()
@@ -68,7 +72,7 @@ void TapeFollow::init()
 	this->onTapeCounter[i] = 0;
 	this->offTapeCounter[i] = 0;
 	// assign active pins
-	this->activePins[i] = this->tapeSensorsFront[i];
+	this->activePins[i] = TapeFollow::tapeSensorsFront[i];
     }
 
     // declare active pins as inputs
@@ -288,10 +292,6 @@ void TapeFollow::printLCD()
 
 TapeFollow::TapeFollow()
     : MinorMode(),
-      motorPinL        (pins::MOTOR_PIN_L),
-      motorPinR        (pins::MOTOR_PIN_R),
-      tapeSensorsFront (pins::TAPE_SENSORS_FRONT),
-      tapeSensorsBack  (pins::TAPE_SENSORS_BACK),
       gainProp         (GAIN_PROP),
       gainDer1         (GAIN_DER1),
       gainDer2         (GAIN_DER2),
@@ -469,11 +469,11 @@ void TapeFollow::loop()
 
     // adjust motor speed
     if (this->motorsActive) {
-	motor.speed(this->motorPinL, dSpeed - this->motorSpeed);
-	motor.speed(this->motorPinR, dSpeed + this->motorSpeed);
+	motor.speed(TapeFollow::motorPinL, dSpeed - this->motorSpeed);
+	motor.speed(TapeFollow::motorPinR, dSpeed + this->motorSpeed);
     } else {
-	motor.speed(this->motorPinL, 0);
-	motor.speed(this->motorPinR, 0);
+	motor.speed(TapeFollow::motorPinL, 0);
+	motor.speed(TapeFollow::motorPinR, 0);
     }
 
     // increase time counters

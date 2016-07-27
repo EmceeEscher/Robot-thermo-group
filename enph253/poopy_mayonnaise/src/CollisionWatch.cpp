@@ -9,6 +9,7 @@
 
 
 const int COLLISION_DETECT_PERIOD {5};
+const int *CollisionWatch::sensorPins {pins::COLLISION_SENSORS};
 
 
 void CollisionWatch::init()
@@ -23,7 +24,6 @@ void CollisionWatch::init()
 
 CollisionWatch::CollisionWatch()
     : MinorMode(),
-      sensorPins(pins::COLLISION_SENSORS),
       collisionDetectPeriod(COLLISION_DETECT_PERIOD)
 {
     this->init();

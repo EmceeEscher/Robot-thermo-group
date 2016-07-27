@@ -21,10 +21,10 @@ class TapeFollow : public MinorMode
 
 private:
 
-    const int motorPinL;
-    const int motorPinR;
-    const int *tapeSensorsFront;
-    const int *tapeSensorsBack;
+    static const int motorPinL;
+    static const int motorPinR;
+    static const int *tapeSensorsFront;
+    static const int *tapeSensorsBack;
 
     float gainProp;                        // TODO: set const; set based on knobs for now
     float gainDer1;                        // TODO: set const; set based on knobs for now
