@@ -107,8 +107,5 @@ void RobotState::test()
     LCD.print("TESTING...");
     delay(1000);
     this->active = true;
-    // for now, test active major mode
-    for (auto *m : this->allMajorModes)
-	if (m->isActive())
-	    m->test();
+    this->currentMajorMode->test();
 }

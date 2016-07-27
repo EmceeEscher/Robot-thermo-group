@@ -72,7 +72,7 @@ void TapeFollow::init()
 	this->onTapeCounter[i] = 0;
 	this->offTapeCounter[i] = 0;
 	// assign active pins
-	this->activePins[i] = this->tapeSensorsFront[i];
+	this->activePins[i] = TapeFollow::tapeSensorsFront[i];
     }
 
     // declare active pins as inputs
@@ -469,11 +469,11 @@ void TapeFollow::loop()
 
     // adjust motor speed
     if (this->motorsActive) {
-	motor.speed(this->motorPinL, dSpeed - this->motorSpeed);
-	motor.speed(this->motorPinR, dSpeed + this->motorSpeed);
+	motor.speed(TapeFollow::motorPinL, dSpeed - this->motorSpeed);
+	motor.speed(TapeFollow::motorPinR, dSpeed + this->motorSpeed);
     } else {
-	motor.speed(this->motorPinL, 0);
-	motor.speed(this->motorPinR, 0);
+	motor.speed(TapeFollow::motorPinL, 0);
+	motor.speed(TapeFollow::motorPinR, 0);
     }
 
     // increase time counters
