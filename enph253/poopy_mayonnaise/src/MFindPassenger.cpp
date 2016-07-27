@@ -14,19 +14,21 @@ void MFindPassenger::init()
 
 
 // TODO
-MFindPassenger::MFindPassenger()
-    : MajorMode()
+MFindPassenger::MFindPassenger(
+        TapeFollow     *mmTapeFollow,
+	PassengerSeek  *mmPassengerSeek,
+	CollisionWatch *mmCollisionWatch
+)
+    : MajorMode(),
+      mmTapeFollow(mmTapeFollow),
+      mmPassengerSeek(mmPassengerSeek),
+      mmCollisionWatch(mmCollisionWatch)
 {
     this->init();
 
     // TODO: initialize specific minor modes
-    this->mmTapeFollow = new TapeFollow;
     this->allMinorModes.push_back(mmTapeFollow);
-
-    this->mmCollisionWatch = new CollisionWatch;
     this->allMinorModes.push_back(mmCollisionWatch);
-
-    this->mmPassengerSeek = new PassengerSeek;
     this->allMinorModes.push_back(mmPassengerSeek);
 
 }
