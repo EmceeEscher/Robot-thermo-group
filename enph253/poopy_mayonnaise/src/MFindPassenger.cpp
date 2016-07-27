@@ -80,6 +80,5 @@ void MFindPassenger::start()
 void MFindPassenger::test()
 {
     MajorMode::test();
-
     this->mmTapeFollow->test();
 }

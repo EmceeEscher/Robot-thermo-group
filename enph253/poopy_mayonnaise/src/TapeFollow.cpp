@@ -54,7 +54,7 @@ void TapeFollow::init()
     this->control             = 0;
     this->printCount          = 0;
     this->motorSpeedFollowing = this->motorSpeedFollowingDefault;
-    this->motorSpeed          = this->motorSpeedFollowing;
+    this->motorSpeed          = 0;
     this->tapeFollowSteps     = 0;
 
     this->lastError           = 0.;
@@ -111,10 +111,10 @@ void TapeFollow::intersectionSeen()
 void TapeFollow::intersectionDetection()
 {
     // declare static variables (runs once)
-    const static bool &intersectL = this->pinReadings[0];
-    const static bool &mainL      = this->pinReadings[1];
-    const static bool &mainR      = this->pinReadings[2];
-    const static bool &intersectR = this->pinReadings[3];
+    bool intersectL = this->pinReadings[0];
+    bool mainL      = this->pinReadings[1];
+    bool mainR      = this->pinReadings[2];
+    bool intersectR = this->pinReadings[3];
 
     // check if intersections seen
     this->intersectionSeen();
@@ -147,13 +147,15 @@ void TapeFollow::intersectionDetection()
 float TapeFollow::followTape()
 {
     // declare static variables (runs once)
-    const static bool &intersectL = this->pinReadings[0];
-    const static bool &mainL      = this->pinReadings[1];
-    const static bool &mainR      = this->pinReadings[2];
-    const static bool &intersectR = this->pinReadings[3];
+    bool intersectL = this->pinReadings[0];
+    bool mainL      = this->pinReadings[1];
+    bool mainR      = this->pinReadings[2];
+    bool intersectR = this->pinReadings[3];
 
     if (this->tapeFollowSteps > this->intersectDelay)
 	this->intersectionDetection();
+
+    float error(0.);
 
     // determine error
     if (mainL && mainR) {                    // both pins over tape
@@ -173,6 +175,27 @@ float TapeFollow::followTape()
     } else {
 	return 0.;
     }
+
+    // LCD.clear();
+    // for (int i(0); i < 4; ++i) {
+    // 	LCD.print(" ");
+    // 	LCD.print(this->pinReadings[i]);
+    // }
+
+    // LCD.print(" ");
+    // LCD.print(intersectL);
+    // LCD.print(" ");
+    // LCD.print(mainL);
+    // LCD.print(" ");
+    // LCD.print(mainR);
+    // LCD.print(" ");
+    // LCD.print(intersectR);
+
+    // LCD.setCursor(0, 1);
+    // LCD.print(error);
+    // delay(500);
+
+    // return error;
 }
 
 

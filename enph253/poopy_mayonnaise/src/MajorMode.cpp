@@ -51,6 +51,7 @@ void MajorMode::pause()
 
 void MajorMode::test()
 {
+    this->pause();
     this->active = true;
 }
 
