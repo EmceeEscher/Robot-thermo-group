@@ -37,15 +37,16 @@ RobotState::RobotState()
     this->allMinorModes.push_back(mmCollisionWatch);
    
     // Major modes
-    LCD
+    LCD.print("3");
     this->mFindPassenger = new MFindPassenger(
             mmTapeFollow,
 	    mmPassengerSeek,
 	    mmCollisionWatch
     );
     this->allMajorModes.push_back(this->mFindPassenger);
-
+    
     // Initialization
+    LCD.print("4");
     this->init();
 }
 
