@@ -56,8 +56,6 @@ private:
     //Stepper Constants
     const int stepperDirPin;
     const int stepperPulsePin;
-    const int COUNTERCLOCKWISE;
-    const int CLOCKWISE;
     const int stepperMicrosDelay; //Time delay between pulses in microseconds
     const int numPulses;
 

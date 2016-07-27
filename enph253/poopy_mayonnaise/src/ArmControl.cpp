@@ -68,8 +68,8 @@ void ArmControl::init() {
   pinMode(STEPPER_DIR_PIN,OUTPUT);
   pinMode(STEPPER_PULSE_PIN,OUTPUT);
   Serial.begin(9600);
-  this->baseTarget = this->BASE_REST_POSITION;
-  this->midTarget = this->MID_REST_POSITION;
+  this->baseTarget = this->baseRestPosition;
+  this->midTarget = this->midRestPosition;
   this->lastPropErr = 0.;
   this->LCDControl = 1;
 }
@@ -102,6 +102,9 @@ ArmControl::ArmControl()
 	  innerClawSwitch(INNER_CLAW_SWITCH),
 	  stepperDirPin(STEPPER_DIR_PIN),
 	  stepperPulsePin(STEPPER_PULSE_PIN)
+	  {
+      this->init();
+	  }
 	  
 	  
 	  
