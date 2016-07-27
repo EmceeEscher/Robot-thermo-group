@@ -61,7 +61,7 @@ private:
     const int stepperMicrosDelay; //Time delay between pulses in microseconds
     const int numPulses;
 
-    //reachAndGrab/reachAndDrop function Constants
+    //reachAndClaw/reachAndDrop function Constants
     const float initialAdjMidTarget;
     const float initialAdjBaseTarget;
     const float finalAdjMidTarget;
@@ -94,8 +94,40 @@ public:
      */
     void doControl();
     
+	/*
+	//Converts base potentiometer voltage to corresponding angle
+	*/
+	float getAngle();
+
+	//Wrapper function for setting motor speed
+	//Prevents values larger than 255 in either direction
+	void setBaseMotor(int duty);
     
-}	
+	//Returns the motor speed based on PID control
+	float getControlValue();
+
+	//Closes the claw until something is detected in claw, the claw
+	//closes on itself or a timeout is reached
+	void grabShit();
+
+	//Opens the claw for specified time
+	void dropShit();
+
+	//Extends arm over two periods and either grabs or drops
+	void reachAndClaw(bool grabbing);
+
+	//Sets the control target values to rest position
+	void setRestPosition();
+
+	//Turns the stepper motor a specified number of steps
+	void stepperTurn(bool CW, int count);
+
+	/*
+	* Parameter: turnRight - Turn right if true, left otherwise
+	* Parameter: grab - grab if true, drop otherwise
+	*/
+	void turnAndReach(bool turnRight, bool grab);
+};
 
 
 #endif //ARM_CONTROL_HPP
