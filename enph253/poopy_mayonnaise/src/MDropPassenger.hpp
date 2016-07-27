@@ -6,6 +6,7 @@
 #ifndef M_DROP_PASSENGER_HPP
 #define M_DROP_PASSENGER_HPP
 
+#include "allminormodes.hpp"
 #include "MajorMode.hpp"
 
 class MDropPassenger : public MajorMode
@@ -13,6 +14,11 @@ class MDropPassenger : public MajorMode
 
 private:
 
+    // Named minor modes
+    ArmControl      *mmArmControl;
+    CollisionWatch  *mmCollisionWatch;
+    DetectBeacon    *mmDetectBeacon;
+      
     /*
      * (Re)initialize state variables
      */

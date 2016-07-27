@@ -35,6 +35,7 @@ void MLoadPassenger::loop()
 {
   if(this->mmCollisionWatch->collisionHasOccurred()){
     //TODO: figure out what to do other than panic
+    //UPDATE: just fucking ignore it
   }
 
   if(this->mmPassengerSeek->isAtPassenger()){
