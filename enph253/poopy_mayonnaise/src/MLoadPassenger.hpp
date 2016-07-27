@@ -17,6 +17,7 @@ private:
     // Named minor modes
     ArmControl      *mmArmControl;
     CollisionWatch  *mmCollisionWatch;
+    PassengerSeek   *mmPassengerSeek;
     
     /*
      * (Re)initialize state variables
