@@ -6,6 +6,7 @@
 #ifndef M_LOAD_PASSENGER_HPP
 #define M_LOAD_PASSENGER_HPP
 
+#include "allminormodes.hpp"
 #include "MajorMode.hpp"
 
 class MLoadPassenger : public MajorMode
@@ -13,6 +14,10 @@ class MLoadPassenger : public MajorMode
 
 private:
 
+    // Named minor modes
+    ArmControl      *mmArmControl;
+    CollisionWatch  *mmCollisionWatch;
+    
     /*
      * (Re)initialize state variables
      */
@@ -25,6 +30,8 @@ public:
     ~MLoadPassenger();  // deconstructor
 
     void loop();
+
+    void start();
 
     void test();
 

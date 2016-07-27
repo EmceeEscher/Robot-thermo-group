@@ -9,5 +9,6 @@
 #include "TapeFollow.hpp"
 #include "PassengerSeek.hpp"
 #include "CollisionWatch.hpp"
+#include "ArmControl.hpp"
 
 #endif  // ALLMINORMODES_HPP

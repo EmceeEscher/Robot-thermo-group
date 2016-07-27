@@ -309,3 +309,8 @@ void ArmControl::turnAndReach(bool turnRight, bool grab){
   reachAndClaw(grab);
   stepperTurn(!turnRight, NUM_PULSES);
 }
+
+bool isHolding(){
+  return holding;
+}
+

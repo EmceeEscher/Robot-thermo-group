@@ -125,6 +125,12 @@ public:
 	* Parameter: grab - grab if true, drop otherwise
 	*/
 	void turnAndReach(bool turnRight, bool grab);
+
+  /*
+   * Returns true if the robot is currently holding a doll,
+   * false otherwise
+   */
+  bool isHolding();
 };
 
 
