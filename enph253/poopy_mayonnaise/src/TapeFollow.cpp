@@ -32,12 +32,10 @@ const int TURN_WAIT_PERIOD        {45};
 const int OFF_TAPE_PERIOD         {50};
 const int ON_TAPE_PERIOD          {10};
 const int INTERSECT_DELAY_PERIOD {100};
-
-
-int TapeFollow::motorPinL         (pins::MOTOR_PIN_L);
-int TapeFollow::motorPinR         (pins::MOTOR_PIN_R);
-int TapeFollow::tapeSensorsFront (pins::TAPE_SENSORS_FRONT);
-int TapeFollow::tapeSensorsBack  (pins::TAPE_SENSORS_BACK),
+const int TapeFollow::motorPinL         {pins::MOTOR_PIN_L};
+const int TapeFollow::motorPinR         {pins::MOTOR_PIN_R};
+const int *TapeFollow::tapeSensorsFront {pins::TAPE_SENSORS_FRONT};
+const int *TapeFollow::tapeSensorsBack  {pins::TAPE_SENSORS_BACK};
 
 
 void TapeFollow::init()

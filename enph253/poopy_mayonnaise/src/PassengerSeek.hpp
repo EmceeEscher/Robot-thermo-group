@@ -17,9 +17,10 @@ class PassengerSeek : public MinorMode
 
 private:
 
+    static const int *qsdPinsSides;            // left-back, left-mid, left-front, right-front, right-mid, right-back
+
     const int maxRegisterPeriod;        // number of consecutive (+) derivatives to be increasing and (-) derivative to be decreasing
     const float maxRegisterThreshold;   // threshold that readings must be above to register
-    const int *qsdPinsSides;            // left-back, left-mid, left-front, right-front, right-mid, right-back
     
     bool approachingPassenger;          // true when approaching a passenger
     bool atPassenger;                   // true when adjacent to a passenger
