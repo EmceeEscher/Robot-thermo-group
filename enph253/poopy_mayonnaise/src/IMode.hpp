@@ -12,7 +12,7 @@ class IMode
 
 public:
 
-    ~IMode() {}
+    virtual ~IMode() {}
 
     /*
      * Major loop function for mode

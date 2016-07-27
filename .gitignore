@@ -17,3 +17,5 @@ enph253/*/*.py
 */*/CMakeLists.txt
 enph253/poopy_mayonnaise/src/Tests/*/Makefile
 enph253/poopy_mayonnaise/notes/*
+*.out
+*.gch
