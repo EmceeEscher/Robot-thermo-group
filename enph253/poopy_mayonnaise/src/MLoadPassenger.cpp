@@ -22,6 +22,9 @@ MLoadPassenger::MLoadPassenger()
 
   this->mmCollisionWatch = new CollisionWatch;
   this->allMinorModes.push_back(mmCollisionWatch);
+
+  this->mmPassengerSeek = new PassengerSeek;
+  this->allMinorModes.push_back(mmPassengerSeek);
 }
 
 
@@ -34,14 +37,20 @@ void MLoadPassenger::loop()
     //TODO: figure out what to do other than panic
   }
 
-  if(true/*this->mmArmControl->onLeft*/){
-    this->mmArmControl->turnAndReach(true, true);
-  }else{
-    this->mmArmControl->turnAndReach(false, true);
-  }
-  if(this->mmArmControl->isHolding()){
+  if(this->mmPassengerSeek->isAtPassenger()){
+    if(this->mmPassengerSeek->getPassengerSide() == 1){
+      this->mmArmControl->turnAndReach(true, true);
+    }else if(this->mmPassengerSeek->getPassengerSide() == -1){
+      this->mmArmControl->turnAndReach(false, true);
+    }
+    if(this->mmArmControl->isHolding()){
     //switch major mode to MToDestination
-  }else{
+    }
+    else{
+      //reposition
+    }
+  }
+  else{
     //reposition
   }
   

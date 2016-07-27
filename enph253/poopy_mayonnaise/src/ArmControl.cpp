@@ -64,9 +64,9 @@ void ArmControl::init() {
 
   
   #include <phys253setup.txt>
-  portMode(1,OUTPUT);
-  pinMode(STEPPER_DIR_PIN,OUTPUT);
-  pinMode(STEPPER_PULSE_PIN,OUTPUT);
+  //portMode(1,OUTPUT);
+  pinMode(stepperDirPin,OUTPUT);
+  pinMode(stepperPulsePin,OUTPUT);
   Serial.begin(9600);
   this->baseTarget = this->baseRestPosition;
   this->midTarget = this->midRestPosition;
@@ -94,14 +94,14 @@ ArmControl::ArmControl()
 	  finalAdjBaseTarget(FINAL_ADJ_BASE_TARGET),
 	  
 	  //pin constants
-	  baseAnglePin(BASE_ANGLE_PIN),
-	  baseMotorNumber(BASE_MOTOR_NUMBER),
-	  babyMotorNum(BABY_MOTOR_NUM),
-	  catchSwitch(CATCH_SWITCH),
-	  noCatchSwitch(NO_CATCH_SWITCH),
-	  innerClawSwitch(INNER_CLAW_SWITCH),
-	  stepperDirPin(STEPPER_DIR_PIN),
-	  stepperPulsePin(STEPPER_PULSE_PIN)
+	  baseAnglePin(pins::POTENTIOMETER),
+	  baseMotorNumber(pins::MOTOR_PIN_ARM),
+	  babyMotorNum(pins::MOTOR_PIN_BABY),
+	  catchSwitch(pins::ARM_SWITCHES[0]),
+	  noCatchSwitch(pins::ARM_SWITCHES[1]),
+	  innerClawSwitch(pins::ARM_SWITCHES[2]),
+	  stepperDirPin(pins::DIR_PIN),
+	  stepperPulsePin(pins::PULSE_PIN)
 	  {
       this->init();
 	  }
@@ -134,12 +134,13 @@ void ArmControl::doControl(){
   lastTime = now;
   lastPropErr = propErr;
 
-  
+  /*
   if(LCDControl % 25 == 0){
     //printState();
     LCDControl = 1;
   }
   LCDControl++;
+  */
 }
 
 //Converts base potentiometer voltage to corresponding angle
