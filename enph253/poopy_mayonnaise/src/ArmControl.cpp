@@ -4,19 +4,6 @@
 #include "pins.hpp"
 #include "ArmControl.hpp"
 
-//Analog pin for base angle potentiometer signal
-const int BASE_ANGLE_PIN = 0;
-//Base GBBC motor output number
-const int BASE_MOTOR_NUMBER = 0;
-
-//Claw's Baby Motor output number
-const int BABY_MOTOR_NUM = 1;
-//Digital pin indicating a successfully caught animal
-const int CATCH_SWITCH = 0;
-//Digital pin indicating a claw closing on itself
-const int NO_CATCH_SWITCH = 1;
-//Digital pin to detect when an animal is in the claw
-const int INNER_CLAW_SWITCH = 2;
 //Amount of time to run motor to drop animal
 const int DROP_TIME = 400; // Milliseconds
 
@@ -40,12 +27,10 @@ const float MID_REST_POSITION = 120;
 const float BASE_HOLD_POSITION = 85;
 const float MID_HOLD_POSITION = 170;
 
-//Iterator for LCD printing
-int LCDControl;
+//Iterator for LCD printing, not currently used
+//int LCDControl;
 
 //Stepper Constants
-const int STEPPER_DIR_PIN = 8;
-const int STEPPER_PULSE_PIN = 9;
 const int COUNTERCLOCKWISE = HIGH;
 const int CLOCKWISE = LOW;
 const int STEPPER_MICROS_DELAY = 40000; //Time delay between pulses in microseconds
@@ -145,7 +130,7 @@ void ArmControl::doControl(){
 
 //Converts base potentiometer voltage to corresponding angle
 float ArmControl::getAngle() {
-  float voltage = (float) analogRead(BASE_ANGLE_PIN) * 5./1024.;
+  float voltage = (float) analogRead(this->baseAnglePin) * 5./1024.;
   return 130.814*(3.*voltage - 10.)/(voltage-5.)+27.5;
 }
 
@@ -158,19 +143,19 @@ void ArmControl::setBaseMotor(int duty){
   else if(duty < -255){
     duty = -255;
   }
-  motor.speed(BASE_MOTOR_NUMBER,duty);
+  motor.speed(this->baseMotorNumber,duty);
 }
 
 //Returns the motor speed based on PID control
 float ArmControl::getControlValue(){
   float control = 0;
   if(holding){
-    control += HOLD_PROP_GAIN * propErr;
+    control += this->holdPropGain * propErr;
   }else{
-    control += PROP_GAIN * propErr;
+    control += this->propGain * propErr;
   }
-  control += DERIV_GAIN * derivErr;
-  control += INT_GAIN * intErr;
+  control += this->derivGain * derivErr;
+  control += this->intGain * intErr;
   return control;
 }
 
@@ -179,20 +164,20 @@ float ArmControl::getControlValue(){
 void ArmControl::grabShit(){
 
   //If switches are already triggered, then do nothing
-  if(!digitalRead(CATCH_SWITCH) || !digitalRead(NO_CATCH_SWITCH)){}
+  if(!digitalRead(this->catchSwitch) || !digitalRead(this->noCatchSwitch)){}
   
   else{
     LCD.clear();
     LCD.print("Grabbing");
-    motor.speed(BABY_MOTOR_NUM,140);
+    motor.speed(this->babyMotorNum,140);
     unsigned long startTime = millis();
     while(1){
       doControl();
-      if(!digitalRead(CATCH_SWITCH)){
+      if(!digitalRead(this->catchSwitch)){
         holding = true;
         break;
       }
-      if(!digitalRead(NO_CATCH_SWITCH)){
+      if(!digitalRead(this->noCatchSwitch)){
         holding = false;
         break;
       }
@@ -202,7 +187,7 @@ void ArmControl::grabShit(){
       }
     }
     if(holding){
-      motor.speed(BABY_MOTOR_NUM,20);
+      motor.speed(this->babyMotorNum,20);
     }else{
       dropShit();
     }
@@ -211,10 +196,10 @@ void ArmControl::grabShit(){
 
 //Opens the claw for specified time
 void ArmControl::dropShit(){
-  motor.speed(BABY_MOTOR_NUM,-140);
+  motor.speed(this->babyMotorNum,-140);
   holding = false;
-  delay(DROP_TIME);
-  motor.speed(BABY_MOTOR_NUM,0);
+  delay(this->dropTime);
+  motor.speed(this->babyMotorNum,0);
 }
 
 /*//Function to update the LCD periodically
@@ -235,25 +220,24 @@ void printState(){
 //Extends arm over two periods and either grabs or drops
 void ArmControl::reachAndClaw(bool grabbing){
   
-  //baseTarget = INITIAL_ADJ_BASE_TARGET; 
-  midTarget = INITIAL_ADJ_MID_TARGET;
+  midTarget = this->initialAdjMidTarget;
   unsigned long startTime = millis();
   while(millis() - startTime < 500){
     doControl();
   }
 
-  baseTarget = INITIAL_ADJ_BASE_TARGET;
+  baseTarget = this->initialAdjBaseTarget;
 
   while(millis() - startTime < 1000){
     doControl();
   }
   
-  baseTarget = FINAL_ADJ_BASE_TARGET; 
-  midTarget = FINAL_ADJ_MID_TARGET;
+  baseTarget = this->finalAdjBaseTarget; 
+  midTarget = this->finalAdjMidTarget;
   startTime = millis();
   while(millis() - startTime < 2500){
     doControl();
-    if(!digitalRead(INNER_CLAW_SWITCH)){
+    if(!digitalRead(this->innerClawSwitch)){
       baseTarget = getAngle() + 5;
       break;
     }
@@ -270,11 +254,11 @@ void ArmControl::reachAndClaw(bool grabbing){
 //Sets the control target values to rest position
 void ArmControl::setRestPosition(){
   if(holding){
-    baseTarget = BASE_HOLD_POSITION;
-    midTarget = MID_HOLD_POSITION;
+    baseTarget = this->baseHoldPosition;
+    midTarget = this->midHoldPosition;
   }else{
-    baseTarget = BASE_REST_POSITION;
-    midTarget = MID_REST_POSITION;
+    baseTarget = this->baseRestPosition;
+    midTarget = this->midRestPosition;
   }
   
 }
@@ -282,9 +266,9 @@ void ArmControl::setRestPosition(){
 //Turns the stepper motor a specified number of steps
 void ArmControl::stepperTurn(bool CW,int count){
   if(CW){
-    digitalWrite(STEPPER_DIR_PIN,CLOCKWISE);
+    digitalWrite(this->stepperDirPin,CLOCKWISE);
   } else{
-    digitalWrite(STEPPER_DIR_PIN,COUNTERCLOCKWISE);
+    digitalWrite(this->stepperDirPin,COUNTERCLOCKWISE);
   }
   int i;
   unsigned long prevTime = millis();
@@ -293,11 +277,11 @@ void ArmControl::stepperTurn(bool CW,int count){
       doControl();
       prevTime = millis();
     }
-    digitalWrite(STEPPER_PULSE_PIN,HIGH);
-    delayMicroseconds(STEPPER_MICROS_DELAY);
+    digitalWrite(this->stepperPulsePin,HIGH);
+    delayMicroseconds(this->stepperMicrosDelay);
     
-    digitalWrite(STEPPER_PULSE_PIN,LOW);
-    delayMicroseconds(STEPPER_MICROS_DELAY);
+    digitalWrite(this->stepperPulsePin,LOW);
+    delayMicroseconds(this->stepperMicrosDelay);
   }
 }
 
@@ -306,9 +290,9 @@ void ArmControl::stepperTurn(bool CW,int count){
  * Parameter: grab - grab if true, drop otherwise
  */
 void ArmControl::turnAndReach(bool turnRight, bool grab){
-  stepperTurn(turnRight, NUM_PULSES);
+  stepperTurn(turnRight, this->numPulses);
   reachAndClaw(grab);
-  stepperTurn(!turnRight, NUM_PULSES);
+  stepperTurn(!turnRight, this->numPulses);
 }
 
 bool isHolding(){
