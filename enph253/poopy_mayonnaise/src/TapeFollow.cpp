@@ -156,45 +156,21 @@ float TapeFollow::followTape()
 	this->intersectionDetection();
 
     // determine error
-    delay(1000);  // TODO: remove
-    LCD.clear();  // TODO: remove
     if (mainL && mainR) {                    // both pins over tape
-	LCD.print("0110");
 	return 0.;
     } else if (mainL) {                       // left main over tape
-	LCD.print(" 10 ");
-	LCD.setCursor(0, 1);
-	LCD.print("Small error");
 	return this->errorSmall;
     } else if (mainR) {                       // right main over tape
-	LCD.print(" 01 ");
-	LCD.setCursor(0, 1);
-	LCD.print("Small error");
 	return -this->errorSmall;
     } else if (intersectL && (!intersectR)) {  // left intersection over tape
-	LCD.print("1000");
-	LCD.setCursor(0, 1);
-	LCD.print("Medium error");
 	return this->errorMedium;
     } else if (intersectR && (!intersectL)) { // right intersection over tape
-	LCD.print("0001");
-	LCD.setCursor(0, 1);
-	LCD.print("Medium error");
 	return -this->errorMedium;
     } else if (this->lastError < 0.) {        // off tape to the right
-	LCD.print("0000");
-	LCD.setCursor(0, 1);
-	LCD.print("Large error");
 	return -this->errorLarge;
     } else if (this->lastError > 0.) {        // off tape to the left
-	LCD.print("0000");
-	LCD.setCursor(0, 1);
-	LCD.print("Large error");
 	return this->errorLarge;
     } else {
-	LCD.print("0000");
-	LCD.setCursor(0, 1);
-	LCD.print("No error");
 	return 0.;
     }
 }
@@ -338,11 +314,6 @@ TapeFollow::TapeFollow()
       motorSpeedReverse          (MOTOR_SPEED_REVERSE),
       motorSpeedFollowing        (MOTOR_SPEED_FOLLOWING)
 {
-    LCD.clear();
-    LCD.print("TapeFollow");
-    LCD.setCursor(0, 1);
-    LCD.print("constructor");
-    delay(1000);
     this->init();
 }
 
@@ -354,11 +325,6 @@ void TapeFollow::loop()
 {
     if (!this->active)
 	return;
-
-    delay(500);
-    LCD.clear();
-    LCD.print("Hfeflflfo!");
-    delay(1000);
 
     if (this->printCount % this->printPeriod == 0) {
 	this->printLCD();
