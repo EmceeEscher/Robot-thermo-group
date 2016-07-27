@@ -17,10 +17,14 @@ void control::setup() {
     Serial.begin(9600);
     randomSeed(analogRead(0));
     LCD.clear();
-    LCD.print("ROBLOX 101");
+    LCD.print("Beefing tears of");
+    LCD.setCursor(0, 1);
+    LCD.print("soy from my     ");
     delay(500);
     LCD.clear();
-    LCD.print("Are you ready?");
+    LCD.print("heart of cold   ");
+    LCD.setCursor(0, 1);
+    LCD.print("aardvark fluids!");
     delay(500);
     LCD.clear();
     LCD.print("Press START to");
