@@ -34,6 +34,12 @@ const int ON_TAPE_PERIOD          {10};
 const int INTERSECT_DELAY_PERIOD {100};
 
 
+int TapeFollow::motorPinL         (pins::MOTOR_PIN_L);
+int TapeFollow::motorPinR         (pins::MOTOR_PIN_R);
+int TapeFollow::tapeSensorsFront (pins::TAPE_SENSORS_FRONT);
+int TapeFollow::tapeSensorsBack  (pins::TAPE_SENSORS_BACK),
+
+
 void TapeFollow::init()
 {
     MinorMode::init();
@@ -288,10 +294,6 @@ void TapeFollow::printLCD()
 
 TapeFollow::TapeFollow()
     : MinorMode(),
-      motorPinL        (pins::MOTOR_PIN_L),
-      motorPinR        (pins::MOTOR_PIN_R),
-      tapeSensorsFront (pins::TAPE_SENSORS_FRONT),
-      tapeSensorsBack  (pins::TAPE_SENSORS_BACK),
       gainProp         (GAIN_PROP),
       gainDer1         (GAIN_DER1),
       gainDer2         (GAIN_DER2),
