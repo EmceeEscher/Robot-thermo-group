@@ -31,12 +31,12 @@ public:
     /*
      * Set the vertex's label to the given value
      */
-    void setLabel(string label);
+    void setLabel(const string label);
 
     /*
      * Overload the string operator to give nice string representation.
      */
-    operator string();
+    operator string() const;
 
     /*
      * Overload equality comparison operator to return true if labels are equal
@@ -51,7 +51,7 @@ public:
     /*
      * Overload << operator to produce nice output
      */
-    friend ostream& operator<<(const ostream &out, const GraphVertex &vertex);
+    friend ostream& operator<<(ostream &out, const GraphVertex &vertex);
 
 };
 

@@ -26,6 +26,7 @@ private:
 
     // explicitly named major modes
     // TODO: Should these necessarily be degraded into their base?
+    //       Do they need individual functionalities?
     MajorMode *mFindPassenger;
     MajorMode *mLoadPassenger;
     MajorMode *mToDestination;
