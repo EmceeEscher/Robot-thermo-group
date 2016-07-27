@@ -19,6 +19,7 @@ namespace pins
     
     // Analog in
     const int PASSENGER_SENSORS_SIDES[] {0, 1, 2, 3, 4, 5};
+	const int BEACON_SENSORS_SIDES[] {6,7}; // left right (Requires loss of knobs)
 
     // Digital out
     const int MOTOR_PIN_L {0};
