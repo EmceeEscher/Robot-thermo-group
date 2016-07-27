@@ -87,7 +87,7 @@ void PassengerSeek::loop()
     // Get pin readings
     for (int i(0); i < 6; ++i) {
 	this->lastPinReadings[i] = this->pinReadings[i];
-	this->pinReadings[i] = analogRead(this->qsdPinsSides[i]);
+	this->pinReadings[i] = analogRead(PassengerSeek::qsdPinsSides[i]);
     }
     
     // Update derivative counts
