@@ -157,22 +157,62 @@ float TapeFollow::followTape()
 	this->intersectionDetection();
 
     // determine error
+    delay(1000);  // TODO: remove
+    LCD.clear();  // TODO: remove
     if (mainL && mainR)                    // both pins over tape
-	return 0.;
+	{
+	    LCD.print("0110");
+	    return 0.;
+	}
     else if (mainL)                       // left main over tape
-	return this->errorSmall;
+	{
+	    LCD.print(" 10 ");
+	    LCD.setCursor(0, 1);
+	    LCD.print("Small error");
+	    return this->errorSmall;
+	}
     else if (mainR)                       // right main over tape
-	return -this->errorSmall;
+	{
+	    LCD.print(" 01 ");
+	    LCD.setCursor(0, 1);
+	    LCD.print("Small error");
+	    return -this->errorSmall;
+	}
     else if (intersectL && (!intersectR))  // left intersection over tape
-	return this->errorMedium;
+	{
+	    LCD.print("1000");
+	    LCD.setCursor(0, 1);
+	    LCD.print("Medium error");
+	    return this->errorMedium;
+	}
     else if (intersectR && (!intersectL))  // right intersection over tape
-	return -this->errorMedium;
+	{
+	    LCD.print("0001");
+	    LCD.setCursor(0, 1);
+	    LCD.print("Medium error");
+	    return -this->errorMedium;
+	}
     else if (this->lastError < 0.)         // off tape to the right
-	return -this->errorLarge;
+	{
+	    LCD.print("0000");
+	    LCD.setCursor(0, 1);
+	    LCD.print("Large error");
+	    return -this->errorLarge;
+	}
     else if (this->lastError > 0.)         // off tape to the left
-	return this->errorLarge;
+	{
+	    LCD.print("0000");
+	    LCD.setCursor(0, 1);
+	    LCD.print("Large error");
+	    return this->errorLarge;
+	}
     else
-	return 0.;
+	{
+	    LCD.print("0000");
+	    LCD.setCursor(0, 1);
+	    LCD.print("No error");
+	    return 0.;
+	}
 }
 
 
@@ -326,45 +366,9 @@ void TapeFollow::loop()
     if (!this->active)
 	return;
 
-    // LCD.clear();
-    // LCD.print("MOTOR SPEEDS:");
-    // delay(1000);
-
-    // LCD.clear();
-    // LCD.print("Turning:");
-    // LCD.setCursor(0, 1);
-    // LCD.print(this->motorSpeedTurning);
-    // delay(1000);
-
-    // LCD.clear();
-    // LCD.print("Tape seeking:");
-    // LCD.setCursor(0, 1);
-    // LCD.print(this->motorSpeedSeeking);
-    // delay(1000);
-
-    // LCD.clear();
-    // LCD.print("Tape following:");
-    // LCD.setCursor(0, 1);
-    // LCD.print(this->motorSpeedFollowing);
-    // delay(1000);
-
-    // LCD.clear();
-    // LCD.print("Def tape following:");
-    // LCD.setCursor(0, 1);
-    // LCD.print(this->motorSpeedFollowingDefault);
-    // delay(1000);
-
-    // LCD.clear();
-    // LCD.print("Passenger seek:");
-    // LCD.setCursor(0, 1);
-    // LCD.print(this->motorSpeedPassengerSeek);
-    // delay(1000);
-
-    // LCD.clear();
-    // LCD.print("Reverse:");
-    // LCD.setCursor(0, 1);
-    // LCD.print(this->motorSpeedReverse);
-    // delay(1000);
+    LCD.clear();
+    LCD.print("Hfeflflfo!");
+    delay(1000);
 
     if (this->printCount % this->printPeriod == 0) {
 	this->printLCD();
@@ -450,20 +454,11 @@ void TapeFollow::loop()
     float ctrlDer2 (this->gainDer2 * der2);
     this->control = -static_cast<int>(ctrlProp + ctrlDer1 + ctrlDer2);
 
-    // LCD.clear();
-    // LCD.print(this->motorSpeedFollowing);
-    // LCD.setCursor(0, 1);
-    // LCD.print(this->control);
-
     int controlMax = this->motorSpeedFollowing * 3 / 2;
     if (this->control > controlMax)
 	this->control = controlMax;
     else if (this->control < -controlMax)
 	this->control = -controlMax;
-
-    // LCD.print(" ");
-    // LCD.print(this->control);
-    // delay(100);
 
     int dSpeed = this->control;
 
