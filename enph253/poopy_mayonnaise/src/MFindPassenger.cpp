@@ -42,23 +42,23 @@ void MFindPassenger::loop()
 {
     MajorMode::loop();  // does loop for each active minor mode
 
-    // if (this->mmCollisionWatch->collisionHasOccurred()) {
-    // 	// for now, just turn around
-    // 	this->mmTapeFollow->turnAround();
-    // }
+    if (this->mmCollisionWatch->collisionHasOccurred()) {
+    	// for now, just turn around
+    	this->mmTapeFollow->turnAround();
+    }
 
-    // // only seek passengers when not turning or seeking
-    // if (this->mmTapeFollow->isActive()) {
-    // 	bool following = !(this->mmTapeFollow->isTurning() ||
-    //             this->mmTapeFollow->isSeeking());
-    // 	bool passengerActive = this->mmPassengerSeek->isActive();
-    // 	if (passengerActive && this->mmTapeFollow->isTurning())
-    // 	    this->mmPassengerSeek->stop();
-    // 	else if (passengerActive && this->mmTapeFollow->isSeeking())
-    // 	    this->mmPassengerSeek->pause();
-    // 	else if ((!passengerActive) && following)
-    // 	    this->mmPassengerSeek->start();
-    // }
+    // only seek passengers when not turning or seeking
+    if (this->mmTapeFollow->isActive()) {
+    	bool following = !(this->mmTapeFollow->isTurning() ||
+                this->mmTapeFollow->isSeeking());
+    	bool passengerActive = this->mmPassengerSeek->isActive();
+    	if (passengerActive && this->mmTapeFollow->isTurning())
+    	    this->mmPassengerSeek->stop();
+    	else if (passengerActive && this->mmTapeFollow->isSeeking())
+    	    this->mmPassengerSeek->pause();
+    	else if ((!passengerActive) && following)
+    	    this->mmPassengerSeek->start();
+    }
 
     // TODO: mitigate communication between minor modes
     // TODO: activate and deactivate modes as necessary
@@ -71,8 +71,8 @@ void MFindPassenger::start()
 
     // Start intial minor modes
     this->mmTapeFollow->start();
-    // this->mmCollisionWatch->start();
-    // this->mmPassengerSeek->start();
+    this->mmCollisionWatch->start();
+    this->mmPassengerSeek->start();
 }
 
 
