@@ -25,10 +25,8 @@ RobotState::RobotState()
     TapeFollow *mmTapeFollow = new TapeFollow;
     this->allMinorModes.push_back(mmTapeFollow);
 
-
     PassengerSeek *mmPassengerSeek = new PassengerSeek;
     this->allMinorModes.push_back(mmPassengerSeek);
-
 
     CollisionWatch *mmCollisionWatch = new CollisionWatch;
     this->allMinorModes.push_back(mmCollisionWatch);
