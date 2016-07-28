@@ -230,65 +230,58 @@ Direction TapeFollow::chooseTurn(bool left, bool right, bool straight)
 
 void TapeFollow::printLCD()
 {
-    if (!this->active) {
-    	LCD.clear();
-    	LCD.print("Press START to");
-    	LCD.setCursor(0,1);
-    	LCD.print("begin");
-    } else {
-    	LCD.clear();
-    	// print letter
-    	if (!(this->turning || this->onTape))
-    	    LCD.print("S ");  // seeking
-    	else if (this->turning)
-    	    LCD.print("T ");  // turning
-    	else
-    	    LCD.print("F ");  // following
-    	// print arrow
-    	if (this->turning) {
-	    switch (this->turnDirection) {
-	    case Direction::LEFT:
-		LCD.print("<");
-		break;
-	    case Direction::FRONT:
-		LCD.print("^");
-		break;
-	    case Direction::RIGHT:
-		LCD.print(">");
-		break;
-	    case Direction::BACK:
-		LCD.print("v");
-		break;
-	    }
-    	} else {
-    	    if (this->control < 0)
-    		LCD.print("<");
-    	    else if (this->control > 0)
-    		LCD.print(">");
-    	    else
-    		LCD.print("^");
-    	}
-
-    	// print QRD readings
-	for (int i(0); i < 4; ++i) {
-	    LCD.print(" ");
-	    LCD.print(this->pinReadings[i]);
+    LCD.clear();
+    // print letter
+    if (!(this->turning || this->onTape))
+	LCD.print("S ");  // seeking
+    else if (this->turning)
+	LCD.print("T ");  // turning
+    else
+	LCD.print("F ");  // following
+    // print arrow
+    if (this->turning) {
+	switch (this->turnDirection) {
+	case Direction::LEFT:
+	    LCD.print("<");
+	    break;
+	case Direction::FRONT:
+	    LCD.print("^");
+	    break;
+	case Direction::RIGHT:
+	    LCD.print(">");
+	    break;
+	case Direction::BACK:
+	    LCD.print("v");
+	    break;
 	}
-
-	// print current available RAM
-	LCD.print(" ");
-	LCD.print(freeRam());
-
-    	// print gains and control
-    	LCD.setCursor(0,1);
-    	LCD.print(this->gainProp);
-	// LCD.print(this->errorArray[0]);
-    	LCD.print(" ");
-    	LCD.print(this->gainDer1);
-	// LCD.print(this->errorArray[1]);
-    	LCD.print(" ");
-    	LCD.print(this->control);
+    } else {
+	if (this->control < 0)
+	    LCD.print("<");
+	else if (this->control > 0)
+	    LCD.print(">");
+	else
+	    LCD.print("^");
     }
+    
+    // print QRD readings
+    for (int i(0); i < 4; ++i) {
+	LCD.print(" ");
+	LCD.print(this->pinReadings[i]);
+    }
+
+    // print current available RAM
+    LCD.print(" ");
+    LCD.print(freeRam());
+    
+    // print gains and control
+    LCD.setCursor(0,1);
+    LCD.print(this->gainProp);
+    // LCD.print(this->errorArray[0]);
+    LCD.print(" ");
+    LCD.print(this->gainDer1);
+    // LCD.print(this->errorArray[1]);
+    LCD.print(" ");
+    LCD.print(this->control);
 }
 
 
