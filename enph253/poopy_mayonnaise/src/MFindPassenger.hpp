@@ -26,7 +26,16 @@ private:
 
 public:
 
-    MFindPassenger();   // constructor
+    /*
+     * Construct major mode with appropriate minor mode pointers.
+     * These pointers are owned by the calling method, and it is its
+     * responsibility to deallocate them.
+     */
+    MFindPassenger(
+           TapeFollow *mmTapeFollow,
+           PassengerSeek *mmPassengerSeek,
+	   CollisionWatch *mmCollisionWatch
+    );   
 
     ~MFindPassenger();  // deconstructor
 

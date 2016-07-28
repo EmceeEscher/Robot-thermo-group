@@ -46,7 +46,7 @@ void control::loop()
 	control::stop();
 
     if (s.isActive())
-	s.loop();
+    	s.loop();
 }
 
 

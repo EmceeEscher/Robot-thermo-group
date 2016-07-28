@@ -28,4 +28,19 @@ namespace pins
 
 }
 
+namespace pins_sizes
+{
+    // Digital in
+    const int TAPE_SENSORS_FRONT = sizeof(pins::TAPE_SENSORS_FRONT) /
+            sizeof(pins::TAPE_SENSORS_FRONT[0]);
+    const int TAPE_SENSORS_BACK = sizeof(pins::TAPE_SENSORS_BACK) /
+	    sizeof(pins::TAPE_SENSORS_BACK[0]);
+    const int COLLISION_SENSORS = sizeof(pins::COLLISION_SENSORS) /
+	    sizeof(pins::COLLISION_SENSORS[0]);
+
+    // Analog in
+    const int PASSENGER_SENSORS_SIDES = sizeof(pins::PASSENGER_SENSORS_SIDES) /
+	    sizeof(pins::PASSENGER_SENSORS_SIDES[0]);
+}
+
 #endif  // PINS_HPP

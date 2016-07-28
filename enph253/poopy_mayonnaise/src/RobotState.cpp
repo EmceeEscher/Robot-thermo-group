@@ -1,9 +1,9 @@
 ///
 // RobotState.cpp
 //
-#include <StandardCplusplus.h>
 #include <phys253.h>
 #include "allmajormodes.hpp"
+#include "allminormodes.hpp"
 #include "RobotState.hpp"
 
 
@@ -21,19 +21,25 @@ void RobotState::init()
 RobotState::RobotState()
     : mainLoopDelay(MAIN_LOOP_DELAY)
 {
-    // MAJOR MODES
-    this->mFindPassenger = new MFindPassenger;
+    // Minor modes
+    TapeFollow *mmTapeFollow = new TapeFollow;
+    this->allMinorModes.push_back(mmTapeFollow);
+
+    PassengerSeek *mmPassengerSeek = new PassengerSeek;
+    this->allMinorModes.push_back(mmPassengerSeek);
+
+    CollisionWatch *mmCollisionWatch = new CollisionWatch;
+    this->allMinorModes.push_back(mmCollisionWatch);
+   
+    // Major modes
+    this->mFindPassenger = new MFindPassenger(
+            mmTapeFollow,
+	    mmPassengerSeek,
+	    mmCollisionWatch
+    );
     this->allMajorModes.push_back(this->mFindPassenger);
-
-    // this->mLoadPassenger = new MLoadPassenger;
-    // this->allMajorModes.push_back(this->mLoadPassenger);
-
-    // this->mToDestination = new MToDestination;
-    // this->allMajorModes.push_back(this->mToDestination);
-
-    // this->mDropPassenger = new MDropPassenger;
-    // this->allMajorModes.push_back(this->mDropPassenger);
-
+    
+    // Initialization
     this->init();
 }
 
@@ -42,6 +48,8 @@ RobotState::RobotState()
 RobotState::~RobotState()
 {
     for (auto *mm : this->allMajorModes)
+	delete mm;
+    for (auto *mm : this->allMinorModes)
 	delete mm;
 }
 
@@ -65,9 +73,9 @@ void RobotState::loop()
 // TODO
 void RobotState::start()
 {
-    LCD.clear();
-    LCD.print("STARTING...");
-    delay(1000);
+    // LCD.clear();
+    // LCD.print("STARTING...");
+    // delay(1000);
     this->active = true;
     this->currentMajorMode->start();
 }
@@ -76,9 +84,9 @@ void RobotState::start()
 // TODO
 void RobotState::stop()
 {
-    LCD.clear();
-    LCD.print("STOPPED");
-    delay(1000);
+    // LCD.clear();
+    // LCD.print("STOPPED");
+    // delay(1000);
     this->active = false;
     this->init();
     for (auto *m : this->allMajorModes)
@@ -90,9 +98,9 @@ void RobotState::stop()
 // TODO
 void RobotState::pause()
 {
-    LCD.clear();
-    LCD.print("PAUSED");
-    delay(1000);
+    // LCD.clear();
+    // LCD.print("PAUSED");
+    // delay(1000);
     this->active = false;
     // for now, pause active major mode
     for (auto *m : this->allMajorModes)
@@ -103,9 +111,9 @@ void RobotState::pause()
 
 void RobotState::test()
 {
-    LCD.clear();
-    LCD.print("TESTING...");
-    delay(1000);
+    // LCD.clear();
+    // LCD.print("TESTING...");
+    // delay(1000);
     this->active = true;
     this->currentMajorMode->test();
 }
