@@ -126,8 +126,8 @@ void TapeFollow::intersectionDetection()
 	this->intersectDetect[1] = 1;
 
     // if intersection(s) detected, make move decision
-    if ((this->onTapeCounter[0] >= this->turnWaitPeriod) &&
-	(this->onTapeCounter[3] >= this->turnWaitPeriod)) {
+    if ((this->offTapeCounter[0] >= this->turnWaitPeriod) &&
+	(this->offTapeCounter[3] >= this->turnWaitPeriod)) {
 
 	// wait until both intersections crossed over
 	this->turnDirection = this->chooseTurn(
