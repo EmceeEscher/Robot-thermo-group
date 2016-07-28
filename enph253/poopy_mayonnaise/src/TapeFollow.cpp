@@ -24,15 +24,15 @@ const float GAIN_PROP      {9.84};
 const float GAIN_DER1     {11.78};
 const float GAIN_DER2     {.5*GAIN_DER1*GAIN_DER1/GAIN_PROP*(1.-EPSILON)};
 // const float GAIN_DER2 {0.};
-const int PRINT_PERIOD            {200};
-const int COUNTER_MAX             {256};
-const int INTERSECT_PERIOD         {15};  
-const int TURNING_PERIOD           {10}; 
-const int TURN_WAIT_PERIOD         {45};
-const int OFF_TAPE_PERIOD          {50};
-// const int ON_TAPE_PERIOD           {10};
-const int ON_TAPE_PERIOD            {5};
-const int INTERSECT_DELAY_PERIOD  {100};
+const int PRINT_PERIOD                {200};
+const int COUNTER_MAX                 {256};
+const int INTERSECT_DETECT_PERIOD      {15};  
+const int TURN_CONFIRM_PERIOD          {10}; 
+const int TURN_PRE_DELAY_PERIOD        {45};
+const int OFF_TAPE_PERIOD              {50};
+// const int ON_TAPE_PERIOD               {10};
+const int ON_TAPE_PERIOD                {5};
+const int INTERSECT_SEEK_DELAY_PERIOD {100};
 const int TapeFollow::motorPinL         {pins::MOTOR_PIN_L};
 const int TapeFollow::motorPinR         {pins::MOTOR_PIN_R};
 const int TapeFollow::numSensors        {pins_sizes::TAPE_SENSORS_FRONT};
@@ -245,7 +245,9 @@ void TapeFollow::printLCD()
     else
 	LCD.print("F ");  // following
     // print arrow
-    if (this->turning) {
+    if (this->turningAround)
+	LCD.print("v");
+    else if (this->turning) {
 	switch (this->turnDirection) {
 	case Direction::LEFT:
 	    LCD.print("<");
@@ -301,10 +303,10 @@ TapeFollow::TapeFollow()
       errorLarge       (ERROR_LARGE),
       errorSeeking     (ERROR_SEEKING),
       errorTurning     (ERROR_TURNING),
-      intersectDelay   (INTERSECT_DELAY_PERIOD),
-      intersectPeriod  (INTERSECT_PERIOD),
-      turningPeriod    (TURNING_PERIOD),
-      turnWaitPeriod   (TURN_WAIT_PERIOD),
+      intersectDelay   (INTERSECT_SEEK_DELAY_PERIOD),
+      intersectPeriod  (INTERSECT_DETECT_PERIOD),
+      turningPeriod    (TURN_CONFIRM_PERIOD),
+      turnWaitPeriod   (TURN_PRE_DELAY_PERIOD),
       offTapePeriod    (OFF_TAPE_PERIOD),
       onTapePeriod     (ON_TAPE_PERIOD),
       printPeriod      (PRINT_PERIOD),
