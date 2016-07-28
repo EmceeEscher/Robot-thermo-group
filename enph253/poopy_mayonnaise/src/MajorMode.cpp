@@ -60,3 +60,9 @@ bool MajorMode::isActive()
 {
     return this->active;
 }
+
+MajModeEnum MajorMode::changeTo()
+{
+  return MajModeEnum::DontChange;
+}
+

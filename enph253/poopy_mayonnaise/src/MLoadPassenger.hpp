@@ -18,6 +18,8 @@ private:
     ArmControl      *mmArmControl;
     CollisionWatch  *mmCollisionWatch;
     PassengerSeek   *mmPassengerSeek;
+
+    MajModeEnum state;
     
     /*
      * (Re)initialize state variables
@@ -38,6 +40,11 @@ public:
     void start();
 
     void test();
+
+    /*
+     * Used to tell if the robot should switch robot states or not
+     */
+    MajModeEnum changeTo();
 
 };
 

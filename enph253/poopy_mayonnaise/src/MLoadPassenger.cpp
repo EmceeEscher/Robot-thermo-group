@@ -19,7 +19,8 @@ MLoadPassenger::MLoadPassenger(
     : MajorMode(),
     mmArmControl(mmArmControl),
     mmPassengerSeek(mmPassengerSeek),
-    mmCollisionWatch(mmCollisionWatch)
+    mmCollisionWatch(mmCollisionWatch),
+    state(MajModeEnum::DontChange)
 {
   this->init();
 
@@ -50,7 +51,7 @@ void MLoadPassenger::loop()
       this->mmArmControl->turnAndReach(false, true);
     }
     if(this->mmArmControl->isHolding()){
-      this->stop();
+      this->state = MajModeEnum::ToDestination;
     }
     else{
       //reposition
@@ -70,11 +71,16 @@ void MLoadPassenger::start()
   this->mmArmControl->start();
   this->mmCollisionWatch->start();
   this->mmPassengerSeek->start();
+  this->state = MajModeEnum::DontChange;
 }
 
 //TODO
 void MLoadPassenger::test()
 {
   MajorMode::test();
+}
+
+MajModeEnum MLoadPassenger::changeTo(){
+  return this->state;
 }
 

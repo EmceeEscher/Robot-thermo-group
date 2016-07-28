@@ -20,7 +20,8 @@ MDropPassenger::MDropPassenger(
     : MajorMode(),
     mmArmControl(mmArmControl),
     mmDetectBeacon(mmDetectBeacon),
-    mmCollisionWatch(mmCollisionWatch)
+    mmCollisionWatch(mmCollisionWatch),
+    state(MajModeEnum::DontChange)
 {
   this->init();
 
@@ -47,6 +48,9 @@ void MDropPassenger::loop()
           this->mmArmControl->turnAndReach(false, false);
         }
     }
+    if(!this->mmArmControl->isHolding()){
+      this->state = MajModeEnum::FindPassenger;
+    }
 }
 
 void MDropPassenger::start()
@@ -56,6 +60,7 @@ void MDropPassenger::start()
     this->mmArmControl->start();
     this->mmCollisionWatch->start();
     this->mmDetectBeacon->start();
+    this->state = MajModeEnum::DontChange;
 }
 
 // TODO
@@ -66,5 +71,9 @@ void MDropPassenger::test()
     this->mmArmControl->test();
     this->mmCollisionWatch->test();
     this->mmDetectBeacon->test();
+}
+
+MajModeEnum MDropPassenger::changeTo(){
+    return this->state;
 }
 

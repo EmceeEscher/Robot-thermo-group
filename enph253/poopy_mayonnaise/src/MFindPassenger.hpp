@@ -19,6 +19,8 @@ private:
     PassengerSeek  *mmPassengerSeek;
     CollisionWatch *mmCollisionWatch;
 
+    MajModeEnum state;
+
     /*
      * (Re)initialize state variables
      */
@@ -44,6 +46,8 @@ public:
     void start();
 
     void test();
+
+    MajModeEnum changeTo();
 
 };
 

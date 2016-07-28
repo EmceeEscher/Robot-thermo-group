@@ -22,7 +22,8 @@ MFindPassenger::MFindPassenger(
     : MajorMode(),
       mmTapeFollow(mmTapeFollow),
       mmPassengerSeek(mmPassengerSeek),
-      mmCollisionWatch(mmCollisionWatch)
+      mmCollisionWatch(mmCollisionWatch),
+      state(MajModeEnum::DontChange)
 {
     this->init();
 
@@ -73,6 +74,7 @@ void MFindPassenger::start()
     this->mmTapeFollow->start();
     this->mmCollisionWatch->start();
     // this->mmPassengerSeek->start();
+    this->state = MajModeEnum::DontChange;
 }
 
 
@@ -83,3 +85,9 @@ void MFindPassenger::test()
     this->mmTapeFollow->test();
     this->mmCollisionWatch->test();
 }
+
+MajModeEnum MFindPassenger::changeTo()
+{
+    return state;
+}
+

@@ -12,6 +12,7 @@
 #include <vector>
 #include "IMode.hpp"
 #include "MinorMode.hpp"
+#include "MajorModeEnum.hpp"
 
 using std::vector;
 
@@ -72,6 +73,12 @@ public:
      * Returns true if the MajorMode is active.
      */
     virtual bool isActive();
+
+    /*
+     * Returns a member of MajorModeEnum telling you which mode RobotState
+     * should switch to
+     */
+     virtual MajModeEnum changeTo();
 
 };
 

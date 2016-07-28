@@ -18,7 +18,9 @@ private:
     ArmControl      *mmArmControl;
     CollisionWatch  *mmCollisionWatch;
     DetectBeacon    *mmDetectBeacon;
-      
+
+
+    MajModeEnum state;  
     /*
      * (Re)initialize state variables
      */
@@ -39,6 +41,10 @@ public:
 
     void test();
 
+    /*
+     * Used to tell if the robot should switch robot states or not
+     */
+    MajModeEnum changeTo();
 };
 
 #endif  // M_DROP_PASSENGER_HPP
