@@ -9,6 +9,7 @@
 
 const int COLLISION_DETECT_PERIOD {5};
 const int *CollisionWatch::sensorPins {pins::COLLISION_SENSORS};
+const int CollisionWatch::numSensorPins {pins_sizes::COLLISION_SENSORS};
 
 
 void CollisionWatch::init()
@@ -16,11 +17,11 @@ void CollisionWatch::init()
     MinorMode::init();
     
     this->collisionDetected.reset();  // bits reset to 0000
-    for (int i(0); i < 4; ++i)
+    for (int i(0); i < CollisionWatch::numSensorPins; ++i)
 	this->numCollisionReads[i] = 0;
 
-    for (int i(0); i < 4; ++i)
-	pinMode(pins::COLLISION_SENSORS[i], INPUT);
+    for (int i(0); i < CollisionWatch::numSensorPins; ++i)
+	pinMode(CollisionWatch::sensorPins[i], INPUT);
 }
 
 
@@ -37,28 +38,12 @@ CollisionWatch::~CollisionWatch() {}
 
 void CollisionWatch::loop()
 {
-    bool collisionSeen(false);
-    
     // Read collision sensors and update numReads array
     for (int i(0); i < 4; ++i) {
-    	if (!(digitalRead(CollisionWatch::sensorPins[i]))) {
+    	if (!(digitalRead(CollisionWatch::sensorPins[i]))) 
     	    this->numCollisionReads[i] = 0;
-    	} else if (this->numCollisionReads[i] < this->collisionDetectPeriod) {
+	else if (this->numCollisionReads[i] < this->collisionDetectPeriod) 
     	    this->numCollisionReads[i] += 1;
-    	    collisionSeen = true;
-    	} else {
-    	    collisionSeen = true;
-    	}
-    }
-
-    if (collisionSeen) {
-	LCD.clear();
-	LCD.print("COLLISION");
-	delay(100);
-    } else {
-	LCD.clear();
-	LCD.print("NO COLLISION");
-	delay(100);
     }
 
     // Check if number of collisions has reached detect period

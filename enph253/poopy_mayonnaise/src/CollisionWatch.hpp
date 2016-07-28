@@ -18,6 +18,7 @@ class CollisionWatch : public MinorMode
 private:
 
     static const int *sensorPins;            // left, front, right, back
+    static const int numSensorPins;
 
     const int collisionDetectPeriod;  // number of consecutive reads to detect a collision
 

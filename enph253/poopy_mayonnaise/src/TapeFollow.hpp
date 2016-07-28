@@ -25,6 +25,7 @@ private:
     static const int motorPinR;
     static const int *tapeSensorsFront;
     static const int *tapeSensorsBack;
+    static const int numSensors;
 
     float gainProp;                        // TODO: set const; set based on knobs for now
     float gainDer1;                        // TODO: set const; set based on knobs for now

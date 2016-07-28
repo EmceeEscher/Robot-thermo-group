@@ -35,6 +35,7 @@ const int ON_TAPE_PERIOD            {5};
 const int INTERSECT_DELAY_PERIOD  {100};
 const int TapeFollow::motorPinL         {pins::MOTOR_PIN_L};
 const int TapeFollow::motorPinR         {pins::MOTOR_PIN_R};
+const int TapeFollow::numSensors        {pins_sizes::TAPE_SENSORS_FRONT};
 const int *TapeFollow::tapeSensorsFront {pins::TAPE_SENSORS_FRONT};
 const int *TapeFollow::tapeSensorsBack  {pins::TAPE_SENSORS_BACK};
 
@@ -68,7 +69,7 @@ void TapeFollow::init()
     this->etimeArray          = {1,  2};
     this->errorArray          = {0., 0.};
 
-    for (int i(0); i < 4; ++i) {
+    for (int i(0); i < TapeFollow::numSensors; ++i) {
 	// reset counters
 	this->onTapeCounter[i] = 0;
 	this->offTapeCounter[i] = 0;
@@ -77,7 +78,7 @@ void TapeFollow::init()
     }
 
     // declare active pins as inputs
-    for (int i(0); i < 4; ++i)
+    for (int i(0); i < TapeFollow::numSensors; ++i)
 	pinMode(this->activePins[i], INPUT);
 }
 
@@ -266,7 +267,7 @@ void TapeFollow::printLCD()
     }
     
     // print QRD readings
-    for (int i(0); i < 4; ++i) {
+    for (int i(0); i < TapeFollow::numSensors; ++i) {
 	LCD.print(" ");
 	LCD.print(this->pinReadings[i]);
     }
@@ -340,12 +341,12 @@ void TapeFollow::loop()
     }
 
     // get readings from tape sensors
-    for (auto i(0); i < 4; ++i) 
+    for (auto i(0); i < TapeFollow::numSensors; ++i) 
 	this->pinReadings[i] = digitalRead(this->activePins[i]);
     
 
     // update counters
-    for (int i(0); i < 4; ++i)
+    for (int i(0); i < TapeFollow::numSensors; ++i)
 	if (this->pinReadings[i]) {
 	    this->offTapeCounter[i] = 0;
 	    if (this->onTapeCounter[i] < this->counterMax)
@@ -366,7 +367,7 @@ void TapeFollow::loop()
 
     // get error based on current state
     bool amOffTape(true);
-    for (int i(0); i < 4; ++i) {
+    for (int i(0); i < TapeFollow::numSensors; ++i) {
 	if (this->offTapeCounter[i] < this->offTapePeriod) {
 	    amOffTape = false;
 	    break;
