@@ -39,10 +39,10 @@ RobotState::RobotState()
    
     // Major modes
     this->mFindPassenger = new MFindPassenger(
+            mmArmControl,
             mmTapeFollow,
-	    mmPassengerSeek,
-	    mmCollisionWatch
-    );
+	          mmPassengerSeek,
+	          mmCollisionWatch);
     this->allMajorModes.push_back(this->mFindPassenger);
 
     this->mLoadPassenger = new MLoadPassenger(
@@ -111,9 +111,9 @@ void RobotState::loop()
 // TODO
 void RobotState::start()
 {
-    // LCD.clear();
-    // LCD.print("STARTING...");
-    // delay(1000);
+    LCD.clear();
+    LCD.print("STARTING...");
+    delay(1000);
     this->active = true;
     this->currentMajorMode->start();
 }

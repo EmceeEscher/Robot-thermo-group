@@ -15,6 +15,7 @@ class MFindPassenger : public MajorMode
 private:
 
     // Named minor modes
+    ArmControl     *mmArmControl;
     TapeFollow     *mmTapeFollow;
     PassengerSeek  *mmPassengerSeek;
     CollisionWatch *mmCollisionWatch;
@@ -34,9 +35,10 @@ public:
      * responsibility to deallocate them.
      */
     MFindPassenger(
+           ArmControl *mmArmControl,
            TapeFollow *mmTapeFollow,
            PassengerSeek *mmPassengerSeek,
-	   CollisionWatch *mmCollisionWatch
+	         CollisionWatch *mmCollisionWatch
     );   
 
     ~MFindPassenger();  // deconstructor

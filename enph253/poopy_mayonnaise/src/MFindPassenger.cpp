@@ -15,11 +15,13 @@ void MFindPassenger::init()
 
 // TODO
 MFindPassenger::MFindPassenger(
+        ArmControl     *mmArmControl,
         TapeFollow     *mmTapeFollow,
-	PassengerSeek  *mmPassengerSeek,
-	CollisionWatch *mmCollisionWatch
+	      PassengerSeek  *mmPassengerSeek,
+	      CollisionWatch *mmCollisionWatch
 )
     : MajorMode(),
+      mmArmControl(mmArmControl),
       mmTapeFollow(mmTapeFollow),
       mmPassengerSeek(mmPassengerSeek),
       mmCollisionWatch(mmCollisionWatch),
