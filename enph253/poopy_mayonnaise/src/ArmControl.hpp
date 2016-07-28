@@ -37,12 +37,12 @@ private:
     const float derivGain;
 
     //Dynamic Control Variables
-    float baseTarget, midTarget;
+    /*float baseTarget, midTarget;
     float propErr, derivErr, intErr, lastPropErr;
     float angle;
     float currAngle;
     float now, lastTime;
-    int hasInitialized;
+    int hasInitialized;*/
 
     //Rest Positions
     const float baseRestPosition;
@@ -51,7 +51,7 @@ private:
     const float midHoldPosition;
 
     //Iterator for LCD printing
-    int LCDControl;
+    //int LCDControl;
 
     //Stepper Constants
     const int stepperDirPin;
@@ -131,6 +131,9 @@ public:
    * false otherwise
    */
   bool isHolding();
+
+  //prints angle read by potentiometer for testing
+  void printState();
 };
 
 

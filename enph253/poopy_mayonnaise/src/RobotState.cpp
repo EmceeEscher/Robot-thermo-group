@@ -13,7 +13,7 @@ const unsigned long MAIN_LOOP_DELAY {1};     // milliseconds
 void RobotState::init()
 {
     this->active = false;
-    this->currentMajorMode = this->mFindPassenger;
+    this->currentMajorMode = this->mLoadPassenger;
 }
 
 
@@ -25,8 +25,8 @@ RobotState::RobotState()
     this->mFindPassenger = new MFindPassenger;
     this->allMajorModes.push_back(this->mFindPassenger);
 
-    // this->mLoadPassenger = new MLoadPassenger;
-    // this->allMajorModes.push_back(this->mLoadPassenger);
+    this->mLoadPassenger = new MLoadPassenger;
+    this->allMajorModes.push_back(this->mLoadPassenger);
 
     // this->mToDestination = new MToDestination;
     // this->allMajorModes.push_back(this->mToDestination);

@@ -26,13 +26,13 @@ private:
     int passengerSide;                  // if atPassenger, specifies the side (-1=left, 1=right)
 
     bitset<6> atMax;                    // true if the associated pin is at a maximum
-    float pinReadings[6];               // current pin readings
-    float lastPinReadings[6];           // pin readings from last loop
+    float pinReadings[5];               // current pin readings
+    float lastPinReadings[5];           // pin readings from last loop
 
-    int numAboveThreshold[6];           // number of consecutive reads above threshold for each pin
-    int numPosDeriv[6];                 // number of consecutive positive derivatives THE LAST TIME A POSITIVE DERIVATIVE WAS READ
-    int numNegDeriv[6];                 // number of consecutive negative or 0 derivatives THE LAST TIME A NEGATIVE DERIVATIVE WAS READ
-    bitset<6> lastDerivPositive;        // true if the last derivative was negative
+    int numAboveThreshold[5];           // number of consecutive reads above threshold for each pin
+    int numPosDeriv[5];                 // number of consecutive positive derivatives THE LAST TIME A POSITIVE DERIVATIVE WAS READ
+    int numNegDeriv[5];                 // number of consecutive negative or 0 derivatives THE LAST TIME A NEGATIVE DERIVATIVE WAS READ
+    bitset<5> lastDerivPositive;        // true if the last derivative was negative
 
     /*
      * (Re)initialize all state variables

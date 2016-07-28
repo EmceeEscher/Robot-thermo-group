@@ -3,6 +3,7 @@
 //
 #include "allminormodes.hpp"
 #include "MLoadPassenger.hpp"
+#include <phys253.h>
 
 void MLoadPassenger::init()
 {
@@ -39,13 +40,16 @@ void MLoadPassenger::loop()
   }
 
   if(this->mmPassengerSeek->isAtPassenger()){
+    LCD.clear();
     if(this->mmPassengerSeek->getPassengerSide() == 1){
+      LCD.print("reaching on right");
       this->mmArmControl->turnAndReach(true, true);
     }else if(this->mmPassengerSeek->getPassengerSide() == -1){
+      LCD.print("reaching on left");
       this->mmArmControl->turnAndReach(false, true);
     }
     if(this->mmArmControl->isHolding()){
-    //switch major mode to MToDestination
+      this->stop();
     }
     else{
       //reposition
@@ -64,6 +68,7 @@ void MLoadPassenger::start()
   //start minor modes
   this->mmArmControl->start();
   this->mmCollisionWatch->start();
+  this->mmPassengerSeek->start();
 }
 
 //TODO

@@ -7,6 +7,8 @@
 #include "PassengerSeek.hpp"
 
 
+//TODO: add code for QSD that's on digital pin
+
 const int NUM_SAVED_READINGS {24};
 const int MAX_REGISTER_PERIOD {10};
 const double MAX_REGISTER_THRESHOLD {0.};
@@ -24,7 +26,7 @@ void PassengerSeek::init()
     this->atMax.reset();              // reset bits to 000000
     this->lastDerivPositive.reset();  // reset bits to 000000
 
-    for (int i(0); i < 6; ++i) {
+    for (int i(0); i < 5; ++i) {
 	this->pinReadings[i] = 0.;
 	this->lastPinReadings[i] = 0.;
 	this->numAboveThreshold[i] = 0;
@@ -49,7 +51,7 @@ bool PassengerSeek::atMaxSideMiddle()
 // TODO
 void PassengerSeek::updateMax()
 {
-    for (int i(0); i < 6; ++i) {
+    for (int i(0); i < 5; ++i) {
 	bool aboveThreshold = (
                 this->numAboveThreshold[i] >= 2*this->maxRegisterPeriod);
 	bool imax = (
@@ -68,11 +70,11 @@ PassengerSeek::PassengerSeek()
       maxRegisterPeriod    (MAX_REGISTER_PERIOD),
       maxRegisterThreshold (MAX_REGISTER_THRESHOLD),
       qsdPinsSides         (pins::PASSENGER_SENSORS_SIDES),
-      pinReadings          {0., 0., 0., 0., 0., 0.},
-      lastPinReadings      {0., 0., 0., 0., 0., 0.},
-      numAboveThreshold    {0, 0, 0, 0, 0, 0},
-      numPosDeriv          {0, 0, 0, 0, 0, 0},
-      numNegDeriv          {0, 0, 0, 0, 0, 0}
+      pinReadings          {0., 0., 0., 0., 0.},
+      lastPinReadings      {0., 0., 0., 0., 0.},
+      numAboveThreshold    {0, 0, 0, 0, 0},
+      numPosDeriv          {0, 0, 0, 0, 0},
+      numNegDeriv          {0, 0, 0, 0, 0}
 {
     this->init();
 }
@@ -85,13 +87,13 @@ PassengerSeek::~PassengerSeek() {}
 void PassengerSeek::loop()
 {
     // Get pin readings
-    for (int i(0); i < 6; ++i) {
+    for (int i(0); i < 5; ++i) {
 	this->lastPinReadings[i] = this->pinReadings[i];
 	this->pinReadings[i] = analogRead(this->qsdPinsSides[i]);
     }
     
     // Update derivative counts
-    for (auto i(0); i < 6; ++i) {
+    for (auto i(0); i < 5; ++i) {
 	if ((this->pinReadings[i] - this->lastPinReadings[i]) <= 0) {
 	    if (this->lastDerivPositive[i])
 		this->numNegDeriv[i] = 1;
@@ -108,7 +110,7 @@ void PassengerSeek::loop()
     }
 
     // Update counters
-    for (int i(0); i < 6; ++i)
+    for (int i(0); i < 5; ++i)
 	if (this->pinReadings[i] <= this->maxRegisterThreshold) {
 	    this->numAboveThreshold[i] = 0;
 	} else if (this->numAboveThreshold[i] < this->maxRegisterPeriod)
@@ -142,11 +144,15 @@ bool PassengerSeek::isApproachingPassenger()
 
 bool PassengerSeek::isAtPassenger()
 {
-    return this->atPassenger;
+    return true;
+    //TODO: uncomment this
+    //return this->atPassenger;
 }
 
 
 int PassengerSeek::getPassengerSide()
 {
-    return this->passengerSide;
+    return -1;
+    //TODO: uncomment this
+    //return this->passengerSide;
 }

@@ -6,6 +6,8 @@
 #ifndef PINS_HPP
 #define PINS_HPP
 
+#include <phys253pins.h>
+
 namespace pins
 {
     // Knobs
@@ -31,8 +33,8 @@ namespace pins
     const int MOTOR_PIN_R {3};
 
     //Servo motors used as digital outputs for stepper motor
-    const int PULSE_PIN {31};
-    const int DIR_PIN {34};
+    const int PULSE_PIN {RCServo1Output};
+    const int DIR_PIN {RCServo2Output};
 
     // Analog out
 

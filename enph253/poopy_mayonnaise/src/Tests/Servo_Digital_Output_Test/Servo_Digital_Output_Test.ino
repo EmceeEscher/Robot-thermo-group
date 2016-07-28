@@ -3,8 +3,8 @@
 
 void setup() {
   #include <phys253setup.txt>
-  RCServo2.detach(); //MUST BE INCLUDED
-  pinMode(34,OUTPUT);
+  RCServo1.detach(); //MUST BE INCLUDED
+  pinMode(31,OUTPUT);
 }
 
 void loop() {
@@ -17,8 +17,10 @@ void loop() {
   analogWrite(34,0);
   delay(2000);
   */
-  digitalWrite(34,HIGH);
-  delay(2000);
-  digitalWrite(34,LOW);
-  delay(2000);
+  while(stopbutton()){
+    digitalWrite(31,HIGH);
+    delay(10);
+    digitalWrite(31,LOW);
+    delay(10);
+  }
 }

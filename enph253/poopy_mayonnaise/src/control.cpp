@@ -16,7 +16,9 @@ RobotState s;
 
 void control::setup()
 {
-#include <phys253setup.txt>
+    #include <phys253setup.txt>
+    RCServo1.detach();
+    RCServo2.detach();
     Serial.begin(9600);
     randomSeed(analogRead(0));
     LCD.clear();
