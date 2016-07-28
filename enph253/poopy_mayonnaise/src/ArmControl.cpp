@@ -17,13 +17,11 @@ const float DERIV_GAIN = 0.5;
 float baseTarget, midTarget;
 float propErr, derivErr, intErr, lastPropErr;
 float angle;
-float currAngle = 0;
 float now, lastTime;
-int hasInitialized = 0;
 
 //Rest Positions
-const float BASE_REST_POSITION = 75;
-const float MID_REST_POSITION = 120;
+const float BASE_REST_POSITION = 85;
+const float MID_REST_POSITION = 170;
 const float BASE_HOLD_POSITION = 85;
 const float MID_HOLD_POSITION = 170;
 
@@ -33,8 +31,8 @@ int LCDControl;
 //Stepper Constants
 const int COUNTERCLOCKWISE = HIGH;
 const int CLOCKWISE = LOW;
-const int STEPPER_MICROS_DELAY = 40000; //Time delay between pulses in microseconds
-const int NUM_PULSES = 700;
+const int STEPPER_MICROS_DELAY = 800; //Time delay between pulses in microseconds
+const int NUM_PULSES = 680;
 
 //reachAndClaw/reachAndDrop function Constants
 const float INITIAL_ADJ_MID_TARGET = 170;
@@ -276,8 +274,7 @@ void ArmControl::setRestPosition(){
 
 //Turns the stepper motor a specified number of steps
 void ArmControl::stepperTurn(bool CW,int count){
-  LCD.clear();
-  LCD.print("8====D");
+
   if(CW){
     digitalWrite(this->stepperDirPin,CLOCKWISE);
   } else{
@@ -296,6 +293,12 @@ void ArmControl::stepperTurn(bool CW,int count){
     digitalWrite(this->stepperPulsePin,LOW);
     delayMicroseconds(this->stepperMicrosDelay);
   }
+  LCD.clear();
+  while(!startbutton()){
+    LCD.print("wieners");
+    delay(10);
+  }
+  LCD.clear();
 }
 
 /* 
