@@ -24,13 +24,13 @@ const float GAIN_DER1      {9.54};
 const float GAIN_DER2     {.5*GAIN_DER1*GAIN_DER1/GAIN_PROP*(1.-EPSILON)};
 // const float GAIN_DER2 {0.};
 const int PRINT_PERIOD            {200};
-const int NUM_SAVED_READINGS       {52};
+const int COUNTER_MAX             {256};
 const int INTERSECT_PERIOD          {5};  
 const int TURNING_PERIOD           {10}; 
 const int TURN_WAIT_PERIOD         {45};
-const int OFF_TAPE_PERIOD         {50};
-const int ON_TAPE_PERIOD          {10};
-const int INTERSECT_DELAY_PERIOD {100};
+const int OFF_TAPE_PERIOD          {50};
+const int ON_TAPE_PERIOD           {10};
+const int INTERSECT_DELAY_PERIOD  {100};
 const int TapeFollow::motorPinL         {pins::MOTOR_PIN_L};
 const int TapeFollow::motorPinR         {pins::MOTOR_PIN_R};
 const int *TapeFollow::tapeSensorsFront {pins::TAPE_SENSORS_FRONT};
@@ -330,6 +330,7 @@ TapeFollow::TapeFollow()
       offTapePeriod    (OFF_TAPE_PERIOD),
       onTapePeriod     (ON_TAPE_PERIOD),
       printPeriod      (PRINT_PERIOD),
+      counterMax       (COUNTER_MAX),
       motorSpeedTurning          (MOTOR_SPEED_TURNING),
       motorSpeedSeeking          (MOTOR_SPEED_SEEKING),
       motorSpeedFollowingDefault (MOTOR_SPEED_FOLLOWING),
@@ -373,11 +374,11 @@ void TapeFollow::loop()
     for (int i(0); i < 4; ++i)
 	if (this->pinReadings[i]) {
 	    this->offTapeCounter[i] = 0;
-	    if (this->onTapeCounter[i] < this->onTapePeriod)
+	    if (this->onTapeCounter[i] < this->counterMax)
 		this->onTapeCounter[i] += 1;
 	} else {
 	    this->onTapeCounter[i] = 0;
-	    if (this->offTapeCounter[i] < this->offTapePeriod)
+	    if (this->offTapeCounter[i] < this->counterMax)
 		this->offTapeCounter[i] += 1;
 	}
 

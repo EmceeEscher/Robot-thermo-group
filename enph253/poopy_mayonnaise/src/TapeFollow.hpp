@@ -41,6 +41,7 @@ private:
     const int offTapePeriod;               // number of consecutive readings required to signal that the robot has lost the tape
     const int onTapePeriod;                // number of consecutive readings required to confirm that the robot is back on the tape after turning
     const int printPeriod;                 // number of iterations per printout
+    const int counterMax;                  // maximum value for onTapeCounter and offTapeCounter
     const int motorSpeedTurning;           // motor speed for making turn
     const int motorSpeedSeeking;           // motor speed for seeking tape
     const int motorSpeedFollowingDefault;  // default motor speed for tape following
