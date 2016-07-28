@@ -173,27 +173,6 @@ float TapeFollow::followTape()
     } else {
 	return 0.;
     }
-
-    // LCD.clear();
-    // for (int i(0); i < 4; ++i) {
-    // 	LCD.print(" ");
-    // 	LCD.print(this->pinReadings[i]);
-    // }
-
-    // LCD.print(" ");
-    // LCD.print(intersectL);
-    // LCD.print(" ");
-    // LCD.print(mainL);
-    // LCD.print(" ");
-    // LCD.print(mainR);
-    // LCD.print(" ");
-    // LCD.print(intersectR);
-
-    // LCD.setCursor(0, 1);
-    // LCD.print(error);
-    // delay(500);
-
-    // return error;
 }
 
 
@@ -392,8 +371,12 @@ void TapeFollow::loop()
 
     // get error based on current state
     bool amOffTape(true);
-    for (int i(0); i < 4; ++i)
-	amOffTape = amOffTape && (this->offTapeCounter[i] > this->offTapePeriod);
+    for (int i(0); i < 4; ++i) {
+	if (this->offTapeCounter[i] < this->offTapePeriod) {
+	    amOffTape = false;
+	    break;
+	}
+    }
     this->seeking = (!this->turning) && (amOffTape);
     
     float error(0.);
