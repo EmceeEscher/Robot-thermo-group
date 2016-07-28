@@ -159,23 +159,22 @@ float TapeFollow::followTape()
 	this->intersectionDetection();
 
     // determine error
-    if (mainL && mainR) {                    // both pins over tape
+    if (mainL && mainR)                     // both pins over tape
 	return 0.;
-    } else if (mainL) {                       // left main over tape
+    else if (mainL)                        // left main over tape
 	return this->errorSmall;
-    } else if (mainR) {                       // right main over tape
+    else if (mainR)                        // right main over tape
 	return -this->errorSmall;
-    } else if (intersectL && (!intersectR)) {  // left intersection over tape
+    else if (intersectL && (!intersectR))   // left intersection over tape
 	return this->errorMedium;
-    } else if (intersectR && (!intersectL)) { // right intersection over tape
+    else if (intersectR && (!intersectL))  // right intersection over tape
 	return -this->errorMedium;
-    } else if (this->lastError < 0.) {        // off tape to the right
+    else if (this->lastError < 0.)         // off tape to the right
 	return -this->errorLarge;
-    } else if (this->lastError > 0.) {        // off tape to the left
+    else if (this->lastError > 0.)         // off tape to the left
 	return this->errorLarge;
-    } else {
+    else 
 	return 0.;
-    }
 }
 
 
