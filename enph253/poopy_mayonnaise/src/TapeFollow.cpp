@@ -8,7 +8,8 @@
 #include "TapeFollow.hpp"
 
 
-const int MOTOR_SPEED_FOLLOWING      {120};
+// const int MOTOR_SPEED_FOLLOWING      {120};
+const int MOTOR_SPEED_FOLLOWING       {84};
 const int MOTOR_SPEED_PASSENGER_SEEK  {64};
 const int MOTOR_SPEED_TURNING         {32};
 const int MOTOR_SPEED_SEEKING          {8};
@@ -19,17 +20,18 @@ const float ERROR_LARGE     {.08};
 const float ERROR_SEEKING   {.64};
 const float ERROR_TURNING {12.80};
 const float EPSILON         {.10};
-const float GAIN_PROP      {4.68};
-const float GAIN_DER1      {9.54};
+const float GAIN_PROP      {9.84};
+const float GAIN_DER1     {11.78};
 const float GAIN_DER2     {.5*GAIN_DER1*GAIN_DER1/GAIN_PROP*(1.-EPSILON)};
 // const float GAIN_DER2 {0.};
 const int PRINT_PERIOD            {200};
 const int COUNTER_MAX             {256};
-const int INTERSECT_PERIOD          {5};  
+const int INTERSECT_PERIOD         {15};  
 const int TURNING_PERIOD           {10}; 
 const int TURN_WAIT_PERIOD         {45};
 const int OFF_TAPE_PERIOD          {50};
-const int ON_TAPE_PERIOD           {10};
+// const int ON_TAPE_PERIOD           {10};
+const int ON_TAPE_PERIOD            {5};
 const int INTERSECT_DELAY_PERIOD  {100};
 const int TapeFollow::motorPinL         {pins::MOTOR_PIN_L};
 const int TapeFollow::motorPinR         {pins::MOTOR_PIN_R};

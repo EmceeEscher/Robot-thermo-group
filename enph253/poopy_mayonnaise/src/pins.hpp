@@ -15,7 +15,7 @@ namespace pins
     // Digital in
     const int TAPE_SENSORS_FRONT[] { 0,  1,  2,  3};  // << < > >>
     const int TAPE_SENSORS_BACK[]  { 8,  9, 10, 11};  // << < > >>
-    const int COLLISION_SENSORS[]  { 5,  4,  6,  7};  // left front right back
+    const int COLLISION_SENSORS[]  { 4,  4,  4,  4};  // left front right back
     
     // Analog in
     const int PASSENGER_SENSORS_SIDES[] {0, 1, 2, 3, 4, 5};
