@@ -63,7 +63,7 @@ void TapeFollow::init()
     this->intersectDetect.reset();  // 00
     this->pinReadings.reset();      // 0000
 
-    this->etimeArray          = {0,  1};
+    this->etimeArray          = {1,  2};
     this->errorArray          = {0., 0.};
 
     for (int i(0); i < 4; ++i) {
@@ -303,8 +303,10 @@ void TapeFollow::printLCD()
     	// print gains and control
     	LCD.setCursor(0,1);
     	LCD.print(this->gainProp);
+	// LCD.print(this->errorArray[0]);
     	LCD.print(" ");
     	LCD.print(this->gainDer1);
+	// LCD.print(this->errorArray[1]);
     	LCD.print(" ");
     	LCD.print(this->control);
     }
