@@ -32,7 +32,9 @@ void DetectBeacon::loop() {}
 
 // returns -1 for left, 1 for right, 0 for no detection
 int DetectBeacon::getBeaconDirection(){
-	int val;
+	return -1;
+  //TODO: uncomment everything below
+	/*int val;
 	int leftAnalog = analogRead(this->sensorPins[0]);
 	int rightAnalog = analogRead(this->sensorPins[1]);
 	
@@ -49,7 +51,19 @@ int DetectBeacon::getBeaconDirection(){
 	
 	else
 		return 0;
+   */
 	
+}
+
+bool DetectBeacon::hasArrived(){
+  return true;
+  //TODO: uncomment everything
+  /*int leftAnalog = analogRead(this->sensorPins[0]);
+  int rightAnalog = analogRead(this->sensorPins[1]);
+  if((leftAnalog > this->beaconThreshold) || (rightAnalog > this->beaconThreshold)){
+    return true;
+  }
+  return false;*/
 }
 
 // TODO

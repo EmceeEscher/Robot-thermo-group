@@ -20,9 +20,9 @@ float angle;
 float now, lastTime;
 
 //Rest Positions
-const float BASE_REST_POSITION = 85;
+const float BASE_REST_POSITION = 70;
 const float MID_REST_POSITION = 170;
-const float BASE_HOLD_POSITION = 80;
+const float BASE_HOLD_POSITION = 70;
 const float MID_HOLD_POSITION = 170;
 
 //Iterator for LCD printing, not currently used
@@ -31,13 +31,13 @@ int LCDControl;
 //Stepper Constants
 const int COUNTERCLOCKWISE = HIGH;
 const int CLOCKWISE = LOW;
-const int STEPPER_MICROS_DELAY = 800; //Time delay between pulses in microseconds
+const int STEPPER_MICROS_DELAY = 1600; //Time delay between pulses in microseconds
 const int NUM_PULSES = 680;
 
 //reachAndClaw/reachAndDrop function Constants
-const float INITIAL_ADJ_MID_TARGET = 170;
+const float INITIAL_ADJ_MID_TARGET = 100;
 const float INITIAL_ADJ_BASE_TARGET = 60;
-const float MID_ADJ_MID_TARGET = 170;
+const float MID_ADJ_MID_TARGET = 135;
 const float MID_ADJ_BASE_TARGET = 40;
 const float FINAL_ADJ_MID_TARGET = 170;
 const float FINAL_ADJ_BASE_TARGET = 20;
@@ -124,7 +124,7 @@ void ArmControl::doControl(){
 
   
   if(LCDControl % 25 == 0){
-    //this->printState();
+    this->printState();
     LCDControl = 1;
   }
   LCDControl++;
@@ -134,7 +134,7 @@ void ArmControl::doControl(){
 //Converts base potentiometer voltage to corresponding angle
 float ArmControl::getAngle() {
   float voltage = (float) analogRead(this->baseAnglePin) * 5./1024.;
-  return 130.814*(3.*voltage - 10.)/(voltage-5.)+27.5;
+  return 130.814*(3.*voltage - 10.)/(voltage-5.)+60.;
 }
 
 //Wrapper function for setting motor speed
@@ -300,12 +300,9 @@ void ArmControl::stepperTurn(bool CW,int count){
     digitalWrite(this->stepperPulsePin,LOW);
     delayMicroseconds(this->stepperMicrosDelay);
   }
-  LCD.clear();
   while(!startbutton()){
-    LCD.print("wieners");
-    delay(10);
+    doControl();
   }
-  LCD.clear();
 }
 
 /* 

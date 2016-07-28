@@ -29,13 +29,15 @@ MDropPassenger::MDropPassenger()
   this->allMinorModes.push_back(mmCollisionWatch);
 }
 
+MDropPassenger::~MDropPassenger(){}
+
 // TODO
 
 void MDropPassenger::loop()
 {
     MajorMode::loop();
 
-    if(true/*TODO: this->mmDetectBeacon->hasArrived()*/)
+    if(this->mmDetectBeacon->hasArrived())
     {
         int dropoffDir = this->mmDetectBeacon->getBeaconDirection();
         if(dropoffDir == 1){
@@ -53,5 +55,15 @@ void MDropPassenger::start()
     this->mmArmControl->start();
     this->mmCollisionWatch->start();
     this->mmDetectBeacon->start();
+}
+
+// TODO
+void MDropPassenger::test()
+{
+    MajorMode::test();
+
+    this->mmArmControl->test();
+    this->mmCollisionWatch->test();
+    this->mmDetectBeacon->test();
 }
 

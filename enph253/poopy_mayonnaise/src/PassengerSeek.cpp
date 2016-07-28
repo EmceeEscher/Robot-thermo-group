@@ -144,15 +144,11 @@ bool PassengerSeek::isApproachingPassenger()
 
 bool PassengerSeek::isAtPassenger()
 {
-    return true;
-    //TODO: uncomment this
-    //return this->atPassenger;
+    return this->atPassenger;
 }
 
 
 int PassengerSeek::getPassengerSide()
 {
-    return -1;
-    //TODO: uncomment this
-    //return this->passengerSide;
+    return this->passengerSide;
 }

@@ -34,13 +34,8 @@ public:
 
     void start();
 
-    void stop();
-
-    void pause();
-
     void test();
 
-    bool isActive();
 };
 
 #endif  // M_DROP_PASSENGER_HPP

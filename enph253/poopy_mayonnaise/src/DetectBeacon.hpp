@@ -51,6 +51,12 @@ public:
      */
     int getBeaconDirection();
 
+    /*
+     * Returns true if the robot has determined that it has arrived at the
+     * drop-off location.
+     */
+     bool hasArrived();
+
 };
 
 #endif  // DETECT_BEACON_HPP
