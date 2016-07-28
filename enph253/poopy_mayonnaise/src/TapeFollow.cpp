@@ -23,11 +23,11 @@ const float GAIN_PROP      {4.68};
 const float GAIN_DER1      {9.54};
 const float GAIN_DER2     {.5*GAIN_DER1*GAIN_DER1/GAIN_PROP*(1.-EPSILON)};
 // const float GAIN_DER2 {0.};
-const int PRINT_PERIOD           {200};
-const int NUM_SAVED_READINGS      {52};
-const int INTERSECT_PERIOD         {5};  
-const int TURNING_PERIOD          {10}; 
-const int TURN_WAIT_PERIOD        {45};
+const int PRINT_PERIOD            {200};
+const int NUM_SAVED_READINGS       {52};
+const int INTERSECT_PERIOD          {5};  
+const int TURNING_PERIOD           {10}; 
+const int TURN_WAIT_PERIOD         {45};
 const int OFF_TAPE_PERIOD         {50};
 const int ON_TAPE_PERIOD          {10};
 const int INTERSECT_DELAY_PERIOD {100};
@@ -152,10 +152,8 @@ float TapeFollow::followTape()
     bool mainR      = this->pinReadings[2];
     bool intersectR = this->pinReadings[3];
 
-    if (this->tapeFollowSteps > this->intersectDelay)
+    if (this->tapeFollowSteps >= this->intersectDelay)
 	this->intersectionDetection();
-
-    float error(0.);
 
     // determine error
     if (mainL && mainR) {                    // both pins over tape
@@ -406,7 +404,8 @@ void TapeFollow::loop()
 	error = makeTurn();
     } else {
 	this->motorSpeed = this->motorSpeedFollowing;
-	this->tapeFollowSteps += 1;
+	if (this->tapeFollowSteps < this->intersectDelay)
+	    this->tapeFollowSteps += 1;
 	error = followTape();
     }
     error *= this->motorSpeedFollowing;

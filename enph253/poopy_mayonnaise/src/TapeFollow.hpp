@@ -34,7 +34,7 @@ private:
     const float errorLarge;                // all QRDs off tape
     const float errorSeeking;              // error to apply while seeking tape
     const float errorTurning;              // error to be applied during turning
-    const unsigned long intersectDelay;    // while tape following, waits for this many steps before searching for intersections
+    const int intersectDelay;              // while tape following, waits for this many steps before searching for intersections
     const int intersectPeriod;             // number of consecutive readings required to see an intersection
     const int turningPeriod;               // number of consecutive readings required to register start of turning
     const int turnWaitPeriod;              // number of iterations to wait after detecting intersections before making decision
@@ -46,7 +46,7 @@ private:
     const int motorSpeedFollowingDefault;  // default motor speed for tape following
     const int motorSpeedPassengerSeek;     // motor speed for following after initial passenger sighting
     const int motorSpeedReverse;           // motor speed for backing up
-    int motorSpeedFollowing;  // current motor speed for following tape
+    int motorSpeedFollowing;               // current motor speed for following tape
 
     bool onTape;                  // true= on tape, false= off tape
     bool lastOnTape;              // last value of onTape
@@ -61,12 +61,12 @@ private:
     int control;                  // current control parameter
     int printCount;
     int motorSpeed;               // speed to add to motors
-    unsigned long tapeFollowSteps;
-    float lastError;             // last calculated error
+    int tapeFollowSteps;
+    float lastError;              // last calculated error
 
-    bitset<4> pinReadings;       // current readings on QRD pins
-    bitset<2> intersectSeen;     // true if an intersection was seen
-    bitset<2> intersectDetect;   // true when an intersection has been detected (seen and passed over)
+    bitset<4> pinReadings;        // current readings on QRD pins
+    bitset<2> intersectSeen;      // true if an intersection was seen
+    bitset<2> intersectDetect;    // true when an intersection has been detected (seen and passed over)
 
     vector<float> errorArray;           // array of last 2 distinct errors
     vector<unsigned long> etimeArray;   // array of times (since read) assoc with errorArray
