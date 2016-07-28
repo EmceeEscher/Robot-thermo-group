@@ -101,9 +101,9 @@ float TapeFollow::seekTape()
 void TapeFollow::intersectionSeen()
 {
     bool intersectSeenL = (this->mainsOnTape &&
-            (this->onTapeCounter[0] >= this->intersectPeriod));
+            (this->onTapeCounter[0] >= this->intersectDetectPeriod));
     bool intersectSeenR = (this->mainsOnTape &&
-            (this->onTapeCounter[3] >= this->intersectPeriod));
+            (this->onTapeCounter[3] >= this->intersectDetectPeriod));
 
     // if seen, update instance variable
     if (intersectSeenL)
@@ -131,8 +131,8 @@ void TapeFollow::intersectionDetection()
 	this->intersectDetect[1] = 1;
 
     // if intersection(s) detected, make move decision
-    if ((this->offTapeCounter[0] >= this->turnWaitPeriod) &&
-	(this->offTapeCounter[3] >= this->turnWaitPeriod)) {
+    if ((this->offTapeCounter[0] >= this->turnPreDelayPeriod) &&
+	(this->offTapeCounter[3] >= this->turnPreDelayPeriod)) {
 
 	// wait until both intersections crossed over
 	this->turnDirection = this->chooseTurn(
@@ -157,7 +157,7 @@ float TapeFollow::followTape()
     bool mainR      = this->pinReadings[2];
     bool intersectR = this->pinReadings[3];
 
-    if (this->tapeFollowSteps >= this->intersectDelay)
+    if (this->tapeFollowSteps >= this->intersectSeekDelayPeriod)
 	this->intersectionDetection();
 
     // determine error
@@ -185,8 +185,8 @@ float TapeFollow::makeTurn()
 {
     // determine whether end has bee reached
     if ((!this->halfTurn) &&
-	    (this->offTapeCounter[1] >= this->turningPeriod) &&
-	    (this->offTapeCounter[2] >= this->turningPeriod)) {
+	    (this->offTapeCounter[1] >= this->turnConfirmPeriod) &&
+	    (this->offTapeCounter[2] >= this->turnConfirmPeriod)) {
     	this->halfTurn = true;
     } else if (this->halfTurn &&
             (this->onTapeCounter[1] >= this->onTapePeriod) &&
@@ -295,22 +295,22 @@ void TapeFollow::printLCD()
 
 TapeFollow::TapeFollow()
     : MinorMode(),
-      gainProp         (GAIN_PROP),
-      gainDer1         (GAIN_DER1),
-      gainDer2         (GAIN_DER2),
-      errorSmall       (ERROR_SMALL),
-      errorMedium      (ERROR_MEDIUM),
-      errorLarge       (ERROR_LARGE),
-      errorSeeking     (ERROR_SEEKING),
-      errorTurning     (ERROR_TURNING),
-      intersectDelay   (INTERSECT_SEEK_DELAY_PERIOD),
-      intersectPeriod  (INTERSECT_DETECT_PERIOD),
-      turningPeriod    (TURN_CONFIRM_PERIOD),
-      turnWaitPeriod   (TURN_PRE_DELAY_PERIOD),
-      offTapePeriod    (OFF_TAPE_PERIOD),
-      onTapePeriod     (ON_TAPE_PERIOD),
-      printPeriod      (PRINT_PERIOD),
-      counterMax       (COUNTER_MAX),
+      gainProp                   (GAIN_PROP),
+      gainDer1                   (GAIN_DER1),
+      gainDer2                   (GAIN_DER2),
+      errorSmall                 (ERROR_SMALL),
+      errorMedium                (ERROR_MEDIUM),
+      errorLarge                 (ERROR_LARGE),
+      errorSeeking               (ERROR_SEEKING),
+      errorTurning               (ERROR_TURNING),
+      intersectSeekDelayPeriod   (INTERSECT_SEEK_DELAY_PERIOD),
+      intersectDetectPeriod      (INTERSECT_DETECT_PERIOD),
+      turnConfirmPeriod          (TURN_CONFIRM_PERIOD),
+      turnPreDelayPeriod         (TURN_PRE_DELAY_PERIOD),
+      offTapePeriod              (OFF_TAPE_PERIOD),
+      onTapePeriod               (ON_TAPE_PERIOD),
+      printPeriod                (PRINT_PERIOD),
+      counterMax                 (COUNTER_MAX),
       motorSpeedTurningDefault   (MOTOR_SPEED_TURNING),
       motorSpeedSeeking          (MOTOR_SPEED_SEEKING),
       motorSpeedFollowingDefault (MOTOR_SPEED_FOLLOWING),
@@ -392,7 +392,7 @@ void TapeFollow::loop()
 	error = makeTurn();
     } else {
 	this->motorSpeed = this->motorSpeedFollowing;
-	if (this->tapeFollowSteps < this->intersectDelay)
+	if (this->tapeFollowSteps < this->intersectSeekDelayPeriod)
 	    this->tapeFollowSteps += 1;
 	error = followTape();
     }
