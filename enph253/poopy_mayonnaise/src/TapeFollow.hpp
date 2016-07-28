@@ -25,6 +25,7 @@ private:
     static const int motorPinR;
     static const int *tapeSensorsFront;
     static const int *tapeSensorsBack;
+    static const int numSensors;
 
     float gainProp;                        // TODO: set const; set based on knobs for now
     float gainDer1;                        // TODO: set const; set based on knobs for now
@@ -34,20 +35,21 @@ private:
     const float errorLarge;                // all QRDs off tape
     const float errorSeeking;              // error to apply while seeking tape
     const float errorTurning;              // error to be applied during turning
-    const int intersectDelay;              // while tape following, waits for this many steps before searching for intersections
-    const int intersectPeriod;             // number of consecutive readings required to see an intersection
-    const int turningPeriod;               // number of consecutive readings required to register start of turning
-    const int turnWaitPeriod;              // number of iterations to wait after detecting intersections before making decision
+    const int intersectSeekDelayPeriod;    // while tape following, waits for this many steps before searching for intersections
+    const int intersectDetectPeriod;       // number of consecutive readings required to see an intersection
+    const int turnConfirmPeriod;           // number of consecutive readings required to register start of turning
+    const int turnPreDelayPeriod;          // number of iterations to wait after detecting intersections before making decision
     const int offTapePeriod;               // number of consecutive readings required to signal that the robot has lost the tape
     const int onTapePeriod;                // number of consecutive readings required to confirm that the robot is back on the tape after turning
     const int printPeriod;                 // number of iterations per printout
     const int counterMax;                  // maximum value for onTapeCounter and offTapeCounter
-    const int motorSpeedTurning;           // motor speed for making turn
+    const int motorSpeedTurningDefault;    // motor speed for making turn
     const int motorSpeedSeeking;           // motor speed for seeking tape
     const int motorSpeedFollowingDefault;  // default motor speed for tape following
     const int motorSpeedPassengerSeek;     // motor speed for following after initial passenger sighting
     const int motorSpeedReverse;           // motor speed for backing up
     int motorSpeedFollowing;               // current motor speed for following tape
+    int motorSpeedTurning;
 
     bool onTape;                  // true= on tape, false= off tape
     bool lastOnTape;              // last value of onTape
@@ -55,6 +57,7 @@ private:
     bool lastMainsOnTape;         // whether one of the mains was on the tape in the last step
     bool seeking;                 // whether the robot is currently seeking tape
     bool turning;                 // true= turning, false= straight
+    bool turningAround;           // true if the robot is turning around (this->turning will always be true if this is true)
     bool halfTurn;                // if true, bot has turned far enough that mains are off tape
     bool motorsActive;            // true if motors are active
 
