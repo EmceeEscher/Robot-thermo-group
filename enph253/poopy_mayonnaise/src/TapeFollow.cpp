@@ -13,7 +13,7 @@ const int MOTOR_SPEED_FOLLOWING       {84};
 const int MOTOR_SPEED_PASSENGER_SEEK  {64};
 const int MOTOR_SPEED_TURNING         {32};
 const int MOTOR_SPEED_SEEKING          {8};
-const int MOTOR_SPEED_REVERSE        {-12};
+const int MOTOR_SPEED_REVERSE         {-8};
 const float ERROR_SMALL     {.02};
 const float ERROR_MEDIUM    {.04};
 const float ERROR_LARGE     {.08};
@@ -50,6 +50,7 @@ void TapeFollow::init()
     this->lastMainsOnTape     = false;
     this->seeking             = false;
     this->turning             = false;
+    this->turningAround       = false;
     this->halfTurn            = false;
     this->motorsActive        = false;
 
@@ -57,6 +58,7 @@ void TapeFollow::init()
     this->control             = 0;
     this->printCount          = 0;
     this->motorSpeedFollowing = this->motorSpeedFollowingDefault;
+    this->motorSpeedTurning   = this->motorSpeedTurningDefault;
     this->motorSpeed          = 0;
     this->tapeFollowSteps     = 0;
 
@@ -191,6 +193,8 @@ float TapeFollow::makeTurn()
 	    (this->onTapeCounter[2] >= this->onTapePeriod)) {
 	this->halfTurn = false;
 	this->turning = false;  // exit to regular following
+	this->turningAround = false;
+	this->motorSpeedTurning = this->motorSpeedTurningDefault;
     }
 
     // determine error
@@ -305,12 +309,13 @@ TapeFollow::TapeFollow()
       onTapePeriod     (ON_TAPE_PERIOD),
       printPeriod      (PRINT_PERIOD),
       counterMax       (COUNTER_MAX),
-      motorSpeedTurning          (MOTOR_SPEED_TURNING),
+      motorSpeedTurningDefault   (MOTOR_SPEED_TURNING),
       motorSpeedSeeking          (MOTOR_SPEED_SEEKING),
       motorSpeedFollowingDefault (MOTOR_SPEED_FOLLOWING),
       motorSpeedPassengerSeek    (MOTOR_SPEED_PASSENGER_SEEK),
       motorSpeedReverse          (MOTOR_SPEED_REVERSE),
-      motorSpeedFollowing        (MOTOR_SPEED_FOLLOWING)
+      motorSpeedFollowing        (MOTOR_SPEED_FOLLOWING),
+      motorSpeedTurning          (MOTOR_SPEED_TURNING)
 {
     this->init();
 }
@@ -473,12 +478,11 @@ void TapeFollow::resetMotorSpeed()
 // TODO
 void TapeFollow::turnAround()
 {
-    // Reverse robot
-    this->motorSpeed = this->motorSpeedReverse;
-
     // Set `turnDirection` and call `makeTurn()`
-    this->turnDirection = Direction::BACK;
+    this->turnDirection = Direction::RIGHT;  // TODO: make a smarter way of choosing this
     this->turning = true;
+    this->turningAround = true;
+    this->motorSpeedTurning = this->motorSpeedReverse;
 }
 
 
