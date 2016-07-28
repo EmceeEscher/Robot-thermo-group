@@ -39,19 +39,21 @@ void CollisionWatch::loop()
 {
     bool collisionSeen(false);
     
-    // Read collision sensors and update numReads array
-    for (int i(0); i < 4; ++i) {
-	if (!digitalRead(CollisionWatch::sensorPins[i])) {
-	    this->numCollisionReads[i] = 0;
-	} else if (this->numCollisionReads[i] < this->collisionDetectPeriod) {
-	    this->numCollisionReads[i] += 1;
-	    collisionSeen = true;
-	} else {
-	    collisionSeen = true;
-	}
-    }
+    // // Read collision sensors and update numReads array
+    // for (int i(0); i < 4; ++i) {
+    // 	if (!(digitalRead(CollisionWatch::sensorPins[i]))) {
+    // 	    this->numCollisionReads[i] = 0;
+    // 	} else if (this->numCollisionReads[i] < this->collisionDetectPeriod) {
+    // 	    this->numCollisionReads[i] += 1;
+    // 	    collisionSeen = true;
+    // 	} else {
+    // 	    collisionSeen = true;
+    // 	}
+    // }
 
-    if (collisionSeen) {
+    pinMode(0, INPUT);
+
+    if (digitalRead(4)) {
 	LCD.clear();
 	LCD.print("COLLISION");
 	delay(100);
