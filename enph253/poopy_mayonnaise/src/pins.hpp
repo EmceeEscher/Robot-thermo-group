@@ -17,9 +17,9 @@ namespace pins
     // Digital in
     const int TAPE_SENSORS_FRONT[] { 0,  1,  2,  3};  // << < > >>
     const int TAPE_SENSORS_BACK[]  { 8,  9, 10, 11};  // << < > >>
-    const int COLLISION_SENSORS[]  { 4, 5 };  // front, back
     const int ARM_SWITCHES[] {12, 13, 14}; //catch, miss, inner
     const int PASSENGER_SENSOR_BACK_LEFT {6}; //we ran out of analog pins, so this one has to be digital
+    const int COLLISION_SENSORS[]  { 4,  4,  5,  5};  // left front right back
     
     // Analog in
     const int PASSENGER_SENSORS_SIDES[] {0, 1, 2, 3, 4};
@@ -38,6 +38,21 @@ namespace pins
 
     // Analog out
 
+}
+
+namespace pins_sizes
+{
+    // Digital in
+    const int TAPE_SENSORS_FRONT = sizeof(pins::TAPE_SENSORS_FRONT) /
+            sizeof(pins::TAPE_SENSORS_FRONT[0]);
+    const int TAPE_SENSORS_BACK = sizeof(pins::TAPE_SENSORS_BACK) /
+	    sizeof(pins::TAPE_SENSORS_BACK[0]);
+    const int COLLISION_SENSORS = sizeof(pins::COLLISION_SENSORS) /
+	    sizeof(pins::COLLISION_SENSORS[0]);
+
+    // Analog in
+    const int PASSENGER_SENSORS_SIDES = sizeof(pins::PASSENGER_SENSORS_SIDES) /
+	    sizeof(pins::PASSENGER_SENSORS_SIDES[0]);
 }
 
 #endif  // PINS_HPP

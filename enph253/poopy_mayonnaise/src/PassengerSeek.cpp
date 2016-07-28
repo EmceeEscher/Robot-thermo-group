@@ -12,6 +12,7 @@
 const int NUM_SAVED_READINGS {24};
 const int MAX_REGISTER_PERIOD {10};
 const double MAX_REGISTER_THRESHOLD {0.};
+const int *PassengerSeek::qsdPinsSides {pins::PASSENGER_SENSORS_SIDES};
 
 
 // TODO
@@ -69,7 +70,6 @@ PassengerSeek::PassengerSeek()
     : MinorMode(),
       maxRegisterPeriod    (MAX_REGISTER_PERIOD),
       maxRegisterThreshold (MAX_REGISTER_THRESHOLD),
-      qsdPinsSides         (pins::PASSENGER_SENSORS_SIDES),
       pinReadings          {0., 0., 0., 0., 0.},
       lastPinReadings      {0., 0., 0., 0., 0.},
       numAboveThreshold    {0, 0, 0, 0, 0},
@@ -89,7 +89,7 @@ void PassengerSeek::loop()
     // Get pin readings
     for (int i(0); i < 5; ++i) {
 	this->lastPinReadings[i] = this->pinReadings[i];
-	this->pinReadings[i] = analogRead(this->qsdPinsSides[i]);
+	this->pinReadings[i] = analogRead(PassengerSeek::qsdPinsSides[i]);
     }
     
     // Update derivative counts

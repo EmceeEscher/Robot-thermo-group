@@ -26,7 +26,10 @@ private:
 
 public:
 
-    MLoadPassenger();   // constructor
+    MLoadPassenger(
+      ArmControl      *mmArmControl,
+      PassengerSeek   *mmPassengerSeek,
+      CollisionWatch  *mmCollisionWatch);   // constructor
 
     ~MLoadPassenger();  // deconstructor
 

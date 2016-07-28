@@ -22,10 +22,12 @@ private:
     bool active;                         // whether the robot is active
     int mainLoopDelay;                   // delay for the main loop
     vector< MajorMode* > allMajorModes;  // all possible major modes
+    vector< MinorMode* > allMinorModes;  // all possible minor modes
     MajorMode *currentMajorMode;         // current major mode
 
     // explicitly named major modes
     // TODO: Should these necessarily be degraded into their base?
+    //       Do they need individual functionalities?
     MajorMode *mFindPassenger;
     MajorMode *mLoadPassenger;
     MajorMode *mToDestination;

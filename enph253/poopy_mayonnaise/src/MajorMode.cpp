@@ -10,17 +10,10 @@ void MajorMode::init()
 }
 
 
-MajorMode::MajorMode()
-    : active(false)
-{
-}
+MajorMode::MajorMode() : active(false) {}
 
 
-MajorMode::~MajorMode()
-{
-    for (auto *mm : this->allMinorModes)
-	delete mm;
-}
+MajorMode::~MajorMode() {}
 
 
 void MajorMode::loop()
@@ -58,6 +51,7 @@ void MajorMode::pause()
 
 void MajorMode::test()
 {
+    this->pause();
     this->active = true;
 }
 

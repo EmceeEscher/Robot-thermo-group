@@ -13,19 +13,20 @@ void MDropPassenger::init()
 }
 
 //TODO
-MDropPassenger::MDropPassenger()
-    : MajorMode()
+MDropPassenger::MDropPassenger(
+  ArmControl      *mmArmControl,
+  DetectBeacon    *mmDetectBeacon,
+  CollisionWatch  *mmCollisionWatch)
+    : MajorMode(),
+    mmArmControl(mmArmControl),
+    mmDetectBeacon(mmDetectBeacon),
+    mmCollisionWatch(mmCollisionWatch)
 {
   this->init();
 
   // TODO: initialize specific minor modes
-  this->mmArmControl = new ArmControl;
   this->allMinorModes.push_back(mmArmControl);
-
-  this->mmDetectBeacon = new DetectBeacon;
   this->allMinorModes.push_back(mmDetectBeacon);
-
-  this->mmCollisionWatch = new CollisionWatch;
   this->allMinorModes.push_back(mmCollisionWatch);
 }
 

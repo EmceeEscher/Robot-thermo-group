@@ -26,7 +26,10 @@ private:
 
 public:
 
-    MDropPassenger();   // constructor
+    MDropPassenger(
+      ArmControl      *mmArmControl,
+      DetectBeacon    *mmDetectBeacon,
+      CollisionWatch  *mmCollisionWatch);   // constructor
 
     ~MDropPassenger();  // deconstructor
 
