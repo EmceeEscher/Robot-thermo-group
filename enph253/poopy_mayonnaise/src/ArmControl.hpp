@@ -64,6 +64,8 @@ private:
     const float initialAdjBaseTarget;
     const float finalAdjMidTarget;
     const float finalAdjBaseTarget;
+    const float midAdjMidTarget;
+    const float midAdjBaseTarget;
 
     //Holding a passenger?
     bool holding;

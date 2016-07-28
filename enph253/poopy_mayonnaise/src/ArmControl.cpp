@@ -11,7 +11,7 @@ const int DROP_TIME = 400; // Milliseconds
 const float PROP_GAIN = 10.;
 const float HOLD_PROP_GAIN = 17.;
 const float INT_GAIN = 0.;
-const float DERIV_GAIN = 0.5;
+const float DERIV_GAIN = 1.5;
 
 //Dynamic Control Variables
 float baseTarget, midTarget;
@@ -22,7 +22,7 @@ float now, lastTime;
 //Rest Positions
 const float BASE_REST_POSITION = 85;
 const float MID_REST_POSITION = 170;
-const float BASE_HOLD_POSITION = 85;
+const float BASE_HOLD_POSITION = 80;
 const float MID_HOLD_POSITION = 170;
 
 //Iterator for LCD printing, not currently used
@@ -36,29 +36,22 @@ const int NUM_PULSES = 680;
 
 //reachAndClaw/reachAndDrop function Constants
 const float INITIAL_ADJ_MID_TARGET = 170;
-const float INITIAL_ADJ_BASE_TARGET = 40;
+const float INITIAL_ADJ_BASE_TARGET = 60;
+const float MID_ADJ_MID_TARGET = 170;
+const float MID_ADJ_BASE_TARGET = 40;
 const float FINAL_ADJ_MID_TARGET = 170;
-const float FINAL_ADJ_BASE_TARGET = 25;
+const float FINAL_ADJ_BASE_TARGET = 20;
 
 //Holding a passenger?
 //bool holding = false;
 
 void ArmControl::init() {
 
-  
-  //#include <phys253setup.txt>
-  //portMode(1,OUTPUT);
-  
-  /*RCServo0.detach();
-  RCServo1.detach();
-  RCServo2.detach();
-  RCServo0.attach(35);*/
   RCServo1.detach();
   pinMode(this->stepperPulsePin,OUTPUT);
   RCServo2.detach();
   pinMode(this->stepperDirPin,OUTPUT);
  
-  //pinMode(31, OUTPUT);
   Serial.begin(9600);
   baseTarget = this->baseRestPosition;
   midTarget = this->midRestPosition;
@@ -85,6 +78,8 @@ ArmControl::ArmControl()
 	  initialAdjBaseTarget(INITIAL_ADJ_BASE_TARGET),
 	  finalAdjMidTarget(FINAL_ADJ_MID_TARGET),
 	  finalAdjBaseTarget(FINAL_ADJ_BASE_TARGET),
+    midAdjMidTarget(MID_ADJ_MID_TARGET),
+    midAdjBaseTarget(MID_ADJ_BASE_TARGET),
 	  
 	  //pin constants
 	  baseAnglePin(pins::POTENTIOMETER),
@@ -230,12 +225,14 @@ void ArmControl::printState(){
 void ArmControl::reachAndClaw(bool grabbing){
 
   midTarget = this->initialAdjMidTarget;
+  baseTarget = this->initialAdjBaseTarget;
   unsigned long startTime = millis();
   while(millis() - startTime < 500){
     doControl();
   }
 
-  baseTarget = this->initialAdjBaseTarget;
+  midTarget = this->midAdjMidTarget;
+  baseTarget = this->midAdjBaseTarget;
 
   while(millis() - startTime < 1000){
     doControl();
@@ -243,13 +240,12 @@ void ArmControl::reachAndClaw(bool grabbing){
   
   baseTarget = this->finalAdjBaseTarget; 
   midTarget = this->finalAdjMidTarget;
-  startTime = millis();
-  while(millis() - startTime < 2500){
+  while(millis() - startTime < 1500){
     doControl();
     if(!digitalRead(this->innerClawSwitch)){
-      baseTarget = getAngle() + 5;
+      //baseTarget = getAngle() + 5; // this code don't do nothing
       break;
-    }
+    } 
   }
   if (grabbing) {
 	  grabShit();
@@ -262,6 +258,17 @@ void ArmControl::reachAndClaw(bool grabbing){
 
 //Sets the control target values to rest position
 void ArmControl::setRestPosition(){
+  unsigned long startTime = millis();
+  baseTarget = this->midAdjBaseTarget;
+  midTarget = this->midAdjMidTarget;
+  while(millis()-startTime < 500){
+    doControl();
+  }
+  baseTarget = this->initialAdjBaseTarget;
+  midTarget = this->initialAdjMidTarget;
+  while(millis()-startTime < 1000){
+    doControl();
+  }
   if(this->holding){
     baseTarget = this->baseHoldPosition;
     midTarget = this->midHoldPosition;
