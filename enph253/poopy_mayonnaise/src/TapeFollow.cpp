@@ -35,14 +35,11 @@ const int OFF_TAPE_PERIOD               {50};
 // const int ON_TAPE_PERIOD               {10};
 const int ON_TAPE_PERIOD                {5};
 const int INTERSECT_SEEK_DELAY_PERIOD {100};
+const unsigned long RANDOM_MAX_VAL     {100000};
 const int TapeFollow::motorPinL         {pins::MOTOR_PIN_L};
 const int TapeFollow::motorPinR         {pins::MOTOR_PIN_R};
 const int *TapeFollow::tapeSensorsFront {pins::TAPE_SENSORS_FRONT};
 const int *TapeFollow::tapeSensorsBack  {pins::TAPE_SENSORS_BACK};
-
-float leftWeight;
-float rightWeight;
-float straightWeight;
 
 
 void TapeFollow::init()
@@ -87,9 +84,9 @@ void TapeFollow::init()
 	this->activePins[i] = TapeFollow::tapeSensorsFront[i];
     }
 
-    leftWeight = 0.;
-    rightWeight = 0.;
-    straightWeight = 0.;
+    this->leftWeight = 0.;
+    this->rightWeight = 0.;
+    this->straightWeight = 0.;
 
     // declare active pins as inputs
     for (int i(0); i < TapeFollow::numSensors; ++i)
@@ -224,38 +221,31 @@ float TapeFollow::makeTurn()
 // TODO: Allow specifying probabilities from outside
 Direction TapeFollow::chooseTurn(bool left, bool right, bool straight)
 {
-    float total = left*leftWeight + right*rightWeight + straight*straightWeight;
-    float leftProb;
-    float rightProb;
-    float straightProb;
-    if(abs(total)<0.0001){
-      leftProb = left*100./(left+right+straight);
-      rightProb = right*100./(left+right+straight);
-      straightProb = straight*100./(left+right+straight);
-    }else{
-      leftProb = (left*leftWeight)/total * 100;
-      rightProb = (right*rightWeight)/total * 100;
-      straightProb = (straight*straightWeight)/total * 100;
-    }
-    
-    float randValue = ((float)(rand() % 1000)) / 10.;
+    float total = (
+	    left     * this->leftWeight +
+	    right    * this->rightWeight +
+	    straight * this->straightWeight
+    );
+    float leftProb     = left     * this->leftWeight     / total;
+    float rightProb    = right    * this->rightWeight    / total;
+    float straightProb = straight * this->straightWeight / total;
+
+    // TODO: do this randValue part differently?
+    float randValue = static_cast<float>(random(RANDOM_MAX_VAL)) /
+	(RANDOM_MAX_VAL+1);
     float leftMax = 0 + leftProb;
     float rightMax = leftProb + rightProb;
-    float straightMax = 100;
+    
+    this->leftWeight = 0.;
+    this->rightWeight = 0.;
+    this->straightWeight = 0.;
 
-    Direction desired;
-    if(randValue < leftMax){
-      desired = Direction::LEFT;
-    }else if(randValue < rightMax){
-      desired = Direction::RIGHT;
-    }else{
-      desired = Direction::FRONT;
-    }
-
-    leftWeight = 0.;
-    rightWeight = 0.;
-    straightWeight = 0.;
-    return desired;
+    if (randValue < leftMax) 
+	return Direction::LEFT;
+    else if (randValue < rightMax) 
+	return Direction::RIGHT;
+    else 
+	return Direction::FRONT;
 }
 
 

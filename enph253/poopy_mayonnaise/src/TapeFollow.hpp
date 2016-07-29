@@ -65,6 +65,10 @@ private:
     bool motorsActive;            // true if motors are active
 
     Direction turnDirection;      // current turn direction
+    float leftWeight;
+    float straightWeight;
+    float rightWeight;
+    
     int control;                  // current control parameter
     int printCount;
     int motorSpeed;               // speed to add to motors
@@ -128,7 +132,7 @@ private:
      * param right: true if right is an option, false otherwise
      * param straight: true if straight is an option, false otherwise
      */
-    static Direction chooseTurn(bool left, bool right, bool straight);
+    Direction chooseTurn(bool left, bool right, bool straight);
 
     /*
      * Loop function for completing a turn in a single direction.
