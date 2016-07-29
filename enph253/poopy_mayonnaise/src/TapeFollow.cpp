@@ -226,62 +226,67 @@ Direction TapeFollow::chooseTurnDeterministic(bool left, bool right, bool straig
   if((leftWeight == rightWeight) && (leftWeight == straightWeight)){
     return TapeFollow::chooseTurn(left, right, straight);
   }
-  
+
+  Direction returnVal;
   if((leftWeight > rightWeight) && (leftWeight > straightWeight)){
     if(left){
-      return Direction::LEFT;
+      returnVal = Direction::LEFT;
     }else{
       if(rightWeight > straightWeight){
         if(right){
-          return Direction::RIGHT;
+          returnVal = Direction::RIGHT;
         }else{
-          return Direction::FRONT;
+          returnVal = Direction::FRONT;
         }
       }else{
         if(straight){
-          return Direction::FRONT;
+          returnVal = Direction::FRONT;
         }else{
-          return Direction::RIGHT;
+          returnVal = Direction::RIGHT;
         }
       }
     }
   }else if((rightWeight > straightWeight) && (rightWeight > leftWeight)){
     if(right){
-      return Direction::RIGHT;
+      returnVal = Direction::RIGHT;
     }else{
       if(leftWeight > straightWeight){
         if(left){
-          return Direction::LEFT;
+          returnVal = Direction::LEFT;
         }else{
-          return Direction::FRONT;
+          returnVal = Direction::FRONT;
         }
       }else{
         if(straight){
-          return Direction::FRONT;
+          returnVal = Direction::FRONT;
         }else{
-          return Direction::LEFT;
+          returnVal = Direction::LEFT;
         }
       }
     }
   }else{
     if(straight){
-      return Direction::FRONT;
+      returnVal = Direction::FRONT;
     }else{
       if(rightWeight > leftWeight){
         if(right){
-          return Direction::RIGHT;
+          returnVal = Direction::RIGHT;
         }else{
-          return Direction::LEFT;
+          returnVal = Direction::LEFT;
         }
       }else{
         if(left){
-          return Direction::LEFT;
+          returnVal = Direction::LEFT;
         }else{
-          return Direction::RIGHT;
+          returnVal = Direction::RIGHT;
         }
       }
     }
   }
+  leftWeight = 0.;
+  rightWeight = 0.;
+  straightWeight = 0.;
+  return returnVal;
 }
 
 // TODO: Allow specifying probabilities from outside
