@@ -2,6 +2,7 @@
 // MFindPassenger.cpp
 //
 #include "allminormodes.hpp"
+#include "MajorModeEnum.hpp"
 #include "MFindPassenger.hpp"
 
 
@@ -17,15 +18,14 @@ void MFindPassenger::init()
 MFindPassenger::MFindPassenger(
         ArmControl     *mmArmControl,
         TapeFollow     *mmTapeFollow,
-	      PassengerSeek  *mmPassengerSeek,
-	      CollisionWatch *mmCollisionWatch
+	PassengerSeek  *mmPassengerSeek,
+	CollisionWatch *mmCollisionWatch
 )
-    : MajorMode(),
+    : MajorMode(MajorModeEnum::FIND_PASSENGER),
       mmArmControl(mmArmControl),
       mmTapeFollow(mmTapeFollow),
       mmPassengerSeek(mmPassengerSeek),
-      mmCollisionWatch(mmCollisionWatch),
-      state(MajModeEnum::DontChange)
+      mmCollisionWatch(mmCollisionWatch)
 {
     this->init();
 
@@ -34,7 +34,6 @@ MFindPassenger::MFindPassenger(
     this->allMinorModes.push_back(mmTapeFollow);
     this->allMinorModes.push_back(mmCollisionWatch);
     this->allMinorModes.push_back(mmPassengerSeek);
-
 }
 
 
@@ -78,7 +77,6 @@ void MFindPassenger::start()
     this->mmCollisionWatch->start();
     // this->mmPassengerSeek->start();
     // this->mmArmControl->start();
-    this->state = MajModeEnum::DontChange;
 }
 
 
@@ -88,10 +86,5 @@ void MFindPassenger::test()
     MajorMode::test();
     this->mmTapeFollow->test();
     this->mmCollisionWatch->test();
-}
-
-MajModeEnum MFindPassenger::changeTo()
-{
-    return this->state;
 }
 

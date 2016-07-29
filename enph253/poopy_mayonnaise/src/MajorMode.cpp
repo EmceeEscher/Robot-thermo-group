@@ -1,16 +1,22 @@
 ///
 // MajorMode.cpp
 //
+#include "MajorModeEnum.hpp"
 #include "MajorMode.hpp"
 
 
 void MajorMode::init()
 {
     this->active = false;
+    this->nextMode = this->thisMode;
 }
 
 
-MajorMode::MajorMode() : active(false) {}
+MajorMode::MajorMode(MajorModeEnum thisMode)
+    : thisMode(thisMode),
+      nextMode(thisMode),
+      active(false)
+{}
 
 
 MajorMode::~MajorMode() {}
@@ -61,8 +67,9 @@ bool MajorMode::isActive()
     return this->active;
 }
 
-MajModeEnum MajorMode::changeTo()
+
+MajorModeEnum MajorMode::changeTo()
 {
-  return MajModeEnum::DontChange;
+    return this->nextMode;
 }
 

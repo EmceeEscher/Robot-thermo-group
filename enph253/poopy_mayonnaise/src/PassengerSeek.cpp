@@ -13,7 +13,6 @@ const int NUM_SAVED_READINGS {24};
 const int MAX_REGISTER_PERIOD {10};
 const double MAX_REGISTER_THRESHOLD {0.};
 const int *PassengerSeek::qsdPinsSides {pins::PASSENGER_SENSORS_SIDES};
-const int PassengerSeek::numPinsSides  {pins_sizes::PASSENGER_SENSORS_SIDES};
 
 
 // TODO

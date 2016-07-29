@@ -24,6 +24,7 @@ private:
     vector< MajorMode* > allMajorModes;  // all possible major modes
     vector< MinorMode* > allMinorModes;  // all possible minor modes
     MajorMode *currentMajorMode;         // current major mode
+    MajorMode *nextMajorMode;
 
     // explicitly named major modes
     // TODO: Should these necessarily be degraded into their base?
@@ -37,6 +38,23 @@ private:
      * (Re)initializes any state variables
      */
     void init();
+
+    /*
+     * Sets nextMajorMode based on the current major mode's `changeTo()`
+     * method.
+     */
+    void setNextMode();
+
+    /*
+     * Enter the mode specified by `nextMajorMode`. If the current mode is
+     * active, the next mode will also be active. Otherwise it will be
+     * left inactive.
+     *
+     * NOTE: This method assumes nextMajorMode is different from
+     * currentMajorMode. Calling it when they are the same will
+     * cause the mode to restart if it is active.
+     */
+    void enterNextMode();
 
 public:
 

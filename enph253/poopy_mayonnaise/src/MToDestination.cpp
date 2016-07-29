@@ -29,12 +29,11 @@ MToDestination::MToDestination(
     DetectBeacon    *mmDetectBeacon,
     TapeFollow      *mmTapeFollow
     )
-    : MajorMode(),
+    : MajorMode(MajorModeEnum::TO_DESTINATION),
       mmArmControl(mmArmControl),
       mmCollisionWatch(mmCollisionWatch),
       mmDetectBeacon(mmDetectBeacon),
-      mmTapeFollow(mmTapeFollow),
-      state(MajModeEnum::DontChange){
+      mmTapeFollow(mmTapeFollow){
 
         this->init();
 
@@ -78,7 +77,6 @@ void MToDestination::start()
     this->mmCollisionWatch->start();
     this->mmDetectBeacon->start();
     this->mmArmControl->start();
-    this->state = MajModeEnum::DontChange;
 }
 
 void MToDestination::test()
@@ -86,9 +84,5 @@ void MToDestination::test()
     MajorMode::test();
     this->mmTapeFollow->test();
     this->mmCollisionWatch->test();
-}
-    
-MajModeEnum MToDestination::changeTo(){
-    return this->state;
 }
 

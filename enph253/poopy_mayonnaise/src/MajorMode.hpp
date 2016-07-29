@@ -21,6 +21,9 @@ class MajorMode : public IMode
 
 protected:
 
+    const MajorModeEnum thisMode;
+
+    MajorModeEnum nextMode;
     bool active;
 
     vector< MinorMode* > allMinorModes;
@@ -33,7 +36,7 @@ protected:
     /*
      * Default major mode initializer. Sets active to false.
      */
-    MajorMode();
+    MajorMode(MajorModeEnum thisMode);
     
 public:
 
@@ -76,9 +79,9 @@ public:
 
     /*
      * Returns a member of MajorModeEnum telling you which mode RobotState
-     * should switch to
+     * should switch to, or NoChange if there is not to be a change
      */
-     virtual MajModeEnum changeTo();
+     virtual MajorModeEnum changeTo();
 
 };
 

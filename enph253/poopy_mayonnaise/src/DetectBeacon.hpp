@@ -6,20 +6,15 @@
 #ifndef DETECT_BEACON_HPP
 #define DETECT_BEACON_HPP
 
-#include <StandardCplusplus.h>
-#include <bitset>
 #include "MinorMode.hpp"
-
-using std::bitset;
 
 class DetectBeacon : public MinorMode
 {
 
 private:
 
-    const int *sensorPins;            // left right
+    static const int *sensorPins;            // left right
     const int beaconThreshold;
-
 
     /*
      * (Re)initializes all state variables

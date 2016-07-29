@@ -20,9 +20,6 @@ private:
     DetectBeacon    *mmDetectBeacon;
     TapeFollow      *mmTapeFollow;
     
-
-    MajModeEnum state;
-    
     bool active;
     
     /*
@@ -46,8 +43,6 @@ public:
     void start();
 
     void test();
-
-    MajModeEnum changeTo();
 
 };
 
