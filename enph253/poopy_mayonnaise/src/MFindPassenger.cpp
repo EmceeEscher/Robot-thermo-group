@@ -30,6 +30,7 @@ MFindPassenger::MFindPassenger(
     this->init();
 
     // TODO: initialize specific minor modes
+    this->allMinorModes.push_back(mmArmControl);
     this->allMinorModes.push_back(mmTapeFollow);
     this->allMinorModes.push_back(mmCollisionWatch);
     this->allMinorModes.push_back(mmPassengerSeek);
@@ -76,6 +77,7 @@ void MFindPassenger::start()
     this->mmTapeFollow->start();
     this->mmCollisionWatch->start();
     // this->mmPassengerSeek->start();
+    // this->mmArmControl->start();
     this->state = MajModeEnum::DontChange;
 }
 
