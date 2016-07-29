@@ -52,13 +52,10 @@ int DetectBeacon::getBeaconDirection(){
 }
 
 bool DetectBeacon::hasArrived(){
-    int leftAnalog = analogRead(DetectBeacon::sensorPins[0]);
+    int leftAnalog = analogRead(DetectBeacon::sensorPins[0]);  // TODO: why cast this to int?
     int rightAnalog = analogRead(DetectBeacon::sensorPins[1]);
-    if ((leftAnalog > this->beaconThreshold) ||
-            (rightAnalog > this->beaconThreshold))
-	return true;
-    else
-	return false;
+    return ((leftAnalog > this->beaconThreshold) ||
+	    (rightAnalog > this->beaconThreshold));
 }
 
 // TODO
