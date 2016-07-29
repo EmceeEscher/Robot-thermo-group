@@ -16,11 +16,9 @@ private:
 
     // Named minor modes
     ArmControl      *mmArmControl;
-    CollisionWatch  *mmCollisionWatch;
     DetectBeacon    *mmDetectBeacon;
+    CollisionWatch  *mmCollisionWatch;
 
-
-    MajModeEnum state;  
     /*
      * (Re)initialize state variables
      */
@@ -28,12 +26,15 @@ private:
 
 public:
 
+    // constructor
     MDropPassenger(
-      ArmControl      *mmArmControl,
-      DetectBeacon    *mmDetectBeacon,
-      CollisionWatch  *mmCollisionWatch);   // constructor
+            ArmControl      *mmArmControl,
+	    DetectBeacon    *mmDetectBeacon,
+	    CollisionWatch  *mmCollisionWatch
+    );
 
-    ~MDropPassenger();  // deconstructor
+    // deconstructor
+    ~MDropPassenger();
 
     void loop();
 
@@ -41,10 +42,6 @@ public:
 
     void test();
 
-    /*
-     * Used to tell if the robot should switch robot states or not
-     */
-    MajModeEnum changeTo();
 };
 
 #endif  // M_DROP_PASSENGER_HPP

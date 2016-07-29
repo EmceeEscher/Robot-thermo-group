@@ -4,6 +4,7 @@
 #include <phys253.h>
 #include "allmajormodes.hpp"
 #include "allminormodes.hpp"
+#include "MajorModeEnum.hpp"
 #include "RobotState.hpp"
 
 
@@ -14,6 +15,36 @@ void RobotState::init()
 {
     this->active = false;
     this->currentMajorMode = this->mFindPassenger;
+    this->nextMajorMode    = this->mFindPassenger;
+}
+
+
+void RobotState::setNextMode()
+{
+    switch (this->currentMajorMode->changeTo()) {
+    case MajorModeEnum::FIND_PASSENGER :
+	this->nextMajorMode = this->mFindPassenger;
+	break;
+    case MajorModeEnum::LOAD_PASSENGER:
+	this->nextMajorMode = this->mLoadPassenger;
+	break;
+    case MajorModeEnum::DROP_PASSENGER:
+	this->nextMajorMode = this->mDropPassenger;
+	break;
+    case MajorModeEnum::TO_DESTINATION:
+    	this->nextMajorMode = this->mToDestination;
+    	break;
+    }
+}
+
+
+void RobotState::enterNextMode()
+{
+    if (this->currentMajorMode->isActive()) {
+	this->currentMajorMode->pause();
+	this->nextMajorMode->start();
+    }
+    this->currentMajorMode = this->nextMajorMode;
 }
 
 
@@ -41,22 +72,26 @@ RobotState::RobotState()
     this->mFindPassenger = new MFindPassenger(
             mmArmControl,
             mmTapeFollow,
-	          mmPassengerSeek,
-	          mmCollisionWatch);
+	    mmPassengerSeek,
+	    mmCollisionWatch
+    );
     this->allMajorModes.push_back(this->mFindPassenger);
 
     this->mLoadPassenger = new MLoadPassenger(
             mmArmControl,
             mmPassengerSeek,
-            mmCollisionWatch);
+            mmCollisionWatch
+    );
     this->allMajorModes.push_back(this->mLoadPassenger);
 
     this->mDropPassenger = new MDropPassenger(
             mmArmControl,
             mmDetectBeacon,
-            mmCollisionWatch);
+            mmCollisionWatch
+    );
     this->allMajorModes.push_back(this->mDropPassenger);
       
+    // initialization
     this->init();
 }
 
@@ -81,29 +116,14 @@ bool RobotState::isActive()
 void RobotState::loop()
 {
     // for now, just loop a single mode, without moving on to the next
-    if(this->currentMajorMode->changeTo() == MajModeEnum::DontChange){
-      if (this->currentMajorMode->isActive())
-	      this->currentMajorMode->loop();
-    }else{
-      this->currentMajorMode->stop();
-      switch(this->currentMajorMode->changeTo()){
-        case MajModeEnum::FindPassenger :
-          this->currentMajorMode = this->mFindPassenger;
-          break;
-        case MajModeEnum::LoadPassenger :
-          this->currentMajorMode = this->mLoadPassenger;
-          break;
-        case MajModeEnum::DropPassenger :
-          this->currentMajorMode = this->mDropPassenger;
-          break;
-        /*case MajModeEnum::ToDestination :
-          this->currentMajorMode = this->mToDestination;
-          break;*/
-        default : 
-          break;
-      }
-      this->currentMajorMode->start();
-    }
+    if (this->currentMajorMode->isActive())
+	this->currentMajorMode->loop();
+
+    // Enter next mode, if different than current
+    this->setNextMode();
+    if (this->nextMajorMode != this->currentMajorMode)
+	this->enterNextMode();
+
     delay(this->mainLoopDelay);
 }
 
@@ -111,9 +131,9 @@ void RobotState::loop()
 // TODO
 void RobotState::start()
 {
-    LCD.clear();
-    LCD.print("STARTING...");
-    delay(1000);
+    // LCD.clear();
+    // LCD.print("STARTING...");
+    // delay(1000);
     this->active = true;
     this->currentMajorMode->start();
 }

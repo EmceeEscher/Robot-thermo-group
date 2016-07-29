@@ -8,6 +8,7 @@
 
 #include <StandardCplusplus.h>
 #include <bitset>
+#include "pins.hpp"
 #include "MinorMode.hpp"
 
 using std::bitset;
@@ -18,12 +19,12 @@ class CollisionWatch : public MinorMode
 private:
 
     static const int *sensorPins;            // left, front, right, back
-    static const int numSensorPins;
+    static const int numSensorPins = pins_sizes::COLLISION_SENSORS;
 
     const int collisionDetectPeriod;  // number of consecutive reads to detect a collision
 
-    bitset<4> collisionDetected;      // true if a collision has been detected
-    int numCollisionReads[4];         // number of consecutive times  a collision has been read
+    bitset<numSensorPins> collisionDetected;      // true if a collision has been detected
+    int numCollisionReads[numSensorPins];         // number of consecutive times  a collision has been read
 
     /*
      * (Re)initializes all state variables

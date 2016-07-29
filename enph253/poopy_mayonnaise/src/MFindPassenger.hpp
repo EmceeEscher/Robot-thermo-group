@@ -20,8 +20,6 @@ private:
     PassengerSeek  *mmPassengerSeek;
     CollisionWatch *mmCollisionWatch;
 
-    MajModeEnum state;
-
     /*
      * (Re)initialize state variables
      */
@@ -35,10 +33,10 @@ public:
      * responsibility to deallocate them.
      */
     MFindPassenger(
-           ArmControl *mmArmControl,
-           TapeFollow *mmTapeFollow,
-           PassengerSeek *mmPassengerSeek,
-	         CollisionWatch *mmCollisionWatch
+            ArmControl *mmArmControl,
+	    TapeFollow *mmTapeFollow,
+	    PassengerSeek *mmPassengerSeek,
+	    CollisionWatch *mmCollisionWatch
     );   
 
     ~MFindPassenger();  // deconstructor
@@ -48,8 +46,6 @@ public:
     void start();
 
     void test();
-
-    MajModeEnum changeTo();
 
 };
 

@@ -8,6 +8,7 @@
 
 #include <StandardCplusplus.h>
 #include <bitset>
+#include "pins.hpp"
 #include "MinorMode.hpp"
 
 using std::bitset;
@@ -18,7 +19,7 @@ class PassengerSeek : public MinorMode
 private:
 
     static const int *qsdPinsSides;     // left-back, left-mid, left-front, right-front, right-mid, right-back
-    static const int numPinsSides;
+    static const int numPinsSides = pins_sizes::PASSENGER_SENSORS_SIDES;
 
     const int maxRegisterPeriod;        // number of consecutive (+) derivatives to be increasing and (-) derivative to be decreasing
     const float maxRegisterThreshold;   // threshold that readings must be above to register
@@ -27,14 +28,14 @@ private:
     bool atPassenger;                   // true when adjacent to a passenger
     int passengerSide;                  // if atPassenger, specifies the side (-1=left, 1=right)
 
-    bitset<6> atMax;                    // true if the associated pin is at a maximum
-    float pinReadings[5];               // current pin readings
-    float lastPinReadings[5];           // pin readings from last loop
+    bitset<numPinsSides> atMax;                    // true if the associated pin is at a maximum
+    float pinReadings[numPinsSides];               // current pin readings
+    float lastPinReadings[numPinsSides];           // pin readings from last loop
 
-    int numAboveThreshold[5];           // number of consecutive reads above threshold for each pin
-    int numPosDeriv[5];                 // number of consecutive positive derivatives THE LAST TIME A POSITIVE DERIVATIVE WAS READ
-    int numNegDeriv[5];                 // number of consecutive negative or 0 derivatives THE LAST TIME A NEGATIVE DERIVATIVE WAS READ
-    bitset<5> lastDerivPositive;        // true if the last derivative was negative
+    int numAboveThreshold[numPinsSides];           // number of consecutive reads above threshold for each pin
+    int numPosDeriv[numPinsSides];                 // number of consecutive positive derivatives THE LAST TIME A POSITIVE DERIVATIVE WAS READ
+    int numNegDeriv[numPinsSides];                 // number of consecutive negative or 0 derivatives THE LAST TIME A NEGATIVE DERIVATIVE WAS READ
+    bitset<numPinsSides> lastDerivPositive;        // true if the last derivative was negative
 
     /*
      * (Re)initialize all state variables

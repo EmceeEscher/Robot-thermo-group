@@ -9,7 +9,6 @@
 
 const int COLLISION_DETECT_PERIOD {5};
 const int *CollisionWatch::sensorPins {pins::COLLISION_SENSORS};
-const int CollisionWatch::numSensorPins {pins_sizes::COLLISION_SENSORS};
 
 
 void CollisionWatch::init()
