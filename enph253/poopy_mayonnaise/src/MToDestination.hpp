@@ -7,12 +7,22 @@
 #define M_TO_DESTINATION_HPP
 
 #include "MajorMode.hpp"
+#include "allminormodes.hpp"
 
 class MToDestination : public MajorMode
 {
 
 private:
 
+    //Named minor modes
+    ArmControl      *mmArmControl;
+    CollisionWatch  *mmCollisionWatch;
+    DetectBeacon    *mmDetectBeacon;
+    TapeFollow      *mmTapeFollow;
+    
+
+    MajModeEnum state;
+    
     bool active;
     
     /*
@@ -22,7 +32,12 @@ private:
 
 public:
 
-    MToDestination();  // constructor
+    MToDestination(
+      ArmControl      *mmArmControl,
+      CollisionWatch  *mmCollisionWatch,
+      DetectBeacon    *mmDetectBeacon,
+      TapeFollow      *mmTapeFollow
+      );
 
     ~MToDestination();  // deconstructor
 
@@ -30,13 +45,9 @@ public:
 
     void start();
 
-    void stop();
-
-    void pause();
-
     void test();
 
-    bool isActive();
+    MajModeEnum changeTo();
 
 };
 

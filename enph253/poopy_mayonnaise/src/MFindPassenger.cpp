@@ -92,6 +92,6 @@ void MFindPassenger::test()
 
 MajModeEnum MFindPassenger::changeTo()
 {
-    return state;
+    return this->state;
 }
 
