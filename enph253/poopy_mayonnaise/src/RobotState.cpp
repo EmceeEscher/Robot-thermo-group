@@ -6,6 +6,7 @@
 #include "allminormodes.hpp"
 #include "MajorModeEnum.hpp"
 #include "RobotState.hpp"
+#include "debug.hpp"
 
 
 const unsigned long MAIN_LOOP_DELAY {1};     // milliseconds
@@ -52,7 +53,8 @@ void RobotState::enterNextMode()
 RobotState::RobotState()
     : mainLoopDelay(MAIN_LOOP_DELAY)
 {
-    // Minor modes
+	
+	// Minor modes
     TapeFollow *mmTapeFollow = new TapeFollow;
     this->allMinorModes.push_back(mmTapeFollow);
 
@@ -69,6 +71,7 @@ RobotState::RobotState()
     this->allMinorModes.push_back(mmDetectBeacon);
    
     // Major modes
+	Serial.println(freeRam());
     this->mFindPassenger = new MFindPassenger(
             mmArmControl,
             mmTapeFollow,
@@ -76,20 +79,24 @@ RobotState::RobotState()
 	    mmCollisionWatch
     );
     this->allMajorModes.push_back(this->mFindPassenger);
+	Serial.println(freeRam());
 
-    // this->mLoadPassenger = new MLoadPassenger(
-    //         mmArmControl,
-    //         mmPassengerSeek,
-    //         mmCollisionWatch
-    // );
-    // this->allMajorModes.push_back(this->mLoadPassenger);
+    this->mLoadPassenger = new MLoadPassenger(
+            mmArmControl,
+            mmPassengerSeek,
+            mmCollisionWatch
+    );
+    this->allMajorModes.push_back(this->mLoadPassenger);
+	Serial.println(freeRam());
 
-    // this->mDropPassenger = new MDropPassenger(
-    //         mmArmControl,
-    //         mmDetectBeacon,
-    //         mmCollisionWatch
-    // );
-    // this->allMajorModes.push_back(this->mDropPassenger);
+    this->mDropPassenger = new MDropPassenger(
+            mmArmControl,
+            mmDetectBeacon,
+            mmCollisionWatch
+    );
+    this->allMajorModes.push_back(this->mDropPassenger);
+	Serial.println(freeRam());
+	Serial.end();
       
     // initialization
     this->init();
