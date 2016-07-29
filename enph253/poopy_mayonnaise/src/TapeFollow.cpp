@@ -255,10 +255,18 @@ Direction TapeFollow::chooseTurn(bool left, bool right, bool straight)
 	    right    * this->rightWeight +
 	    straight * this->straightWeight
     );
-    float leftProb     = left     * this->leftWeight     / total;
-    float rightProb    = right    * this->rightWeight    / total;
-    float straightProb = straight * this->straightWeight / total;
-
+    float leftProb;
+    float rightProb;
+    float straightProb;
+    if(abs(total)<0.0001){
+      leftProb = left * this->leftWeight / (left+right+straight);
+      rightProb = right * this->rightWeight / (left+right+straight);
+      straightProb = straight * this->straightWeight / (left+right+straight);
+    }else{
+      leftProb     = left     * this->leftWeight     / total;
+      rightProb    = right    * this->rightWeight    / total;
+      straightProb = straight * this->straightWeight / total;
+    }
     // TODO: do this randValue part differently?
     float randValue = static_cast<float>(random(RANDOM_MAX_VAL)) /
 	(RANDOM_MAX_VAL+1);
