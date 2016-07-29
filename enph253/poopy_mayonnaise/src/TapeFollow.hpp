@@ -138,9 +138,10 @@ private:
      * Chooses direction to turn but not randomly. It will always turn in the highest
      * weighted direction if it can, next highest if it can't, etc.
      * 
-     * If all weights are equal, it will pick randomly from available options.
+     * If all weights are equal, behavior is undefined
      */
-    static Direction chooseTurnDeterministic(bool left, bool right, bool straight);
+    Direction chooseTurnDeterministic(bool left, bool right, bool straight);
+
     /*
      * Loop function for completing a turn in a single direction.
      * Continues until both main detecters loss current tape and find the

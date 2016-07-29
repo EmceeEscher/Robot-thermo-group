@@ -136,6 +136,7 @@ void TapeFollow::updateIntersectionsDetected()
     if ((this->offTapeCounter[0] >= this->preTurnDelayPeriod) &&
 	(this->offTapeCounter[3] >= this->preTurnDelayPeriod)) {
 
+	// TODO: do this a better way
 	this->turnDirection = this->chooseTurnDeterministic(  // TODO: specify this function from major mode
 	        this->intersectDetect[0],
 		this->intersectDetect[1],
@@ -220,70 +221,30 @@ float TapeFollow::makeTurn()
 
 Direction TapeFollow::chooseTurnDeterministic(bool left, bool right, bool straight)
 { 
-  if((leftWeight == rightWeight) && (leftWeight == straightWeight)){
-    return TapeFollow::chooseTurn(left, right, straight);
-  }
+    int prefLeft = left * (
+            (this->leftWeight > this->rightWeight) +
+	    (this->leftWeight > this->straightWeight));
+    int prefRight = right * (
+            (this->rightWeight > this->leftWeight) +
+	    (this->rightWeight > this->straightWeight));
+    int prefStraight = straight * (
+            (this->straightWeight > this->leftWeight) +
+	    (this->straightWeight > this->rightWeight));
 
-  Direction returnVal;
-  if((leftWeight > rightWeight) && (leftWeight > straightWeight)){
-    if(left){
-      returnVal = Direction::LEFT;
-    }else{
-      if(rightWeight > straightWeight){
-        if(right){
-          returnVal = Direction::RIGHT;
-        }else{
-          returnVal = Direction::FRONT;
-        }
-      }else{
-        if(straight){
-          returnVal = Direction::FRONT;
-        }else{
-          returnVal = Direction::RIGHT;
-        }
-      }
-    }
-  }else if((rightWeight > straightWeight) && (rightWeight > leftWeight)){
-    if(right){
-      returnVal = Direction::RIGHT;
-    }else{
-      if(leftWeight > straightWeight){
-        if(left){
-          returnVal = Direction::LEFT;
-        }else{
-          returnVal = Direction::FRONT;
-        }
-      }else{
-        if(straight){
-          returnVal = Direction::FRONT;
-        }else{
-          returnVal = Direction::LEFT;
-        }
-      }
-    }
-  }else{
-    if(straight){
-      returnVal = Direction::FRONT;
-    }else{
-      if(rightWeight > leftWeight){
-        if(right){
-          returnVal = Direction::RIGHT;
-        }else{
-          returnVal = Direction::LEFT;
-        }
-      }else{
-        if(left){
-          returnVal = Direction::LEFT;
-        }else{
-          returnVal = Direction::RIGHT;
-        }
-      }
-    }
-  }
-  leftWeight = 0.;
-  rightWeight = 0.;
-  straightWeight = 0.;
-  return returnVal;
+    if (straight && (prefStraight >= prefLeft) && (prefStraight >= prefRight))
+	return Direction::FRONT;
+    else if (left && (prefLeft >= prefRight) && (prefLeft >= prefStraight))
+	return Direction::LEFT;
+    else if (right && (prefRight >= prefLeft) && (prefRight >= prefStraight))
+	return Direction::RIGHT;
+    else if (straight)
+	return Direction::FRONT;
+    else if (left)
+	return Direction::LEFT;
+    else if (right)
+	return Direction::RIGHT;
+    else
+	return Direction::FRONT;
 }
 
 // TODO: Allow specifying probabilities from outside
