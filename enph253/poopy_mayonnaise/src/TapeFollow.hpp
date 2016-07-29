@@ -54,15 +54,13 @@ private:
     int motorSpeedTurning;
 
     bool onTape;                  // true= on tape, false= off tape
-    bool lastOnTape;              // last value of onTape
+    bool offTape;                 // true= off tpae, false= on tape
     bool mainsOnTape;             // whether one of the mains in on the tape
-    bool lastMainsOnTape;         // whether one of the mains was on the tape in the last step
     bool following;               // whether the robot is currently following tape
     bool seeking;                 // whether the robot is currently seeking tape
     bool turning;                 // true= turning, false= straight
     bool turningAround;           // true if the robot is turning around
     bool willTurnAround;          // true if the robot is about to turn around
-    bool reversing;               // true if the robot is going in reverse
     bool halfTurn;                // if true, bot has turned far enough that mains are off tape
     bool motorsActive;            // true if motors are active
 
@@ -81,6 +79,7 @@ private:
     vector<unsigned long> etimeArray;   // array of times (since read) assoc with errorArray
     int activePins[4];                  // pin numbers (intL, mainL, mainR, intR)
 
+    int mainOnTapeCounter;              // number of consecutive times at least one main has been seen
     int onTapeCounter[4];               // counts the number of consecutive onTape reads for each pin
     int offTapeCounter[4];              // counts the number of consecutive offTape reads for each pin
     
