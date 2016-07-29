@@ -50,9 +50,11 @@ void TapeFollow::init()
     this->lastOnTape          = false;
     this->mainsOnTape         = false;
     this->lastMainsOnTape     = false;
+    this->following           = true;
     this->seeking             = false;
     this->turning             = false;
     this->turningAround       = false;
+    this->willTurnAround      = false;
     this->reversing           = false;
     this->halfTurn            = false;
     this->motorsActive        = false;
@@ -164,6 +166,7 @@ float TapeFollow::followTape()
 	this->intersectionDetection();
     if (this->willTurnAround &&
 	     (this->tapeFollowSteps >= this->preTurnAroundDelayPeriod)) {
+	this->willTurnAround = false;
 	this->turningAround = true;
 	this->turning = true;
     }
