@@ -1,6 +1,7 @@
 ///
 // MFindPassenger.cpp
 //
+#include <phys253.h>
 #include "allminormodes.hpp"
 #include "MajorModeEnum.hpp"
 #include "MFindPassenger.hpp"
@@ -47,7 +48,7 @@ void MFindPassenger::loop()
 
     if (this->mmCollisionWatch->collisionHasOccurred()) {
     	// for now, just turn around
-    	this->mmTapeFollow->turnAround();
+	this->mmTapeFollow->turnAround();
     }
 
     // // only seek passengers when not turning or seeking
@@ -70,11 +71,19 @@ void MFindPassenger::loop()
 
 void MFindPassenger::start()
 {
+
+    // LCD.clear();
+    // LCD.print("Starting");
+    // LCD.setCursor(0, 1);
+    // LCD.print("MFindPassenger");
+    // delay(1000);
+
     MajorMode::start();
 
     // Start intial minor modes
     this->mmTapeFollow->start();
     this->mmCollisionWatch->start();
+
     // this->mmPassengerSeek->start();
     // this->mmArmControl->start();
 }
@@ -83,6 +92,12 @@ void MFindPassenger::start()
 // TODO
 void MFindPassenger::test()
 {
+    // LCD.clear();
+    // LCD.print("Testing");
+    // LCD.setCursor(0, 1);
+    // LCD.print("MFindPassenger");
+    // delay(1000);
+
     MajorMode::test();
     this->mmTapeFollow->test();
     this->mmCollisionWatch->test();

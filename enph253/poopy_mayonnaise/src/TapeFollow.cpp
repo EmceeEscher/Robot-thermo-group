@@ -144,6 +144,7 @@ void TapeFollow::updateIntersectionsDetected()
         );
 	if (this->turnDirection != Direction::FRONT)
 	    this->turning = true;  // activates `makeTurn` function
+
 	// reset intersection arrays
 	this->intersectSeen.reset();    // 00
 	this->intersectDetect.reset();  // 00
@@ -521,6 +522,12 @@ void TapeFollow::loop()
 
 void TapeFollow::start()
 {
+    // LCD.clear();
+    // LCD.print("Starting");
+    // LCD.setCursor(0, 1);
+    // LCD.print("TapeFollow");
+    // delay(1000);
+
     MinorMode::start();
     this->motorsActive = true;
 }
@@ -528,6 +535,12 @@ void TapeFollow::start()
 
 void TapeFollow::pause()
 {
+    // LCD.clear();
+    // LCD.print("Pausing");
+    // LCD.setCursor(0, 1);
+    // LCD.print("TapeFollow");
+    // delay(1000);
+
     MinorMode::pause();
     this->motorsActive = false;
     this->printLCD();
@@ -536,6 +549,12 @@ void TapeFollow::pause()
 
 void TapeFollow::test()
 {
+    // LCD.clear();
+    // LCD.print("Testing");
+    // LCD.setCursor(0, 1);
+    // LCD.print("TapeFollow");
+    // delay(1000);
+
     MinorMode::test();
     this->motorsActive = false;
 }
@@ -588,9 +607,9 @@ bool TapeFollow::isSeeking()
     return this->seeking;
 }
 
+
 void TapeFollow::giveTurnDirection(float left, float right, float straight){
     this->leftWeight = left;
     this->rightWeight = right;
     this->straightWeight = straight;
 }
-
