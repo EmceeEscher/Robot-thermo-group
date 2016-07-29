@@ -77,19 +77,19 @@ RobotState::RobotState()
     );
     this->allMajorModes.push_back(this->mFindPassenger);
 
-    this->mLoadPassenger = new MLoadPassenger(
-            mmArmControl,
-            mmPassengerSeek,
-            mmCollisionWatch
-    );
-    this->allMajorModes.push_back(this->mLoadPassenger);
+    // this->mLoadPassenger = new MLoadPassenger(
+    //         mmArmControl,
+    //         mmPassengerSeek,
+    //         mmCollisionWatch
+    // );
+    // this->allMajorModes.push_back(this->mLoadPassenger);
 
-    this->mDropPassenger = new MDropPassenger(
-            mmArmControl,
-            mmDetectBeacon,
-            mmCollisionWatch
-    );
-    this->allMajorModes.push_back(this->mDropPassenger);
+    // this->mDropPassenger = new MDropPassenger(
+    //         mmArmControl,
+    //         mmDetectBeacon,
+    //         mmCollisionWatch
+    // );
+    // this->allMajorModes.push_back(this->mDropPassenger);
       
     // initialization
     this->init();

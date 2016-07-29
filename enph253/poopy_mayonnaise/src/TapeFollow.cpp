@@ -223,28 +223,37 @@ Direction TapeFollow::chooseTurnDeterministic(bool left, bool right, bool straig
 { 
     int prefLeft = left * (
             (this->leftWeight > this->rightWeight) +
-	    (this->leftWeight > this->straightWeight));
+    	    (this->leftWeight > this->straightWeight));
     int prefRight = right * (
             (this->rightWeight > this->leftWeight) +
-	    (this->rightWeight > this->straightWeight));
+    	    (this->rightWeight > this->straightWeight));
     int prefStraight = straight * (
             (this->straightWeight > this->leftWeight) +
-	    (this->straightWeight > this->rightWeight));
+    	    (this->straightWeight > this->rightWeight));
 
     if (straight && (prefStraight >= prefLeft) && (prefStraight >= prefRight))
-	return Direction::FRONT;
+    	return Direction::FRONT;
     else if (left && (prefLeft >= prefRight) && (prefLeft >= prefStraight))
-	return Direction::LEFT;
+    	return Direction::LEFT;
     else if (right && (prefRight >= prefLeft) && (prefRight >= prefStraight))
-	return Direction::RIGHT;
+    	return Direction::RIGHT;
     else if (straight)
-	return Direction::FRONT;
+    	return Direction::FRONT;
     else if (left)
-	return Direction::LEFT;
+    	return Direction::LEFT;
     else if (right)
-	return Direction::RIGHT;
+    	return Direction::RIGHT;
     else
-	return Direction::FRONT;
+    	return Direction::FRONT;
+
+    // if (straight)
+    // 	return Direction::FRONT;
+    // else if (left)
+    // 	return Direction::LEFT;
+    // else if (right)
+    // 	return Direction::RIGHT;
+    // else
+    // 	return Direction::FRONT;
 }
 
 // TODO: Allow specifying probabilities from outside
