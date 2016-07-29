@@ -258,10 +258,11 @@ Direction TapeFollow::chooseTurn(bool left, bool right, bool straight)
 	    right    * this->rightWeight +
 	    straight * this->straightWeight
     );
+
     if (total == 0) {
-	leftProb = left;
-	rightProb = right;
-	straightProb = straight;
+	leftProb     = left     / (left + right + straight);
+	rightProb    = right    / (left + right + straight);
+	straightProb = straight / (left + right + straight);
     } else {
 	leftProb     = left     * this->leftWeight     / total;
 	rightProb    = right    * this->rightWeight    / total;
