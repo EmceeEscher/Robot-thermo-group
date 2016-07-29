@@ -238,7 +238,7 @@ Direction TapeFollow::chooseTurn(bool left, bool right, bool straight)
       straightProb = (straight*straightWeight)/total * 100;
     }
     
-    int randValue = rand() % 100;
+    float randValue = ((float)(rand() % 1000)) / 10.;
     float leftMax = 0 + leftProb;
     float rightMax = leftProb + rightProb;
     float straightMax = 100;
