@@ -4,6 +4,8 @@
 #include "allminormodes.hpp"
 #include "MToDestination.hpp"
 
+const int DIFF_THRESHOLD = 50;
+
 int lastLeft;
 int lastRight;
 int currLeft;
@@ -33,7 +35,8 @@ MToDestination::MToDestination(
       mmArmControl(mmArmControl),
       mmCollisionWatch(mmCollisionWatch),
       mmDetectBeacon(mmDetectBeacon),
-      mmTapeFollow(mmTapeFollow){
+      mmTapeFollow(mmTapeFollow),
+      diffThreshold(DIFF_THRESHOLD){
 
         this->init();
 
@@ -53,15 +56,38 @@ void MToDestination::loop()
       this->mmTapeFollow->turnAround();
     }
 
-    float leftAverage = mmDetectBeacon->getLeftAverage();
-    float rightAverage = mmDetectBeacon->getRightAverage();
+    this->pickDirection();
     
+    if(this->mmDetectBeacon->hasArrived()){
+      this->nextMode = MajorModeEnum::DROP_PASSENGER;
+    }
     /*
      * tapeFollow
      * if at intersection, turn whichever direction has higher reading
      *    if you can't turn that direction, turn whichever is closest
      * if reading passes threshold, drop off
      */
+}
+
+void MToDestination::pickDirection(){
+  
+    float leftAverage = mmDetectBeacon->getLeftAverage();
+    float rightAverage = mmDetectBeacon->getRightAverage();
+
+    float diff = rightAverage - leftAverage;
+    if(abs(diff)>this->diffThreshold){
+      if(diff>0){
+        this->mmTapeFollow->giveTurnDirection(0,100,0.1);
+      }else{
+        this->mmTapeFollow->giveTurnDirection(100,0,0.1);
+      }
+    }else{
+      if(diff>0){
+        this->mmTapeFollow->giveTurnDirection(0,0.1,100);
+      }else{
+        this->mmTapeFollow->giveTurnDirection(0.1,0,100);
+      }
+    }
 }
 
 void MToDestination::start()

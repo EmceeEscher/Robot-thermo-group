@@ -21,7 +21,8 @@ private:
     TapeFollow      *mmTapeFollow;
     
     bool active;
-    
+
+    int diffThreshold;
     /*
      * (Re)initialize state variables
      */
@@ -43,6 +44,12 @@ public:
     void start();
 
     void test();
+
+    /*
+     * picks a direction to turn at the next intersection based on QSD readings
+     * and sends it to the TapeFollow minor mode
+     */
+    void pickDirection();
 
 };
 
