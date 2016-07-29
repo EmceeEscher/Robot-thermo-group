@@ -250,15 +250,15 @@ Direction TapeFollow::chooseTurnDeterministic(bool left, bool right, bool straig
 // TODO: Allow specifying probabilities from outside
 Direction TapeFollow::chooseTurn(bool left, bool right, bool straight)
 {
-    float leftProb;
-    float rightProb;
-    float straightProb;
     float total = (
 	    left     * this->leftWeight +
 	    right    * this->rightWeight +
 	    straight * this->straightWeight
     );
 
+    float leftProb;
+    float rightProb;
+    float straightProb;
     if (total == 0) {
 	leftProb     = left     / (left + right + straight);
 	rightProb    = right    / (left + right + straight);
