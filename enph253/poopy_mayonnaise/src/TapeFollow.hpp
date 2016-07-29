@@ -38,7 +38,7 @@ private:
     const int intersectSeekDelayPeriod;    // while tape following, waits for this many steps before searching for intersections
     const int intersectDetectPeriod;       // number of consecutive readings required to see an intersection
     const int turnConfirmPeriod;           // number of consecutive readings required to register start of turning
-    const int turnPreDelayPeriod;          // number of iterations to wait after detecting intersections before making decision
+    const int preTurnDelayPeriod;          // number of iterations to wait after detecting intersections before making decision
     const int offTapePeriod;               // number of consecutive readings required to signal that the robot has lost the tape
     const int onTapePeriod;                // number of consecutive readings required to confirm that the robot is back on the tape after turning
     const int printPeriod;                 // number of iterations per printout
@@ -57,7 +57,8 @@ private:
     bool lastMainsOnTape;         // whether one of the mains was on the tape in the last step
     bool seeking;                 // whether the robot is currently seeking tape
     bool turning;                 // true= turning, false= straight
-    bool turningAround;           // true if the robot is turning around (this->turning will always be true if this is true)
+    bool turningAround;           // true if the robot is turning around
+    bool reversing;               // true if the robot is going in reverse
     bool halfTurn;                // if true, bot has turned far enough that mains are off tape
     bool motorsActive;            // true if motors are active
 

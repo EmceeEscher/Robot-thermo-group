@@ -28,7 +28,7 @@ const int PRINT_PERIOD                {200};
 const int COUNTER_MAX                 {256};
 const int INTERSECT_DETECT_PERIOD      {15};  
 const int TURN_CONFIRM_PERIOD          {10}; 
-const int TURN_PRE_DELAY_PERIOD        {45};
+const int PRE_TURN_DELAY_PERIOD        {45};
 const int OFF_TAPE_PERIOD              {50};
 // const int ON_TAPE_PERIOD               {10};
 const int ON_TAPE_PERIOD                {5};
@@ -51,6 +51,7 @@ void TapeFollow::init()
     this->seeking             = false;
     this->turning             = false;
     this->turningAround       = false;
+    this->reversing           = false;
     this->halfTurn            = false;
     this->motorsActive        = false;
 
@@ -131,8 +132,8 @@ void TapeFollow::intersectionDetection()
 	this->intersectDetect[1] = 1;
 
     // if intersection(s) detected, make move decision
-    if ((this->offTapeCounter[0] >= this->turnPreDelayPeriod) &&
-	(this->offTapeCounter[3] >= this->turnPreDelayPeriod)) {
+    if ((this->offTapeCounter[0] >= this->preTurnDelayPeriod) &&
+	(this->offTapeCounter[3] >= this->preTurnDelayPeriod)) {
 
 	// wait until both intersections crossed over
 	this->turnDirection = this->chooseTurn(
@@ -306,7 +307,7 @@ TapeFollow::TapeFollow()
       intersectSeekDelayPeriod   (INTERSECT_SEEK_DELAY_PERIOD),
       intersectDetectPeriod      (INTERSECT_DETECT_PERIOD),
       turnConfirmPeriod          (TURN_CONFIRM_PERIOD),
-      turnPreDelayPeriod         (TURN_PRE_DELAY_PERIOD),
+      preTurnDelayPeriod         (PRE_TURN_DELAY_PERIOD),
       offTapePeriod              (OFF_TAPE_PERIOD),
       onTapePeriod               (ON_TAPE_PERIOD),
       printPeriod                (PRINT_PERIOD),
@@ -389,12 +390,12 @@ void TapeFollow::loop()
     } else if (this->turning) {
 	this->motorSpeed = this->motorSpeedTurning;
 	this->tapeFollowSteps = 0;
-	error = makeTurn();
+	error = this->makeTurn();
     } else {
 	this->motorSpeed = this->motorSpeedFollowing;
 	if (this->tapeFollowSteps < this->intersectSeekDelayPeriod)
 	    this->tapeFollowSteps += 1;
-	error = followTape();
+	error = this->followTape();
     }
     error *= this->motorSpeedFollowing;
 
