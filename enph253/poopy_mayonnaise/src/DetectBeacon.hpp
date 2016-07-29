@@ -21,6 +21,16 @@ private:
      */
     void init();
 
+    /*
+     * updates the array used for averaging the readings of the left sensor
+     */
+    void updateLeftArray();
+
+    /*
+     * updates the array used for averaging the readings of the right sensor
+     */
+    void updateRightArray();
+
 public:
 
     DetectBeacon();   // constructor
@@ -47,6 +57,17 @@ public:
      * Returns analog reading of right beacon detector.
      */
     int getRightReading();
+
+        /*
+     * Returns average of last numReadings readings of left beacon detector.
+     */
+    float getLeftAverage();
+
+    /*
+     * Returns average of last numReadings readings of right beacon detector.
+     */
+    float getRightAverage();
+
 
     /*
      * Returns true if the robot has determined that it has arrived at the
