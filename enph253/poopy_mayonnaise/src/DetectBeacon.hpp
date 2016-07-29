@@ -32,24 +32,26 @@ public:
 
     ~DetectBeacon();  // deconstructor
 
-    /*
-     * Main loop function to watch for collisions. Halts the TapeFollow
-     * minor mode when a collision is detected
-     */
+
     void loop();
 
-    /*
-     * Enter a testing mode in which sensor readings are still made, but
-     * hardware (i.e. motors) are not active
-     */
     void test();
 
     /*
-     * Returns the number associated with the direction where the collision
-     * occurred. [0, 1, 2, 3] = [left, front, right, back]
-     * Returns -1 if no collision has been detected.
+     * Tells whether beacon is closer to right side or to left side.
+     * Returns -1 if left, 1 if right, 0 if can't see beacon
      */
     int getBeaconDirection();
+
+    /*
+     * Returns analog reading of left beacon detector.
+     */
+    int getLeftReading();
+
+    /*
+     * Returns analog reading of right beacon detector.
+     */
+    int getRightReading();
 
     /*
      * Returns true if the robot has determined that it has arrived at the

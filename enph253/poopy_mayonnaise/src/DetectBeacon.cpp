@@ -12,7 +12,6 @@ const int BEACON_THRESHOLD = 512;
 void DetectBeacon::init()
 {
     MinorMode::init();
-    
 }
 
 
@@ -50,6 +49,14 @@ int DetectBeacon::getBeaconDirection(){
 	else
 		return 0;
 	
+}
+
+int DetectBeacon::getLeftReading(){
+  return analogRead(this->sensorPins[0]);
+}
+
+int DetectBeacon::getRightReading(){
+  return analogRead(this->sensorPins[1]);
 }
 
 bool DetectBeacon::hasArrived(){

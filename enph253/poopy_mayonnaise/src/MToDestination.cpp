@@ -4,10 +4,19 @@
 #include "allminormodes.hpp"
 #include "MToDestination.hpp"
 
+int lastLeft;
+int lastRight;
+int currLeft;
+int currRight;
+
 void MToDestination::init()
 {
   MajorMode::init();
   // TODO: reinitialize specific state variables
+  lastLeft = mmDetectBeacon->getLeftReading();
+  lastRight = mmDetectBeacon->getRightReading();
+  currLeft = lastLeft;
+  currRight = lastRight;
 }
 
 MToDestination::MToDestination(
@@ -40,6 +49,16 @@ void MToDestination::loop()
     if(this->mmCollisionWatch->collisionHasOccurred()){
       this->mmTapeFollow->turnAround();
     }
+
+    lastLeft = currLeft;
+    lastRight = currRight;
+    currLeft = mmDetectBeacon->getLeftReading();
+    currRight = mmDetectBeacon->getRightReading();
+    
+    
+    /*
+     * 
+     */
 }
 
 void MToDestination::start()
