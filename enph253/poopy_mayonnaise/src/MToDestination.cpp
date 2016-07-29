@@ -53,13 +53,8 @@ void MToDestination::loop()
       this->mmTapeFollow->turnAround();
     }
 
-    lastLeft = currLeft;
-    lastRight = currRight;
-    currLeft = mmDetectBeacon->getLeftReading();
-    currRight = mmDetectBeacon->getRightReading();
-    lastDiff = currDiff;
-    currDiff = currRight - currLeft;
-    
+    float leftAverage = mmDetectBeacon->getLeftAverage();
+    float rightAverage = mmDetectBeacon->getRightAverage();
     
     /*
      * tapeFollow
