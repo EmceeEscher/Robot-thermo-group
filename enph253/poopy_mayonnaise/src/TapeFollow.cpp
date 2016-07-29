@@ -103,7 +103,7 @@ float TapeFollow::seekTape()
 
 
 // TODO
-void TapeFollow::intersectionSeen()
+void TapeFollow::updateIntersectionsSeen()
 {
     bool intersectSeenL = (this->mainsOnTape &&
             (this->onTapeCounter[0] >= this->intersectDetectPeriod));
@@ -120,30 +120,22 @@ void TapeFollow::intersectionSeen()
 
 void TapeFollow::intersectionDetection()
 {
-    // declare static variables (runs once)
-    bool intersectL = this->pinReadings[0];
-    bool mainL      = this->pinReadings[1];
-    bool mainR      = this->pinReadings[2];
-    bool intersectR = this->pinReadings[3];
-
     // check if intersections seen
-    this->intersectionSeen();
+    this->updateIntersectionsSeen();
 
     // check if intersection detected
-    if ((!intersectL) && this->intersectSeen[0])
-	this->intersectDetect[0] = 1;
-    if ((!intersectR) && this->intersectSeen[1])
-	this->intersectDetect[1] = 1;
+    for (int i(0); i < 2; ++i)
+	this->intersectDetect[i] = (!this->pinReadings[i]) &&
+	        this->intersectSeen[i];
 
     // if intersection(s) detected, make move decision
     if ((this->offTapeCounter[0] >= this->preTurnDelayPeriod) &&
 	(this->offTapeCounter[3] >= this->preTurnDelayPeriod)) {
 
-	// wait until both intersections crossed over
-	this->turnDirection = this->chooseTurn(
+	this->turnDirection = this->chooseTurn(  // TODO: specify this function from major mode
 	        this->intersectDetect[0],
 		this->intersectDetect[1],
-		(mainL || mainR)
+		this->mainsOnTape
         );
 	if (this->turnDirection != Direction::FRONT)
 	    this->turning = true;  // activates `makeTurn` function

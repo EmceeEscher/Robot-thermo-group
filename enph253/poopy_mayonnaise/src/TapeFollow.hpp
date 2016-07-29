@@ -102,7 +102,7 @@ private:
      * intersection has been seen and updates the intersectSeen
      * array
      */
-    void intersectionSeen();
+    void updateIntersectionsSeen();
 
     /*
      * Look for intersection. If found, make decision and turn?
