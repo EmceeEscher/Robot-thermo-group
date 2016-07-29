@@ -37,7 +37,6 @@ const int ON_TAPE_PERIOD                {5};
 const int INTERSECT_SEEK_DELAY_PERIOD {100};
 const int TapeFollow::motorPinL         {pins::MOTOR_PIN_L};
 const int TapeFollow::motorPinR         {pins::MOTOR_PIN_R};
-const int TapeFollow::numSensors        {pins_sizes::TAPE_SENSORS_FRONT};
 const int *TapeFollow::tapeSensorsFront {pins::TAPE_SENSORS_FRONT};
 const int *TapeFollow::tapeSensorsBack  {pins::TAPE_SENSORS_BACK};
 

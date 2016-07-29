@@ -2,6 +2,7 @@
 // MDropPassenger.cpp
 //
 #include "allminormodes.hpp"
+#include "MajorModeEnum.hpp"
 #include "MDropPassenger.hpp"
 
 
@@ -12,16 +13,16 @@ void MDropPassenger::init()
     // TODO: reinitialize specific state variables
 }
 
+
 //TODO
 MDropPassenger::MDropPassenger(
-  ArmControl      *mmArmControl,
-  DetectBeacon    *mmDetectBeacon,
-  CollisionWatch  *mmCollisionWatch)
-    : MajorMode(),
-    mmArmControl(mmArmControl),
-    mmDetectBeacon(mmDetectBeacon),
-    mmCollisionWatch(mmCollisionWatch),
-    state(MajModeEnum::DontChange)
+        ArmControl      *mmArmControl,
+	DetectBeacon    *mmDetectBeacon,
+	CollisionWatch  *mmCollisionWatch)
+    : MajorMode(MajorModeEnum::DROP_PASSENGER),
+      mmArmControl(mmArmControl),
+      mmDetectBeacon(mmDetectBeacon),
+      mmCollisionWatch(mmCollisionWatch)
 {
   this->init();
 
@@ -31,37 +32,36 @@ MDropPassenger::MDropPassenger(
   this->allMinorModes.push_back(mmCollisionWatch);
 }
 
+
 MDropPassenger::~MDropPassenger(){}
 
-// TODO
 
+// TODO
 void MDropPassenger::loop()
 {
     MajorMode::loop();
 
-    if(this->mmDetectBeacon->hasArrived())
-    {
+    if (this->mmDetectBeacon->hasArrived()) {
         int dropoffDir = this->mmDetectBeacon->getBeaconDirection();
-        if(dropoffDir == 1){
-          this->mmArmControl->turnAndReach(true, false);
-        }else if(dropoffDir == -1){
-          this->mmArmControl->turnAndReach(false, false);
-        }
+        if (dropoffDir == 1) 
+	    this->mmArmControl->turnAndReach(true, false);
+	else if (dropoffDir == -1) 
+	    this->mmArmControl->turnAndReach(false, false);
     }
-    if(!this->mmArmControl->isHolding()){
-      this->state = MajModeEnum::FindPassenger;
-    }
+    if (!this->mmArmControl->isHolding())
+	this->nextMode = MajorModeEnum::FIND_PASSENGER;
 }
+
 
 void MDropPassenger::start()
 {
     MajorMode::start();
-
+    
     this->mmArmControl->start();
     this->mmCollisionWatch->start();
     this->mmDetectBeacon->start();
-    this->state = MajModeEnum::DontChange;
 }
+
 
 // TODO
 void MDropPassenger::test()
@@ -72,8 +72,3 @@ void MDropPassenger::test()
     this->mmCollisionWatch->test();
     this->mmDetectBeacon->test();
 }
-
-MajModeEnum MDropPassenger::changeTo(){
-    return this->state;
-}
-
