@@ -33,7 +33,7 @@ void DetectBeacon::loop() {}
 int DetectBeacon::getBeaconDirection(){
 	int val;
 	int leftAnalog = analogRead(this->sensorPins[0]);
-	int leftAnalog = analogRead(this->sensorPins[1]);
+	int rightAnalog = analogRead(this->sensorPins[1]);
 	
 	if(leftAnalog > beaconThreshold){
 		if(rightAnalog > beaconThreshold)
@@ -52,7 +52,7 @@ int DetectBeacon::getBeaconDirection(){
 }
 
 // TODO
-void BeaconDetect::test()
+void DetectBeacon::test()
 {
     MinorMode::test();
 }

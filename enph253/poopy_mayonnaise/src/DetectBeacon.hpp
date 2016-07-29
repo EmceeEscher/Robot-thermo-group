@@ -18,6 +18,7 @@ class DetectBeacon : public MinorMode
 private:
 
     const int *sensorPins;            // left right
+	const int beaconThreshold = 100; 
 
 
     /*
