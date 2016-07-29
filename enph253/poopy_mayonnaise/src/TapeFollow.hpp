@@ -135,6 +135,13 @@ private:
     Direction chooseTurn(bool left, bool right, bool straight);
 
     /*
+     * Chooses direction to turn but not randomly. It will always turn in the highest
+     * weighted direction if it can, next highest if it can't, etc.
+     * 
+     * If all weights are equal, it will pick randomly from available options.
+     */
+    static Direction chooseTurnDeterministic(bool left, bool right, bool straight);
+    /*
      * Loop function for completing a turn in a single direction.
      * Continues until both main detecters loss current tape and find the
      * next, at which point `followTape` is entered.
@@ -207,21 +214,6 @@ public:
      * but weighted by ratio of parameters. If you want it to only turn in one direction, 
      * give it 0 for the others. If it can't turn in a nonzero direction, it will turn randomly
      * in one of the directions it can go.
-     * 
-     * If you want it to definitely go in one direction, but specifically go in a different direction
-     * if the desired directions is not an option, do the following:
-     * -give the direction you want 100
-     * -give the backup direction a value of 0.1
-     * -give the last direction 0
-     * 
-     * (e.g. if you wanted to turn left, or go straight if you can't turn left,
-     * call giveTurnDirection(100, 0, 0.1))
-     * 
-     * Because of how the random number is generated (using a modulo function), this will pick the correct direction
-     * 100% of the time, unless it's not an option, in which case, it will pick the other one.
-     * 
-     * BUG: if you give left 0.1, or give right 0.1 and straight 100, it will only go the correct direction 99.9% of the time,
-     * instead of 100%, but I don't expect it to be a problem. This bug isn't an issue in other cases
      */
     void giveTurnDirection(float left, float right, float straight);
 

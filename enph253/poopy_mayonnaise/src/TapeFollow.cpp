@@ -136,7 +136,7 @@ void TapeFollow::updateIntersectionsDetected()
     if ((this->offTapeCounter[0] >= this->preTurnDelayPeriod) &&
 	(this->offTapeCounter[3] >= this->preTurnDelayPeriod)) {
 
-	this->turnDirection = this->chooseTurn(  // TODO: specify this function from major mode
+	this->turnDirection = this->chooseTurnDeterministic(  // TODO: specify this function from major mode
 	        this->intersectDetect[0],
 		this->intersectDetect[1],
 		this->mainsOnTape
@@ -217,6 +217,74 @@ float TapeFollow::makeTurn()
 	return -(static_cast<int>(this->turnDirection)-1) * this->errorTurning;
 }
 
+
+Direction TapeFollow::chooseTurnDeterministic(bool left, bool right, bool straight)
+{ 
+  if((leftWeight == rightWeight) && (leftWeight == straightWeight)){
+    return TapeFollow::chooseTurn(left, right, straight);
+  }
+
+  Direction returnVal;
+  if((leftWeight > rightWeight) && (leftWeight > straightWeight)){
+    if(left){
+      returnVal = Direction::LEFT;
+    }else{
+      if(rightWeight > straightWeight){
+        if(right){
+          returnVal = Direction::RIGHT;
+        }else{
+          returnVal = Direction::FRONT;
+        }
+      }else{
+        if(straight){
+          returnVal = Direction::FRONT;
+        }else{
+          returnVal = Direction::RIGHT;
+        }
+      }
+    }
+  }else if((rightWeight > straightWeight) && (rightWeight > leftWeight)){
+    if(right){
+      returnVal = Direction::RIGHT;
+    }else{
+      if(leftWeight > straightWeight){
+        if(left){
+          returnVal = Direction::LEFT;
+        }else{
+          returnVal = Direction::FRONT;
+        }
+      }else{
+        if(straight){
+          returnVal = Direction::FRONT;
+        }else{
+          returnVal = Direction::LEFT;
+        }
+      }
+    }
+  }else{
+    if(straight){
+      returnVal = Direction::FRONT;
+    }else{
+      if(rightWeight > leftWeight){
+        if(right){
+          returnVal = Direction::RIGHT;
+        }else{
+          returnVal = Direction::LEFT;
+        }
+      }else{
+        if(left){
+          returnVal = Direction::LEFT;
+        }else{
+          returnVal = Direction::RIGHT;
+        }
+      }
+    }
+  }
+  leftWeight = 0.;
+  rightWeight = 0.;
+  straightWeight = 0.;
+  return returnVal;
+}
 
 // TODO: Allow specifying probabilities from outside
 Direction TapeFollow::chooseTurn(bool left, bool right, bool straight)
