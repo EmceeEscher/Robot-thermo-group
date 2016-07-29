@@ -1,3 +1,6 @@
+///
+// ArmControl.cpp
+//
 #include <phys253.h>
 #include <StandardCplusplus.h>
 #include <string>
@@ -13,20 +16,11 @@ const float HOLD_PROP_GAIN = 17.;
 const float INT_GAIN = 0.;
 const float DERIV_GAIN = 1.5;
 
-//Dynamic Control Variables  // TODO: get rid of these
-float baseTarget, midTarget;
-float propErr, derivErr, intErr, lastPropErr;
-float angle;
-float now, lastTime;
-
 //Rest Positions
 const float BASE_REST_POSITION = 70;
 const float MID_REST_POSITION = 170;
 const float BASE_HOLD_POSITION = 70;
 const float MID_HOLD_POSITION = 170;
-
-//Iterator for LCD printing, not currently used  // TODO: get rid of this
-int LCDControl;
 
 //Stepper Constants
 const int COUNTERCLOCKWISE = HIGH;
@@ -42,22 +36,29 @@ const float MID_ADJ_BASE_TARGET = 40;
 const float FINAL_ADJ_MID_TARGET = 170;
 const float FINAL_ADJ_BASE_TARGET = 20;
 
-//Holding a passenger?
-//bool holding = false;
+// Pin assignments
+const int ArmControl::baseAnglePin     {pins::POTENTIOMETER};
+const int ArmControl::baseMotorNumber  {pins::MOTOR_PIN_ARM};
+const int ArmControl::babyMotorNum     {pins::MOTOR_PIN_BABY};
+const int ArmControl::catchSwitch      {pins::ARM_SWITCHES[0]};
+const int ArmControl::noCatchSwitch    {pins::ARM_SWITCHES[1]};
+const int ArmControl::innerClawSwitch  {pins::ARM_SWITCHES[2]};
+const int ArmControl::stepperDirPin    {pins::DIR_PIN};
+const int ArmControl::stepperPulsePin  {pins::PULSE_PIN};
 
 
 void ArmControl::init()
 {
     RCServo1.detach();
-    pinMode(this->stepperPulsePin,OUTPUT);
+    pinMode(ArmControl::stepperPulsePin,OUTPUT);
     RCServo2.detach();
-    pinMode(this->stepperDirPin,OUTPUT);
+    pinMode(ArmControl::stepperDirPin,OUTPUT);
     
     Serial.begin(9600);
-    baseTarget = this->baseRestPosition;
-    midTarget = this->midRestPosition;
-    lastPropErr = 0.;
-    LCDControl = 1;
+    this->baseTarget = this->baseRestPosition;
+    this->midTarget = this->midRestPosition;
+    this->lastPropErr = 0.;
+    this->lcdControl = 1;
     this->holding = false;
 }
 
@@ -76,22 +77,13 @@ ArmControl::ArmControl()
       midHoldPosition      (MID_HOLD_POSITION),
       stepperMicrosDelay   (STEPPER_MICROS_DELAY),
       numPulses            (NUM_PULSES),
+
       initialAdjMidTarget  (INITIAL_ADJ_MID_TARGET),
       initialAdjBaseTarget (INITIAL_ADJ_BASE_TARGET),
       finalAdjMidTarget    (FINAL_ADJ_MID_TARGET),
       finalAdjBaseTarget   (FINAL_ADJ_BASE_TARGET),
       midAdjMidTarget      (MID_ADJ_MID_TARGET),
-      midAdjBaseTarget     (MID_ADJ_BASE_TARGET),
-      
-      //pin constants
-      baseAnglePin     (pins::POTENTIOMETER),
-      baseMotorNumber  (pins::MOTOR_PIN_ARM),
-      babyMotorNum     (pins::MOTOR_PIN_BABY),
-      catchSwitch      (pins::ARM_SWITCHES[0]),
-      noCatchSwitch    (pins::ARM_SWITCHES[1]),
-      innerClawSwitch  (pins::ARM_SWITCHES[2]),
-      stepperDirPin    (pins::DIR_PIN),
-      stepperPulsePin  (pins::PULSE_PIN)
+      midAdjBaseTarget     (MID_ADJ_BASE_TARGET)
 {
     this->init();
 }
@@ -114,24 +106,24 @@ void ArmControl::loop()
 //derivative control purposes
 void ArmControl::doControl()
 {
-    angle = getAngle();
+    this->angle = getAngle();
     
-    now = micros();
-    propErr = angle - baseTarget;
-    derivErr = (propErr - lastPropErr) / (now - lastTime) * 1000000.;
-    intErr += (propErr + lastPropErr) / 2 * (now - lastTime) / 1000000.;
+    this->now = micros();
+    this->propErr = this->angle - this->baseTarget;
+    this->derivErr = (this->propErr - this->lastPropErr) / (this->now - this->lastTime) * 1000000.;
+    this->intErr += (this->propErr + this->lastPropErr) / 2 * (this->now - this->lastTime) / 1000000.;
     setBaseMotor(static_cast<int>(getControlValue()));
     
-    RCServo0.write(midTarget);
+    RCServo0.write(this->midTarget);
     
-    lastTime = now;
-    lastPropErr = propErr;
+    this->lastTime = this->now;
+    this->lastPropErr = this->propErr;
     
-    if (LCDControl % 25 == 0) {  // TODO: get rid of hard coding
+    if (this->lcdControl % 25 == 0) {  // TODO: get rid of hard coding
 	this->printState();
-	LCDControl = 1;
+	this->lcdControl = 1;
     }
-    ++LCDControl;
+    ++this->lcdControl;
 }
 
 
@@ -139,7 +131,7 @@ void ArmControl::doControl()
 float ArmControl::getAngle()
 {
     // TODO: get rid of hard coding
-    float voltage = static_cast<float>(analogRead(this->baseAnglePin) *
+    float voltage = static_cast<float>(analogRead(ArmControl::baseAnglePin) *
 				       5./1024.);
     return 130.814 * (3. * voltage - 10.) / (voltage - 5.) + 60.;
 }
@@ -153,7 +145,7 @@ void ArmControl::setBaseMotor(int duty)
 	duty = 255;  // TODO: get rid of global variables
     else if(duty < -255)
 	duty = -255;
-    motor.speed(this->baseMotorNumber,duty);
+    motor.speed(ArmControl::baseMotorNumber,duty);
 }
 
 
@@ -162,11 +154,11 @@ float ArmControl::getControlValue()
 {
     float control(0.);
     if (this->holding) 
-	control += this->holdPropGain * propErr;  // TODO: get rid of globals
+	control += this->holdPropGain * this->propErr;  // TODO: get rid of globals
     else
-	control += this->propGain * propErr;
-    control += this->derivGain * derivErr;
-    control += this->intGain * intErr;
+	control += this->propGain * this->propErr;
+    control += this->derivGain * this->derivErr;
+    control += this->intGain * this->intErr;
     return control;
 }
 
@@ -176,20 +168,20 @@ float ArmControl::getControlValue()
 void ArmControl::grabShit()
 {
     //If switches are already triggered, then do nothing
-    if (!digitalRead(this->catchSwitch) || !digitalRead(this->noCatchSwitch)) {
+    if (!digitalRead(ArmControl::catchSwitch) || !digitalRead(ArmControl::noCatchSwitch)) {
 	// TODO: get rid of empty block
     } else {
 	LCD.clear();
 	LCD.print("Grabbing");
-	motor.speed(this->babyMotorNum,140);  // TODO: no hard coding
+	motor.speed(ArmControl::babyMotorNum,140);  // TODO: no hard coding
 	unsigned long startTime = millis();
 	while (true) {  // TODO: is this a loop inside the main loop?
 	    doControl();
-	    if (!digitalRead(this->catchSwitch)) {
+	    if (!digitalRead(ArmControl::catchSwitch)) {
 		this->holding = true;
 		break;
 	    }
-	    if (!digitalRead(this->noCatchSwitch)) {
+	    if (!digitalRead(ArmControl::noCatchSwitch)) {
 		this->holding = false;
 		break;
 	    }
@@ -199,7 +191,7 @@ void ArmControl::grabShit()
 	    }
 	}
 	if (this->holding)
-	    motor.speed(this->babyMotorNum,20);  // TODO: no hard coding
+	    motor.speed(ArmControl::babyMotorNum,20);  // TODO: no hard coding
 	else
 	    dropShit();
     }
@@ -209,10 +201,10 @@ void ArmControl::grabShit()
 //Opens the claw for specified time
 void ArmControl::dropShit()
 {
-    motor.speed(this->babyMotorNum,-140);  // TODO: no hard coding
+    motor.speed(ArmControl::babyMotorNum,-140);  // TODO: no hard coding
     this->holding = false;
     delay(this->dropTime);  // TODO: is this necessary here?
-    motor.speed(this->babyMotorNum,0);
+    motor.speed(ArmControl::babyMotorNum,0);
 }
 
 
@@ -237,26 +229,26 @@ void ArmControl::printState()
 //Extends arm over two periods and either grabs or drops
 void ArmControl::reachAndClaw(bool grabbing)
 {
-    midTarget = this->initialAdjMidTarget;
-    baseTarget = this->initialAdjBaseTarget;
+    this->midTarget = this->initialAdjMidTarget;
+    this->baseTarget = this->initialAdjBaseTarget;
     unsigned long startTime = millis();
     while (millis() - startTime < 500) // TODO: no hard coding
 	doControl();
     // TODO: is it necessary to run all of these loops inside of the main loop
     // or could they be run concurrently
     
-    midTarget = this->midAdjMidTarget;
-    baseTarget = this->midAdjBaseTarget;
+    this->midTarget = this->midAdjMidTarget;
+    this->baseTarget = this->midAdjBaseTarget;
     
     while (millis() - startTime < 1000) // TODO: no hard coding
 	doControl();
     
-    baseTarget = this->finalAdjBaseTarget; 
-    midTarget = this->finalAdjMidTarget;
+    this->baseTarget = this->finalAdjBaseTarget; 
+    this->midTarget = this->finalAdjMidTarget;
     while (millis() - startTime < 1500) {  // TODO: no hard coding
 	doControl();
-	if (!digitalRead(this->innerClawSwitch)) {
-	    //baseTarget = getAngle() + 5; // this code don't do nothing
+	if (!digitalRead(ArmControl::innerClawSwitch)) {
+	    //this->baseTarget = getAngle() + 5; // this code don't do nothing
 	    break;
 	} 
     }
@@ -271,22 +263,22 @@ void ArmControl::reachAndClaw(bool grabbing)
 //Sets the control target values to rest position
 void ArmControl::setRestPosition(){
     unsigned long startTime = millis();
-    baseTarget = this->midAdjBaseTarget; // TODO: no global variables
-    midTarget = this->midAdjMidTarget;
+    this->baseTarget = this->midAdjBaseTarget; // TODO: no global variables
+    this->midTarget = this->midAdjMidTarget;
     while (millis() - startTime < 500) // TODO: no hard coding
 	doControl();
     
-    baseTarget = this->initialAdjBaseTarget;
-    midTarget = this->initialAdjMidTarget;
+    this->baseTarget = this->initialAdjBaseTarget;
+    this->midTarget = this->initialAdjMidTarget;
     while (millis() - startTime < 1000)  // TODO: no hard coding
 	doControl();
     
     if (this->holding) {
-	baseTarget = this->baseHoldPosition;
-	midTarget = this->midHoldPosition;
+	this->baseTarget = this->baseHoldPosition;
+	this->midTarget = this->midHoldPosition;
     } else {
-	baseTarget = this->baseRestPosition;
-	midTarget = this->midRestPosition;
+	this->baseTarget = this->baseRestPosition;
+	this->midTarget = this->midRestPosition;
     }
 }
 
@@ -295,9 +287,9 @@ void ArmControl::setRestPosition(){
 void ArmControl::stepperTurn(bool CW, int count) // TODO: lowercase params
 {
     if (CW) 
-	digitalWrite(this->stepperDirPin, CLOCKWISE);
+	digitalWrite(ArmControl::stepperDirPin, CLOCKWISE);
     else
-	digitalWrite(this->stepperDirPin, COUNTERCLOCKWISE);
+	digitalWrite(ArmControl::stepperDirPin, COUNTERCLOCKWISE);
     
     int i;
     unsigned long prevTime = millis();
@@ -306,10 +298,10 @@ void ArmControl::stepperTurn(bool CW, int count) // TODO: lowercase params
 	    doControl();
 	    prevTime = millis();
 	}
-	digitalWrite(this->stepperPulsePin, HIGH);
+	digitalWrite(ArmControl::stepperPulsePin, HIGH);
 	delayMicroseconds(this->stepperMicrosDelay);
 	
-	digitalWrite(this->stepperPulsePin, LOW);
+	digitalWrite(ArmControl::stepperPulsePin, LOW);
 	delayMicroseconds(this->stepperMicrosDelay);
     }
     while (!startbutton())   // TODO: is this going to be in the final version?

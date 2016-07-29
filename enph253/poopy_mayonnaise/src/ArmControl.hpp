@@ -14,18 +14,22 @@ class ArmControl : public MinorMode
 private:
 
     //Analog pin for base angle potentiometer signal
-    const int baseAnglePin;
+    static const int baseAnglePin;
     //Base GBBC motor output number
-    const int baseMotorNumber;
- 
+    static const int baseMotorNumber;
     //Claw's Baby Motor output number
-    const int babyMotorNum;
+    static const int babyMotorNum;
     //Digital pin indicating a successfully caugh animal
-    const int catchSwitch;
+    static const int catchSwitch;
     //Digital pin indicating a claw closing on itself
-    const int noCatchSwitch;
+    static const int noCatchSwitch;
     //Digital pin to detect when an animal is in the claw
-    const int innerClawSwitch;
+    static const int innerClawSwitch;
+
+    //Stepper Constants
+    static const int stepperDirPin;
+    static const int stepperPulsePin;
+
     //Amount of time to run motor to drop animal
     const int dropTime; // Milliseconds
 
@@ -35,26 +39,12 @@ private:
     const float intGain;
     const float derivGain;
 
-    //Dynamic Control Variables
-    /*float baseTarget, midTarget;
-    float propErr, derivErr, intErr, lastPropErr;
-    float angle;
-    float currAngle;
-    float now, lastTime;
-    int hasInitialized;*/
-
     //Rest Positions
     const float baseRestPosition;
     const float midRestPosition;
     const float baseHoldPosition;
     const float midHoldPosition;
 
-    //Iterator for LCD printing
-    //int LCDControl;
-
-    //Stepper Constants
-    const int stepperDirPin;
-    const int stepperPulsePin;
     const int stepperMicrosDelay; //Time delay between pulses in microseconds
     const int numPulses;
 
@@ -65,6 +55,26 @@ private:
     const float finalAdjBaseTarget;
     const float midAdjMidTarget;
     const float midAdjBaseTarget;
+
+    //Iterator for LCD printing
+    int lcdControl;  // TODO: how is an int an interator??
+
+    //Dynamic Control Variables
+    /*float baseTarget, midTarget;
+    float propErr, derivErr, intErr, lastPropErr;
+    float angle;
+    float currAngle;
+    float now, lastTime;
+    int hasInitialized;*/
+    float baseTarget;
+    float midTarget;
+    float propErr;
+    float derivErr;
+    float intErr;
+    float lastPropErr;
+    float angle;
+    float now;
+    float lastTime;
 
     //Holding a passenger?
     bool holding;
