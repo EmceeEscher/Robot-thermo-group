@@ -12,8 +12,9 @@
 const int MOTOR_SPEED_FOLLOWING       {84};
 const int MOTOR_SPEED_PASSENGER_SEEK  {64};
 const int MOTOR_SPEED_TURNING         {32};
+const int MOTOR_SPEED_TURNING_AROUND   {0};
 const int MOTOR_SPEED_SEEKING          {8};
-const int MOTOR_SPEED_REVERSE         {-8};
+const int MOTOR_SPEED_REVERSE        {-16};
 const float ERROR_SMALL     {.02};
 const float ERROR_MEDIUM    {.04};
 const float ERROR_LARGE     {.08};
@@ -28,7 +29,8 @@ const int PRINT_PERIOD                {200};
 const int COUNTER_MAX                 {256};
 const int INTERSECT_DETECT_PERIOD      {15};  
 const int TURN_CONFIRM_PERIOD          {10}; 
-const int TURN_PRE_DELAY_PERIOD        {45};
+const int PRE_TURN_DELAY_PERIOD        {45};
+const int PRE_TURN_AROUND_DELAY_PERIOD {45};
 const int OFF_TAPE_PERIOD              {50};
 // const int ON_TAPE_PERIOD               {10};
 const int ON_TAPE_PERIOD                {5};
@@ -48,9 +50,12 @@ void TapeFollow::init()
     this->lastOnTape          = false;
     this->mainsOnTape         = false;
     this->lastMainsOnTape     = false;
+    this->following           = true;
     this->seeking             = false;
     this->turning             = false;
     this->turningAround       = false;
+    this->willTurnAround      = false;
+    this->reversing           = false;
     this->halfTurn            = false;
     this->motorsActive        = false;
 
@@ -98,7 +103,7 @@ float TapeFollow::seekTape()
 
 
 // TODO
-void TapeFollow::intersectionSeen()
+void TapeFollow::updateIntersectionsSeen()
 {
     bool intersectSeenL = (this->mainsOnTape &&
             (this->onTapeCounter[0] >= this->intersectDetectPeriod));
@@ -113,32 +118,24 @@ void TapeFollow::intersectionSeen()
 }
 
 
-void TapeFollow::intersectionDetection()
+void TapeFollow::updateIntersectionsDetected()
 {
-    // declare static variables (runs once)
-    bool intersectL = this->pinReadings[0];
-    bool mainL      = this->pinReadings[1];
-    bool mainR      = this->pinReadings[2];
-    bool intersectR = this->pinReadings[3];
-
     // check if intersections seen
-    this->intersectionSeen();
+    this->updateIntersectionsSeen();
 
     // check if intersection detected
-    if ((!intersectL) && this->intersectSeen[0])
-	this->intersectDetect[0] = 1;
-    if ((!intersectR) && this->intersectSeen[1])
-	this->intersectDetect[1] = 1;
+    for (int i(0); i < 2; ++i)
+	this->intersectDetect[i] = (!this->pinReadings[i]) &&
+	        this->intersectSeen[i];
 
     // if intersection(s) detected, make move decision
-    if ((this->offTapeCounter[0] >= this->turnPreDelayPeriod) &&
-	(this->offTapeCounter[3] >= this->turnPreDelayPeriod)) {
+    if ((this->offTapeCounter[0] >= this->preTurnDelayPeriod) &&
+	(this->offTapeCounter[3] >= this->preTurnDelayPeriod)) {
 
-	// wait until both intersections crossed over
-	this->turnDirection = this->chooseTurn(
+	this->turnDirection = this->chooseTurn(  // TODO: specify this function from major mode
 	        this->intersectDetect[0],
 		this->intersectDetect[1],
-		(mainL || mainR)
+		this->mainsOnTape
         );
 	if (this->turnDirection != Direction::FRONT)
 	    this->turning = true;  // activates `makeTurn` function
@@ -152,28 +149,35 @@ void TapeFollow::intersectionDetection()
 float TapeFollow::followTape()
 {
     // declare static variables (runs once)
-    bool intersectL = this->pinReadings[0];
+    bool intrL = this->pinReadings[0];
     bool mainL      = this->pinReadings[1];
     bool mainR      = this->pinReadings[2];
-    bool intersectR = this->pinReadings[3];
+    bool intrR = this->pinReadings[3];
 
+    // TODO: move this stuff outside
     if (this->tapeFollowSteps >= this->intersectSeekDelayPeriod)
-	this->intersectionDetection();
+	this->updateIntersectionsDetected();
+    if (this->willTurnAround &&
+	     (this->tapeFollowSteps >= this->preTurnAroundDelayPeriod)) {
+	this->willTurnAround = false;
+	this->turningAround = true;
+	this->turning = true;
+    }
 
     // determine error
-    if (mainL && mainR)                     // both pins over tape
+    if (mainL && mainR)               // both main pins over tape
 	return 0.;
-    else if (mainL)                        // left main over tape
+    else if (mainL)                  // left main over tape
 	return this->errorSmall;
-    else if (mainR)                        // right main over tape
+    else if (mainR)                  // right main over tape
 	return -this->errorSmall;
-    else if (intersectL && (!intersectR))   // left intersection over tape
+    else if (intrL && (!intrR))       // left intersection over tape
 	return this->errorMedium;
-    else if (intersectR && (!intersectL))  // right intersection over tape
+    else if (intrR && (!intrL))       // right intersection over tape
 	return -this->errorMedium;
-    else if (this->lastError < 0.)         // off tape to the right
+    else if (this->lastError < 0.)    // off tape to the right
 	return -this->errorLarge;
-    else if (this->lastError > 0.)         // off tape to the left
+    else if (this->lastError > 0.)    // off tape to the left
 	return this->errorLarge;
     else 
 	return 0.;
@@ -195,6 +199,7 @@ float TapeFollow::makeTurn()
 	this->turning = false;  // exit to regular following
 	this->turningAround = false;
 	this->motorSpeedTurning = this->motorSpeedTurningDefault;
+	this->motorSpeedFollowing = this->motorSpeedFollowingDefault;
     }
 
     // determine error
@@ -306,12 +311,14 @@ TapeFollow::TapeFollow()
       intersectSeekDelayPeriod   (INTERSECT_SEEK_DELAY_PERIOD),
       intersectDetectPeriod      (INTERSECT_DETECT_PERIOD),
       turnConfirmPeriod          (TURN_CONFIRM_PERIOD),
-      turnPreDelayPeriod         (TURN_PRE_DELAY_PERIOD),
+      preTurnDelayPeriod         (PRE_TURN_DELAY_PERIOD),
+      preTurnAroundDelayPeriod   (PRE_TURN_AROUND_DELAY_PERIOD),
       offTapePeriod              (OFF_TAPE_PERIOD),
       onTapePeriod               (ON_TAPE_PERIOD),
       printPeriod                (PRINT_PERIOD),
       counterMax                 (COUNTER_MAX),
       motorSpeedTurningDefault   (MOTOR_SPEED_TURNING),
+      motorSpeedTurningAround    (MOTOR_SPEED_TURNING_AROUND),
       motorSpeedSeeking          (MOTOR_SPEED_SEEKING),
       motorSpeedFollowingDefault (MOTOR_SPEED_FOLLOWING),
       motorSpeedPassengerSeek    (MOTOR_SPEED_PASSENGER_SEEK),
@@ -380,6 +387,7 @@ void TapeFollow::loop()
 	}
     }
     this->seeking = (!this->turning) && (amOffTape);
+    this->following = !(this->turning || this->seeking);
     
     float error(0.);
     if (this->seeking) {
@@ -389,12 +397,12 @@ void TapeFollow::loop()
     } else if (this->turning) {
 	this->motorSpeed = this->motorSpeedTurning;
 	this->tapeFollowSteps = 0;
-	error = makeTurn();
+	error = this->makeTurn();
     } else {
 	this->motorSpeed = this->motorSpeedFollowing;
 	if (this->tapeFollowSteps < this->intersectSeekDelayPeriod)
 	    this->tapeFollowSteps += 1;
-	error = followTape();
+	error = this->followTape();
     }
     error *= this->motorSpeedFollowing;
 
@@ -480,11 +488,12 @@ void TapeFollow::resetMotorSpeed()
 // TODO
 void TapeFollow::turnAround()
 {
-    // Set `turnDirection` and call `makeTurn()`
     this->turnDirection = Direction::RIGHT;  // TODO: make a smarter way of choosing this
-    this->turning = true;
-    this->turningAround = true;
-    this->motorSpeedTurning = this->motorSpeedReverse;
+    this->willTurnAround = true;
+    this->reversing = true;
+    this->motorSpeedTurning = this->motorSpeedTurningAround;
+    this->motorSpeedFollowing = this->motorSpeedReverse;
+    this->tapeFollowSteps = 0;  // reset steps counter
 }
 
 
