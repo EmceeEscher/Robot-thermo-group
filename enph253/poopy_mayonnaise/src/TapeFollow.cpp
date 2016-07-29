@@ -221,6 +221,65 @@ float TapeFollow::makeTurn()
 }
 
 
+Direction TapeFollow::chooseTurnDeterministic(bool left, bool right, bool straight)
+{
+  if((leftWeight > rightWeight) && (leftWeight > straightWeight)){
+    if(left){
+      return Direction::LEFT;
+    }else{
+      if(rightWeight > straightWeight){
+        if(right){
+          return Direction::RIGHT;
+        }else{
+          return Direction::FRONT;
+        }
+      }else{
+        if(straight){
+          return Direction::FRONT;
+        }else{
+          return Direction::RIGHT;
+        }
+      }
+    }
+  }else if((rightWeight > straightWeight) && (rightWeight > leftWeight)){
+    if(right){
+      return Direction::RIGHT;
+    }else{
+      if(leftWeight > straightWeight){
+        if(left){
+          return Direction::LEFT;
+        }else{
+          return Direction::FRONT;
+        }
+      }else{
+        if(straight){
+          return Direction::FRONT;
+        }else{
+          return Direction::LEFT;
+        }
+      }
+    }
+  }else{
+    if(straight){
+      return Direction::FRONT;
+    }else{
+      if(rightWeight > leftWeight){
+        if(right){
+          return Direction::RIGHT;
+        }else{
+          return Direction::LEFT;
+        }
+      }else{
+        if(left){
+          return Direction::LEFT;
+        }else{
+          return Direction::RIGHT;
+        }
+      }
+    }
+  }
+}
+
 // TODO: Allow specifying probabilities from outside
 Direction TapeFollow::chooseTurn(bool left, bool right, bool straight)
 {
