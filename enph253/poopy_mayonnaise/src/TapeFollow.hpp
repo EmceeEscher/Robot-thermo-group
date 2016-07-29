@@ -172,12 +172,12 @@ public:
     /*
      * Changes the motor following speed to the given value
      */
-    void setMotorSpeedPassengerSeek();
+    void setMotorSpeedPassengerSeek();  // TODO: find a better way to do this
 
     /*
      * Resets the following speed to the default value
      */
-    void resetMotorSpeed();
+    void resetMotorSpeed();  // TODO: find a better wy to do this
 
     /*
      * Turn around procedure
