@@ -1,7 +1,6 @@
 ///
 // TapeFollow.cpp
 //
-#include <StandardCplusplus.h>
 #include <phys253.h>
 #include "pins.hpp"
 #include "Direction.hpp"
@@ -9,29 +8,36 @@
 #include "TapeFollow.hpp"
 
 
-const int MOTOR_SPEED_FOLLOWING      {120};
+// const int MOTOR_SPEED_FOLLOWING      {120};
+const int MOTOR_SPEED_FOLLOWING       {84};
 const int MOTOR_SPEED_PASSENGER_SEEK  {64};
 const int MOTOR_SPEED_TURNING         {32};
 const int MOTOR_SPEED_SEEKING          {8};
-const int MOTOR_SPEED_REVERSE        {-12};
+const int MOTOR_SPEED_REVERSE         {-8};
 const float ERROR_SMALL     {.02};
 const float ERROR_MEDIUM    {.04};
 const float ERROR_LARGE     {.08};
 const float ERROR_SEEKING   {.64};
 const float ERROR_TURNING {12.80};
 const float EPSILON         {.10};
-const float GAIN_PROP      {4.68};
-const float GAIN_DER1      {9.54};
+const float GAIN_PROP      {9.84};
+const float GAIN_DER1     {11.78};
 const float GAIN_DER2     {.5*GAIN_DER1*GAIN_DER1/GAIN_PROP*(1.-EPSILON)};
 // const float GAIN_DER2 {0.};
-const int PRINT_PERIOD           {200};
-const int NUM_SAVED_READINGS      {52};
-const int INTERSECT_PERIOD         {5};  
-const int TURNING_PERIOD          {10}; 
-const int TURN_WAIT_PERIOD        {45};
-const int OFF_TAPE_PERIOD         {50};
-const int ON_TAPE_PERIOD          {10};
-const int INTERSECT_DELAY_PERIOD {100};
+const int PRINT_PERIOD                {200};
+const int COUNTER_MAX                 {256};
+const int INTERSECT_DETECT_PERIOD      {15};  
+const int TURN_CONFIRM_PERIOD          {10}; 
+const int TURN_PRE_DELAY_PERIOD        {45};
+const int OFF_TAPE_PERIOD              {50};
+// const int ON_TAPE_PERIOD               {10};
+const int ON_TAPE_PERIOD                {5};
+const int INTERSECT_SEEK_DELAY_PERIOD {100};
+const int TapeFollow::motorPinL         {pins::MOTOR_PIN_L};
+const int TapeFollow::motorPinR         {pins::MOTOR_PIN_R};
+const int TapeFollow::numSensors        {pins_sizes::TAPE_SENSORS_FRONT};
+const int *TapeFollow::tapeSensorsFront {pins::TAPE_SENSORS_FRONT};
+const int *TapeFollow::tapeSensorsBack  {pins::TAPE_SENSORS_BACK};
 
 
 void TapeFollow::init()
@@ -44,6 +50,7 @@ void TapeFollow::init()
     this->lastMainsOnTape     = false;
     this->seeking             = false;
     this->turning             = false;
+    this->turningAround       = false;
     this->halfTurn            = false;
     this->motorsActive        = false;
 
@@ -51,7 +58,8 @@ void TapeFollow::init()
     this->control             = 0;
     this->printCount          = 0;
     this->motorSpeedFollowing = this->motorSpeedFollowingDefault;
-    this->motorSpeed          = this->motorSpeedFollowing;
+    this->motorSpeedTurning   = this->motorSpeedTurningDefault;
+    this->motorSpeed          = 0;
     this->tapeFollowSteps     = 0;
 
     this->lastError           = 0.;
@@ -60,19 +68,19 @@ void TapeFollow::init()
     this->intersectDetect.reset();  // 00
     this->pinReadings.reset();      // 0000
 
-    this->etimeArray          = {0,  1};
+    this->etimeArray          = {1,  2};
     this->errorArray          = {0., 0.};
 
-    for (int i(0); i < 4; ++i) {
+    for (int i(0); i < TapeFollow::numSensors; ++i) {
 	// reset counters
 	this->onTapeCounter[i] = 0;
 	this->offTapeCounter[i] = 0;
 	// assign active pins
-	this->activePins[i] = this->tapeSensorsFront[i];
+	this->activePins[i] = TapeFollow::tapeSensorsFront[i];
     }
 
     // declare active pins as inputs
-    for (int i(0); i < 4; ++i)
+    for (int i(0); i < TapeFollow::numSensors; ++i)
 	pinMode(this->activePins[i], INPUT);
 }
 
@@ -93,9 +101,9 @@ float TapeFollow::seekTape()
 void TapeFollow::intersectionSeen()
 {
     bool intersectSeenL = (this->mainsOnTape &&
-            (this->onTapeCounter[0] >= this->intersectPeriod));
+            (this->onTapeCounter[0] >= this->intersectDetectPeriod));
     bool intersectSeenR = (this->mainsOnTape &&
-            (this->onTapeCounter[3] >= this->intersectPeriod));
+            (this->onTapeCounter[3] >= this->intersectDetectPeriod));
 
     // if seen, update instance variable
     if (intersectSeenL)
@@ -108,10 +116,10 @@ void TapeFollow::intersectionSeen()
 void TapeFollow::intersectionDetection()
 {
     // declare static variables (runs once)
-    const static bool &intersectL = this->pinReadings[0];
-    const static bool &mainL      = this->pinReadings[1];
-    const static bool &mainR      = this->pinReadings[2];
-    const static bool &intersectR = this->pinReadings[3];
+    bool intersectL = this->pinReadings[0];
+    bool mainL      = this->pinReadings[1];
+    bool mainR      = this->pinReadings[2];
+    bool intersectR = this->pinReadings[3];
 
     // check if intersections seen
     this->intersectionSeen();
@@ -123,8 +131,8 @@ void TapeFollow::intersectionDetection()
 	this->intersectDetect[1] = 1;
 
     // if intersection(s) detected, make move decision
-    if ((this->onTapeCounter[0] >= this->turnWaitPeriod) &&
-	(this->onTapeCounter[3] >= this->turnWaitPeriod)) {
+    if ((this->offTapeCounter[0] >= this->turnPreDelayPeriod) &&
+	(this->offTapeCounter[3] >= this->turnPreDelayPeriod)) {
 
 	// wait until both intersections crossed over
 	this->turnDirection = this->chooseTurn(
@@ -144,22 +152,22 @@ void TapeFollow::intersectionDetection()
 float TapeFollow::followTape()
 {
     // declare static variables (runs once)
-    const static bool &intersectL = this->pinReadings[0];
-    const static bool &mainL      = this->pinReadings[1];
-    const static bool &mainR      = this->pinReadings[2];
-    const static bool &intersectR = this->pinReadings[3];
+    bool intersectL = this->pinReadings[0];
+    bool mainL      = this->pinReadings[1];
+    bool mainR      = this->pinReadings[2];
+    bool intersectR = this->pinReadings[3];
 
-    if (this->tapeFollowSteps > this->intersectDelay)
+    if (this->tapeFollowSteps >= this->intersectSeekDelayPeriod)
 	this->intersectionDetection();
 
     // determine error
-    if (mainL && mainR)                    // both pins over tape
+    if (mainL && mainR)                     // both pins over tape
 	return 0.;
-    else if (mainL)                       // left main over tape
+    else if (mainL)                        // left main over tape
 	return this->errorSmall;
-    else if (mainR)                       // right main over tape
+    else if (mainR)                        // right main over tape
 	return -this->errorSmall;
-    else if (intersectL && (!intersectR))  // left intersection over tape
+    else if (intersectL && (!intersectR))   // left intersection over tape
 	return this->errorMedium;
     else if (intersectR && (!intersectL))  // right intersection over tape
 	return -this->errorMedium;
@@ -167,7 +175,7 @@ float TapeFollow::followTape()
 	return -this->errorLarge;
     else if (this->lastError > 0.)         // off tape to the left
 	return this->errorLarge;
-    else
+    else 
 	return 0.;
 }
 
@@ -177,14 +185,16 @@ float TapeFollow::makeTurn()
 {
     // determine whether end has bee reached
     if ((!this->halfTurn) &&
-	    (this->offTapeCounter[1] >= this->turningPeriod) &&
-	    (this->offTapeCounter[2] >= this->turningPeriod)) {
+	    (this->offTapeCounter[1] >= this->turnConfirmPeriod) &&
+	    (this->offTapeCounter[2] >= this->turnConfirmPeriod)) {
     	this->halfTurn = true;
     } else if (this->halfTurn &&
             (this->onTapeCounter[1] >= this->onTapePeriod) &&
 	    (this->onTapeCounter[2] >= this->onTapePeriod)) {
 	this->halfTurn = false;
 	this->turning = false;  // exit to regular following
+	this->turningAround = false;
+	this->motorSpeedTurning = this->motorSpeedTurningDefault;
     }
 
     // determine error
@@ -226,93 +236,88 @@ Direction TapeFollow::chooseTurn(bool left, bool right, bool straight)
 
 void TapeFollow::printLCD()
 {
-    if (!this->active) {
-    	LCD.clear();
-    	LCD.print("Press START to");
-    	LCD.setCursor(0,1);
-    	LCD.print("begin");
-    } else {
-    	LCD.clear();
-    	// print letter
-    	if (!(this->turning || this->onTape))
-    	    LCD.print("S ");  // seeking
-    	else if (this->turning)
-    	    LCD.print("T ");  // turning
-    	else
-    	    LCD.print("F ");  // following
-    	// print arrow
-    	if (this->turning) {
-	    switch (this->turnDirection) {
-	    case Direction::LEFT:
-		LCD.print("<");
-		break;
-	    case Direction::FRONT:
-		LCD.print("^");
-		break;
-	    case Direction::RIGHT:
-		LCD.print(">");
-		break;
-	    case Direction::BACK:
-		LCD.print("v");
-		break;
-	    }
-    	} else {
-    	    if (this->control < 0)
-    		LCD.print("<");
-    	    else if (this->control > 0)
-    		LCD.print(">");
-    	    else
-    		LCD.print("^");
-    	}
-
-    	// print QRD readings
-	for (int i(0); i < 4; ++i) {
-	    LCD.print(" ");
-	    LCD.print(this->pinReadings[i]);
+    LCD.clear();
+    // print letter
+    if (!(this->turning || this->onTape))
+	LCD.print("S ");  // seeking
+    else if (this->turning)
+	LCD.print("T ");  // turning
+    else
+	LCD.print("F ");  // following
+    // print arrow
+    if (this->turningAround)
+	LCD.print("v");
+    else if (this->turning) {
+	switch (this->turnDirection) {
+	case Direction::LEFT:
+	    LCD.print("<");
+	    break;
+	case Direction::FRONT:
+	    LCD.print("^");
+	    break;
+	case Direction::RIGHT:
+	    LCD.print(">");
+	    break;
+	case Direction::BACK:
+	    LCD.print("v");
+	    break;
 	}
-
-	// print current available RAM
-	LCD.print(" ");
-	LCD.print(freeRam());
-
-    	// print gains and control
-    	LCD.setCursor(0,1);
-    	LCD.print(this->gainProp);
-    	LCD.print(" ");
-    	LCD.print(this->gainDer1);
-    	LCD.print(" ");
-    	LCD.print(this->control);
+    } else {
+	if (this->control < 0)
+	    LCD.print("<");
+	else if (this->control > 0)
+	    LCD.print(">");
+	else
+	    LCD.print("^");
     }
+    
+    // print QRD readings
+    for (int i(0); i < TapeFollow::numSensors; ++i) {
+	LCD.print(" ");
+	LCD.print(this->pinReadings[i]);
+    }
+
+    // print current available RAM
+    LCD.print(" ");
+    LCD.print(freeRam());
+    
+    // print gains and control
+    LCD.setCursor(0,1);
+    LCD.print(this->gainProp);
+    // LCD.print(this->errorArray[0]);
+    LCD.print(" ");
+    LCD.print(this->gainDer1);
+    // LCD.print(this->errorArray[1]);
+    LCD.print(" ");
+    LCD.print(this->control);
 }
 
 
 TapeFollow::TapeFollow()
     : MinorMode(),
-      motorPinL        (pins::MOTOR_PIN_L),
-      motorPinR        (pins::MOTOR_PIN_R),
-      tapeSensorsFront (pins::TAPE_SENSORS_FRONT),
-      tapeSensorsBack  (pins::TAPE_SENSORS_BACK),
-      gainProp         (GAIN_PROP),
-      gainDer1         (GAIN_DER1),
-      gainDer2         (GAIN_DER2),
-      errorSmall       (ERROR_SMALL),
-      errorMedium      (ERROR_MEDIUM),
-      errorLarge       (ERROR_LARGE),
-      errorSeeking     (ERROR_SEEKING),
-      errorTurning     (ERROR_TURNING),
-      intersectDelay   (INTERSECT_DELAY_PERIOD),
-      intersectPeriod  (INTERSECT_PERIOD),
-      turningPeriod    (TURNING_PERIOD),
-      turnWaitPeriod   (TURN_WAIT_PERIOD),
-      offTapePeriod    (OFF_TAPE_PERIOD),
-      onTapePeriod     (ON_TAPE_PERIOD),
-      printPeriod      (PRINT_PERIOD),
-      motorSpeedTurning          (MOTOR_SPEED_TURNING),
+      gainProp                   (GAIN_PROP),
+      gainDer1                   (GAIN_DER1),
+      gainDer2                   (GAIN_DER2),
+      errorSmall                 (ERROR_SMALL),
+      errorMedium                (ERROR_MEDIUM),
+      errorLarge                 (ERROR_LARGE),
+      errorSeeking               (ERROR_SEEKING),
+      errorTurning               (ERROR_TURNING),
+      intersectSeekDelayPeriod   (INTERSECT_SEEK_DELAY_PERIOD),
+      intersectDetectPeriod      (INTERSECT_DETECT_PERIOD),
+      turnConfirmPeriod          (TURN_CONFIRM_PERIOD),
+      turnPreDelayPeriod         (TURN_PRE_DELAY_PERIOD),
+      offTapePeriod              (OFF_TAPE_PERIOD),
+      onTapePeriod               (ON_TAPE_PERIOD),
+      printPeriod                (PRINT_PERIOD),
+      counterMax                 (COUNTER_MAX),
+      motorSpeedTurningDefault   (MOTOR_SPEED_TURNING),
       motorSpeedSeeking          (MOTOR_SPEED_SEEKING),
       motorSpeedFollowingDefault (MOTOR_SPEED_FOLLOWING),
       motorSpeedPassengerSeek    (MOTOR_SPEED_PASSENGER_SEEK),
       motorSpeedReverse          (MOTOR_SPEED_REVERSE),
-      motorSpeedFollowing        (MOTOR_SPEED_FOLLOWING)
+      motorSpeedFollowing        (MOTOR_SPEED_FOLLOWING),
+      motorSpeedTurning          (MOTOR_SPEED_TURNING)
 {
     this->init();
 }
@@ -325,46 +330,6 @@ void TapeFollow::loop()
 {
     if (!this->active)
 	return;
-
-    // LCD.clear();
-    // LCD.print("MOTOR SPEEDS:");
-    // delay(1000);
-
-    // LCD.clear();
-    // LCD.print("Turning:");
-    // LCD.setCursor(0, 1);
-    // LCD.print(this->motorSpeedTurning);
-    // delay(1000);
-
-    // LCD.clear();
-    // LCD.print("Tape seeking:");
-    // LCD.setCursor(0, 1);
-    // LCD.print(this->motorSpeedSeeking);
-    // delay(1000);
-
-    // LCD.clear();
-    // LCD.print("Tape following:");
-    // LCD.setCursor(0, 1);
-    // LCD.print(this->motorSpeedFollowing);
-    // delay(1000);
-
-    // LCD.clear();
-    // LCD.print("Def tape following:");
-    // LCD.setCursor(0, 1);
-    // LCD.print(this->motorSpeedFollowingDefault);
-    // delay(1000);
-
-    // LCD.clear();
-    // LCD.print("Passenger seek:");
-    // LCD.setCursor(0, 1);
-    // LCD.print(this->motorSpeedPassengerSeek);
-    // delay(1000);
-
-    // LCD.clear();
-    // LCD.print("Reverse:");
-    // LCD.setCursor(0, 1);
-    // LCD.print(this->motorSpeedReverse);
-    // delay(1000);
 
     if (this->printCount % this->printPeriod == 0) {
 	this->printLCD();
@@ -382,19 +347,19 @@ void TapeFollow::loop()
     }
 
     // get readings from tape sensors
-    for (auto i(0); i < 4; ++i) 
+    for (auto i(0); i < TapeFollow::numSensors; ++i) 
 	this->pinReadings[i] = digitalRead(this->activePins[i]);
     
 
     // update counters
-    for (int i(0); i < 4; ++i)
+    for (int i(0); i < TapeFollow::numSensors; ++i)
 	if (this->pinReadings[i]) {
 	    this->offTapeCounter[i] = 0;
-	    if (this->onTapeCounter[i] < this->onTapePeriod)
+	    if (this->onTapeCounter[i] < this->counterMax)
 		this->onTapeCounter[i] += 1;
 	} else {
 	    this->onTapeCounter[i] = 0;
-	    if (this->offTapeCounter[i] < this->offTapePeriod)
+	    if (this->offTapeCounter[i] < this->counterMax)
 		this->offTapeCounter[i] += 1;
 	}
 
@@ -408,8 +373,12 @@ void TapeFollow::loop()
 
     // get error based on current state
     bool amOffTape(true);
-    for (int i(0); i < 4; ++i)
-	amOffTape = amOffTape && (this->offTapeCounter[i] > this->offTapePeriod);
+    for (int i(0); i < TapeFollow::numSensors; ++i) {
+	if (this->offTapeCounter[i] < this->offTapePeriod) {
+	    amOffTape = false;
+	    break;
+	}
+    }
     this->seeking = (!this->turning) && (amOffTape);
     
     float error(0.);
@@ -423,7 +392,8 @@ void TapeFollow::loop()
 	error = makeTurn();
     } else {
 	this->motorSpeed = this->motorSpeedFollowing;
-	this->tapeFollowSteps += 1;
+	if (this->tapeFollowSteps < this->intersectSeekDelayPeriod)
+	    this->tapeFollowSteps += 1;
 	error = followTape();
     }
     error *= this->motorSpeedFollowing;
@@ -450,30 +420,21 @@ void TapeFollow::loop()
     float ctrlDer2 (this->gainDer2 * der2);
     this->control = -static_cast<int>(ctrlProp + ctrlDer1 + ctrlDer2);
 
-    // LCD.clear();
-    // LCD.print(this->motorSpeedFollowing);
-    // LCD.setCursor(0, 1);
-    // LCD.print(this->control);
-
     int controlMax = this->motorSpeedFollowing * 3 / 2;
     if (this->control > controlMax)
 	this->control = controlMax;
     else if (this->control < -controlMax)
 	this->control = -controlMax;
 
-    // LCD.print(" ");
-    // LCD.print(this->control);
-    // delay(100);
-
     int dSpeed = this->control;
 
     // adjust motor speed
     if (this->motorsActive) {
-	motor.speed(this->motorPinL, dSpeed - this->motorSpeed);
-	motor.speed(this->motorPinR, dSpeed + this->motorSpeed);
+	motor.speed(TapeFollow::motorPinL, dSpeed - this->motorSpeed);
+	motor.speed(TapeFollow::motorPinR, dSpeed + this->motorSpeed);
     } else {
-	motor.speed(this->motorPinL, 0);
-	motor.speed(this->motorPinR, 0);
+	motor.speed(TapeFollow::motorPinL, 0);
+	motor.speed(TapeFollow::motorPinR, 0);
     }
 
     // increase time counters
@@ -519,12 +480,11 @@ void TapeFollow::resetMotorSpeed()
 // TODO
 void TapeFollow::turnAround()
 {
-    // Reverse robot
-    this->motorSpeed = this->motorSpeedReverse;
-
     // Set `turnDirection` and call `makeTurn()`
-    this->turnDirection = Direction::BACK;
+    this->turnDirection = Direction::RIGHT;  // TODO: make a smarter way of choosing this
     this->turning = true;
+    this->turningAround = true;
+    this->motorSpeedTurning = this->motorSpeedReverse;
 }
 
 

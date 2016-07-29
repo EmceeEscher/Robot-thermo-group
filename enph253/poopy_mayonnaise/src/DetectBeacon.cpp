@@ -7,7 +7,7 @@
 #include "pins.hpp"
 #include "DetectBeacon.hpp"
 
-
+const int BEACON_THRESHOLD = 512;
 
 void DetectBeacon::init()
 {
@@ -18,7 +18,8 @@ void DetectBeacon::init()
 
 DetectBeacon::DetectBeacon()
     : MinorMode(),
-      sensorPins(pins::BEACON_SENSORS_SIDES)
+      sensorPins(pins::BEACON_SENSORS_SIDES),
+      beaconThreshold(BEACON_THRESHOLD)
 {
     this->init();
 }
@@ -35,20 +36,29 @@ int DetectBeacon::getBeaconDirection(){
 	int leftAnalog = analogRead(this->sensorPins[0]);
 	int rightAnalog = analogRead(this->sensorPins[1]);
 	
-	if(leftAnalog > beaconThreshold){
-		if(rightAnalog > beaconThreshold)
+	if(leftAnalog > this->beaconThreshold){
+		if(rightAnalog > this->beaconThreshold)
 			return (leftAnalog > rightAnalog) ? -1 : 1;
 		else
 			return -1;
 	}
 	
-	else if(rightAnalog > beaconThreshold){
+	else if(rightAnalog > this->beaconThreshold){
 		return 1;
 	}
 	
 	else
 		return 0;
 	
+}
+
+bool DetectBeacon::hasArrived(){
+  int leftAnalog = analogRead(this->sensorPins[0]);
+  int rightAnalog = analogRead(this->sensorPins[1]);
+  if((leftAnalog > this->beaconThreshold) || (rightAnalog > this->beaconThreshold)){
+    return true;
+  }
+  return false;
 }
 
 // TODO

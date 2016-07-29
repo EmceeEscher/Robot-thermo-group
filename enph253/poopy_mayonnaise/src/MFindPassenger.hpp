@@ -15,9 +15,12 @@ class MFindPassenger : public MajorMode
 private:
 
     // Named minor modes
+    ArmControl     *mmArmControl;
     TapeFollow     *mmTapeFollow;
     PassengerSeek  *mmPassengerSeek;
     CollisionWatch *mmCollisionWatch;
+
+    MajModeEnum state;
 
     /*
      * (Re)initialize state variables
@@ -26,7 +29,17 @@ private:
 
 public:
 
-    MFindPassenger();   // constructor
+    /*
+     * Construct major mode with appropriate minor mode pointers.
+     * These pointers are owned by the calling method, and it is its
+     * responsibility to deallocate them.
+     */
+    MFindPassenger(
+           ArmControl *mmArmControl,
+           TapeFollow *mmTapeFollow,
+           PassengerSeek *mmPassengerSeek,
+	         CollisionWatch *mmCollisionWatch
+    );   
 
     ~MFindPassenger();  // deconstructor
 
@@ -35,6 +48,8 @@ public:
     void start();
 
     void test();
+
+    MajModeEnum changeTo();
 
 };
 

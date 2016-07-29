@@ -16,16 +16,20 @@ RobotState s;
 
 void control::setup()
 {
-#include <phys253setup.txt>
+    #include <phys253setup.txt>
+    RCServo1.detach();
+    RCServo2.detach();
     Serial.begin(9600);
     randomSeed(analogRead(0));
     LCD.clear();
-    LCD.print("THE GOLDEN PEPE");
+    LCD.print("   ABORTION'S   ");
+    LCD.setCursor(0, 1);
+    LCD.print("     WORLD!     ");
     delay(500);
     LCD.clear();
-    LCD.print("Hfeflflfo, LSD!");
+    LCD.print("An elephant     ");
     LCD.setCursor(0, 1);
-    LCD.print("Feels good man!");
+    LCD.print("never forgets...");
     delay(500);
     LCD.clear();
     LCD.print("Press START to");
@@ -44,7 +48,7 @@ void control::loop()
 	control::stop();
 
     if (s.isActive())
-	s.loop();
+    	s.loop();
 }
 
 

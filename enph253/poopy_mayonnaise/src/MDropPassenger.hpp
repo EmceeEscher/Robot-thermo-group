@@ -6,6 +6,7 @@
 #ifndef M_DROP_PASSENGER_HPP
 #define M_DROP_PASSENGER_HPP
 
+#include "allminormodes.hpp"
 #include "MajorMode.hpp"
 
 class MDropPassenger : public MajorMode
@@ -13,6 +14,13 @@ class MDropPassenger : public MajorMode
 
 private:
 
+    // Named minor modes
+    ArmControl      *mmArmControl;
+    CollisionWatch  *mmCollisionWatch;
+    DetectBeacon    *mmDetectBeacon;
+
+
+    MajModeEnum state;  
     /*
      * (Re)initialize state variables
      */
@@ -20,7 +28,10 @@ private:
 
 public:
 
-    MDropPassenger();   // constructor
+    MDropPassenger(
+      ArmControl      *mmArmControl,
+      DetectBeacon    *mmDetectBeacon,
+      CollisionWatch  *mmCollisionWatch);   // constructor
 
     ~MDropPassenger();  // deconstructor
 
@@ -28,13 +39,12 @@ public:
 
     void start();
 
-    void stop();
-
-    void pause();
-
     void test();
 
-    bool isActive();
+    /*
+     * Used to tell if the robot should switch robot states or not
+     */
+    MajModeEnum changeTo();
 };
 
 #endif  // M_DROP_PASSENGER_HPP

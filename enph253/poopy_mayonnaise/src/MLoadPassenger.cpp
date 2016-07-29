@@ -3,6 +3,7 @@
 //
 #include "allminormodes.hpp"
 #include "MLoadPassenger.hpp"
+#include <phys253.h>
 
 void MLoadPassenger::init()
 {
@@ -11,19 +12,21 @@ void MLoadPassenger::init()
 }
 
 // TODO
-MLoadPassenger::MLoadPassenger()
-    : MajorMode()
+MLoadPassenger::MLoadPassenger(
+  ArmControl      *mmArmControl,
+  PassengerSeek   *mmPassengerSeek,
+  CollisionWatch  *mmCollisionWatch)
+    : MajorMode(),
+    mmArmControl(mmArmControl),
+    mmPassengerSeek(mmPassengerSeek),
+    mmCollisionWatch(mmCollisionWatch),
+    state(MajModeEnum::DontChange)
 {
   this->init();
 
   // TODO: initialize specific minor modes
-  this->mmArmControl = new ArmControl;
   this->allMinorModes.push_back(mmArmControl);
-
-  this->mmCollisionWatch = new CollisionWatch;
   this->allMinorModes.push_back(mmCollisionWatch);
-
-  this->mmPassengerSeek = new PassengerSeek;
   this->allMinorModes.push_back(mmPassengerSeek);
 }
 
@@ -35,16 +38,20 @@ void MLoadPassenger::loop()
 {
   if(this->mmCollisionWatch->collisionHasOccurred()){
     //TODO: figure out what to do other than panic
+    //UPDATE: just fucking ignore it
   }
 
   if(this->mmPassengerSeek->isAtPassenger()){
+    LCD.clear();
     if(this->mmPassengerSeek->getPassengerSide() == 1){
+      LCD.print("reaching on right");
       this->mmArmControl->turnAndReach(true, true);
     }else if(this->mmPassengerSeek->getPassengerSide() == -1){
+      LCD.print("reaching on left");
       this->mmArmControl->turnAndReach(false, true);
     }
     if(this->mmArmControl->isHolding()){
-    //switch major mode to MToDestination
+      this->state = MajModeEnum::ToDestination;
     }
     else{
       //reposition
@@ -63,11 +70,17 @@ void MLoadPassenger::start()
   //start minor modes
   this->mmArmControl->start();
   this->mmCollisionWatch->start();
+  this->mmPassengerSeek->start();
+  this->state = MajModeEnum::DontChange;
 }
 
 //TODO
 void MLoadPassenger::test()
 {
   MajorMode::test();
+}
+
+MajModeEnum MLoadPassenger::changeTo(){
+  return this->state;
 }
 

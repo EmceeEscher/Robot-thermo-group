@@ -7,9 +7,13 @@
 #include "PassengerSeek.hpp"
 
 
+//TODO: add code for QSD that's on digital pin
+
 const int NUM_SAVED_READINGS {24};
 const int MAX_REGISTER_PERIOD {10};
 const double MAX_REGISTER_THRESHOLD {0.};
+const int *PassengerSeek::qsdPinsSides {pins::PASSENGER_SENSORS_SIDES};
+const int PassengerSeek::numPinsSides  {pins_sizes::PASSENGER_SENSORS_SIDES};
 
 
 // TODO
@@ -24,7 +28,7 @@ void PassengerSeek::init()
     this->atMax.reset();              // reset bits to 000000
     this->lastDerivPositive.reset();  // reset bits to 000000
 
-    for (int i(0); i < 6; ++i) {
+    for (int i(0); i < PassengerSeek::numPinsSides; ++i) {
 	this->pinReadings[i] = 0.;
 	this->lastPinReadings[i] = 0.;
 	this->numAboveThreshold[i] = 0;
@@ -49,7 +53,8 @@ bool PassengerSeek::atMaxSideMiddle()
 // TODO
 void PassengerSeek::updateMax()
 {
-    for (int i(0); i < 6; ++i) {
+
+    for (int i(0); i < PassengerSeek::numPinsSides; ++i) {
 	bool aboveThreshold = (
                 this->numAboveThreshold[i] >= 2*this->maxRegisterPeriod);
 	bool imax = (
@@ -67,12 +72,11 @@ PassengerSeek::PassengerSeek()
     : MinorMode(),
       maxRegisterPeriod    (MAX_REGISTER_PERIOD),
       maxRegisterThreshold (MAX_REGISTER_THRESHOLD),
-      qsdPinsSides         (pins::PASSENGER_SENSORS_SIDES),
-      pinReadings          {0., 0., 0., 0., 0., 0.},
-      lastPinReadings      {0., 0., 0., 0., 0., 0.},
-      numAboveThreshold    {0, 0, 0, 0, 0, 0},
-      numPosDeriv          {0, 0, 0, 0, 0, 0},
-      numNegDeriv          {0, 0, 0, 0, 0, 0}
+      pinReadings          {0., 0., 0., 0., 0.},
+      lastPinReadings      {0., 0., 0., 0., 0.},
+      numAboveThreshold    {0, 0, 0, 0, 0},
+      numPosDeriv          {0, 0, 0, 0, 0},
+      numNegDeriv          {0, 0, 0, 0, 0}
 {
     this->init();
 }
@@ -85,13 +89,15 @@ PassengerSeek::~PassengerSeek() {}
 void PassengerSeek::loop()
 {
     // Get pin readings
-    for (int i(0); i < 6; ++i) {
+
+    for (int i(0); i < PassengerSeek::numPinsSides; ++i) {
 	this->lastPinReadings[i] = this->pinReadings[i];
-	this->pinReadings[i] = analogRead(this->qsdPinsSides[i]);
+	this->pinReadings[i] = analogRead(PassengerSeek::qsdPinsSides[i]);
     }
     
     // Update derivative counts
-    for (auto i(0); i < 6; ++i) {
+
+    for (int i(0); i < PassengerSeek::numPinsSides; ++i) {
 	if ((this->pinReadings[i] - this->lastPinReadings[i]) <= 0) {
 	    if (this->lastDerivPositive[i])
 		this->numNegDeriv[i] = 1;
@@ -108,7 +114,7 @@ void PassengerSeek::loop()
     }
 
     // Update counters
-    for (int i(0); i < 6; ++i)
+    for (int i(0); i < PassengerSeek::numPinsSides; ++i)
 	if (this->pinReadings[i] <= this->maxRegisterThreshold) {
 	    this->numAboveThreshold[i] = 0;
 	} else if (this->numAboveThreshold[i] < this->maxRegisterPeriod)

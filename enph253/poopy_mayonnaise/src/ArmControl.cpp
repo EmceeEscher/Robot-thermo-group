@@ -4,19 +4,6 @@
 #include "pins.hpp"
 #include "ArmControl.hpp"
 
-//Analog pin for base angle potentiometer signal
-const int BASE_ANGLE_PIN = 0;
-//Base GBBC motor output number
-const int BASE_MOTOR_NUMBER = 0;
-
-//Claw's Baby Motor output number
-const int BABY_MOTOR_NUM = 1;
-//Digital pin indicating a successfully caught animal
-const int CATCH_SWITCH = 0;
-//Digital pin indicating a claw closing on itself
-const int NO_CATCH_SWITCH = 1;
-//Digital pin to detect when an animal is in the claw
-const int INNER_CLAW_SWITCH = 2;
 //Amount of time to run motor to drop animal
 const int DROP_TIME = 400; // Milliseconds
 
@@ -24,54 +11,53 @@ const int DROP_TIME = 400; // Milliseconds
 const float PROP_GAIN = 10.;
 const float HOLD_PROP_GAIN = 17.;
 const float INT_GAIN = 0.;
-const float DERIV_GAIN = 0.5;
+const float DERIV_GAIN = 1.5;
 
 //Dynamic Control Variables
 float baseTarget, midTarget;
 float propErr, derivErr, intErr, lastPropErr;
 float angle;
-float currAngle = 0;
 float now, lastTime;
-int hasInitialized = 0;
 
 //Rest Positions
-const float BASE_REST_POSITION = 75;
-const float MID_REST_POSITION = 120;
-const float BASE_HOLD_POSITION = 85;
+const float BASE_REST_POSITION = 70;
+const float MID_REST_POSITION = 170;
+const float BASE_HOLD_POSITION = 70;
 const float MID_HOLD_POSITION = 170;
 
-//Iterator for LCD printing
+//Iterator for LCD printing, not currently used
 int LCDControl;
 
 //Stepper Constants
-const int STEPPER_DIR_PIN = 8;
-const int STEPPER_PULSE_PIN = 9;
 const int COUNTERCLOCKWISE = HIGH;
 const int CLOCKWISE = LOW;
-const int STEPPER_MICROS_DELAY = 40000; //Time delay between pulses in microseconds
-const int NUM_PULSES = 700;
+const int STEPPER_MICROS_DELAY = 1600; //Time delay between pulses in microseconds
+const int NUM_PULSES = 680;
 
 //reachAndClaw/reachAndDrop function Constants
-const float INITIAL_ADJ_MID_TARGET = 180;
-const float INITIAL_ADJ_BASE_TARGET = 40;
-const float FINAL_ADJ_MID_TARGET = 180;
-const float FINAL_ADJ_BASE_TARGET = 25;
+const float INITIAL_ADJ_MID_TARGET = 100;
+const float INITIAL_ADJ_BASE_TARGET = 60;
+const float MID_ADJ_MID_TARGET = 135;
+const float MID_ADJ_BASE_TARGET = 40;
+const float FINAL_ADJ_MID_TARGET = 170;
+const float FINAL_ADJ_BASE_TARGET = 20;
 
 //Holding a passenger?
-bool holding = false;
+//bool holding = false;
 
 void ArmControl::init() {
 
-  
-  #include <phys253setup.txt>
-  //portMode(1,OUTPUT);
-  pinMode(stepperDirPin,OUTPUT);
-  pinMode(stepperPulsePin,OUTPUT);
+  RCServo1.detach();
+  pinMode(this->stepperPulsePin,OUTPUT);
+  RCServo2.detach();
+  pinMode(this->stepperDirPin,OUTPUT);
+ 
   Serial.begin(9600);
-  this->baseTarget = this->baseRestPosition;
-  this->midTarget = this->midRestPosition;
-  this->lastPropErr = 0.;
-  this->LCDControl = 1;
+  baseTarget = this->baseRestPosition;
+  midTarget = this->midRestPosition;
+  lastPropErr = 0.;
+  LCDControl = 1;
+  this->holding = false;
 }
 
 ArmControl::ArmControl()
@@ -92,6 +78,8 @@ ArmControl::ArmControl()
 	  initialAdjBaseTarget(INITIAL_ADJ_BASE_TARGET),
 	  finalAdjMidTarget(FINAL_ADJ_MID_TARGET),
 	  finalAdjBaseTarget(FINAL_ADJ_BASE_TARGET),
+    midAdjMidTarget(MID_ADJ_MID_TARGET),
+    midAdjBaseTarget(MID_ADJ_BASE_TARGET),
 	  
 	  //pin constants
 	  baseAnglePin(pins::POTENTIOMETER),
@@ -107,7 +95,7 @@ ArmControl::ArmControl()
 	  }
 	  
 	  
-	  
+ArmControl::~ArmControl(){}
 
 void ArmControl::loop() {
   doControl();
@@ -134,19 +122,19 @@ void ArmControl::doControl(){
   lastTime = now;
   lastPropErr = propErr;
 
-  /*
+  
   if(LCDControl % 25 == 0){
-    //printState();
+    this->printState();
     LCDControl = 1;
   }
   LCDControl++;
-  */
+  
 }
 
 //Converts base potentiometer voltage to corresponding angle
 float ArmControl::getAngle() {
-  float voltage = (float) analogRead(BASE_ANGLE_PIN) * 5./1024.;
-  return 130.814*(3.*voltage - 10.)/(voltage-5.)+27.5;
+  float voltage = (float) analogRead(this->baseAnglePin) * 5./1024.;
+  return 130.814*(3.*voltage - 10.)/(voltage-5.)+60.;
 }
 
 //Wrapper function for setting motor speed
@@ -158,19 +146,19 @@ void ArmControl::setBaseMotor(int duty){
   else if(duty < -255){
     duty = -255;
   }
-  motor.speed(BASE_MOTOR_NUMBER,duty);
+  motor.speed(this->baseMotorNumber,duty);
 }
 
 //Returns the motor speed based on PID control
 float ArmControl::getControlValue(){
   float control = 0;
-  if(holding){
-    control += HOLD_PROP_GAIN * propErr;
+  if(this->holding){
+    control += this->holdPropGain * propErr;
   }else{
-    control += PROP_GAIN * propErr;
+    control += this->propGain * propErr;
   }
-  control += DERIV_GAIN * derivErr;
-  control += INT_GAIN * intErr;
+  control += this->derivGain * derivErr;
+  control += this->intGain * intErr;
   return control;
 }
 
@@ -179,30 +167,30 @@ float ArmControl::getControlValue(){
 void ArmControl::grabShit(){
 
   //If switches are already triggered, then do nothing
-  if(!digitalRead(CATCH_SWITCH) || !digitalRead(NO_CATCH_SWITCH)){}
+  if(!digitalRead(this->catchSwitch) || !digitalRead(this->noCatchSwitch)){}
   
   else{
     LCD.clear();
     LCD.print("Grabbing");
-    motor.speed(BABY_MOTOR_NUM,140);
+    motor.speed(this->babyMotorNum,140);
     unsigned long startTime = millis();
     while(1){
       doControl();
-      if(!digitalRead(CATCH_SWITCH)){
-        holding = true;
+      if(!digitalRead(this->catchSwitch)){
+        this->holding = true;
         break;
       }
-      if(!digitalRead(NO_CATCH_SWITCH)){
-        holding = false;
+      if(!digitalRead(this->noCatchSwitch)){
+        this->holding = false;
         break;
       }
       if(millis() - startTime > 2000){
-        holding = true;
+        this->holding = true;
         break;
       }
     }
-    if(holding){
-      motor.speed(BABY_MOTOR_NUM,20);
+    if(this->holding){
+      motor.speed(this->babyMotorNum,20);
     }else{
       dropShit();
     }
@@ -211,52 +199,53 @@ void ArmControl::grabShit(){
 
 //Opens the claw for specified time
 void ArmControl::dropShit(){
-  motor.speed(BABY_MOTOR_NUM,-140);
-  holding = false;
-  delay(DROP_TIME);
-  motor.speed(BABY_MOTOR_NUM,0);
+  motor.speed(this->babyMotorNum,-140);
+  this->holding = false;
+  delay(this->dropTime);
+  motor.speed(this->babyMotorNum,0);
 }
 
-/*//Function to update the LCD periodically
-void printState(){
+//Function to update the LCD periodically
+void ArmControl::printState(){
   LCD.clear();
   LCD.print("A");
   LCD.print(getAngle());
-  LCD.print(" TaR:");
+  //LCD.print(RCServo0.attached());
+  /*LCD.print(" TaR:");
   if(knob(7) > 900){
     LCD.print("R");
   } else if (knob(7) < 150){
     LCD.print("L");
   } else {
     LCD.print("S");
-  }
-}*/
+  }*/
+}
 
 //Extends arm over two periods and either grabs or drops
 void ArmControl::reachAndClaw(bool grabbing){
-  
-  //baseTarget = INITIAL_ADJ_BASE_TARGET; 
-  midTarget = INITIAL_ADJ_MID_TARGET;
+
+  midTarget = this->initialAdjMidTarget;
+  baseTarget = this->initialAdjBaseTarget;
   unsigned long startTime = millis();
   while(millis() - startTime < 500){
     doControl();
   }
 
-  baseTarget = INITIAL_ADJ_BASE_TARGET;
+  midTarget = this->midAdjMidTarget;
+  baseTarget = this->midAdjBaseTarget;
 
   while(millis() - startTime < 1000){
     doControl();
   }
   
-  baseTarget = FINAL_ADJ_BASE_TARGET; 
-  midTarget = FINAL_ADJ_MID_TARGET;
-  startTime = millis();
-  while(millis() - startTime < 2500){
+  baseTarget = this->finalAdjBaseTarget; 
+  midTarget = this->finalAdjMidTarget;
+  while(millis() - startTime < 1500){
     doControl();
-    if(!digitalRead(INNER_CLAW_SWITCH)){
-      baseTarget = getAngle() + 5;
+    if(!digitalRead(this->innerClawSwitch)){
+      //baseTarget = getAngle() + 5; // this code don't do nothing
       break;
-    }
+    } 
   }
   if (grabbing) {
 	  grabShit();
@@ -269,22 +258,34 @@ void ArmControl::reachAndClaw(bool grabbing){
 
 //Sets the control target values to rest position
 void ArmControl::setRestPosition(){
-  if(holding){
-    baseTarget = BASE_HOLD_POSITION;
-    midTarget = MID_HOLD_POSITION;
+  unsigned long startTime = millis();
+  baseTarget = this->midAdjBaseTarget;
+  midTarget = this->midAdjMidTarget;
+  while(millis()-startTime < 500){
+    doControl();
+  }
+  baseTarget = this->initialAdjBaseTarget;
+  midTarget = this->initialAdjMidTarget;
+  while(millis()-startTime < 1000){
+    doControl();
+  }
+  if(this->holding){
+    baseTarget = this->baseHoldPosition;
+    midTarget = this->midHoldPosition;
   }else{
-    baseTarget = BASE_REST_POSITION;
-    midTarget = MID_REST_POSITION;
+    baseTarget = this->baseRestPosition;
+    midTarget = this->midRestPosition;
   }
   
 }
 
 //Turns the stepper motor a specified number of steps
 void ArmControl::stepperTurn(bool CW,int count){
+
   if(CW){
-    digitalWrite(STEPPER_DIR_PIN,CLOCKWISE);
+    digitalWrite(this->stepperDirPin,CLOCKWISE);
   } else{
-    digitalWrite(STEPPER_DIR_PIN,COUNTERCLOCKWISE);
+    digitalWrite(this->stepperDirPin,COUNTERCLOCKWISE);
   }
   int i;
   unsigned long prevTime = millis();
@@ -293,11 +294,14 @@ void ArmControl::stepperTurn(bool CW,int count){
       doControl();
       prevTime = millis();
     }
-    digitalWrite(STEPPER_PULSE_PIN,HIGH);
-    delayMicroseconds(STEPPER_MICROS_DELAY);
+    digitalWrite(this->stepperPulsePin,HIGH);
+    delayMicroseconds(this->stepperMicrosDelay);
     
-    digitalWrite(STEPPER_PULSE_PIN,LOW);
-    delayMicroseconds(STEPPER_MICROS_DELAY);
+    digitalWrite(this->stepperPulsePin,LOW);
+    delayMicroseconds(this->stepperMicrosDelay);
+  }
+  while(!startbutton()){
+    doControl();
   }
 }
 
@@ -306,12 +310,12 @@ void ArmControl::stepperTurn(bool CW,int count){
  * Parameter: grab - grab if true, drop otherwise
  */
 void ArmControl::turnAndReach(bool turnRight, bool grab){
-  stepperTurn(turnRight, NUM_PULSES);
+  stepperTurn(turnRight, this->numPulses);
   reachAndClaw(grab);
-  stepperTurn(!turnRight, NUM_PULSES);
+  stepperTurn(!turnRight, this->numPulses);
 }
 
-bool isHolding(){
-  return holding;
+bool ArmControl::isHolding(){
+  return this->holding;
 }
 

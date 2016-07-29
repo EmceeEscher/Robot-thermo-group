@@ -18,7 +18,8 @@ class DetectBeacon : public MinorMode
 private:
 
     const int *sensorPins;            // left right
-	const int beaconThreshold = 100; 
+
+    const int beaconThreshold;
 
 
     /*
@@ -50,6 +51,12 @@ public:
      * Returns -1 if no collision has been detected.
      */
     int getBeaconDirection();
+
+    /*
+     * Returns true if the robot has determined that it has arrived at the
+     * drop-off location.
+     */
+     bool hasArrived();
 
 };
 
