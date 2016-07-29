@@ -107,7 +107,7 @@ private:
     /*
      * Look for intersection. If found, make decision and turn?
      */
-    void intersectionDetection();
+    void updateIntersectionsDetected();
 
     /*
      * Loop function for following tape with no intersections.

@@ -118,7 +118,7 @@ void TapeFollow::updateIntersectionsSeen()
 }
 
 
-void TapeFollow::intersectionDetection()
+void TapeFollow::updateIntersectionsDetected()
 {
     // check if intersections seen
     this->updateIntersectionsSeen();
@@ -149,13 +149,14 @@ void TapeFollow::intersectionDetection()
 float TapeFollow::followTape()
 {
     // declare static variables (runs once)
-    bool intersectL = this->pinReadings[0];
+    bool intrL = this->pinReadings[0];
     bool mainL      = this->pinReadings[1];
     bool mainR      = this->pinReadings[2];
-    bool intersectR = this->pinReadings[3];
+    bool intrR = this->pinReadings[3];
 
+    // TODO: move this stuff outside
     if (this->tapeFollowSteps >= this->intersectSeekDelayPeriod)
-	this->intersectionDetection();
+	this->updateIntersectionsDetected();
     if (this->willTurnAround &&
 	     (this->tapeFollowSteps >= this->preTurnAroundDelayPeriod)) {
 	this->willTurnAround = false;
@@ -164,19 +165,19 @@ float TapeFollow::followTape()
     }
 
     // determine error
-    if (mainL && mainR)                     // both pins over tape
+    if (mainL && mainR)               // both main pins over tape
 	return 0.;
-    else if (mainL)                        // left main over tape
+    else if (mainL)                  // left main over tape
 	return this->errorSmall;
-    else if (mainR)                        // right main over tape
+    else if (mainR)                  // right main over tape
 	return -this->errorSmall;
-    else if (intersectL && (!intersectR))   // left intersection over tape
+    else if (intrL && (!intrR))       // left intersection over tape
 	return this->errorMedium;
-    else if (intersectR && (!intersectL))  // right intersection over tape
+    else if (intrR && (!intrL))       // right intersection over tape
 	return -this->errorMedium;
-    else if (this->lastError < 0.)         // off tape to the right
+    else if (this->lastError < 0.)    // off tape to the right
 	return -this->errorLarge;
-    else if (this->lastError > 0.)         // off tape to the left
+    else if (this->lastError > 0.)    // off tape to the left
 	return this->errorLarge;
     else 
 	return 0.;
