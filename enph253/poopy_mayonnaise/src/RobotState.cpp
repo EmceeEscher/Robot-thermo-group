@@ -41,7 +41,7 @@ void RobotState::setNextMode()
 void RobotState::enterNextMode()
 {
     if (this->currentMajorMode->isActive()) {
-	this->currentMajorMode->stop();
+	this->currentMajorMode->pause();
 	this->nextMajorMode->start();
     }
     this->currentMajorMode = this->nextMajorMode;
