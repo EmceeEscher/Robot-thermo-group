@@ -8,6 +8,8 @@ int lastLeft;
 int lastRight;
 int currLeft;
 int currRight;
+int lastDiff;
+int currDiff;
 
 void MToDestination::init()
 {
@@ -17,6 +19,8 @@ void MToDestination::init()
   lastRight = mmDetectBeacon->getRightReading();
   currLeft = lastLeft;
   currRight = lastRight;
+  lastDiff = currRight - currLeft;
+  currDiff = lastDiff;
 }
 
 MToDestination::MToDestination(
@@ -54,10 +58,15 @@ void MToDestination::loop()
     lastRight = currRight;
     currLeft = mmDetectBeacon->getLeftReading();
     currRight = mmDetectBeacon->getRightReading();
+    lastDiff = currDiff;
+    currDiff = currRight - currLeft;
     
     
     /*
-     * 
+     * tapeFollow
+     * if at intersection, turn whichever direction has higher reading
+     *    if you can't turn that direction, turn whichever is closest
+     * if reading passes threshold, drop off
      */
 }
 

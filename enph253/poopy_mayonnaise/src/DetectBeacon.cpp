@@ -12,6 +12,7 @@ const int BEACON_THRESHOLD = 512;
 void DetectBeacon::init()
 {
     MinorMode::init();
+    
 }
 
 
