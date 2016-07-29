@@ -41,7 +41,7 @@ public:
      * given vertex v.
      * Assumes v is a vertex in the graph.
      */
-    virtual std::vector<GraphVertex*> getDownstreamNeighbors(
+    virtual std::vector<GraphVertex*>& getDownstreamNeighbors(
             GraphVertex &v) = 0;
 
     /*
@@ -49,13 +49,13 @@ public:
      * vertex v.
      * Assumes v is a vertex in the graph.
      */
-    virtual std::vector<GraphVertex*> getUpstreamNeighbors(
+    virtual std::vector<GraphVertex*>& getUpstreamNeighbors(
             GraphVertex &v) = 0;
 
     /*
      * Returns a vector of all of the vertices in the graph.
      */
-    virtual std::vector<GraphVertex*> getVertices() = 0;
+    virtual std::vector<GraphVertex*>& getVertices() = 0;
 
 };
 

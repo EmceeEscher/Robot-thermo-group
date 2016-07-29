@@ -17,6 +17,7 @@ class GraphVertex
 
 private:
 
+
     string label;
 
 public:
@@ -39,19 +40,24 @@ public:
     operator string() const;
 
     /*
+     * Overload << operator to produce nice output
+     */
+    friend ostream& operator<<(ostream &out, const GraphVertex &vertex);
+
+    /*
+     * Less comparison operator for ordering elements (e.g. in a map)
+     */
+    friend bool operator<(const GraphVertex &v1, const GraphVertex &v2);
+
+    /*
      * Overload equality comparison operator to return true if labels are equal
      */
-    friend bool operator==(const GraphVertex &me, const GraphVertex &other);
+    friend bool operator==(const GraphVertex &v1, const GraphVertex &v2);
 
     /*
      * Overload innequality comparison operator to reflect == operator
      */
-    friend bool operator!=(const GraphVertex &me, const GraphVertex &other);
-
-    /*
-     * Overload << operator to produce nice output
-     */
-    friend ostream& operator<<(ostream &out, const GraphVertex &vertex);
+    friend bool operator!=(const GraphVertex &v1, const GraphVertex &v2);
 
 };
 

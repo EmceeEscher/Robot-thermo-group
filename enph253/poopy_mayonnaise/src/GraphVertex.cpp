@@ -33,20 +33,26 @@ GraphVertex::operator string() const
 }
 
 
-bool operator==(const GraphVertex &me, const GraphVertex &other)
-{
-    return me.label == other.label;
-}
-
-
-bool operator!=(const GraphVertex &me, const GraphVertex &other)
-{
-    return !(me == other);
-}
-
-
 ostream& operator<<(ostream &out, const GraphVertex &vertex)
 {
     out << string(vertex);
     return out;
+}
+
+
+bool operator<(const GraphVertex &v1, const GraphVertex &v2)
+{
+    return v1.label < v2.label;
+}
+
+
+bool operator==(const GraphVertex &v1, const GraphVertex &v2)
+{
+    return !((v1 < v2) || (v2 < v1));
+}
+
+
+bool operator!=(const GraphVertex &v1, const GraphVertex &v2)
+{
+    return !(v1 == v2);
 }
