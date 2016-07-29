@@ -12,8 +12,9 @@
 const int MOTOR_SPEED_FOLLOWING       {84};
 const int MOTOR_SPEED_PASSENGER_SEEK  {64};
 const int MOTOR_SPEED_TURNING         {32};
+const int MOTOR_SPEED_TURNING_AROUND   {0};
 const int MOTOR_SPEED_SEEKING          {8};
-const int MOTOR_SPEED_REVERSE         {-8};
+const int MOTOR_SPEED_REVERSE        {-16};
 const float ERROR_SMALL     {.02};
 const float ERROR_MEDIUM    {.04};
 const float ERROR_LARGE     {.08};
@@ -29,6 +30,7 @@ const int COUNTER_MAX                 {256};
 const int INTERSECT_DETECT_PERIOD      {15};  
 const int TURN_CONFIRM_PERIOD          {10}; 
 const int PRE_TURN_DELAY_PERIOD        {45};
+const int PRE_TURN_AROUND_DELAY_PERIOD {45};
 const int OFF_TAPE_PERIOD              {50};
 // const int ON_TAPE_PERIOD               {10};
 const int ON_TAPE_PERIOD                {5};
@@ -160,6 +162,11 @@ float TapeFollow::followTape()
 
     if (this->tapeFollowSteps >= this->intersectSeekDelayPeriod)
 	this->intersectionDetection();
+    if (this->willTurnAround &&
+	     (this->tapeFollowSteps >= this->preTurnAroundDelayPeriod)) {
+	this->turningAround = true;
+	this->turning = true;
+    }
 
     // determine error
     if (mainL && mainR)                     // both pins over tape
@@ -196,6 +203,7 @@ float TapeFollow::makeTurn()
 	this->turning = false;  // exit to regular following
 	this->turningAround = false;
 	this->motorSpeedTurning = this->motorSpeedTurningDefault;
+	this->motorSpeedFollowing = this->motorSpeedFollowingDefault;
     }
 
     // determine error
@@ -308,11 +316,13 @@ TapeFollow::TapeFollow()
       intersectDetectPeriod      (INTERSECT_DETECT_PERIOD),
       turnConfirmPeriod          (TURN_CONFIRM_PERIOD),
       preTurnDelayPeriod         (PRE_TURN_DELAY_PERIOD),
+      preTurnAroundDelayPeriod   (PRE_TURN_AROUND_DELAY_PERIOD),
       offTapePeriod              (OFF_TAPE_PERIOD),
       onTapePeriod               (ON_TAPE_PERIOD),
       printPeriod                (PRINT_PERIOD),
       counterMax                 (COUNTER_MAX),
       motorSpeedTurningDefault   (MOTOR_SPEED_TURNING),
+      motorSpeedTurningAround    (MOTOR_SPEED_TURNING_AROUND),
       motorSpeedSeeking          (MOTOR_SPEED_SEEKING),
       motorSpeedFollowingDefault (MOTOR_SPEED_FOLLOWING),
       motorSpeedPassengerSeek    (MOTOR_SPEED_PASSENGER_SEEK),
@@ -381,6 +391,7 @@ void TapeFollow::loop()
 	}
     }
     this->seeking = (!this->turning) && (amOffTape);
+    this->following = !(this->turning || this->seeking);
     
     float error(0.);
     if (this->seeking) {
@@ -481,11 +492,12 @@ void TapeFollow::resetMotorSpeed()
 // TODO
 void TapeFollow::turnAround()
 {
-    // Set `turnDirection` and call `makeTurn()`
     this->turnDirection = Direction::RIGHT;  // TODO: make a smarter way of choosing this
-    this->turning = true;
-    this->turningAround = true;
-    this->motorSpeedTurning = this->motorSpeedReverse;
+    this->willTurnAround = true;
+    this->reversing = true;
+    this->motorSpeedTurning = this->motorSpeedTurningAround;
+    this->motorSpeedFollowing = this->motorSpeedReverse;
+    this->tapeFollowSteps = 0;  // reset steps counter
 }
 
 

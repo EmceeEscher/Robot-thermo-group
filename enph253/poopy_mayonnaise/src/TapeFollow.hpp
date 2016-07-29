@@ -39,11 +39,13 @@ private:
     const int intersectDetectPeriod;       // number of consecutive readings required to see an intersection
     const int turnConfirmPeriod;           // number of consecutive readings required to register start of turning
     const int preTurnDelayPeriod;          // number of iterations to wait after detecting intersections before making decision
+    const int preTurnAroundDelayPeriod;    // number of reverse steps to make before turning around
     const int offTapePeriod;               // number of consecutive readings required to signal that the robot has lost the tape
     const int onTapePeriod;                // number of consecutive readings required to confirm that the robot is back on the tape after turning
     const int printPeriod;                 // number of iterations per printout
     const int counterMax;                  // maximum value for onTapeCounter and offTapeCounter
     const int motorSpeedTurningDefault;    // motor speed for making turn
+    const int motorSpeedTurningAround;     // motor speed for turning around
     const int motorSpeedSeeking;           // motor speed for seeking tape
     const int motorSpeedFollowingDefault;  // default motor speed for tape following
     const int motorSpeedPassengerSeek;     // motor speed for following after initial passenger sighting
@@ -55,9 +57,11 @@ private:
     bool lastOnTape;              // last value of onTape
     bool mainsOnTape;             // whether one of the mains in on the tape
     bool lastMainsOnTape;         // whether one of the mains was on the tape in the last step
+    bool following;               // whether the robot is currently following tape
     bool seeking;                 // whether the robot is currently seeking tape
     bool turning;                 // true= turning, false= straight
     bool turningAround;           // true if the robot is turning around
+    bool willTurnAround;          // true if the robot is about to turn around
     bool reversing;               // true if the robot is going in reverse
     bool halfTurn;                // if true, bot has turned far enough that mains are off tape
     bool motorsActive;            // true if motors are active
