@@ -116,6 +116,10 @@ private:
      * Function which chooses what direction to turn, based on its available
      * options
      * 
+     * Chooses randomly, but weighted by values giveTurnDirection.
+     * If giveTurnDirection hasn't been called since last call of chooseTurn,
+     * will choose randomly with equal weights given to available options.
+     * 
      * param left: true if left is an option, false otherwise
      * param right: true if right is an option, false otherwise
      * param straight: true if straight is an option, false otherwise
@@ -207,6 +211,14 @@ public:
      * Return true if the robot is currently seeking tape
      */
     bool isSeeking();
+
+    /*
+     * Give weighted directions for turning. Robo will turn at next intersection randomly,
+     * but weighted by ratio of parameters. If you want it to only turn in one direction, 
+     * give it 0 for the others. If it can't turn in a nonzero direction, it will turn randomly
+     * in one of the directions it can go.
+     */
+    void giveTurnDirection(float left, float right, float straight);
 
 };
 

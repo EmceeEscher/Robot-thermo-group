@@ -39,6 +39,10 @@ const int TapeFollow::numSensors        {pins_sizes::TAPE_SENSORS_FRONT};
 const int *TapeFollow::tapeSensorsFront {pins::TAPE_SENSORS_FRONT};
 const int *TapeFollow::tapeSensorsBack  {pins::TAPE_SENSORS_BACK};
 
+float leftWeight;
+float rightWeight;
+float straightWeight;
+
 
 void TapeFollow::init()
 {
@@ -78,6 +82,10 @@ void TapeFollow::init()
 	// assign active pins
 	this->activePins[i] = TapeFollow::tapeSensorsFront[i];
     }
+
+    leftWeight = 0.;
+    rightWeight = 0.;
+    straightWeight = 0.;
 
     // declare active pins as inputs
     for (int i(0); i < TapeFollow::numSensors; ++i)
@@ -208,29 +216,40 @@ float TapeFollow::makeTurn()
 // TODO: generalize
 Direction TapeFollow::chooseTurn(bool left, bool right, bool straight)
 {
-    // // for now, random
-    // if (left && right && straight)
-    // 	return random(3) - 1;
-    // else if (left && right)
-    // 	return 2*random(2) - 1;
-    // else if (left && straight)
-    // 	return random(2) - 1;
-    // else if (right && straight)
-    // 	return random(2);
-    // else if (left)
-    // 	return -1;
-    // else if (right)
-    // 	return 1;
-    // else
-    // 	return 0;
 
-    // for now, prefer left, then right, then straight
-    if (left)
-    	return Direction::LEFT;  // left
-    else if (right)
-    	return Direction::RIGHT;   // right
-    else
-    	return Direction::FRONT;   // straight
+    float total = left*leftWeight + right*rightWeight + straight*straightWeight;
+    float leftProb;
+    float rightProb;
+    float straightProb;
+    if(abs(total)<0.0001){
+      leftProb = left*100./(left+right+straight);
+      rightProb = right*100./(left+right+straight);
+      straightProb = straight*100./(left+right+straight);
+    }else{
+      leftProb = (left*leftWeight)/total * 100;
+      rightProb = (right*rightWeight)/total * 100;
+      straightProb = (straight*straightWeight)/total * 100;
+    }
+    
+    int randValue = rand() % 100;
+    float leftMax = 0 + leftProb;
+    float rightMax = leftProb + rightProb;
+    float straightMax = 100;
+
+    Direction desired;
+    if(randValue < leftMax){
+      desired = Direction::LEFT;
+    }else if(randValue < rightMax){
+      desired = Direction::RIGHT;
+    }else{
+      desired = Direction::FRONT;
+    }
+
+    leftWeight = 0.;
+    rightWeight = 0.;
+    straightWeight = 0.;
+    return desired;
+
 }
 
 
@@ -498,3 +517,10 @@ bool TapeFollow::isSeeking()
 {
     return this->seeking;
 }
+
+void TapeFollow::giveTurnDirection(float left, float right, float straight){
+    leftWeight = left;
+    rightWeight = right;
+    straightWeight = straight;
+}
+
