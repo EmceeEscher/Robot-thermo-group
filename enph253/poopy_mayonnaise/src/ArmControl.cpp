@@ -165,7 +165,7 @@ float ArmControl::getControlValue()
 
 //Closes the claw until something is detected in claw, the claw
 //closes on itself or a timeout is reached
-void ArmControl::grabShit()
+void ArmControl::grabCrap()
 {
     //If switches are already triggered, then do nothing
     if (!digitalRead(ArmControl::catchSwitch) || !digitalRead(ArmControl::noCatchSwitch)) {
@@ -193,13 +193,13 @@ void ArmControl::grabShit()
 	if (this->holding)
 	    motor.speed(ArmControl::babyMotorNum,20);  // TODO: no hard coding
 	else
-	    dropShit();
+	    this->dropCrap();
     }
 }
 
 
 //Opens the claw for specified time
-void ArmControl::dropShit()
+void ArmControl::dropCrap()
 {
     motor.speed(ArmControl::babyMotorNum,-140);  // TODO: no hard coding
     this->holding = false;
@@ -253,9 +253,9 @@ void ArmControl::reachAndClaw(bool grabbing)
 	} 
     }
     if (grabbing) 
-	grabShit();
+	this->grabCrap();
     else 
-	dropShit();
+	this->dropCrap();
     setRestPosition();
 }
 

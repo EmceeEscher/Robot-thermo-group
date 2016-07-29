@@ -33,7 +33,7 @@ MDropPassenger::MDropPassenger(
 }
 
 
-MDropPassenger::~MDropPassenger(){}
+MDropPassenger::~MDropPassenger() {}
 
 
 // TODO

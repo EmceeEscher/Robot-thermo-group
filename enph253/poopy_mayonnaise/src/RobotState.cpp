@@ -91,6 +91,7 @@ RobotState::RobotState()
     );
     this->allMajorModes.push_back(this->mDropPassenger);
       
+    // initialization
     this->init();
 }
 

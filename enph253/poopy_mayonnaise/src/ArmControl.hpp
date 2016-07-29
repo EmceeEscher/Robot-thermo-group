@@ -116,10 +116,10 @@ public:
     
     //Closes the claw until something is detected in claw, the claw
     //closes on itself or a timeout is reached
-    void grabShit();
+    void grabCrap();
     
     //Opens the claw for specified time
-    void dropShit();
+    void dropCrap();
     
     //Extends arm over two periods and either grabs or drops
     void reachAndClaw(bool grabbing);

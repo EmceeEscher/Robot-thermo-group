@@ -26,18 +26,22 @@ private:
 
 public:
 
+    // constructor
     MDropPassenger(
             ArmControl      *mmArmControl,
 	    DetectBeacon    *mmDetectBeacon,
-	    CollisionWatch  *mmCollisionWatch);   // constructor
+	    CollisionWatch  *mmCollisionWatch
+    );
 
-    ~MDropPassenger();  // deconstructor
+    // deconstructor
+    ~MDropPassenger();
 
     void loop();
 
     void start();
 
     void test();
+
 };
 
 #endif  // M_DROP_PASSENGER_HPP
