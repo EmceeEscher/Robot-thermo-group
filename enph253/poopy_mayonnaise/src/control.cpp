@@ -16,18 +16,20 @@ RobotState s;
 
 void control::setup()
 {
-#include <phys253setup.txt>
+    #include <phys253setup.txt>
+    RCServo1.detach();
+    RCServo2.detach();
     Serial.begin(9600);
     randomSeed(analogRead(0));
     LCD.clear();
-    LCD.print("   ABORTION'S   ");
+    LCD.print("Beefing tears of");
     LCD.setCursor(0, 1);
-    LCD.print("     WORLD!     ");
+    LCD.print("soy from my     ");
     delay(500);
     LCD.clear();
-    LCD.print("An elephant     ");
+    LCD.print("heart of cold   ");
     LCD.setCursor(0, 1);
-    LCD.print("never forgets...");
+    LCD.print("aardvark fluids!");
     delay(500);
     LCD.clear();
     LCD.print("Press START to");

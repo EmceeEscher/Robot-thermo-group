@@ -30,16 +30,33 @@ RobotState::RobotState()
 
     CollisionWatch *mmCollisionWatch = new CollisionWatch;
     this->allMinorModes.push_back(mmCollisionWatch);
+
+    ArmControl *mmArmControl = new ArmControl;
+    this->allMinorModes.push_back(mmArmControl);
+
+    DetectBeacon *mmDetectBeacon = new DetectBeacon;
+    this->allMinorModes.push_back(mmDetectBeacon);
    
     // Major modes
     this->mFindPassenger = new MFindPassenger(
+            mmArmControl,
             mmTapeFollow,
-	    mmPassengerSeek,
-	    mmCollisionWatch
-    );
+	          mmPassengerSeek,
+	          mmCollisionWatch);
     this->allMajorModes.push_back(this->mFindPassenger);
-    
-    // Initialization
+
+    this->mLoadPassenger = new MLoadPassenger(
+            mmArmControl,
+            mmPassengerSeek,
+            mmCollisionWatch);
+    this->allMajorModes.push_back(this->mLoadPassenger);
+
+    this->mDropPassenger = new MDropPassenger(
+            mmArmControl,
+            mmDetectBeacon,
+            mmCollisionWatch);
+    this->allMajorModes.push_back(this->mDropPassenger);
+      
     this->init();
 }
 
@@ -64,8 +81,29 @@ bool RobotState::isActive()
 void RobotState::loop()
 {
     // for now, just loop a single mode, without moving on to the next
-    if (this->currentMajorMode->isActive())
-	this->currentMajorMode->loop();
+    if(this->currentMajorMode->changeTo() == MajModeEnum::DontChange){
+      if (this->currentMajorMode->isActive())
+	      this->currentMajorMode->loop();
+    }else{
+      this->currentMajorMode->stop();
+      switch(this->currentMajorMode->changeTo()){
+        case MajModeEnum::FindPassenger :
+          this->currentMajorMode = this->mFindPassenger;
+          break;
+        case MajModeEnum::LoadPassenger :
+          this->currentMajorMode = this->mLoadPassenger;
+          break;
+        case MajModeEnum::DropPassenger :
+          this->currentMajorMode = this->mDropPassenger;
+          break;
+        /*case MajModeEnum::ToDestination :
+          this->currentMajorMode = this->mToDestination;
+          break;*/
+        default : 
+          break;
+      }
+      this->currentMajorMode->start();
+    }
     delay(this->mainLoopDelay);
 }
 
@@ -73,9 +111,9 @@ void RobotState::loop()
 // TODO
 void RobotState::start()
 {
-    // LCD.clear();
-    // LCD.print("STARTING...");
-    // delay(1000);
+    LCD.clear();
+    LCD.print("STARTING...");
+    delay(1000);
     this->active = true;
     this->currentMajorMode->start();
 }

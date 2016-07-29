@@ -7,15 +7,15 @@ double pulses;
 const double ratio = 250.0/1024.0;
 unsigned long prevTime;
 unsigned long milliTime;
-const int pulsePin = 0; 
-const int delayPeriod = 1000; //Microseconds
+const int pulsePin = 9; 
+const int delayPeriod = 7000; //Microseconds
 
 void setup()
 {
     #include <phys253setup.txt>
     Serial.begin(9600);
-    portMode(0,OUTPUT);
-    pinMode(0,OUTPUT);
+    portMode(1,OUTPUT);
+    pinMode(pulsePin,OUTPUT);
     prevTime = millis();
 }
 

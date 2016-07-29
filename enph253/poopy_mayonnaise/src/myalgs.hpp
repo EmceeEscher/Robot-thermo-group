@@ -18,7 +18,7 @@ namespace std
     bool none_of(InputIterator first, InputIterator last, UnaryPredicate pred);
 }
 
-//#include "myalgs.tpp"  // implementations defined here
+
 #include "myalgs.cpp"  // implementations defined here
 
 #endif  // MYALGS_HPP
