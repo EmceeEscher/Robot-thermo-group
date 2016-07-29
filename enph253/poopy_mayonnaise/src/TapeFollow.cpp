@@ -570,8 +570,8 @@ bool TapeFollow::isSeeking()
 }
 
 void TapeFollow::giveTurnDirection(float left, float right, float straight){
-    leftWeight = left;
-    rightWeight = right;
-    straightWeight = straight;
+    this->leftWeight = left;
+    this->rightWeight = right;
+    this->straightWeight = straight;
 }
 

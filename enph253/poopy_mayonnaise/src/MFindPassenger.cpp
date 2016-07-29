@@ -22,10 +22,10 @@ MFindPassenger::MFindPassenger(
 	CollisionWatch *mmCollisionWatch
 )
     : MajorMode(MajorModeEnum::FIND_PASSENGER),
-      mmArmControl(mmArmControl),
-      mmTapeFollow(mmTapeFollow),
-      mmPassengerSeek(mmPassengerSeek),
-      mmCollisionWatch(mmCollisionWatch)
+      mmArmControl     (mmArmControl),
+      mmTapeFollow     (mmTapeFollow),
+      mmPassengerSeek  (mmPassengerSeek),
+      mmCollisionWatch (mmCollisionWatch)
 {
     this->init();
 
