@@ -2,18 +2,23 @@
 // control.cpp
 //
 #include <phys253.h>
-#include "TapeFollow3.hpp"
+#include "RobotState.hpp"
 #include "control.hpp"
 
 
-namespace control {
+namespace control
+{
     static bool active(false);  // replace this with RobotState instance var
 }
-TapeFollow3 tf;
+
+RobotState s;
 
 
-void control::setup() {
-#include <phys253setup.txt>
+void control::setup()
+{
+    #include <phys253setup.txt>
+    RCServo1.detach();
+    RCServo2.detach();
     Serial.begin(9600);
     randomSeed(analogRead(0));
     LCD.clear();
@@ -33,26 +38,31 @@ void control::setup() {
 }
 
 
-void control::loop() {
+void control::loop()
+{
     if (startbutton() && !control::active) 
 	control::start();
     else if (stopbutton() && control::active) 
 	control::stop();
     else if (stopbutton())
 	control::stop();
-    tf.loop();
+
+    if (s.isActive())
+    	s.loop();
 }
 
 
-void control::start() {
+void control::start()
+{
     control::active = true;
-    tf.start();
+    s.start();
     LCD.clear();
 }
 
 
-void control::stop() {
+void control::stop()
+{
     control::active = false;
-    tf.test();
+    s.test();
     LCD.clear();
 }

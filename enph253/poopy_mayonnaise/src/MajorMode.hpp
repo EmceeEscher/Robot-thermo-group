@@ -1,43 +1,85 @@
 ///
 // MajorMode.hpp
 //
-// Major mode (singular objective) controller interface class
+// Major mode (singular objective) controller abstract class.
+// Method implemenations contain the default action to be done for any
+// major mode.
 //
 #ifndef MAJOR_MODE_HPP
 #define MAJOR_MODE_HPP
 
-class MajorMode
+#include <StandardCplusplus.h>
+#include <vector>
+#include "IMode.hpp"
+#include "MinorMode.hpp"
+#include "MajorModeEnum.hpp"
+
+using std::vector;
+
+class MajorMode : public IMode
 {
-public:
-    /*
-     * Major loop function for mode
-     */
-    virtual void loop() = 0;
+
+protected:
+
+    bool active;
+
+    vector< MinorMode* > allMinorModes;
 
     /*
-     * Begin looping
+     * Default major mode `init` method. Sets active to false.
      */
-    virtual void start() = 0;
+    virtual void init();
 
     /*
-     * Stop looping (and reset variables)
+     * Default major mode initializer. Sets active to false.
      */
-    virtual void stop() = 0;
-
-    /*
-     * Stop looping but keep variables in current state
-     */
-    virtual void pause() = 0;
-
-    /*
-     * Return true if the mode is currently active
-     */
-    virtual bool isActive() = 0;
+    MajorMode();
     
+public:
+
     /*
-     * Enter next major mode
+     * Deallocates all MinorMode objects pointed to by `allMinorModes`
      */
-    virtual void nextMode() = 0;
+    virtual ~MajorMode();
+
+    /*
+     * Default MajorMode `loop` function, which calls the `loop` method
+     * of each active minor mode in `allMinorModes`
+     */
+    virtual void loop();
+
+    /*
+     * Default `start` for MajorMode. Sets `active` to true.
+     */
+    virtual void start();
+
+    /*
+     * Default `stop` method for a MajorMode. Calls the most derived `init`
+     * and then the most derived `pause`.
+     */
+    virtual void stop();
+
+    /*
+     * Default `pause` method for a MinorMode. Sets `active` to false.
+     */
+    virtual void pause();
+
+    /*
+     * Default `test` method for a MajorMode. Sets `active` to true.
+     */
+    virtual void test();
+
+    /*
+     * Returns true if the MajorMode is active.
+     */
+    virtual bool isActive();
+
+    /*
+     * Returns a member of MajorModeEnum telling you which mode RobotState
+     * should switch to
+     */
+     virtual MajModeEnum changeTo();
+
 };
 
 #endif // MAJOR_MODE_HPP
