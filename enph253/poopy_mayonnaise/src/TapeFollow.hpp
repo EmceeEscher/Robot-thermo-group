@@ -133,6 +133,8 @@ private:
     /*
      * Chooses direction to turn but not randomly. It will always turn in the highest
      * weighted direction if it can, next highest if it can't, etc.
+     * 
+     * If all weights are equal, it will pick randomly from available options.
      */
     static Direction chooseTurnDeterministic(bool left, bool right, bool straight);
     /*

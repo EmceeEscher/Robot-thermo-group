@@ -139,7 +139,7 @@ void TapeFollow::updateIntersectionsDetected()
     if ((this->offTapeCounter[0] >= this->preTurnDelayPeriod) &&
 	(this->offTapeCounter[3] >= this->preTurnDelayPeriod)) {
 
-	this->turnDirection = this->chooseTurn(  // TODO: specify this function from major mode
+	this->turnDirection = this->chooseTurnDeterministic(  // TODO: specify this function from major mode
 	        this->intersectDetect[0],
 		this->intersectDetect[1],
 		this->mainsOnTape
@@ -222,7 +222,11 @@ float TapeFollow::makeTurn()
 
 
 Direction TapeFollow::chooseTurnDeterministic(bool left, bool right, bool straight)
-{
+{ 
+  if((leftWeight == rightWeight) && (leftWeight == straightWeight)){
+    return TapeFollow::chooseTurn(left, right, straight);
+  }
+  
   if((leftWeight > rightWeight) && (leftWeight > straightWeight)){
     if(left){
       return Direction::LEFT;
