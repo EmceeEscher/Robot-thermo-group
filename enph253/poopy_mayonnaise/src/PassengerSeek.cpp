@@ -11,7 +11,7 @@
 
 const int NUM_SAVED_READINGS {24};
 const int MAX_REGISTER_PERIOD {10};
-const double MAX_REGISTER_THRESHOLD {0.};
+const int MAX_REGISTER_THRESHOLD {600};
 const int *PassengerSeek::qsdPinsSides {pins::PASSENGER_SENSORS_SIDES};
 
 
@@ -28,8 +28,8 @@ void PassengerSeek::init()
     this->lastDerivPositive.reset();  // reset bits to 000000
 
     for (int i(0); i < PassengerSeek::numPinsSides; ++i) {
-	this->pinReadings[i] = 0.;
-	this->lastPinReadings[i] = 0.;
+	this->pinReadings[i] = 0;
+	this->lastPinReadings[i] = 0;
 	this->numAboveThreshold[i] = 0;
 	this->numPosDeriv[i] = 0;
 	this->numNegDeriv[i] = 1;

@@ -29,8 +29,8 @@ private:
     int passengerSide;                  // if atPassenger, specifies the side (-1=left, 1=right)
 
     bitset<numPinsSides> atMax;                    // true if the associated pin is at a maximum
-    float pinReadings[numPinsSides];               // current pin readings
-    float lastPinReadings[numPinsSides];           // pin readings from last loop
+    int pinReadings[numPinsSides];               // current pin readings
+    int lastPinReadings[numPinsSides];           // pin readings from last loop
 
     int numAboveThreshold[numPinsSides];           // number of consecutive reads above threshold for each pin
     int numPosDeriv[numPinsSides];                 // number of consecutive positive derivatives THE LAST TIME A POSITIVE DERIVATIVE WAS READ
