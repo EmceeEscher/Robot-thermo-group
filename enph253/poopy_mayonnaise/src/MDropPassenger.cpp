@@ -27,9 +27,11 @@ MDropPassenger::MDropPassenger(
     this->init();
 
     // TODO: initialize specific minor modes
-    this->allMinorModes.push_back(mmArmControl);
-    this->allMinorModes.push_back(mmDetectBeacon);
-    this->allMinorModes.push_back(mmCollisionWatch);
+    this->allMinorModes = {
+            this->mmArmControl,
+            this->mmDetectBeacon,
+            this->mmCollisionWatch
+    };
 }
 
 

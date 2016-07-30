@@ -22,20 +22,20 @@ private:
     static const int numPinsSides = pins_sizes::PASSENGER_SENSORS_SIDES;
 
     const int maxRegisterPeriod;        // number of consecutive (+) derivatives to be increasing and (-) derivative to be decreasing
-    const int maxRegisterThreshold;   // threshold that readings must be above to register
+    const int maxRegisterThreshold;     // threshold that readings must be above to register
     
     bool approachingPassenger;          // true when approaching a passenger
     bool atPassenger;                   // true when adjacent to a passenger
     int passengerSide;                  // if atPassenger, specifies the side (-1=left, 1=right)
 
-    bitset<numPinsSides> atMax;                    // true if the associated pin is at a maximum
-    int pinReadings[numPinsSides];               // current pin readings
-    int lastPinReadings[numPinsSides];           // pin readings from last loop
+    bitset<numPinsSides> atMax;             // true if the associated pin is at a maximum
+    int pinReadings[numPinsSides];          // current pin readings
+    int lastPinReadings[numPinsSides];      // pin readings from last loop
 
-    int numAboveThreshold[numPinsSides];           // number of consecutive reads above threshold for each pin
-    int numPosDeriv[numPinsSides];                 // number of consecutive positive derivatives THE LAST TIME A POSITIVE DERIVATIVE WAS READ
-    int numNegDeriv[numPinsSides];                 // number of consecutive negative or 0 derivatives THE LAST TIME A NEGATIVE DERIVATIVE WAS READ
-    bitset<numPinsSides> lastDerivPositive;        // true if the last derivative was negative
+    int numAboveThreshold[numPinsSides];    // number of consecutive reads above threshold for each pin
+    int numPosDeriv[numPinsSides];          // number of consecutive positive derivatives THE LAST TIME A POSITIVE DERIVATIVE WAS READ
+    int numNegDeriv[numPinsSides];          // number of consecutive negative or 0 derivatives THE LAST TIME A NEGATIVE DERIVATIVE WAS READ
+    bitset<numPinsSides> lastDerivPositive; // true if the last derivative was negative
 
     /*
      * (Re)initialize all state variables

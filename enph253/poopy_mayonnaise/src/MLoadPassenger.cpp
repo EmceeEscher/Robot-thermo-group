@@ -27,9 +27,11 @@ MLoadPassenger::MLoadPassenger(
     this->init();
     
     // TODO: initialize specific minor modes
-    this->allMinorModes.push_back(mmArmControl);
-    this->allMinorModes.push_back(mmCollisionWatch);
-    this->allMinorModes.push_back(mmPassengerSeek);
+    this->allMinorModes = {
+	    this->mmArmControl,
+	    this->mmCollisionWatch,
+	    this->mmPassengerSeek
+    };
 }
 
 

@@ -11,7 +11,7 @@
 
 const int NUM_SAVED_READINGS {24};
 const int MAX_REGISTER_PERIOD {10};
-const int MAX_REGISTER_THRESHOLD {600};
+const int MAX_REGISTER_THRESHOLD {600};  // TODO: adjust this
 const int *PassengerSeek::qsdPinsSides {pins::PASSENGER_SENSORS_SIDES};
 
 
@@ -116,7 +116,7 @@ void PassengerSeek::loop()
     for (int i(0); i < PassengerSeek::numPinsSides; ++i)
 	if (this->pinReadings[i] <= this->maxRegisterThreshold) {
 	    this->numAboveThreshold[i] = 0;
-	} else if (this->numAboveThreshold[i] < this->maxRegisterPeriod)
+	} else if (this->numAboveThreshold[i] < 2*this->maxRegisterPeriod)
 	    this->numAboveThreshold[i] += 1;
 
     // Update atMax array
