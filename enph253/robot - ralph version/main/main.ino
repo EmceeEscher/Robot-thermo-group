@@ -1,6 +1,13 @@
 #include <phys253.h>
 
+const int FIND_PASSENGER = 0;
+const int LOAD_PASSENGER = 1;
+const int FIND_BEACON = 2;
+const int DROP_PASSENGER = 3;
+
 bool started = false;
+int state = FIND_PASSENGER;
+
 
 void setup() {
   // put your setup code here, to run once:
@@ -23,7 +30,13 @@ void loop() {
     started = false;
   }
   if(started){
-    //do everything
+    if(state == FIND_PASSENGER){
+      findPassengerLoop();
+    }
   }
-
 }
+
+void findPassengerLoop(){
+  
+}
+
