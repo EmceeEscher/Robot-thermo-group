@@ -8,6 +8,7 @@
 
 namespace control
 {
+
     /*
      * Main setup function
      */
@@ -24,9 +25,11 @@ namespace control
     void start();
     
     /*
-     * Function that halts the loop
+     * Function that halts the loop and discards the current state
+     * of all modes
      */
     void stop();
+
 }
 
 #endif // CONTROL_HPP

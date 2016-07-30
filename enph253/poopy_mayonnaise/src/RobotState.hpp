@@ -14,54 +14,59 @@
 
 using std::vector;
 
-// TODO
 class RobotState
 {
 
 private:
 
-    bool active;                          // whether the robot is active
-    // vector< MajorMode* >  allMajorModes;     // all possible major modes
-    // vector< MinorMode* >  allMinorModes;     // all possible minor modes
-    MajorMode*            activeMajorMode;      // pointer to currently active major mode
-    vector< MinorMode* >  activeMinorModes;     // vector of pointers to currently acive minor modes
+    bool active;                         // whether the robot is active
+    int mainLoopDelay;                   // delay for the main loop
+    vector< MajorMode* > allMajorModes;  // all possible major modes
+    vector< MinorMode* > allMinorModes;  // all possible minor modes
+    MajorMode *currentMajorMode;         // current major mode
+    MajorMode *nextMajorMode;
 
-    /*
-     * Initialize the allMajorModes member with all necessary major modes.
-     * Fill activeMajorMode with the first major mode
-     */
-    void initMajorModes();
-
-    /*
-     * Initialize the allMinorModes member with all necessary minor modes.
-     * Fill activeMinorModes with the initially-active minor modes.
-     */
-    void initMinorModes();
+    // explicitly named major modes
+    // TODO: Should these necessarily be degraded into their base?
+    //       Do they need individual functionalities?
+    MajorMode *mFindPassenger;
+    MajorMode *mLoadPassenger;
+    MajorMode *mToDestination;
+    MajorMode *mDropPassenger;
 
     /*
      * (Re)initializes any state variables
      */
     void init();
 
+    /*
+     * Sets nextMajorMode based on the current major mode's `changeTo()`
+     * method.
+     */
+    void setNextMode();
+
+    /*
+     * Enter the mode specified by `nextMajorMode`. If the current mode is
+     * active, the next mode will also be active. Otherwise it will be
+     * left inactive.
+     *
+     * NOTE: This method assumes nextMajorMode is different from
+     * currentMajorMode. Calling it when they are the same will
+     * cause the mode to restart if it is active.
+     */
+    void enterNextMode();
+
 public:
 
-    RobotState();
+    RobotState();   // constructor
+
+    ~RobotState();  // deconstructor
 
     /*
      * Return true if the robot is currently active (i.e. looping through 
      * modes)
      */
     bool isActive();
-
-    /*
-     * Returns a pointer to the currently active major mode
-     */
-    MajorMode* getMajorMode();
-
-    /*
-     * Returns a reference to the vector of currently active minor modes
-     */
-    vector< MinorMode* >& getMinorModes();
 
     /*
      * Loops through all of the currently active modes
@@ -82,6 +87,11 @@ public:
      * Halts the looping of the robot
      */
     void pause();
+
+    /*
+     * Cause all mode to enter a testing mode
+     */
+    void test();
 
 };
 

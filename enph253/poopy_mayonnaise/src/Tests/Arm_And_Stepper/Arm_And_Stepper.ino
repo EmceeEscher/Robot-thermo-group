@@ -32,9 +32,9 @@ float now, lastTime;
 int hasInitialized = 0;
 
 //Rest Positions
-const float baseRestPosition = 75;
-const float midRestPosition = 120;
-const float baseHoldPosition = 85;
+const float baseRestPosition = 90;
+const float midRestPosition = 140;
+const float baseHoldPosition = 90;
 const float midHoldPosition = 170;
 
 //Iterator for LCD printing
@@ -45,14 +45,14 @@ const int stepperDirPin = 8;
 const int stepperPulsePin = 9;
 const int COUNTERCLOCKWISE = HIGH;
 const int CLOCKWISE = LOW;
-const int stepperMicrosDelay = 40000; //Time delay between pulses in microseconds
+const int stepperMicrosDelay = 4000; //Time delay between pulses in microseconds
 const int numPulses = 700;
 
 //reachAndGrab/reachAndDrop function Constants
 const float initialAdjMidTarget = 180;
-const float initialAdjBaseTarget = 40;
+const float initialAdjBaseTarget = 50;
 const float finalAdjMidTarget = 180;
-const float finalAdjBaseTarget = 25;
+const float finalAdjBaseTarget = 40;
 
 //Holding a passenger?
 bool holding = false;
@@ -112,7 +112,7 @@ void doControl(){
   propErr = angle - baseTarget;
   derivErr = (propErr - lastPropErr)/(now - lastTime) * 1000000.;
   intErr += (propErr + lastPropErr)/2 * (now - lastTime) / 1000000.;
-  setBaseMotor((int) getControlValue());
+  setBaseMotor((long) getControlValue());
 
   RCServo0.write(midTarget);
   
@@ -135,7 +135,7 @@ float getAngle() {
 
 //Wrapper function for setting motor speed
 //Prevents values larger than 255 in either direction
-void setBaseMotor(int duty){
+void setBaseMotor(long duty){
   if(duty > 255){
     duty = 255;
   }
@@ -168,7 +168,7 @@ void grabShit(){
   else{
     LCD.clear();
     LCD.print("Grabbing");
-    motor.speed(babyMotorNum,140);
+    motor.speed(babyMotorNum,190);
     unsigned long startTime = millis();
     while(1){
       doControl();
@@ -214,6 +214,7 @@ void printState(){
   } else {
     LCD.print("S");
   }
+  LCD.print(holding);
 }
 
 //Extends arm over two periods and calls grab function
