@@ -103,10 +103,11 @@ RobotState::RobotState()
 // TODO
 RobotState::~RobotState()
 {
-  for (auto *mm : this->allMajorModes)
-    delete mm;
-  for (auto *mm : this->allMinorModes)
-    delete mm;
+  int i;
+  for (i=0; i < 4; i++)
+    delete allMajorModes[i];
+  for (i=0; i < 5; i++)
+    delete allMinorModes[i];
 }
 
 
@@ -151,9 +152,11 @@ void RobotState::stop()
   // delay(1000);
   this->active = false;
   this->init();
-  for (auto *m : this->allMajorModes)
-    if (m->isActive())
-      m->stop();
+  int i;
+  for(i = 0; i < 4; i++){
+    if(allMajorModes[i]->isActive())
+      allMajorModes[i]->stop();
+  }
 }
 
 
@@ -165,9 +168,12 @@ void RobotState::pause()
   // delay(1000);
   this->active = false;
   // for now, pause active major mode
-  for (auto *m : this->allMajorModes)
-    if (m->isActive())
-      m->pause();
+  int i;
+  for(i = 0; i < 4; i++){
+    if(allMajorModes[i]->isActive()){
+      allMajorModes[i]->pause();
+    }
+  }
 }
 
 
