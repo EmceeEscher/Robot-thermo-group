@@ -22,7 +22,7 @@ private:
     static const int numPinsSides = pins_sizes::PASSENGER_SENSORS_SIDES;
 
     const int maxRegisterPeriod;        // number of consecutive (+) derivatives to be increasing and (-) derivative to be decreasing
-    const float maxRegisterThreshold;   // threshold that readings must be above to register
+    const int maxRegisterThreshold;   // threshold that readings must be above to register
     
     bool approachingPassenger;          // true when approaching a passenger
     bool atPassenger;                   // true when adjacent to a passenger

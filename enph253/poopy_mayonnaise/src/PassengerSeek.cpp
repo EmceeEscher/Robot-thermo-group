@@ -71,8 +71,8 @@ PassengerSeek::PassengerSeek()
     : MinorMode(),
       maxRegisterPeriod    (MAX_REGISTER_PERIOD),
       maxRegisterThreshold (MAX_REGISTER_THRESHOLD),
-      pinReadings          {0., 0., 0., 0., 0.},
-      lastPinReadings      {0., 0., 0., 0., 0.},
+      pinReadings          {0, 0, 0, 0, 0},
+      lastPinReadings      {0, 0, 0, 0, 0},
       numAboveThreshold    {0, 0, 0, 0, 0},
       numPosDeriv          {0, 0, 0, 0, 0},
       numNegDeriv          {0, 0, 0, 0, 0}
