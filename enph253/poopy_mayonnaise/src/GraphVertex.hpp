@@ -7,10 +7,10 @@
 #ifndef GRAPH_VERTEX_HPP
 #define GRAPH_VERTEX_HPP
 
-#include <string>
-
-using std::ostream;
-using std::string;
+//#include <string>
+//
+//using std::ostream;
+//using std::string;
 
 class GraphVertex
 {
@@ -18,22 +18,17 @@ class GraphVertex
 private:
 
 
-    string label;
+    int num;
     int* neighbors;
 
 public:
 
-    GraphVertex(const string label, int neighbors[]);  // constructor
+    GraphVertex(int num, int* neighbors);  // constructor
 
     /*
-     * Returns a reference to the vertex's label string
+     * Returns the intersections index (between 1 and 20)
      */
-    string& getLabel();
-
-    /*
-     * Set the vertex's label to the given value
-     */
-    void setLabel(const string label);
+    int getNum();
 
     /*
      * Returns a 4-dimensional array of the vertex's neighbors. Each index corresponds to a direction,

@@ -1,58 +1,22 @@
-/////
-//// GraphVertex.cpp
-////
-//#include <iostream>
-//#include <string>
-//#include "GraphVertex.hpp"
+///
+// GraphVertex.cpp
 //
-//
-//using std::string;
-//using std::ostream;
-//
-//
-//GraphVertex::GraphVertex(const string label)
-//    : label(label)
-//{}
-//
-//
-//string& GraphVertex::getLabel()
-//{
-//    return this->label;
-//}
-//
-//
-//void GraphVertex::setLabel(const string label)
-//{
-//    this->label = label;
-//}
-//
-//
-//GraphVertex::operator string() const
-//{
-//    return this->label;
-//}
-//
-//
-//ostream& operator<<(ostream &out, const GraphVertex &vertex)
-//{
-//    out << string(vertex);
-//    return out;
-//}
-//
-//
-//bool operator<(const GraphVertex &v1, const GraphVertex &v2)
-//{
-//    return v1.label < v2.label;
-//}
-//
-//
-//bool operator==(const GraphVertex &v1, const GraphVertex &v2)
-//{
-//    return !((v1 < v2) || (v2 < v1));
-//}
-//
-//
-//bool operator!=(const GraphVertex &v1, const GraphVertex &v2)
-//{
-//    return !(v1 == v2);
-//}
+
+#include <StandardCplusplus.h>
+#include "GraphVertex.hpp"
+
+const int NEIGHBORS_SIZE {4};
+
+GraphVertex::GraphVertex(int num, int* neighbors)
+  : num(num),
+    neighbors(neighbors){  
+}
+
+int GraphVertex::getNum(){
+  return this->num;
+}
+
+int* GraphVertex::getNeighbors(){
+  return this->neighbors;
+}
+
