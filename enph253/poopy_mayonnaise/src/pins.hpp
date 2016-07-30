@@ -22,7 +22,7 @@ namespace pins
     const int COLLISION_SENSORS[]  { 4,  4,  4,  4};  // left front right back
     
     // Analog in
-    const int PASSENGER_SENSORS_SIDES[]  {0, 1, 2, 3, 4};
+    const int PASSENGER_SENSORS_SIDES[]  {1, 0, 1, 1, 2};
     const int BEACON_SENSORS_SIDES[]     {6, 7}; // left right (Requires loss of knobs)
     const int POTENTIOMETER {5};
 
