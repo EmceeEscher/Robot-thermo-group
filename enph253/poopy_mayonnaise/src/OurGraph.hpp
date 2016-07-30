@@ -24,7 +24,7 @@ class OurGraph
      * Returns four-dimensional array of neighbors of given vertex.
      * index 0 = west, 1 = north, 2 = east, 3 = south
      * if an edge exists in that direction, the entry will be the number of
-     * the vertex that it connects to, otherwise it will be 0
+     * the vertex that it connects to, otherwise it will be -1
      */
     int* getNeighbors(int vertexNum);
 

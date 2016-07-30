@@ -26,7 +26,7 @@ public:
     GraphVertex(int num, int* neighbors);  // constructor
 
     /*
-     * Returns the intersections index (between 1 and 20)
+     * Returns the intersections index (between 0 and 19)
      */
     int getNum();
 
@@ -34,7 +34,7 @@ public:
      * Returns a 4-dimensional array of the vertex's neighbors. Each index corresponds to a direction,
      * 0 = west, 1 = north, 2 = east, 3 = south
      * Each element of the array will be the number of the vertex that is connected, or 
-     * 0 if there is no edge in that direction.
+     * -1 if there is no edge in that direction.
      */
     int* getNeighbors();
 
