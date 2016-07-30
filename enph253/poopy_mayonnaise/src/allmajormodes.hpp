@@ -11,4 +11,6 @@
 #include "MToDestination.hpp"
 #include "MDropPassenger.hpp"
 
+const int NUM_MAJOR_MODES = 4;
+
 #endif  // ALLMAJORMODES_HPP

@@ -12,4 +12,6 @@
 #include "ArmControl.hpp"
 #include "DetectBeacon.hpp"
 
+const int NUM_MINOR_MODES = 5;
+
 #endif  // ALLMINORMODES_HPP

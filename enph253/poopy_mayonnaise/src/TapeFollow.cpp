@@ -268,15 +268,12 @@ Direction TapeFollow::chooseTurn(bool left, bool right, bool straight)
 
     float leftProb;
     float rightProb;
-    float straightProb;
     if (total == 0) {
 	leftProb     = left     / (left + right + straight);
 	rightProb    = right    / (left + right + straight);
-	straightProb = straight / (left + right + straight);
     } else {
 	leftProb     = left     * this->leftWeight     / total;
 	rightProb    = right    * this->rightWeight    / total;
-	straightProb = straight * this->straightWeight / total;
     }
 
     // TODO: do this randValue part differently?

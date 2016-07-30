@@ -9,6 +9,8 @@
 
 #include <StandardCplusplus.h>
 #include <vector>
+#include "allmajormodes.hpp"
+#include "allminormodes.hpp"
 #include "MajorMode.hpp"
 #include "MinorMode.hpp"
 
@@ -19,10 +21,13 @@ class RobotState
 
 private:
 
+    static const int numMajorModes = NUM_MAJOR_MODES;
+    static const int numMinorModes = NUM_MINOR_MODES;
+
     bool active;                         // whether the robot is active
     int mainLoopDelay;                   // delay for the main loop
-    MajorMode* allMajorModes[4];  // all possible major modes
-    MinorMode* allMinorModes[5];  // all possible minor modes
+    MajorMode *allMajorModes[numMajorModes];            // array of all possible major modes
+    MinorMode *allMinorModes[numMinorModes];            // array of all possible minor modes
     MajorMode *currentMajorMode;         // current major mode
     MajorMode *nextMajorMode;
 
