@@ -80,19 +80,19 @@ RobotState::RobotState()
     );
     this->allMajorModes[0] = this->mFindPassenger;
     
-    this->mLoadPassenger = new MLoadPassenger(
-            mmArmControl,
-	    mmPassengerSeek,
-	    mmCollisionWatch
-    );
-    this->allMajorModes[1] = this->mLoadPassenger;
+    // this->mLoadPassenger = new MLoadPassenger(
+    //         mmArmControl,
+    // 	    mmPassengerSeek,
+    // 	    mmCollisionWatch
+    // );
+    // this->allMajorModes[1] = this->mLoadPassenger;
     
-    this->mDropPassenger = new MDropPassenger(
-            mmArmControl,
-	    mmDetectBeacon,
-	    mmCollisionWatch
-    );
-    this->allMajorModes[2] = this->mDropPassenger;
+    // this->mDropPassenger = new MDropPassenger(
+    //         mmArmControl,
+    // 	    mmDetectBeacon,
+    // 	    mmCollisionWatch
+    // );
+    // this->allMajorModes[2] = this->mDropPassenger;
 
     // initialization
     this->init();
@@ -102,10 +102,10 @@ RobotState::RobotState()
 // TODO
 RobotState::~RobotState()
 {
-    for (int i(0); i < RobotState::numMajorModes; ++i)
-	delete this->allMajorModes[i];
     for (int i(0); i < RobotState::numMinorModes; ++i)
 	delete this->allMinorModes[i];
+    for (int i(0); i < RobotState::numMajorModes; ++i)
+	delete this->allMajorModes[i];
 }
 
 
@@ -122,10 +122,10 @@ void RobotState::loop()
     if (this->currentMajorMode->isActive())
 	this->currentMajorMode->loop();
     
-  // Enter next mode, if different than current
-    this->setNextMode();
-    if (this->nextMajorMode != this->currentMajorMode)
-	this->enterNextMode();
+  // // Enter next mode, if different than current
+  //   this->setNextMode();
+  //   if (this->nextMajorMode != this->currentMajorMode)
+  // 	this->enterNextMode();
     
     delay(this->mainLoopDelay);
 }

@@ -21,12 +21,15 @@ class MajorMode : public IMode
 
 protected:
 
-    const MajorModeEnum thisMode;
+    const int numMinorModes;
+    MinorMode **allMinorModes;  // Pointer to an array of pointers... Welcome to C++
 
+    const MajorModeEnum thisMode;
     MajorModeEnum nextMode;
+
     bool active;
 
-    vector< MinorMode* > allMinorModes;
+    // vector< MinorMode* > allMinorModes;
 
     /*
      * Default major mode `init` method. Sets active to false.
@@ -36,7 +39,7 @@ protected:
     /*
      * Default major mode initializer. Sets active to false.
      */
-    MajorMode(MajorModeEnum thisMode);
+    MajorMode(MajorModeEnum thisMode, int numMinorModes);
     
 public:
 

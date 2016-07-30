@@ -22,7 +22,7 @@ MFindPassenger::MFindPassenger(
 	PassengerSeek  *mmPassengerSeek,
 	CollisionWatch *mmCollisionWatch
 )
-    : MajorMode(MajorModeEnum::FIND_PASSENGER),
+    : MajorMode(MajorModeEnum::FIND_PASSENGER, 4),  // 4 minor modes
       mmArmControl     (mmArmControl),
       mmTapeFollow     (mmTapeFollow),
       mmPassengerSeek  (mmPassengerSeek),
@@ -30,13 +30,20 @@ MFindPassenger::MFindPassenger(
 {
     this->init();
 
-    // TODO: initialize specific minor modes
-    this->allMinorModes = {
-            this->mmArmControl,
-	    this->mmTapeFollow,
-	    this->mmCollisionWatch,
-	    this->mmPassengerSeek
-    };
+    MinorMode **mm = new MinorMode*[4];
+    mm[0] = this->mmArmControl;
+    mm[1] = this->mmTapeFollow;
+    mm[2] = this->mmCollisionWatch;
+    mm[3] = this->mmPassengerSeek;
+    this->allMinorModes = mm;
+
+    // // TODO: initialize specific minor modes
+    // this->allMinorModes = {
+    //         this->mmArmControl,
+    // 	    this->mmTapeFollow,
+    // 	    this->mmCollisionWatch,
+    // 	    this->mmPassengerSeek
+    // };
 }
 
 
@@ -46,12 +53,14 @@ MFindPassenger::~MFindPassenger() {}
 // TODO
 void MFindPassenger::loop()
 {
-    MajorMode::loop();  // does loop for each active minor mode
+    // MajorMode::loop();  // does loop for each active minor mode
 
-    if (this->mmCollisionWatch->collisionHasOccurred()) {
-    	// for now, just turn around
-	this->mmTapeFollow->turnAround();
-    }
+    this->mmTapeFollow->loop();  // TODO: remove 
+
+    // if (this->mmCollisionWatch->collisionHasOccurred()) {
+    // 	// for now, just turn around
+    // 	this->mmTapeFollow->turnAround();
+    // }
 
     // only seek passengers when not turning or seeking
     // if (this->mmTapeFollow->isActive()) {
@@ -89,7 +98,7 @@ void MFindPassenger::start()
 
     // Start intial minor modes
     this->mmTapeFollow->start();
-    this->mmCollisionWatch->start();
+    // this->mmCollisionWatch->start();
 
     // this->mmPassengerSeek->start();
     // this->mmArmControl->start();
@@ -107,5 +116,5 @@ void MFindPassenger::test()
 
     MajorMode::test();
     this->mmTapeFollow->test();
-    this->mmCollisionWatch->test();
+    // this->mmCollisionWatch->test();
 }
