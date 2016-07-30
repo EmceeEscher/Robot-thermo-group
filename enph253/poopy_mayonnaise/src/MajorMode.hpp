@@ -8,13 +8,10 @@
 #ifndef MAJOR_MODE_HPP
 #define MAJOR_MODE_HPP
 
-#include <StandardCplusplus.h>
-#include <vector>
 #include "IMode.hpp"
 #include "MinorMode.hpp"
 #include "MajorModeEnum.hpp"
 
-using std::vector;
 
 class MajorMode : public IMode
 {
