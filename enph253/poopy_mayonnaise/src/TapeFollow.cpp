@@ -425,7 +425,7 @@ TapeFollow::~TapeFollow() {}
 void TapeFollow::loop()
 {
     if (this->printCount % this->printPeriod == 0) {
-	this->printLCD();
+	//this->printLCD();
 	this->printCount = 0;
     }
     ++this->printCount;

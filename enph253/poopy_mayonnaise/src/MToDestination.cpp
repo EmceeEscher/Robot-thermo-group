@@ -3,6 +3,7 @@
 //
 #include "allminormodes.hpp"
 #include "MToDestination.hpp"
+#include <phys253.h>
 
 const int DIFF_THRESHOLD = 50;
 
@@ -12,6 +13,7 @@ int currLeft;
 int currRight;
 int lastDiff;
 int currDiff;
+int printCount;
 
 void MToDestination::init()
 {
@@ -23,6 +25,7 @@ void MToDestination::init()
   currRight = lastRight;
   lastDiff = currRight - currLeft;
   currDiff = lastDiff;
+  printCount = 0;
 }
 
 MToDestination::MToDestination(
@@ -73,6 +76,16 @@ void MToDestination::pickDirection(){
   
     float leftAverage = mmDetectBeacon->getLeftAverage();
     float rightAverage = mmDetectBeacon->getRightAverage();
+    if(printCount>25){
+      LCD.clear();
+      LCD.print("L: ");
+      LCD.print(leftAverage);
+      LCD.setCursor(0,1);
+      LCD.print("R: ");
+      LCD.print(rightAverage);
+      printCount = 0;
+    }
+    printCount++;
 
     float diff = rightAverage - leftAverage;
     if(abs(diff)>this->diffThreshold){
