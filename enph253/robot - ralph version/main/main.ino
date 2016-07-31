@@ -1,4 +1,5 @@
 #include <phys253.h>
+#include "pins.hpp"
 
 const int FIND_PASSENGER = 0;
 const int LOAD_PASSENGER = 1;
