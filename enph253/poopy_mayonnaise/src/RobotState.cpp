@@ -77,11 +77,13 @@ RobotState::RobotState()
             mmArmControl, mmPassengerSeek, mmCollisionWatch);
     this->mDropPassenger = new MDropPassenger(
             mmArmControl, mmDetectBeacon, mmCollisionWatch);
+    this->mToDestination = new MToDestination;
 
     // Push major modes to allMajorModes vector
     this->allMajorModes.push_back(this->mFindPassenger);
     this->allMajorModes.push_back(this->mLoadPassenger);
     this->allMajorModes.push_back(this->mDropPassenger);
+    this->allMajorModes.push_back(this->mToDestination);
       
     // initialization
     this->init();

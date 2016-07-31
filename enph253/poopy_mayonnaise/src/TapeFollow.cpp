@@ -152,7 +152,7 @@ void TapeFollow::updateIntersectionsDetected()
 		this->intersectDetect[1],
 		!this->mainsOffTape()
         );
-	if (this->turnDirection != Direction::FRONT) 
+	if (this->turnDirection != Direction::FRONT)  // TODO: move to updateSTate?
 	    this->action = TFAction::TURNING;
 
 	// reset intersection arrays
@@ -280,15 +280,12 @@ void TapeFollow::setError()
     // choose error based on current action
     switch (this->action) {  // TODO: handle all cases
     case TFAction::SEEKING:
-	this->motorSpeed = this->motorSpeedSeeking;
 	this->setErrorSeekTape();
 	break;
     case TFAction::TURNING:
-	this->motorSpeed = this->motorSpeedTurning;
 	this->setErrorMakeTurn();
 	break;
     default:
-	this->motorSpeed = this->motorSpeedFollowing;
 	this->setErrorFollowTape();
 	break;
     }
@@ -336,30 +333,46 @@ void TapeFollow::setControl()
 // TODO: !!! Serious cleanup needed !
 void TapeFollow::updateState()
 {
-    // TODO: make this function the only one to modify this->action?
-    // TODO: is this correct?
-    if ((this->action != TFAction::TURNING) && this->offTape())
-	this->action = TFAction::SEEKING;
-    else if ((this->action != TFAction::REVERSING) && !this->offTape())
-	this->action = TFAction::FOLLOWING;
+    int followSteps  = this->steps[static_cast<int>(TFAction::FOLLOWING)];
+    int reverseSteps = this->steps[static_cast<int>(TFAction::REVERSING)];
 
-    // TODO: is this correct?
-    if (this->action == TFAction::FOLLOWING) {
-	int tapeFollowSteps =
-	    this->steps[static_cast<int>(TFAction::FOLLOWING)];
-	if (this->willTurnAround) {
-	    if (tapeFollowSteps >= this->preTurnAroundDelayPeriod) {
+    switch (this->action) {
+
+    case TFAction::FOLLOWING:
+	this->motorSpeed = this->motorSpeedFollowing;
+	if (this->offTape())
+	    this->action = TFAction::SEEKING;
+	else if (followSteps >= this->intersectSeekDelayPeriod)
+	    this->updateIntersectionsDetected();
+	break;
+
+    case TFAction::REVERSING:
+	this->motorSpeed = this->motorSpeedReverse;
+	if (this->offTape())
+	    this->action = TFAction::SEEKING;
+	else if (this->willTurnAround) {
+	    if (reverseSteps >= this->preTurnAroundDelayPeriod) {
 		this->motorSpeedFollowing = this->motorSpeedFollowingDefault;
+		this->motorSpeedTurning = this->motorSpeedTurningAround;
 		this->willTurnAround = false;
 		this->turningAround = true;
 		this->action = TFAction::TURNING;
 	    }
-	} else if (tapeFollowSteps >= this->intersectSeekDelayPeriod)
-	    this->updateIntersectionsDetected();
-    }
-    else if (this->action == TFAction::TURNING) {
-	// determine whether end has bee reached
-	// TODO: move this stuff somewhere else
+	}
+	break;
+
+    case TFAction::SEEKING:
+	this->motorSpeed = this->motorSpeedSeeking;
+	if (!this->offTape()) {
+	    if (!this->willTurnAround)
+		this->action = TFAction::FOLLOWING;
+	    else
+		this->action = TFAction::REVERSING;
+	}
+	break;
+
+    case TFAction::TURNING:
+	this->motorSpeed = this->motorSpeedTurning;
 	if ((!this->halfTurn) &&
 	    (this->offTapeCounter[1] >= this->turnConfirmPeriod) &&
 	    (this->offTapeCounter[2] >= this->turnConfirmPeriod)) {
@@ -376,9 +389,9 @@ void TapeFollow::updateState()
 	    this->motorSpeedTurning = this->motorSpeedTurningDefault;
 	    this->motorSpeedFollowing = this->motorSpeedFollowingDefault;
 	}
+	break;
+
     }
-
-
 }
 
 
@@ -615,8 +628,7 @@ void TapeFollow::turnAround()
 	break;
     }
     this->willTurnAround = true;
-    this->motorSpeedTurning = this->motorSpeedTurningAround;
-    this->motorSpeedFollowing = this->motorSpeedReverse;
+    this->action = TFAction::SEEKING;
 }
 
 
