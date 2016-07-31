@@ -1,13 +1,8 @@
 #include <StandardCplusplus.h>
 #include <phys253.h>
 #include "TapeFollow.hpp"
+#include "pins.hpp"
 
-const int TAPE_SENSORS_FRONT[] {0, 1, 2, 3};
-const int TAPE_SENSORS_BACK[]  {4, 5, 6, 7};
-const int MOTOR_PIN_L {0};
-const int MOTOR_PIN_R {3};
-const int KNOB_PROP_GAIN {6};
-const int KNOB_DER1_GAIN {7};
 const int MOTOR_SPEED_FOLLOWING       {120};
 const int MOTOR_SPEED_PASSENGER_SEEK  {64};
 const int MOTOR_SPEED_TURNING         {32};
@@ -67,11 +62,11 @@ int tapeFollowSteps;
 double lastError;             // last calculated error
 
 bool intersectSeen [2] = {false, false};        // true if an intersection was seen
-bool intersectDetect [2] = {false, false};      // true when an intersection has been detected (seen and passed over)
+bool intersectDetect [2];// = {false, false};      // true when an intersection has been detected (seen and passed over)
 
 double errorArray [2] = {0,  1};         // array of last 2 distinct errors
 unsigned long etimeArray [2] = {0., 0.};   // array of times (since read) assoc with errorArray
-int activePins [4] = {false, false, false, false};
+int activePins [4];
 
 bool willTurnAround;
 bool turningAround;
@@ -118,6 +113,9 @@ void tapeFollowInit()
     willTurnAround = false;
     turningAround = false;
 
+    intersectDetect[0] = false;
+    intersectDetect[1] = false;
+
     leftWeight = 0.;
     rightWeight = 0.;
     straightWeight = 0.;
@@ -140,15 +138,13 @@ double seekTape()
 void intersectionSeen()
 {
     // bool intersectSeenL = true;
-    bool intersectSeenL(true);
-    bool intersectSeenR(true);
-    int i(0);
-    for (i = 0; i < NUM_SAVED_READINGS; i++) {
+    bool intersectSeenL = true;
+    bool intersectSeenR = true;
+    for (int i = 0; i < NUM_SAVED_READINGS; i++) {
       if (i >= INTERSECT_PERIOD)
         break;
-      intersectSeenL = (intersectSeenL && lastPinReadings[i][0] && mainsOnTape);
+      intersectSeenL = (intersectSeenL && lastPinReadings[i][0] && mainsOnTape); //TODO:lastPinReadings must be producing true when it shouldn't  
       intersectSeenR = (intersectSeenR && lastPinReadings[i][3] && mainsOnTape);
-      ++i;
     }
 
     // if seen, update instance variable
@@ -180,15 +176,15 @@ void intersectionDetection()
     if (fnAllLastReadings(TURN_WAIT_PERIOD, FN_INTS_OFF_TAPE) &&
           (intersectDetect[0] || intersectDetect[1])) {
   // wait until both intersections crossed over
-  /*turnDirection = chooseTurn(
+  turnDirection = chooseTurn(
           intersectDetect[0],
           intersectDetect[1],
           (mainL || mainR)
-          );*/ 
+          ); 
   if (turnDirection != Direction::FRONT)
       turning = true;  // activates `makeTurn` function
-  /*else
-      turning = false;*/
+  else
+      turning = false;
   // reset intersection arrays
   intersectSeen[0] = false;
   intersectSeen[1] = false;
@@ -201,10 +197,10 @@ void intersectionDetection()
 double followTape()
 {
     // declare static variables (runs once)
-    const static bool &intersectL = pinReadings[0];
-    const static bool &mainL      = pinReadings[1];
-    const static bool &mainR      = pinReadings[2];
-    const static bool &intersectR = pinReadings[3];
+    bool intersectL = pinReadings[0];
+    bool mainL      = pinReadings[1];
+    bool mainR      = pinReadings[2];
+    bool intersectR = pinReadings[3];
 
     if (tapeFollowSteps >= PRE_TURN_AROUND_DELAY_PERIOD && willTurnAround) {
       motorSpeedFollowing = MOTOR_SPEED_FOLLOWING;
@@ -212,7 +208,7 @@ double followTape()
       turningAround = true;
       turning = true;
       turnDirection = Direction::RIGHT;
-  }
+    }
 
     if (tapeFollowSteps >= INTERSECT_DELAY)
       intersectionDetection();
@@ -343,10 +339,10 @@ Direction chooseTurn(bool left, bool right, bool straight)
 {
     if(right)
       return Direction::RIGHT;
-    else if(left)
-      return Direction::LEFT;
-    else
+    else if(straight)
       return Direction::FRONT;
+    else
+      return Direction::LEFT;
     /*float total = (
       left     * leftWeight +
       right    * rightWeight +
