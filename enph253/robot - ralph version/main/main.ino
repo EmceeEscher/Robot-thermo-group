@@ -2,6 +2,7 @@
 #include "pins.hpp"
 #include "Arm_And_Stepper.hpp"
 #include "TapeFollow.hpp"
+#include "CollisionWatch.hpp"
 
 const int FIND_PASSENGER = 0;
 const int LOAD_PASSENGER_LEFT = 1;
@@ -60,5 +61,8 @@ void loop() {
 
 void findPassengerLoop(){
     tapeFollowLoop();
+    if(hasDetectedCollision()){
+      turnAround();
+    }
 }
 

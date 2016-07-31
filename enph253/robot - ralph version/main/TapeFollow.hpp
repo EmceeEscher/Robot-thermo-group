@@ -1,6 +1,8 @@
 #ifndef TAPE_FOLLOW_HPP
 #define TAPE_FOLLOW_HPP
 
+#include "Direction.hpp"
+
   void tapeFollowInit();
 
   double seekTape();
@@ -27,7 +29,7 @@
 
   double makeTurn();
 
-  int chooseTurn(bool left, bool right, bool straight);
+  Direction chooseTurn(bool left, bool right, bool straight);
 
   void printLCD();
 
@@ -43,5 +45,8 @@
 
   void test();
 
+  void giveTurnDirection();
+
+  void turnAround();
 
 #endif

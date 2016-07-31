@@ -1,7 +1,6 @@
 #include <StandardCplusplus.h>
 #include <phys253.h>
 #include "TapeFollow.hpp"
-#include "Direction.hpp"
 
 const int TAPE_SENSORS_FRONT[] {0, 1, 2, 3};
 const int TAPE_SENSORS_BACK[]  {4, 5, 6, 7};
@@ -35,6 +34,8 @@ const int TURNING_PERIOD   {10};
 const int TURN_WAIT_PERIOD {45};
 const int OFF_TAPE_PERIOD  {50};
 const int ON_TAPE_PERIOD   {10};
+
+const unsigned long RANDOM_MAX_VAL     {100000};
 
 const int FN_MAINS_OFF_TAPE = 0;
 const int FN_OFF_TAPE = 1;
@@ -75,6 +76,10 @@ int activePins [4] = {false, false, false, false};
 bool willTurnAround;
 bool turningAround;
 
+float leftWeight;
+float rightWeight;
+float straightWeight;
+
 void tapeFollowInit()
 {
     active          = false;
@@ -86,7 +91,7 @@ void tapeFollowInit()
     halfTurn        = false;
     motorsActive    = false;
 
-    turnDirection   = 0;
+    turnDirection   = Direction::FRONT;
     control         = 0;
     printCount      = 0;
     motorSpeed      = MOTOR_SPEED_FOLLOWING;
@@ -112,6 +117,10 @@ void tapeFollowInit()
 
     willTurnAround = false;
     turningAround = false;
+
+    leftWeight = 0.;
+    rightWeight = 0.;
+    straightWeight = 0.;
 }
 
 
@@ -176,7 +185,7 @@ void intersectionDetection()
           intersectDetect[1],
           (mainL || mainR)
           );
-  if (turnDirection != 0)
+  if (turnDirection != Direction::FRONT)
       turning = true;  // activates `makeTurn` function
   // reset intersection arrays
   intersectSeen[0] = false;
@@ -318,36 +327,44 @@ double makeTurn()
     if (!turning)
   return 0.;
     else
-  return -turnDirection * ERROR_TURNING;
+  return -(static_cast<int>(turnDirection)-1) * ERROR_TURNING;
 }
 
-
-// TODO: generalize
-int chooseTurn(bool left, bool right, bool straight)
+Direction chooseTurn(bool left, bool right, bool straight)
 {
-    if (left && right && straight)
-  return random(3) - 1;
-    else if (left && right)
-  return 2*random(2) - 1;
-    else if (left && straight)
-  return random(2) - 1;
-    else if (right && straight)
-  return random(2);
-    else if (left)
-  return -1;
-    else if (right)
-  return 1;
-    else
-  return 0;
-    // // for now, prefer right, then left, then straight
-    // if (right)
-    //  return 1;  // right
-    // else if (left)
-    //  return -1; // left
-    // else
-    //  return 0;  // straight
-}
+    float total = (
+      left     * leftWeight +
+      right    * rightWeight +
+      straight * straightWeight
+    );
 
+    float leftProb;
+    float rightProb;
+    if (total == 0) {
+  leftProb     = left     / (left + right + straight);
+  rightProb    = right    / (left + right + straight);
+    } else {
+  leftProb     = left     * leftWeight     / total;
+  rightProb    = right    * rightWeight    / total;
+    }
+
+    // TODO: do this randValue part differently?
+    float randValue = static_cast<float>(random(RANDOM_MAX_VAL)) /
+  (RANDOM_MAX_VAL+1);
+    float leftMax = 0 + leftProb;
+    float rightMax = leftProb + rightProb;
+    
+    leftWeight = 0.;
+    rightWeight = 0.;
+    straightWeight = 0.;
+
+    if (randValue < leftMax) 
+  return Direction::LEFT;
+    else if (randValue < rightMax) 
+  return Direction::RIGHT;
+    else 
+  return Direction::FRONT;
+}
 
 void printLCD()
 {
@@ -367,9 +384,9 @@ void printLCD()
           LCD.print("F ");  // following
       // print arrow
       if (turning) {
-          if (turnDirection == -1)
+          if (turnDirection == Direction::LEFT)
         LCD.print("<--");
-          else if (turnDirection == 1)
+          else if (turnDirection == Direction::RIGHT)
         LCD.print("-->");
           else
         LCD.print(" ^ ");
@@ -517,7 +534,7 @@ void tapeFollowLoop()
     delay(MAIN_LOOP_DELAY);
 }
 
-void TapeFollow::turnAround()
+void turnAround()
 {
     switch (turnDirection) {
     case Direction::LEFT:
@@ -571,4 +588,10 @@ void test()
 {
     active = true;
     motorsActive = false;
+}
+
+void giveTurnDirection(float left, float right, float straight){
+    leftWeight = left;
+    rightWeight = right;
+    straightWeight = straight;
 }
