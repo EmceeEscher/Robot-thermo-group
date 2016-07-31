@@ -29,18 +29,18 @@ const float MID_HOLD_POSITION = 170;
 int LCDControl;
 
 //Stepper Constants
-const int DIR_PIN = 8;
-const int PULSE_PIN = 9;
 const int COUNTERCLOCKWISE = HIGH;
 const int CLOCKWISE = LOW;
 const int stepperMicrosDelay = 1600; //Time delay between pulses in microseconds
 const int numPulses = 680;
 
 //reachAndGrab/reachAndDrop function Constants
-const float initialAdjMidTarget = 180;
-const float initialAdjBaseTarget = 50;
-const float finalAdjMidTarget = 180;
-const float finalAdjBaseTarget = 40;
+const float initialAdjMidTarget = 100;
+const float initialAdjBaseTarget = 60;
+const float midAdjMidTarget = 135;
+const float midAdjBaseTarget = 40;
+const float finalAdjMidTarget = 170;
+const float finalAdjBaseTarget = 20;
 
 //Holding a passenger?
 bool holding = false;
@@ -59,6 +59,7 @@ void setup() {
 }
 */
 
+/*
 void loop() {
   doControl();
 
@@ -89,6 +90,7 @@ void loop() {
   }
   delay(10);
 }
+*/
 
 // The control loop. Should be implemented wherever the code
 //be for extended perids of time to prevent arm from overcorrecting,
@@ -111,7 +113,7 @@ void doControl(){
 
   
   if(LCDControl % 25 == 0){
-    printState();
+    //printState();
     LCDControl = 1;
   }
   LCDControl++;
@@ -291,9 +293,9 @@ void reachAndClaw(bool grabbing)
   } 
     }
     if (grabbing) 
-  this->grabShit();
+  grabShit();
     else 
-  this->dropShit();
+  dropShit();
     setRestPosition();
 }
 
@@ -324,11 +326,11 @@ void setRestPosition(){
   doControl();
     
     if (holding) {
-  baseTarget = baseHoldPosition;
-  midTarget = midHoldPosition;
+  baseTarget = BASE_HOLD_POSITION;
+  midTarget = MID_HOLD_POSITION;
     } else {
-  baseTarget = baseRestPosition;
-  midTarget = midRestPosition;
+  baseTarget = BASE_REST_POSITION;
+  midTarget = MID_REST_POSITION;
     }
 }
 
