@@ -61,6 +61,7 @@ void loop() {
 
 void findPassengerLoop(){
     tapeFollowLoop();
+    collisionLoop();
     if(hasDetectedCollision()){
       turnAround();
     }
