@@ -64,11 +64,11 @@ RobotState::RobotState()
     DetectBeacon   *mmDetectBeacon   = new DetectBeacon;
 
     // Push minor mode pointers to allMinorModes vector
-    this->allMinorModes.push_back(mmTapeFollow);
-    this->allMinorModes.push_back(mmPassengerSeek);
-    this->allMinorModes.push_back(mmCollisionWatch);
-    this->allMinorModes.push_back(mmArmControl);
-    this->allMinorModes.push_back(mmDetectBeacon);
+    this->allMinorModes[0] = mmTapeFollow;
+    this->allMinorModes[1] = mmPassengerSeek;
+    this->allMinorModes[2] = mmCollisionWatch;
+    this->allMinorModes[3] = mmArmControl;
+    this->allMinorModes[4] = mmDetectBeacon;
    
     // Declare major modes as dynamic pointers
     this->mFindPassenger = new MFindPassenger(
@@ -80,10 +80,10 @@ RobotState::RobotState()
     this->mToDestination = new MToDestination;
 
     // Push major modes to allMajorModes vector
-    this->allMajorModes.push_back(this->mFindPassenger);
-    this->allMajorModes.push_back(this->mLoadPassenger);
-    this->allMajorModes.push_back(this->mDropPassenger);
-    this->allMajorModes.push_back(this->mToDestination);
+    this->allMajorModes[0] = this->mFindPassenger;
+    this->allMajorModes[1] = this->mLoadPassenger;
+    this->allMajorModes[2] = this->mDropPassenger;
+    this->allMajorModes[3] = this->mToDestination;
       
     // initialization
     this->init();
