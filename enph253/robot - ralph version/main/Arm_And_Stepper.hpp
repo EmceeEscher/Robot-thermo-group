@@ -45,6 +45,17 @@ const float finalAdjBaseTarget = 20;
 //Holding a passenger?
 bool holding = false;
 
+void doControl();
+float getAngle();
+void setBaseMotor(long duty);
+float getControlValue();
+void grabShit();
+void dropShit();
+void reachAndClaw(bool grabbing);
+void setRestPosition();
+void stepperTurn(bool CW,int count);
+void turnAndReach(bool turnRight, bool grab);
+
 /*
 void setup() {
   #include <phys253setup.txt>
