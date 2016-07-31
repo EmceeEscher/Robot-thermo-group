@@ -43,7 +43,7 @@ namespace PassengerSeek
 }
 
     
-static void PassengerSeek::init()
+void PassengerSeek::init()
 {
     active = false;
     approachingPassenger = false;
@@ -65,20 +65,20 @@ static void PassengerSeek::init()
 }
     
     
-static bool PassengerSeek::atMaxSideFront()
+bool PassengerSeek::atMaxSideFront()
 {
     return atMax[2] || atMax[3];
 }
     
     
-static bool PassengerSeek::atMaxSideMiddle()
+bool PassengerSeek::atMaxSideMiddle()
 {
     return atMax[1] || atMax[4];
 }
     
     
     // TODO
-static void PassengerSeek::updateMax()
+void PassengerSeek::updateMax()
 {
     for (int i(0); i < NUM_PINS_SIDES; ++i) {
 	bool aboveThreshold = (numAboveThreshold[i] >= MAX_REGISTER_PERIOD);
