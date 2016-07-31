@@ -36,6 +36,8 @@ private:
     static const int *tapeSensorsFront;
     static const int *tapeSensorsBack;
     static const int numSensors = pins_sizes::TAPE_SENSORS_FRONT;
+    static const int numActions = 4;
+    static const TFAction allActions[TapeFollow::numActions];
 
     float gainProp;                        // TODO: set const; set based on knobs for now
     float gainDer1;                        // TODO: set const; set based on knobs for now
@@ -78,7 +80,6 @@ private:
     int control;                  // current control parameter
     int printCount;
     int motorSpeed;               // speed to add to motors
-    int tapeFollowSteps;
     float error;
     float lastError;              // last calculated error
 
@@ -89,6 +90,8 @@ private:
     vector<float> errorArray;           // array of last 2 distinct errors
     vector<unsigned long> etimeArray;   // array of times (since read) assoc with errorArray
     int activePins[numSensors];         // pin numbers (intL, mainL, mainR, intR)
+
+    int steps[TapeFollow::numActions];  // number of steps for associated action
 
     int onTapeCounter[numSensors];      // counts the number of consecutive onTape reads for each pin
     int offTapeCounter[numSensors];     // counts the number of consecutive offTape reads for each pin
