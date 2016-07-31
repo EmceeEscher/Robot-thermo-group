@@ -162,7 +162,8 @@ void TapeFollow::updateIntersectionsDetected()
 }
 
 
-Direction TapeFollow::chooseTurnDeterministic(bool left, bool right, bool straight)
+Direction TapeFollow::chooseTurnDeterministic(
+        bool left, bool right, bool straight)
 { 
     int prefLeft = left * (
             (this->leftWeight > this->rightWeight) +

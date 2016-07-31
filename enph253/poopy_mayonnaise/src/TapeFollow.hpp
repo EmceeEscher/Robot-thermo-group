@@ -73,7 +73,7 @@ private:
     TFAction action;              // what the tapefollowing is currently doing (i.e. following, seeking, etc)
 
     Direction turnDirection;      // current turn direction
-    float leftWeight;
+    float leftWeight;             // TODO: come up with a better way of doing this weight stuff
     float straightWeight;
     float rightWeight;
     
