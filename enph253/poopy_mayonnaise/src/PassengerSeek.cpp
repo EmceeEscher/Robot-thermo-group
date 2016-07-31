@@ -39,13 +39,13 @@ void PassengerSeek::init()
 
 bool PassengerSeek::atMaxSideFront()
 {
-    return this->atMax[2] || this->atMax[3];
+    return this->atMax[1] || this->atMax[2];
 }
 
 
 bool PassengerSeek::atMaxSideMiddle()
 {
-    return this->atMax[1] || this->atMax[4];
+    return this->atMax[0] || this->atMax[3];
 }
 
 

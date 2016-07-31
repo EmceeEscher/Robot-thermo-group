@@ -15,14 +15,13 @@ namespace pins
     const int KNOB_DER1_GAIN {7};
     
     // Digital in
-    const int PASSENGER_SENSOR_BACK_LEFT {6}; //we ran out of analog pins, so this one has to be digital
     const int TAPE_SENSORS_FRONT[] { 0,  1,  2,  3};  // << < > >>
     const int TAPE_SENSORS_BACK[]  { 8,  9, 10, 11};  // << < > >>
     const int ARM_SWITCHES[]       {12, 13, 14};      //catch, miss, inner
     const int COLLISION_SENSORS[]  { 4,  4,  4,  4};  // left front right back
     
     // Analog in
-    const int PASSENGER_SENSORS_SIDES[]  {1, 0, 1, 1, 2};  // TODO: assign
+    const int PASSENGER_SENSORS_SIDES[]  {0, 7, 6, 2};  // left middle, left front, right front, right middle
     const int BEACON_SENSORS_SIDES[]     {6, 7}; // left right (Requires loss of knobs)
     const int POTENTIOMETER {5};
 
