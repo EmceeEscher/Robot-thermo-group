@@ -21,12 +21,13 @@ private:
     static const int *qsdPinsSides;     // left-back, left-mid, left-front, right-front, right-mid, right-back
     static const int numPinsSides = pins_sizes::PASSENGER_SENSORS_SIDES;
 
-    const int maxRegisterPeriod;        // number of consecutive (+) derivatives to be increasing and (-) derivative to be decreasing
-    const int maxRegisterThreshold;     // threshold that readings must be above to register
+    const int maxRegisterPeriod;          // number of consecutive readings above the threshold required to register a max
+    const int maxNumDerivRegisterPeriod;  // number of consecutive (+) derivatives and then (-) derivatives required to achieve a max
+    const int maxRegisterThreshold;       // threshold that readings must be above to register
     
-    bool approachingPassenger;          // true when approaching a passenger
-    bool atPassenger;                   // true when adjacent to a passenger
-    int passengerSide;                  // if atPassenger, specifies the side (-1=left, 1=right)
+    bool approachingPassenger;            // true when approaching a passenger
+    bool atPassenger;                     // true when adjacent to a passenger
+    int passengerSide;                    // if atPassenger, specifies the side (-1=left, 1=right)
 
     bitset<numPinsSides> atMax;             // true if the associated pin is at a maximum
     int pinReadings[numPinsSides];          // current pin readings

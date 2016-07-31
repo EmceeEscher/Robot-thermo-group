@@ -25,8 +25,7 @@ void CollisionWatch::init()
 
 
 CollisionWatch::CollisionWatch()
-    : MinorMode(),
-      collisionDetectPeriod(COLLISION_DETECT_PERIOD)
+    : MinorMode(), collisionDetectPeriod(COLLISION_DETECT_PERIOD)
 {
     this->init();
 }

@@ -20,9 +20,9 @@ MLoadPassenger::MLoadPassenger(
         PassengerSeek   *mmPassengerSeek,
         CollisionWatch  *mmCollisionWatch)
     : MajorMode(MajorModeEnum::LOAD_PASSENGER),
-      mmArmControl(mmArmControl),
-      mmPassengerSeek(mmPassengerSeek),
-      mmCollisionWatch(mmCollisionWatch)
+      mmArmControl     (mmArmControl),
+      mmPassengerSeek  (mmPassengerSeek),
+      mmCollisionWatch (mmCollisionWatch)
 {
     this->init();
     

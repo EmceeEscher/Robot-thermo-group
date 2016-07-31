@@ -13,9 +13,7 @@ void MajorMode::init()
 
 
 MajorMode::MajorMode(MajorModeEnum thisMode)
-    : thisMode(thisMode),
-      nextMode(thisMode),
-      active(false)
+    : thisMode(thisMode), nextMode(thisMode), active(false)
 {}
 
 

@@ -37,14 +37,14 @@ const float FINAL_ADJ_MID_TARGET = 170;
 const float FINAL_ADJ_BASE_TARGET = 20;
 
 // Pin assignments
-const int ArmControl::baseAnglePin     {pins::POTENTIOMETER};
-const int ArmControl::baseMotorNumber  {pins::MOTOR_PIN_ARM};
-const int ArmControl::babyMotorNum     {pins::MOTOR_PIN_BABY};
-const int ArmControl::catchSwitch      {pins::ARM_SWITCHES[0]};
-const int ArmControl::noCatchSwitch    {pins::ARM_SWITCHES[1]};
-const int ArmControl::innerClawSwitch  {pins::ARM_SWITCHES[2]};
-const int ArmControl::stepperDirPin    {pins::DIR_PIN};
-const int ArmControl::stepperPulsePin  {pins::PULSE_PIN};
+const int ArmControl::baseAnglePin     { pins::POTENTIOMETER };
+const int ArmControl::baseMotorNumber  { pins::MOTOR_PIN_ARM };
+const int ArmControl::babyMotorNum     { pins::MOTOR_PIN_BABY };
+const int ArmControl::catchSwitch      { pins::ARM_SWITCHES[0] };
+const int ArmControl::noCatchSwitch    { pins::ARM_SWITCHES[1] };
+const int ArmControl::innerClawSwitch  { pins::ARM_SWITCHES[2] };
+const int ArmControl::stepperDirPin    { pins::DIR_PIN };
+const int ArmControl::stepperPulsePin  { pins::PULSE_PIN };
 
 
 void ArmControl::init()
@@ -100,18 +100,20 @@ void ArmControl::loop()
 
 
 // The control loop. Should be implemented wherever the code
-//be for extended perids of time to prevent arm from overcorrecting,
-//grinding gears, etc.
+// be for extended perids of time to prevent arm from overcorrecting,
+// grinding gears, etc.
 // Should be repeated with several millisecond delays for integral/
-//derivative control purposes
+// derivative control purposes
 void ArmControl::doControl()
 {
     this->angle = getAngle();
     
     this->now = micros();
     this->propErr = this->angle - this->baseTarget;
-    this->derivErr = (this->propErr - this->lastPropErr) / (this->now - this->lastTime) * 1000000.;
-    this->intErr += (this->propErr + this->lastPropErr) / 2 * (this->now - this->lastTime) / 1000000.;
+    this->derivErr = (this->propErr - this->lastPropErr) /
+	(this->now - this->lastTime) * 1000000.;
+    this->intErr += (this->propErr + this->lastPropErr) / 2 *
+	(this->now - this->lastTime) / 1000000.;
     setBaseMotor(static_cast<int>(getControlValue()));
     
     RCServo0.write(this->midTarget);
@@ -127,7 +129,7 @@ void ArmControl::doControl()
 }
 
 
-//Converts base potentiometer voltage to corresponding angle
+// Converts base potentiometer voltage to corresponding angle
 float ArmControl::getAngle()
 {
     // TODO: get rid of hard coding
@@ -137,19 +139,19 @@ float ArmControl::getAngle()
 }
 
 
-//Wrapper function for setting motor speed
-//Prevents values larger than 255 in either direction
+// Wrapper function for setting motor speed
+// Prevents values larger than 255 in either direction
 void ArmControl::setBaseMotor(int duty)
 {
     if (duty > 255)
-	duty = 255;  // TODO: get rid of global variables
+	duty = 255; 
     else if(duty < -255)
 	duty = -255;
-    motor.speed(ArmControl::baseMotorNumber,duty);
+    motor.speed(ArmControl::baseMotorNumber, duty);
 }
 
 
-//Returns the motor speed based on PID control
+// Returns the motor speed based on PID control
 float ArmControl::getControlValue()
 {
     float control(0.);
@@ -163,8 +165,8 @@ float ArmControl::getControlValue()
 }
 
 
-//Closes the claw until something is detected in claw, the claw
-//closes on itself or a timeout is reached
+// Closes the claw until something is detected in claw, the claw
+// closes on itself or a timeout is reached
 void ArmControl::grabCrap()
 {
     //If switches are already triggered, then do nothing
@@ -198,7 +200,7 @@ void ArmControl::grabCrap()
 }
 
 
-//Opens the claw for specified time
+// Opens the claw for specified time
 void ArmControl::dropCrap()
 {
     motor.speed(ArmControl::babyMotorNum,-140);  // TODO: no hard coding
@@ -208,7 +210,7 @@ void ArmControl::dropCrap()
 }
 
 
-//Function to update the LCD periodically
+// Function to update the LCD periodically
 void ArmControl::printState()
 {
     LCD.clear();
@@ -226,14 +228,14 @@ void ArmControl::printState()
 }
 
 
-//Extends arm over two periods and either grabs or drops
+// Extends arm over two periods and either grabs or drops
 void ArmControl::reachAndClaw(bool grabbing)
 {
     this->midTarget = this->initialAdjMidTarget;
     this->baseTarget = this->initialAdjBaseTarget;
     unsigned long startTime = millis();
     while (millis() - startTime < 500) // TODO: no hard coding
-	doControl();
+	this->doControl();
     // TODO: is it necessary to run all of these loops inside of the main loop
     // or could they be run concurrently
     
@@ -241,12 +243,12 @@ void ArmControl::reachAndClaw(bool grabbing)
     this->baseTarget = this->midAdjBaseTarget;
     
     while (millis() - startTime < 1000) // TODO: no hard coding
-	doControl();
+	this->doControl();
     
     this->baseTarget = this->finalAdjBaseTarget; 
     this->midTarget = this->finalAdjMidTarget;
     while (millis() - startTime < 1500) {  // TODO: no hard coding
-	doControl();
+	this->doControl();
 	if (!digitalRead(ArmControl::innerClawSwitch)) {
 	    //this->baseTarget = getAngle() + 5; // this code don't do nothing
 	    break;
@@ -256,22 +258,23 @@ void ArmControl::reachAndClaw(bool grabbing)
 	this->grabCrap();
     else 
 	this->dropCrap();
-    setRestPosition();
+    this->setRestPosition();
 }
 
 
 //Sets the control target values to rest position
-void ArmControl::setRestPosition(){
+void ArmControl::setRestPosition()
+{
     unsigned long startTime = millis();
     this->baseTarget = this->midAdjBaseTarget; // TODO: no global variables
     this->midTarget = this->midAdjMidTarget;
     while (millis() - startTime < 500) // TODO: no hard coding
-	doControl();
+	this->doControl();
     
     this->baseTarget = this->initialAdjBaseTarget;
     this->midTarget = this->initialAdjMidTarget;
     while (millis() - startTime < 1000)  // TODO: no hard coding
-	doControl();
+	this->doControl();
     
     if (this->holding) {
 	this->baseTarget = this->baseHoldPosition;

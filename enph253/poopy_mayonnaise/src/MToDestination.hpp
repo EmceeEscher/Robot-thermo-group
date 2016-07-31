@@ -13,8 +13,6 @@ class MToDestination : public MajorMode
 
 private:
 
-    bool active;
-    
     /*
      * (Re)initialize state variables
      */
@@ -30,13 +28,7 @@ public:
 
     void start();
 
-    void stop();
-
-    void pause();
-
     void test();
-
-    bool isActive();
 
 };
 

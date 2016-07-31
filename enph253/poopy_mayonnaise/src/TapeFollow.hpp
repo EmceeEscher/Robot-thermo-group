@@ -16,6 +16,16 @@
 using std::vector;
 using std::bitset;
 
+
+enum class TFAction
+{
+    FOLLOWING,
+    REVERSING,
+    SEEKING,
+    TURNING
+};
+
+
 class TapeFollow : public MinorMode
 {
 
@@ -53,16 +63,12 @@ private:
     int motorSpeedFollowing;               // current motor speed for following tape
     int motorSpeedTurning;
 
-    bool onTape;                  // true= on tape, false= off tape
-    bool offTape;                 // true= off tpae, false= on tape
-    bool mainsOnTape;             // whether one of the mains in on the tape
-    bool following;               // whether the robot is currently following tape
-    bool seeking;                 // whether the robot is currently seeking tape
-    bool turning;                 // true= turning, false= straight
     bool turningAround;           // true if the robot is turning around
     bool willTurnAround;          // true if the robot is about to turn around
     bool halfTurn;                // if true, bot has turned far enough that mains are off tape
     bool motorsActive;            // true if motors are active
+
+    TFAction action;              // what the tapefollowing is currently doing (i.e. following, seeking, etc)
 
     Direction turnDirection;      // current turn direction
     float leftWeight;
@@ -73,6 +79,7 @@ private:
     int printCount;
     int motorSpeed;               // speed to add to motors
     int tapeFollowSteps;
+    float error;
     float lastError;              // last calculated error
 
     bitset<numSensors> pinReadings;    // current readings on QRD pins
@@ -83,7 +90,6 @@ private:
     vector<unsigned long> etimeArray;   // array of times (since read) assoc with errorArray
     int activePins[numSensors];         // pin numbers (intL, mainL, mainR, intR)
 
-    int mainOnTapeCounter;              // number of consecutive times at least one main has been seen
     int onTapeCounter[numSensors];      // counts the number of consecutive onTape reads for each pin
     int offTapeCounter[numSensors];     // counts the number of consecutive offTape reads for each pin
     
@@ -93,12 +99,14 @@ private:
     void init();
 
     /*
-     * Loop function for seeking tape. 
-     * Intersection sensors are used to help find tape. When found,
-     * `followTape` is entered.
-     * The appropriate error is returned.
+     * Returns true if off tape (no readings) for longer than offTapePeriod
      */
-    float seekTape();
+    bool offTape();
+
+    /*
+     * Returns true if both mains are off tape for longer than offTapePeriod
+     */
+    bool mainsOffTape();
 
     /*
      * Based on the lastPinReadings array, determines whether an
@@ -111,14 +119,6 @@ private:
      * Look for intersection. If found, make decision and turn?
      */
     void updateIntersectionsDetected();
-
-    /*
-     * Loop function for following tape with no intersections.
-     * If an intersection is detected (and a turn is to be made) 
-     * `makeTurn` is called.
-     * The appropriate error is returned.
-     */
-    float followTape();
 
     /*
      * Function which chooses what direction to turn, based on its available
@@ -143,12 +143,51 @@ private:
     Direction chooseTurnDeterministic(bool left, bool right, bool straight);
 
     /*
+     * Loop function for seeking tape. 
+     * Intersection sensors are used to help find tape. When found,
+     * `followTape` is entered.
+     * The appropriate error is set.
+     */
+    void setErrorSeekTape();
+
+    /*
+     * Loop function for following tape with no intersections.
+     * If an intersection is detected (and a turn is to be made) 
+     * `makeTurn` is called.
+     * The appropriate error is set.
+     */
+    void setErrorFollowTape();
+
+    /*
      * Loop function for completing a turn in a single direction.
      * Continues until both main detecters loss current tape and find the
      * next, at which point `followTape` is entered.
      * The appropriate error is returned.
      */
-    float makeTurn();
+    void setErrorMakeTurn();
+
+    /*
+     * Based on whether the robot is currently seeking, turning, or following,
+     * set the error to apply.
+     */
+    void setError();
+
+    /*
+     * Based on the error and following speed, set the control to apply to
+     * the motor speed
+     */
+    void setControl();
+
+    /*
+     * Update on/off tape counters
+     */
+    void updateCounters();
+
+    /*
+     * Updates the state of the robot based on the latest reads and
+     * counter values
+     */
+    void updateState();
 
     /*
      * Print output to the LCD
@@ -193,7 +232,7 @@ public:
     /*
      * Resets the following speed to the default value
      */
-    void resetMotorSpeed();  // TODO: find a better wy to do this
+    void resetMotorSpeed();  // TODO: find a better way to do this
 
     /*
      * Turn around procedure

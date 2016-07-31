@@ -10,8 +10,7 @@ void MinorMode::init()
 }
 
 
-MinorMode::MinorMode()
-    : active(false)
+MinorMode::MinorMode() : active(false)
 {
 }
 

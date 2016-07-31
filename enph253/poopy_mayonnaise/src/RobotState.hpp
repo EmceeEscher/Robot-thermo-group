@@ -19,10 +19,13 @@ class RobotState
 
 private:
 
-    bool active;                         // whether the robot is active
-    int mainLoopDelay;                   // delay for the main loop
+    const int numMajorModes;
+    const int numMinorModes;
+
     vector< MajorMode* > allMajorModes;  // all possible major modes
     vector< MinorMode* > allMinorModes;  // all possible minor modes
+    bool active;                         // whether the robot is active
+    int mainLoopDelay;                   // delay for the main loop
     MajorMode *currentMajorMode;         // current major mode
     MajorMode *nextMajorMode;
 

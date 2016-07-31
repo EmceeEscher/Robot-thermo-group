@@ -13,42 +13,36 @@ class ArmControl : public MinorMode
 
 private:
 
-    //Analog pin for base angle potentiometer signal
-    static const int baseAnglePin;
-    //Base GBBC motor output number
-    static const int baseMotorNumber;
-    //Claw's Baby Motor output number
-    static const int babyMotorNum;
-    //Digital pin indicating a successfully caugh animal
-    static const int catchSwitch;
-    //Digital pin indicating a claw closing on itself
-    static const int noCatchSwitch;
-    //Digital pin to detect when an animal is in the claw
-    static const int innerClawSwitch;
+    static const int baseAnglePin;       // Analog pin for base angle potentiometer signal
+    static const int baseMotorNumber;    // Base GBBC motor output number
+    static const int babyMotorNum;       // Claw's Baby Motor output number
+    static const int catchSwitch;        // Digital pin indicating a successfully caugh animal
+    static const int noCatchSwitch;      // Digital pin indicating a claw closing on itself
+    static const int innerClawSwitch;    // Digital pin to detect when an animal is in the claw
 
-    //Stepper Constants
+    // Stepper Constants
     static const int stepperDirPin;
     static const int stepperPulsePin;
 
-    //Amount of time to run motor to drop animal
+    // Amount of time to run motor to drop animal
     const int dropTime; // Milliseconds
 
-    //SPECIFIED GAIN VALUES
+    // SPECIFIED GAIN VALUES
     const float propGain;
     const float holdPropGain;
     const float intGain;
     const float derivGain;
 
-    //Rest Positions
+    // Rest Positions
     const float baseRestPosition;
     const float midRestPosition;
     const float baseHoldPosition;
     const float midHoldPosition;
 
-    const int stepperMicrosDelay; //Time delay between pulses in microseconds
+    const int stepperMicrosDelay; // Time delay between pulses in microseconds
     const int numPulses;
 
-    //reachAndClaw/reachAndDrop function Constants
+    // reachAndClaw/reachAndDrop function Constants
     const float initialAdjMidTarget;
     const float initialAdjBaseTarget;
     const float finalAdjMidTarget;
@@ -56,16 +50,10 @@ private:
     const float midAdjMidTarget;
     const float midAdjBaseTarget;
 
-    //Iterator for LCD printing
+    // Iterator for LCD printing
     int lcdControl;  // TODO: how is an int an interator??
 
-    //Dynamic Control Variables
-    /*float baseTarget, midTarget;
-    float propErr, derivErr, intErr, lastPropErr;
-    float angle;
-    float currAngle;
-    float now, lastTime;
-    int hasInitialized;*/
+    // Dynamic Control Variables
     float baseTarget;
     float midTarget;
     float propErr;
@@ -76,11 +64,9 @@ private:
     float now;
     float lastTime;
 
-    //Holding a passenger?
-    bool holding;
+    bool holding;   // True if holding a passenger?
     
-    
-    //TODO: make it work
+    // TODO: make it work
     void init();
 
 public:
@@ -103,31 +89,45 @@ public:
     void doControl();
     
     /*
-    //Converts base potentiometer voltage to corresponding angle
-    */
+     * Converts base potentiometer voltage to corresponding angle
+     */
     float getAngle();
     
-    //Wrapper function for setting motor speed
-    //Prevents values larger than 255 in either direction
+    /*
+     * Wrapper function for setting motor speed
+     * Prevents values larger than 255 in either direction
+     */
     void setBaseMotor(int duty);
     
-    //Returns the motor speed based on PID control
+    /*
+     * Returns the motor speed based on PID control
+     */
     float getControlValue();
     
-    //Closes the claw until something is detected in claw, the claw
-    //closes on itself or a timeout is reached
+    /*
+     * Closes the claw until something is detected in claw, the claw
+     * closes on itself or a timeout is reached
+     */
     void grabCrap();
     
-    //Opens the claw for specified time
+    /*
+     * Opens the claw for specified time
+     */
     void dropCrap();
     
-    //Extends arm over two periods and either grabs or drops
+    /*
+     * Extends arm over two periods and either grabs or drops
+     */
     void reachAndClaw(bool grabbing);
     
-    //Sets the control target values to rest position
+    /*
+     * Sets the control target values to rest position
+     */
     void setRestPosition();
     
-    //Turns the stepper motor a specified number of steps
+    /*
+     * Turns the stepper motor a specified number of steps
+     */
     void stepperTurn(bool CW, int count);
     
     /*
@@ -142,7 +142,9 @@ public:
      */
     bool isHolding();
     
-    //prints angle read by potentiometer for testing
+    /*
+     * Prints angle read by potentiometer for testing
+     */
     void printState();
 };
 
