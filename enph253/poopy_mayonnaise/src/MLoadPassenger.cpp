@@ -19,24 +19,17 @@ MLoadPassenger::MLoadPassenger(
         ArmControl      *mmArmControl,
         PassengerSeek   *mmPassengerSeek,
         CollisionWatch  *mmCollisionWatch)
-    : MajorMode(MajorModeEnum::LOAD_PASSENGER, 3),  // 3 minor modes
+    : MajorMode(MajorModeEnum::LOAD_PASSENGER),
       mmArmControl(mmArmControl),
       mmPassengerSeek(mmPassengerSeek),
       mmCollisionWatch(mmCollisionWatch)
 {
     this->init();
     
-    MinorMode **mm = new MinorMode*[3];
-    mm[0] = this->mmArmControl;
-    mm[1] = this->mmCollisionWatch;
-    mm[2] = this->mmPassengerSeek;
-    
-    // // TODO: initialize specific minor modes
-    // this->allMinorModes = {
-    // 	    this->mmArmControl,
-    // 	    this->mmCollisionWatch,
-    // 	    this->mmPassengerSeek
-    // };
+    // TODO: initialize specific minor modes
+    this->allMinorModes.push_back(mmArmControl);
+    this->allMinorModes.push_back(mmCollisionWatch);
+    this->allMinorModes.push_back(mmPassengerSeek);
 }
 
 
