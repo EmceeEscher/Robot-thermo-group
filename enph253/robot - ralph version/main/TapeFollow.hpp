@@ -45,7 +45,7 @@
 
   void test();
 
-  void giveTurnDirection();
+  void giveTurnDirection(float left, float right, float straight);
 
   void turnAround();
 
