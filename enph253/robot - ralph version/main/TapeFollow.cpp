@@ -89,7 +89,9 @@ void tapeFollowInit()
     turnDirection   = Direction::FRONT;
     control         = 0;
     printCount      = 0;
-    motorSpeed      = MOTOR_SPEED_FOLLOWING;
+    motorSpeedFollowing = MOTOR_SPEED_FOLLOWING;
+    motorSpeedTurning = MOTOR_SPEED_TURNING;
+    motorSpeed      = motorSpeedFollowing;
     tapeFollowSteps = 0;
 
     lastError       = 0.;
@@ -485,19 +487,19 @@ void tapeFollowLoop()
     double error(0.);
     if ((!(turning)) && fnAllLastReadings(
             OFF_TAPE_PERIOD, FN_OFF_TAPE)) {
-  motorSpeed = MOTOR_SPEED_TURNING;
+  motorSpeed = motorSpeedTurning;
   tapeFollowSteps = 0;
   error = seekTape();
     } else if (turning) {
-  motorSpeed = MOTOR_SPEED_TURNING;
+  motorSpeed = motorSpeedTurning;
   tapeFollowSteps = 0;
   error = makeTurn();
     } else {
-  motorSpeed = MOTOR_SPEED_FOLLOWING;
+  motorSpeed = motorSpeedFollowing;
   tapeFollowSteps += 1;
   error = followTape();
     }
-    error *= MOTOR_SPEED_FOLLOWING;
+    error *= MOTOR_SPEED_FOLLOWING; //TODO: check if this should be variable
 
     // update previous error parameters
     if (error != lastError) {
@@ -568,6 +570,10 @@ void turnAround()
     motorSpeedTurning = MOTOR_SPEED_TURNING_AROUND;
     motorSpeedFollowing = MOTOR_SPEED_REVERSE;
     tapeFollowSteps = 0;  // reset steps counter
+}
+
+void backUp(){
+  
 }
 
 void start()
