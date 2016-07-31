@@ -4,8 +4,7 @@
 
 #include <phys253pins.h>
 
-namespace pins
-{
+
     // Knobs
     const int KNOB_PROP_GAIN {6};
     const int KNOB_DER1_GAIN {7};
@@ -34,8 +33,8 @@ namespace pins
 
     // Analog out
 
-}
 
+/*
 namespace pins_sizes
 {
     // Digital in
@@ -54,5 +53,6 @@ namespace pins_sizes
     const int BEACON_SENSORS_SIDES = sizeof(pins::BEACON_SENSORS_SIDES) /
       sizeof(pins::BEACON_SENSORS_SIDES[0]);
 }
+*/
 
 #endif
