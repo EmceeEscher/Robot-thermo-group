@@ -33,6 +33,7 @@ void collisionLoop(){
 }
 
 bool hasDetectedCollision(){
-  return collisionDetected[0] || collisionDetected[1];
+  return false;
+  //return collisionDetected[0] || collisionDetected[1];
 }
 
