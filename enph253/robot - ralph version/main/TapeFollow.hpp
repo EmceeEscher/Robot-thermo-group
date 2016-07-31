@@ -35,15 +35,15 @@
 
   void tapeFollowLoop();
 
-  void start();
+  void tapeFollowStart();
 
-  void stop();
+  void tapeFollowStop();
 
-  void pause();
+  void tapeFollowPause();
 
   bool isActive();
 
-  void test();
+  void tapeFollowTest();
 
   void giveTurnDirection(float left, float right, float straight);
 

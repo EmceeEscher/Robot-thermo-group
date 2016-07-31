@@ -16,7 +16,7 @@ const int NUM_PINS_SIDES  {sizeof(PASSENGER_SENSORS_SIDES) /
 
 const int MAX_REGISTER_PERIOD            {20};  // number of consecutive readings above the threshold required to register a max
 const int MAX_NUM_DERIV_REGISTER_PERIOD  {10};  // number of consecutive (+) derivatives and then (-) derivatives required to achieve a max
-const int MAX_REGISTER_THRESHOLD        {600};  // threshold that readings must be above to register
+const int MAX_REGISTER_THRESHOLD        {300};  // threshold that readings must be above to register
     
 static bool active                {false}; // true if active
 
@@ -193,3 +193,17 @@ int PassengerSeek::getPassengerSide()
 {
     return passengerSide;
 }
+
+void PassengerSeek::printLCD(){
+  LCD.clear();
+  LCD.print("FL: ");
+  LCD.print(pinReadings[X]);
+  LCD.print(" FR: ");
+  LCD.print(pinReadings[X]);
+  LCD.setCursor(0,1);
+  LCD.print("SL: ");
+  LCD.print(pinReadings[X]);
+  LCD.print(" SR: ");
+  LCD.print(pinReadings[X]);
+}
+

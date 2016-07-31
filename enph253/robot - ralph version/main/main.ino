@@ -3,6 +3,7 @@
 #include "Arm_And_Stepper.hpp"
 #include "TapeFollow.hpp"
 #include "CollisionWatch.hpp"
+#include "PassengerSeek.hpp"
 
 const int FIND_PASSENGER = 0;
 const int LOAD_PASSENGER_LEFT = 1;
@@ -38,11 +39,13 @@ void loop() {
   if(startbutton()){
     started = true;
     tapeFollowInit();
-    start();
+    //PassengerSeek::init();
+    tapeFollowStart();
     LCD.clear();
   }
   if(stopbutton()){
-    test();
+    tapeFollowTest();
+    PassengerSeek::pause();
     LCD.clear();
     LCD.print("stopped!");
   }
@@ -62,6 +65,10 @@ void loop() {
 void findPassengerLoop(){
     tapeFollowLoop();
     collisionLoop();
+    if(PassengerSeek::isAtPassenger()){
+      tapeFollowTest();
+      PassengerSeek::pause();
+    }
     if(hasDetectedCollision()){
       turnAround();
     }

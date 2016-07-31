@@ -59,6 +59,8 @@ namespace PassengerSeek
      * Behavior is undefined if we are not at a passenger.
      */
     int getPassengerSide();
+
+    void printLCD();
     
 }
 

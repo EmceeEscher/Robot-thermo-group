@@ -448,7 +448,8 @@ void tapeFollowLoop()
     }
 
     if (printCount % PRINT_PERIOD == 0) {
-  printLCD();
+  //printLCD();
+  PassengerSeek::printLCD();
   printCount = 0;
     }
     ++printCount;
@@ -586,21 +587,21 @@ void backUp(){
   
 }
 
-void start()
+void tapeFollowStart()
 {
     active = true;
     motorsActive = true;
 }
 
 
-void stop()
+void tapeFollowStop()
 {
     tapeFollowInit();
-    pause();
+    tapeFollowPause();
 }
 
 
-void pause()
+void tapeFollowPause()
 {
     active = false;
     motorsActive = false;
@@ -614,7 +615,7 @@ bool isActive()
 }
 
 
-void test()
+void tapeFollowTest()
 {
     active = true;
     motorsActive = false;
