@@ -1,12 +1,6 @@
 #include <StandardCplusplus.h>
-#include <vector>
-#include <algorithm>
 #include <phys253.h>
-
-
-
-using std::vector;
-
+#include "TapeFollow.hpp"
 
 const int TAPE_SENSORS_FRONT[] {0, 1, 2, 3};
 const int TAPE_SENSORS_BACK[]  {4, 5, 6, 7};
