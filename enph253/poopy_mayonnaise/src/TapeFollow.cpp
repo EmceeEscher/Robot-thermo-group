@@ -228,7 +228,7 @@ Direction TapeFollow::chooseTurn(bool left, bool right, bool straight)
 }
 
 
-// TODO make this more advanced
+// TODO: make this more advanced
 void TapeFollow::setErrorSeekTape()
 {
     if (this->lastError < 0.)              // off tape to the right
@@ -268,37 +268,13 @@ void TapeFollow::setErrorFollowTape()
 }
 
 
-// TODO make more advanced
+// TODO: is this correct?
 void TapeFollow::setErrorMakeTurn()
 {
-    // determine whether end has bee reached
-    // TODO: move this stuff somewhere else
-    if ((!this->halfTurn) &&
-	    (this->offTapeCounter[1] >= this->turnConfirmPeriod) &&
-	    (this->offTapeCounter[2] >= this->turnConfirmPeriod)) {
-    	this->halfTurn = true;
-    } else if (this->halfTurn &&
-            (this->onTapeCounter[1] >= this->onTapePeriod) &&
-	    (this->onTapeCounter[2] >= this->onTapePeriod)) {
-	this->willTurnAround = false;
-	this->halfTurn = false;
-	this->action = TFAction::FOLLOWING; // exit to regular following
-	this->turningAround = false;
-	this->turnDirection = Direction::FRONT;
-	this->motorSpeedTurning = this->motorSpeedTurningDefault;
-	this->motorSpeedFollowing = this->motorSpeedFollowingDefault;
-    }
-
-    // determine error
-    if (this->action != TFAction::TURNING)
-	this->error = 0.;
-    else
-	this->error = -(static_cast<int>(this->turnDirection)-1) *
-	    this->errorTurning;
+    this->error = -(static_cast<int>(this->turnDirection)-1) * this->errorTurning;
 }
 
 
-// TODO
 void TapeFollow::setError()
 {
     // choose error based on current action
@@ -356,8 +332,11 @@ void TapeFollow::setControl()
 }
 
 
+// TODO: !!! Determine how to modify/respond to action
+// TODO: !!! Serious cleanup needed !
 void TapeFollow::updateState()
 {
+    // TODO: make this function the only one to modify this->action?
     // TODO: is this correct?
     if ((this->action != TFAction::TURNING) && this->offTape())
 	this->action = TFAction::SEEKING;
@@ -378,6 +357,27 @@ void TapeFollow::updateState()
 	} else if (tapeFollowSteps >= this->intersectSeekDelayPeriod)
 	    this->updateIntersectionsDetected();
     }
+    else if (this->action == TFAction::TURNING) {
+	// determine whether end has bee reached
+	// TODO: move this stuff somewhere else
+	if ((!this->halfTurn) &&
+	    (this->offTapeCounter[1] >= this->turnConfirmPeriod) &&
+	    (this->offTapeCounter[2] >= this->turnConfirmPeriod)) {
+	    this->halfTurn = true;
+	} else if (
+		   this->halfTurn &&
+		   ((this->onTapeCounter[1] >= this->onTapePeriod) ||
+		    (this->onTapeCounter[2] >= this->onTapePeriod))) {
+	    this->willTurnAround = false;
+	    this->halfTurn = false;
+	    this->action = TFAction::FOLLOWING; // exit to regular following
+	    this->turningAround = false;
+	    this->turnDirection = Direction::FRONT;
+	    this->motorSpeedTurning = this->motorSpeedTurningDefault;
+	    this->motorSpeedFollowing = this->motorSpeedFollowingDefault;
+	}
+    }
+
 
 }
 
@@ -385,7 +385,6 @@ void TapeFollow::updateState()
 void TapeFollow::updateCounters()
 {
     // update steps counters
-    // TODO: come up with a way to iterate over the actions and counters
     for (int i(0); i < TapeFollow::numActions; ++i) {
 	if (this->action != TapeFollow::allActions[i]) 
 	    this->steps[i] = 0;
@@ -408,7 +407,7 @@ void TapeFollow::updateCounters()
 }
 
 
-// TODO: move this outside of this class
+// TODO: !!! move this outside of this class
 void TapeFollow::printLCD()
 {
     LCD.clear();
@@ -584,19 +583,21 @@ void TapeFollow::test()
 }
 
 
+// TODO: !!! find a better way
 void TapeFollow::setMotorSpeedPassengerSeek()
 {
     this->motorSpeedFollowing = this->motorSpeedPassengerSeek;
 }
 
 
+// TODO: !!! find a better way
 void TapeFollow::resetMotorSpeed()
 {
     this->motorSpeedFollowing = this->motorSpeedFollowingDefault;
 }
 
 
-// TODO
+// TODO: !!! check if this is correct
 void TapeFollow::turnAround()
 {
     switch (this->turnDirection) {
