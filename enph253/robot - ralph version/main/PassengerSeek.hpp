@@ -11,26 +11,6 @@ namespace PassengerSeek
 {
 
     /*
-     * (Re)initialize all state variables
-     */
-    static void init();
-    
-    /*
-     * Return true if one of the front side readings is at a maximum
-     */
-    static bool atMaxSideFront();
-    
-    /*
-     * Return true if one of the middle side readings is at a maximum
-     */
-    static bool atMaxSideMiddle();
-    
-    /*
-     * Update the atMax array to reflect the latest readings
-     */
-    static void updateMax();
-    
-    /*
      * Main loop function to seek passengers. Halts the TapeFollow minor
      * mode when the passenger is directly adjacent to the robot
      */

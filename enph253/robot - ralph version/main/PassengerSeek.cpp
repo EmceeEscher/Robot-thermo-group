@@ -34,20 +34,27 @@ static int  numNegDeriv       [NUM_PINS_SIDES];  // number of consecutive negati
 static bool lastDerivPositive [NUM_PINS_SIDES];  // true if the last derivative was negative
 
 
+namespace PassengerSeek
+{
+    static void init();
+    static bool atMaxSideFront();
+    static bool atMaxSideMiddle();
+    static void updateMax();
+}
 
-// TODO
-void PassengerSeek::init()
+    
+static void PassengerSeek::init()
 {
     active = false;
     approachingPassenger = false;
     atPassenger = false;
     passengerSide = 0;  // undefined
-
+    
     for (int i(0); i < NUM_PINS_SIDES; ++i) {
 	atMax[i] = false;
 	lastDerivPositive[i] = false;
     }
-
+    
     for (int i(0); i < NUM_PINS_SIDES; ++i) {
 	pinReadings[i] = 0;
 	lastPinReadings[i] = 0;
@@ -56,29 +63,29 @@ void PassengerSeek::init()
 	numNegDeriv[i] = 1;
     }
 }
-
-
-bool PassengerSeek::atMaxSideFront()
+    
+    
+static bool PassengerSeek::atMaxSideFront()
 {
     return atMax[2] || atMax[3];
 }
-
-
-bool PassengerSeek::atMaxSideMiddle()
+    
+    
+static bool PassengerSeek::atMaxSideMiddle()
 {
     return atMax[1] || atMax[4];
 }
-
-
-// TODO
-void PassengerSeek::updateMax()
+    
+    
+    // TODO
+static void PassengerSeek::updateMax()
 {
     for (int i(0); i < NUM_PINS_SIDES; ++i) {
 	bool aboveThreshold = (numAboveThreshold[i] >= MAX_REGISTER_PERIOD);
 	bool imax = (
-	        (!lastDerivPositive[i]) &&
-	        (numPosDeriv[i] >= MAX_NUM_DERIV_REGISTER_PERIOD) &&
-	        (numNegDeriv[i] >= MAX_NUM_DERIV_REGISTER_PERIOD));
+		     (!lastDerivPositive[i]) &&
+		     (numPosDeriv[i] >= MAX_NUM_DERIV_REGISTER_PERIOD) &&
+		     (numNegDeriv[i] >= MAX_NUM_DERIV_REGISTER_PERIOD));
 	// set array
 	atMax[i] = static_cast<int>(aboveThreshold && imax);
     }
