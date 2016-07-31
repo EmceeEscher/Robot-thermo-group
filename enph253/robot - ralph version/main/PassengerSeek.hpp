@@ -6,8 +6,6 @@
 #ifndef PASSENGER_SEEK_HPP
 #define PASSENGER_SEEK_HPP
 
-#include "pins.hpp"
-
 
 namespace PassengerSeek
 {
