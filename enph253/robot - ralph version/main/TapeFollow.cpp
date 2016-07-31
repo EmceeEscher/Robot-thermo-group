@@ -2,6 +2,7 @@
 #include <phys253.h>
 #include "TapeFollow.hpp"
 #include "pins.hpp"
+#include "PassengerSeek.hpp"
 
 const int MOTOR_SPEED_FOLLOWING       {120};
 const int MOTOR_SPEED_PASSENGER_SEEK  {64};
