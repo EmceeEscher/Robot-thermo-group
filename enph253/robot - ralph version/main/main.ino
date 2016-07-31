@@ -25,11 +25,15 @@ void setup() {
 }
 
 void loop() {
-  if(startbutton()&&!started){
+  if(startbutton() && !started){
     started = true;
+    tapeFollowInit();
+    start();
+    LCD.clear();
   }
-  else if(stopbutton()&&started){
+  if(stopbutton()&&started){
     started = false;
+    stop();
   }
   if(started){
     if(state == FIND_PASSENGER){

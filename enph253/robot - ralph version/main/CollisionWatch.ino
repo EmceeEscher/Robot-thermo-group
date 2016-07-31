@@ -1,20 +1,14 @@
 #include <phys253.h>    
 #include <LiquidCrystal.h>
 
-const int COLLISION_SENSORS[]  { 4,  5};  // left front right back
+//const int COLLISION_SENSORS[]  { 4,  5};  // left front right back
 const int collisionDetectPeriod {5};
 const int numSensorsPin = sizeof(COLLISION_SENSORS)/ sizeof(COLLISION_SENSORS[0]);
 int numCollisionReads[numSensorsPin];
 bool collisionDetected[numSensorsPin];
 int collisionDirection;
 
-void setup() {
-  #include <phys253setup.txt>
-  Serial.begin(9600);
-  LCD.clear();
-}
-
-void loop(){
+void collisionLoop(){
   // Read collision sensors and update numReads array
   collisionDirection = -1;
   
