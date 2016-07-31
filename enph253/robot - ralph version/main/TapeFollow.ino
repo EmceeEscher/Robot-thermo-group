@@ -36,9 +36,16 @@ const int TURN_WAIT_PERIOD {45};
 const int OFF_TAPE_PERIOD  {50};
 const int ON_TAPE_PERIOD   {10};
 
-double gainProp;        // TODO: set const; set based on knobs for now
-double gainDer1;        // TODO: set const; set based on knobs for now
-double gainDer2;  
+const int FN_MAINS_OFF_TAPE = 0;
+const int FN_OFF_TAPE = 1;
+const int FN_INTS_OFF_TAPE = 2;
+
+bool pinReadings [4];     // current readings on QRD pins
+bool lastPinReadings [NUM_SAVED_READINGS][4];
+
+double gainProp = GAIN_PROP;        // TODO: set const; set based on knobs for now
+double gainDer1 = GAIN_DER1;        // TODO: set const; set based on knobs for now
+double gainDer2 = GAIN_DER2;  
 
 bool active;                  // whether the loop is active
 bool onTape;                  // true= on tape, false= off tape
@@ -56,14 +63,14 @@ int motorSpeed;               // speed to add to motors
 unsigned long tapeFollowSteps;
 double lastError;             // last calculated error
 
-bool intersectSeen [2];        // true if an intersection was seen
-bool intersectDetect [2];      // true when an intersection has been detected (seen and passed over)
+bool intersectSeen [2] = {false, false};        // true if an intersection was seen
+bool intersectDetect [2] = {false, false};      // true when an intersection has been detected (seen and passed over)
 
-double errorArray [2];         // array of last 2 distinct errors
-unsigned long etimeArray [2];   // array of times (since read) assoc with errorArray
-int activePins [4];
+double errorArray [2] = {0,  1};         // array of last 2 distinct errors
+unsigned long etimeArray [2] = {0., 0.};   // array of times (since read) assoc with errorArray
+int activePins [4] = {false, false, false, false};
 
-void TapeFollow3::init()
+void tapeFollowInit()
 {
     active          = false;
     onTape          = false;
@@ -82,206 +89,226 @@ void TapeFollow3::init()
 
     lastError       = 0.;
 
-    intersectSeen   = {false, false};
-    intersectDetect = {false, false};
-
-    etimeArray      = {0,  1};
-    errorArray      = {0., 0.};
-
-    pinReadings     = {false, false, false, false};
-
-    for (auto &x : this->lastPinReadings)
-  std::fill(x.begin(), x.end(), false);
+    int i;
+    int j;
+    for(i = 0; i < NUM_SAVED_READINGS; i++){
+      for(j = 0; j < 4; j++){
+        lastPinReadings[i][j] = false;
+      }
+    }
 
     // assign active pins
-    for (auto i(0); i < 4; ++i) 
-  this->activePins[i] = TAPE_SENSORS_FRONT[i];
+    for (i = 0; i < 4; i++) 
+      activePins[i] = TAPE_SENSORS_FRONT[i];
 
     // declare active pins as inputs
-    for (const auto pin : this->activePins)
-  pinMode(pin, INPUT);
+    for (i = 0; i < 4; i++)
+      pinMode(activePins[i], INPUT);
 }
 
 
 // TODO make this more advanced
-double TapeFollow3::seekTape()
+double seekTape()
 {
-    if (this->lastError < 0.)              // off tape to the right
-  return -this->errorSeeking;
-    else if (this->lastError > 0.)         // off tape to the left
-  return this->errorSeeking;
+    if (lastError < 0.)              // off tape to the right
+  return -ERROR_SEEKING;
+    else if (lastError > 0.)         // off tape to the left
+  return ERROR_SEEKING;
     else
   return 0.;
 }
 
 
 // TODO
-void TapeFollow3::intersectionSeen()
+void intersectionSeen()
 {
     // bool intersectSeenL = true;
     bool intersectSeenL(true);
     bool intersectSeenR(true);
     int i(0);
-    for (const auto &reads : this->lastPinReadings) {
-  if (i >= this->intersectPeriod)
-      break;
-  intersectSeenL = (intersectSeenL && reads[0] && this->mainsOnTape);
-  intersectSeenR = (intersectSeenR && reads[3] && this->mainsOnTape);
-  ++i;
+    for (const auto &reads : lastPinReadings) {
+      if (i >= INTERSECT_PERIOD)
+        break;
+      intersectSeenL = (intersectSeenL && reads[0] && mainsOnTape);
+      intersectSeenR = (intersectSeenR && reads[3] && mainsOnTape);
+      ++i;
     }
 
     // if seen, update instance variable
     if (intersectSeenL)
-  this->intersectSeen[0] = true;
+      intersectSeen[0] = true;
     if (intersectSeenR)
-  this->intersectSeen[1] = true;
+      intersectSeen[1] = true;
 }
 
 
-void TapeFollow3::intersectionDetection()
+void intersectionDetection()
 {
     // declare static variables (runs once)
-    const static bool &intersectL = this->pinReadings[0];
-    const static bool &mainL      = this->pinReadings[1];
-    const static bool &mainR      = this->pinReadings[2];
-    const static bool &intersectR = this->pinReadings[3];
+    const static bool &intersectL = pinReadings[0];
+    const static bool &mainL      = pinReadings[1];
+    const static bool &mainR      = pinReadings[2];
+    const static bool &intersectR = pinReadings[3];
 
     // check if intersections seen
-    this->intersectionSeen();
+    intersectionSeen();
 
     // check if intersection detected
-    if ((!intersectL) && this->intersectSeen[0])
-  this->intersectDetect[0] = true;
-    if ((!intersectR) && this->intersectSeen[1])
-  this->intersectDetect[1] = true;
+    if ((!intersectL) && intersectSeen[0])
+      intersectDetect[0] = true;
+    if ((!intersectR) && intersectSeen[1])
+      intersectDetect[1] = true;
 
     // if intersection(s) detected, make move decision
-    if (this->fnAllLastReadings(
-            this->turnWaitPeriod, &TapeFollow3::intsOffTape)) {
+    if (fnAllLastReadings(
+            TURN_WAIT_PERIOD, FN_INTS_OFF_TAPE)) {
   // wait until both intersections crossed over
-  this->turnDirection = this->chooseTurn(
-          this->intersectDetect[0],
-    this->intersectDetect[1],
-    (mainL || mainR)
-        );
-  if (this->turnDirection != 0)
-      this->turning = true;  // activates `makeTurn` function
+  turnDirection = chooseTurn(
+          intersectDetect[0],
+          intersectDetect[1],
+          (mainL || mainR)
+          );
+  if (turnDirection != 0)
+      turning = true;  // activates `makeTurn` function
   // reset intersection arrays
-  this->intersectSeen =   {false, false};
-  this->intersectDetect = {false, false};
+  intersectSeen[0] = false;
+  intersectSeen[1] = false;
+  intersectDetect[0] = false;
+  intersectDetect[1] = false;
     }
 }
 
 
-double TapeFollow3::followTape()
+double followTape()
 {
     // declare static variables (runs once)
-    const static bool &intersectL = this->pinReadings[0];
-    const static bool &mainL      = this->pinReadings[1];
-    const static bool &mainR      = this->pinReadings[2];
-    const static bool &intersectR = this->pinReadings[3];
+    const static bool &intersectL = pinReadings[0];
+    const static bool &mainL      = pinReadings[1];
+    const static bool &mainR      = pinReadings[2];
+    const static bool &intersectR = pinReadings[3];
 
-    if (this->tapeFollowSteps > this->intersectDelay)
-  this->intersectionDetection();
+    if (tapeFollowSteps > INTERSECT_DELAY)
+      intersectionDetection();
 
     // determine error
     if (mainL && mainR)                    // both pins over tape
   return 0.;
     else if (mainL)                       // left main over tape
-  return this->errorSmall;
+  return ERROR_SMALL;
     else if (mainR)                       // right main over tape
-  return -this->errorSmall;
+  return -ERROR_SMALL;
     else if (intersectL && (!intersectR))  // left intersection over tape
-  return this->errorMedium;
+  return ERROR_MEDIUM;
     else if (intersectR && (!intersectL))  // right intersection over tape
-  return -this->errorMedium;
-    else if (this->lastError < 0.)         // off tape to the right
-  return -this->errorLarge;
-    else if (this->lastError > 0.)         // off tape to the left
-  return this->errorLarge;
+  return -ERROR_MEDIUM;
+    else if (lastError < 0.)         // off tape to the right
+  return -ERROR_LARGE;
+    else if (lastError > 0.)         // off tape to the left
+  return ERROR_LARGE;
     else
   return 0.;
 }
 
 
-bool TapeFollow3::fnAllLastReadings(int period, readingFn fn)
-{
+bool fnAllLastReadings(int period, int fn)
+{    
     for (int i(0); i < period; ++i) {
-  auto &reading = this->lastPinReadings[i];
-  if (!(fn(reading)))
-      return false;
+      auto &reading = lastPinReadings[i];
+      bool result;
+      if(fn == FN_MAINS_OFF_TAPE){
+        result = mainsOffTape(reading);
+      }else if(fn == FN_OFF_TAPE){
+        result = offTape(reading);
+      }else if(fn == FN_INTS_OFF_TAPE){
+        result = intsOffTape(reading);
+      }else{
+        result = false; //YOU SHOULD NEVER GET HERE
+      }
+      if (!result)
+        return false;
     }
     return true;
 }
 
 
-bool TapeFollow3::fnAnyLastReadings(int period, readingFn fn)
+bool fnAnyLastReadings(int period, int fn)
 {
     for (int i(0); i < period; ++i) {
-  auto &reading = this->lastPinReadings[i];
-  if (fn(reading))
+    auto &reading = lastPinReadings[i];
+    bool result;
+    if(fn == FN_MAINS_OFF_TAPE){
+        result = mainsOffTape(reading);
+      }else if(fn == FN_OFF_TAPE){
+        result = offTape(reading);
+      }else if(fn == FN_INTS_OFF_TAPE){
+        result = intsOffTape(reading);
+      }else{
+        result = false; //YOU SHOULD NEVER GET HERE
+      }
+    if (result)
       return true;
     }
     return false;
 }
 
 
-bool TapeFollow3::offTape(vector<bool> reading)
+bool offTape(bool reading[])
 {
-    for (const bool read : reading)
-  if (read)
-      return false;
+    int i;
+    for (i = 0; i < 4; i++)
+      if (reading[i])
+        return false;
     return true;
 }
 
 
-bool TapeFollow3::mainsOffTape(vector<bool> reading)
+bool mainsOffTape(bool reading[])
 {
     return !(reading[1] || reading[2]);
 }
 
 
-bool TapeFollow3::intsOffTape(vector<bool> reading)
+bool intsOffTape(bool reading[])
 {
     return !(reading[0] || reading[3]);
 }
 
 
-bool TapeFollow3::intLOnTape(vector<bool> reading)
+bool intLOnTape(bool reading[])
 {
     return reading[0];
 }
 
 
-bool TapeFollow3::intROnTape(vector<bool> reading)
+bool intROnTape(bool reading[])
 {
     return reading[3];
 }
 
 
 // TODO make more advanced
-double TapeFollow3::makeTurn()
+double makeTurn()
 {
     // determine whether end has bee reached
-    if ((!this->halfTurn) && this->fnAllLastReadings(
-            this->turningPeriod, &TapeFollow3::mainsOffTape))
-      this->halfTurn = true;
-    else if (this->halfTurn && !(this->fnAnyLastReadings(
-            this->onTapePeriod, &TapeFollow3::mainsOffTape))) {
-  this->halfTurn = false;
-  this->turning = false;  // exit to regular following
+    if ((!halfTurn) && fnAllLastReadings(
+            TURNING_PERIOD, FN_MAINS_OFF_TAPE))
+      halfTurn = true;
+    else if (halfTurn && !(fnAnyLastReadings(
+            ON_TAPE_PERIOD, FN_MAINS_OFF_TAPE))) {
+  halfTurn = false;
+  turning = false;  // exit to regular following
     }
 
     // determine error
-    if (!this->turning)
+    if (!turning)
   return 0.;
     else
-  return -this->turnDirection * this->errorTurning;
+  return -turnDirection * ERROR_TURNING;
 }
 
 
 // TODO: generalize
-int TapeFollow3::chooseTurn(bool left, bool right, bool straight)
+int chooseTurn(bool left, bool right, bool straight)
 {
     if (left && right && straight)
   return random(3) - 1;
@@ -307,9 +334,9 @@ int TapeFollow3::chooseTurn(bool left, bool right, bool straight)
 }
 
 
-void TapeFollow3::printLCD()
+void printLCD()
 {
-    if (!this->active) {
+    if (!active) {
       LCD.clear();
       LCD.print("Press START to");
       LCD.setCursor(0,1);
@@ -317,172 +344,148 @@ void TapeFollow3::printLCD()
     } else {
       LCD.clear();
       // print letter
-      if (!(this->turning || this->onTape))
+      if (!(turning || onTape))
           LCD.print("S ");  // seeking
-      else if (this->turning)
+      else if (turning)
           LCD.print("T ");  // turning
       else
           LCD.print("F ");  // following
       // print arrow
-      if (this->turning) {
-          if (this->turnDirection == -1)
+      if (turning) {
+          if (turnDirection == -1)
         LCD.print("<--");
-          else if (this->turnDirection == 1)
+          else if (turnDirection == 1)
         LCD.print("-->");
           else
         LCD.print(" ^ ");
       } else {
-          if (this->control < 0)
+          if (control < 0)
         LCD.print("<  ");
-          else if (this->control > 0)
+          else if (control > 0)
         LCD.print("  >");
           else
         LCD.print(" ^ ");
       }
       // print QRD readings
-      for (const auto read : this->pinReadings) {
+      for (const auto read : pinReadings) {
           LCD.print(" ");
           LCD.print(read);
       }
       // print gains and control
       LCD.setCursor(0,1);
-      LCD.print(this->gainProp);
+      LCD.print(gainProp);
       LCD.print(" ");
-      LCD.print(this->gainDer1);
+      LCD.print(gainDer1);
       LCD.print(" ");
-      LCD.print(this->control);
+      LCD.print(control);
     }
 }
 
-
-TapeFollow3::TapeFollow3()
-    : gainProp        (GAIN_PROP),
-      gainDer1        (GAIN_DER1),
-      gainDer2        (GAIN_DER2),
-      errorSmall      (ERROR_SMALL),
-      errorMedium     (ERROR_MEDIUM),
-      errorLarge      (ERROR_LARGE),
-      errorSeeking    (ERROR_SEEKING),
-      errorTurning    (ERROR_TURNING),
-      intersectDelay  (INTERSECT_DELAY),
-      intersectPeriod (INTERSECT_PERIOD),
-      turningPeriod   (TURNING_PERIOD),
-      turnWaitPeriod  (TURN_WAIT_PERIOD),
-      offTapePeriod   (OFF_TAPE_PERIOD),
-      onTapePeriod    (ON_TAPE_PERIOD),
-      printPeriod     (PRINT_PERIOD),
-      motorSpeedFollowing (MOTOR_SPEED_FOLLOWING),
-      motorSpeedTurning   (MOTOR_SPEED_TURNING),
-      pinReadings     (4, false),
-      lastPinReadings (NUM_SAVED_READINGS, vector<bool>(4, false))
+void tapeFollowLoop()
 {
-    this->init();
-}
-
-
-void TapeFollow3::loop()
-{
-    if (!this->active)
+    if (!active)
   return;
 
-    if (this->printCount % this->printPeriod == 0) {
-  this->printLCD();
-  this->printCount = 0;
+    if (printCount % PRINT_PERIOD == 0) {
+  printLCD();
+  printCount = 0;
     }
-    ++this->printCount;
+    ++printCount;
 
     // set gains
     // TODO move this to constructor once values are decided upon
-    if (!this->motorsActive) {
-  this->gainProp = static_cast<double>(knob(KNOB_PROP_GAIN)) / 50.;
-  this->gainDer1 = static_cast<double>(knob(KNOB_DER1_GAIN)) / 50.;
-  this->gainDer2 = .5*this->gainDer1*this->gainDer1 /
-          this->gainProp*(1.-EPSILON);
+    if (!motorsActive) {
+  gainProp = static_cast<double>(knob(KNOB_PROP_GAIN)) / 50.;
+  gainDer1 = static_cast<double>(knob(KNOB_DER1_GAIN)) / 50.;
+  gainDer2 = .5*gainDer1*gainDer1 /
+          gainProp*(1.-EPSILON);
     }
 
     // get readings from tape sensors
     for (auto i(0); i < 4; ++i) {
-  this->pinReadings[i] = static_cast<bool>(
-                digitalRead(this->activePins[i]));
+  pinReadings[i] = static_cast<bool>(
+                digitalRead(activePins[i]));
     }
 
     // update lastPinReadings array
-    std::rotate(
-            this->lastPinReadings.begin(), this->lastPinReadings.end()-1,
-      this->lastPinReadings.end()
-    );
-    std::copy(
-            this->pinReadings.begin(), this->pinReadings.end(),
-      this->lastPinReadings[0].begin()
-    );
+    for(auto i(NUM_SAVED_READINGS-1); i>0; i--){
+      for(auto j(0); j<4; j++){
+        lastPinReadings[i][j] = lastPinReadings[i-1][j];
+      }
+    }
+    for(auto i(0); i<4; i++){
+      lastPinReadings[0][i] = pinReadings[i];
+    }
     
     // determine whether on tape
-    this->lastOnTape = this->onTape;
+    lastOnTape = onTape;
 
     bool isOnTape(false);
-    for (const auto read : this->pinReadings) 
+    for (const auto read : pinReadings) 
   if (read) {
       isOnTape = true;
       break;
   }
-    this->onTape = isOnTape;
+    onTape = isOnTape;
 
     // determine whether mains on tape
-    this->lastMainsOnTape = this->mainsOnTape;
-    this->mainsOnTape = (this->pinReadings[1] || this->pinReadings[2]);
+    lastMainsOnTape = mainsOnTape;
+    mainsOnTape = (pinReadings[1] || pinReadings[2]);
 
     // get error based on current state
     double error(0.);
-    if ((!(this->turning)) && this->fnAllLastReadings(
-            this->offTapePeriod, &TapeFollow3::offTape)) {
-  this->motorSpeed = this->motorSpeedTurning;
-  this->tapeFollowSteps = 0;
-  error = this->seekTape();
-    } else if (this->turning) {
-  this->motorSpeed = this->motorSpeedTurning;
-  this->tapeFollowSteps = 0;
+    if ((!(turning)) && fnAllLastReadings(
+            OFF_TAPE_PERIOD, FN_OFF_TAPE)) {
+  motorSpeed = MOTOR_SPEED_TURNING;
+  tapeFollowSteps = 0;
+  error = seekTape();
+    } else if (turning) {
+  motorSpeed = MOTOR_SPEED_TURNING;
+  tapeFollowSteps = 0;
   error = makeTurn();
     } else {
-  this->motorSpeed = this->motorSpeedFollowing;
-  this->tapeFollowSteps += 1;
+  motorSpeed = MOTOR_SPEED_FOLLOWING;
+  tapeFollowSteps += 1;
   error = followTape();
     }
-    error *= this->motorSpeedFollowing;
+    error *= MOTOR_SPEED_FOLLOWING;
 
     // update previous error parameters
-    if (error != this->lastError) {
-  this->errorArray = {this->lastError, this->errorArray[0]};
-  this->etimeArray = {1,              this->etimeArray[0]};
-  this->lastError  = error;
+    if (error != lastError) {
+      errorArray[1] = errorArray[0];
+      errorArray[0] = lastError;
+      etimeArray[1] = etimeArray[0];
+      etimeArray[0] = 1;
+      lastError  = error;
     }
 
     // get error derivatives
     double der1[2];
-    der1[0] = (error - this->errorArray[0]) /
-        static_cast<double>(this->etimeArray[0]);
-    der1[1] = (this->errorArray[0] - this->errorArray[1]) /
-      static_cast<double>(this->etimeArray[1] - this->etimeArray[0]);
+    der1[0] = (error - errorArray[0]) /
+        static_cast<double>(etimeArray[0]);
+    der1[1] = (errorArray[0] - errorArray[1]) /
+      static_cast<double>(etimeArray[1] - etimeArray[0]);
     double der2 = (der1[0] - der1[1]) /
-      static_cast<double>(this->etimeArray[0]);
+      static_cast<double>(etimeArray[0]);
 
     // get the effect of gains
-    double ctrlProp (this->gainProp * error);
-    double ctrlDer1 (this->gainDer1 * der1[0]);
-    double ctrlDer2 (this->gainDer2 * der2);
-    this->control = -static_cast<int>(ctrlProp + ctrlDer1 + ctrlDer2);
+    double ctrlProp (gainProp * error);
+    double ctrlDer1 (gainDer1 * der1[0]);
+    double ctrlDer2 (gainDer2 * der2);
+    control = -static_cast<int>(ctrlProp + ctrlDer1 + ctrlDer2);
 
-    int controlMax = 1.5 * this->motorSpeedFollowing;
-    if (this->control > controlMax)
-  this->control = controlMax;
-    else if (this->control < -controlMax)
-  this->control = -controlMax;
+    int controlMax = 1.5 * MOTOR_SPEED_FOLLOWING;
+    if (control > controlMax)
+  control = controlMax;
+    else if (control < -controlMax)
+  control = -controlMax;
 
-    int dSpeed = this->control;
+    int dSpeed = control;
 
     // adjust motor speed
-    if (this->motorsActive) {
-  motor.speed(MOTOR_PIN_L, dSpeed - this->motorSpeed);
-  motor.speed(MOTOR_PIN_R, dSpeed + this->motorSpeed);
+    if (motorsActive) {
+  motor.speed(MOTOR_PIN_L, dSpeed - motorSpeed);
+  motor.speed(MOTOR_PIN_R, dSpeed + motorSpeed);
     } else {
   motor.speed(MOTOR_PIN_L, 0);
   motor.speed(MOTOR_PIN_R, 0);
@@ -497,36 +500,36 @@ void TapeFollow3::loop()
 }
 
 
-void TapeFollow3::start()
+void start()
 {
-    this->active = true;
-    this->motorsActive = true;
+    active = true;
+    motorsActive = true;
 }
 
 
-void TapeFollow3::stop()
+void stop()
 {
-    this->init();
-    this->pause();
+    tapeFollowInit();
+    pause();
 }
 
 
-void TapeFollow3::pause()
+void pause()
 {
-    this->active = false;
-    this->motorsActive = false;
-    this->printLCD();
+    active = false;
+    motorsActive = false;
+    printLCD();
 }
 
 
-bool TapeFollow3::isActive()
+bool isActive()
 {
-    return this->active;
+    return active;
 }
 
 
-void TapeFollow3::test()
+void test()
 {
-    this->active = true;
-    this->motorsActive = false;
+    active = true;
+    motorsActive = false;
 }
