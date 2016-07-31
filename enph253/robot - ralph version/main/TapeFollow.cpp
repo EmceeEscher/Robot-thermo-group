@@ -118,9 +118,9 @@ void tapeFollowInit()
     intersectDetect[0] = false;
     intersectDetect[1] = false;
 
-    leftWeight = 0.;
-    rightWeight = 0.;
-    straightWeight = 0.;
+    leftWeight = 50.;
+    rightWeight = 50.;
+    straightWeight = 50.;
 }
 
 
@@ -339,44 +339,54 @@ double makeTurn()
 
 Direction chooseTurn(bool left, bool right, bool straight)
 {
-    if(right)
+    /*if(right)
       return Direction::RIGHT;
     else if(straight)
       return Direction::FRONT;
     else
-      return Direction::LEFT;
-    /*float total = (
+      return Direction::LEFT;*/
+    float total = (
       left     * leftWeight +
       right    * rightWeight +
       straight * straightWeight
     );
 
     float leftProb;
-    float rightProb;
+    float straightProb;
     if (total == 0) {
-  leftProb     = left     / (left + right + straight);
-  rightProb    = right    / (left + right + straight);
+  leftProb     = left     / (left + right + straight) * 100.;
+  straightProb    = straight    / (left + right + straight) * 100.;
     } else {
-  leftProb     = left     * leftWeight     / total;
-  rightProb    = right    * rightWeight    / total;
+  leftProb     = left     * leftWeight     / total * 100.;
+  straightProb    = straight    * straightWeight    / total * 100.;
     }
 
     // TODO: do this randValue part differently?
-    float randValue = static_cast<float>(random(RANDOM_MAX_VAL)) /
-  (RANDOM_MAX_VAL+1);
+    float randValue = (static_cast<float>(random(1000))) / 10.;
     float leftMax = 0 + leftProb;
-    float rightMax = leftProb + rightProb;
-    
-    leftWeight = 0.;
-    rightWeight = 0.;
-    straightWeight = 0.;
+    float straightMax = leftProb + straightProb;
 
-    if (randValue < leftMax) 
-  return Direction::LEFT;
-    else if (randValue < rightMax) 
-  return Direction::RIGHT;
-    else 
-  return Direction::FRONT;*/
+    Serial.print("rand: ");
+    Serial.println(randValue);
+    Serial.print("left: ");
+    Serial.println(leftMax);
+    Serial.print("straight: ");
+    Serial.println(straightMax);
+    Serial.print("direction: ");
+    
+    leftWeight = 50.;
+    rightWeight = 50.;
+    straightWeight = 50.;
+
+    if (randValue < leftMax){
+      Serial.println("left");
+      return Direction::LEFT;}
+    else if (randValue < straightMax){
+      Serial.println("straight"); 
+      return Direction::FRONT;}
+    else{
+      Serial.println("right"); 
+      return Direction::RIGHT;}
 }
 
 void printLCD()
