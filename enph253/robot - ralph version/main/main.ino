@@ -28,22 +28,22 @@ void setup() {
   //Arm & Stepper Initialization code
   pinMode(DIR_PIN,OUTPUT);
   pinMode(PULSE_PIN,OUTPUT);
-  Serial.begin(9600);
   baseTarget = BASE_REST_POSITION;
   midTarget = MID_REST_POSITION;
   lastPropErr = 0.;
 }
 
 void loop() {
-  if(startbutton() && !started){
+  if(startbutton()){
     started = true;
     tapeFollowInit();
     start();
     LCD.clear();
   }
-  if(stopbutton()&&started){
-    started = false;
-    stop();
+  if(stopbutton()){
+    test();
+    LCD.clear();
+    LCD.print("stopped!");
   }
   if(started){
     doControl(); //Can't not do this or the arm will FUCKING EXPLODE

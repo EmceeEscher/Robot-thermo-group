@@ -1,6 +1,7 @@
 #include <StandardCplusplus.h>
 #include <phys253.h>
 #include "TapeFollow.hpp"
+#include "Direction.hpp"
 
 const int TAPE_SENSORS_FRONT[] {0, 1, 2, 3};
 const int TAPE_SENSORS_BACK[]  {4, 5, 6, 7};
@@ -8,9 +9,14 @@ const int MOTOR_PIN_L {0};
 const int MOTOR_PIN_R {3};
 const int KNOB_PROP_GAIN {6};
 const int KNOB_DER1_GAIN {7};
-const int MOTOR_SPEED_FOLLOWING {120};
-const int MOTOR_SPEED_TURNING   {32};
+const int MOTOR_SPEED_FOLLOWING       {120};
+const int MOTOR_SPEED_PASSENGER_SEEK  {64};
+const int MOTOR_SPEED_TURNING         {32};
+const int MOTOR_SPEED_TURNING_AROUND  {-8};
+const int MOTOR_SPEED_SEEKING          {8};
+const int MOTOR_SPEED_REVERSE        {-64};
 const int PRINT_PERIOD {200};
+const int PRE_TURN_AROUND_DELAY_PERIOD {145};
 const unsigned long INTERSECT_DELAY {100};  // steps following before intersection seeking
 const unsigned long MAIN_LOOP_DELAY {1};     // milliseconds
 const double ERROR_SMALL   {.02};
@@ -50,11 +56,13 @@ bool turning;                 // true= turning, false= straight
 bool halfTurn;                // if true, bot has turned far enough that mains are off tape
 bool motorsActive;            // true if motors are active
 
-int turnDirection;            // current direction (-1:left, 0:straight, 1:right)
+Direction turnDirection;            // current direction (-1:left, 0:straight, 1:right)
 int control;                  // current control parameter
 int printCount;
 int motorSpeed;               // speed to add to motors
-unsigned long tapeFollowSteps;
+int motorSpeedFollowing;
+int motorSpeedTurning;
+int tapeFollowSteps;
 double lastError;             // last calculated error
 
 bool intersectSeen [2] = {false, false};        // true if an intersection was seen
@@ -63,6 +71,9 @@ bool intersectDetect [2] = {false, false};      // true when an intersection has
 double errorArray [2] = {0,  1};         // array of last 2 distinct errors
 unsigned long etimeArray [2] = {0., 0.};   // array of times (since read) assoc with errorArray
 int activePins [4] = {false, false, false, false};
+
+bool willTurnAround;
+bool turningAround;
 
 void tapeFollowInit()
 {
@@ -98,6 +109,9 @@ void tapeFollowInit()
     // declare active pins as inputs
     for (i = 0; i < 4; i++)
       pinMode(activePins[i], INPUT);
+
+    willTurnAround = false;
+    turningAround = false;
 }
 
 
@@ -180,6 +194,13 @@ double followTape()
     const static bool &mainL      = pinReadings[1];
     const static bool &mainR      = pinReadings[2];
     const static bool &intersectR = pinReadings[3];
+
+    if (tapeFollowSteps >= PRE_TURN_AROUND_DELAY_PERIOD) {
+      motorSpeedFollowing = MOTOR_SPEED_FOLLOWING;
+      willTurnAround = false;
+      turningAround = true;
+      turning = true;
+  }
 
     if (tapeFollowSteps > INTERSECT_DELAY)
       intersectionDetection();
@@ -332,7 +353,7 @@ void printLCD()
 {
     if (!active) {
       LCD.clear();
-      LCD.print("Press START to");
+      LCD.print("why");
       LCD.setCursor(0,1);
       LCD.print("begin");
     } else {
@@ -377,8 +398,11 @@ void printLCD()
 
 void tapeFollowLoop()
 {
-    if (!active)
-  return;
+    if (!active){
+      LCD.clear();
+      LCD.print("in TF loop");
+      return;
+    }
 
     if (printCount % PRINT_PERIOD == 0) {
   printLCD();
@@ -493,6 +517,27 @@ void tapeFollowLoop()
     delay(MAIN_LOOP_DELAY);
 }
 
+void TapeFollow::turnAround()
+{
+    switch (turnDirection) {
+    case Direction::LEFT:
+      turnDirection = Direction::RIGHT;
+    break;
+    case Direction::RIGHT:
+      turnDirection = Direction::LEFT;
+    break;
+    case Direction::FRONT:
+      turnDirection = Direction::RIGHT;  // TODO: make a smarter way of choosing this
+    break;
+    case Direction::BACK:
+      turnDirection = Direction::RIGHT;  // TODO: make a smarter way of choosing this
+    break;
+    }
+    willTurnAround = true;
+    motorSpeedTurning = MOTOR_SPEED_TURNING_AROUND;
+    motorSpeedFollowing = MOTOR_SPEED_REVERSE;
+    tapeFollowSteps = 0;  // reset steps counter
+}
 
 void start()
 {
