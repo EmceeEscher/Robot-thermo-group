@@ -427,67 +427,67 @@ void TapeFollow::printLCD()
     // print letter
     switch (this->action) {
     case TFAction::SEEKING:
-	LCD.print("S ");  // seeking
+	LCD.print( F("S ") );  // seeking
 	break;
     case TFAction::TURNING:
-	LCD.print("T ");  // turning
+	LCD.print( F("T ") );  // turning
 	break;
     case TFAction::FOLLOWING:
-	LCD.print("F ");  // following
+	LCD.print( F("F ") );  // following
 	break;
     case TFAction::REVERSING:
-	LCD.print("R ");
+	LCD.print( F("R ") );
 	break;
     default:
-	LCD.print("? ");
+	LCD.print( F("? ") );
 	break;
     }
 
     // print arrow
     if (this->turningAround)
-	LCD.print("v");
+	LCD.print( F("v") );
     else if (this->action == TFAction::TURNING) {
 	switch (this->turnDirection) {
 	case Direction::LEFT:
-	    LCD.print("<");
+	    LCD.print( F("<") );
 	    break;
 	case Direction::FRONT:
-	    LCD.print("^");
+	    LCD.print( F("^") );
 	    break;
 	case Direction::RIGHT:
-	    LCD.print(">");
+	    LCD.print( F(">") );
 	    break;
 	case Direction::BACK:
-	    LCD.print("v");
+	    LCD.print( F("v") );
 	    break;
 	}
     } else {
 	if (this->control < 0)
-	    LCD.print("<");
+	    LCD.print( F("<") );
 	else if (this->control > 0)
-	    LCD.print(">");
+	    LCD.print( F(">") );
 	else
-	    LCD.print("^");
+	    LCD.print( F("^") );
     }
     
     // print QRD readings
     for (int i(0); i < TapeFollow::numSensors; ++i) {
-	LCD.print(" ");
+	LCD.print( F(" ") );
 	LCD.print(this->pinReadings[i]);
     }
 
     // print current available RAM
-    LCD.print(" ");
+    LCD.print( F(" ") );
     LCD.print(freeRam());
     
     // print gains and control
     LCD.setCursor(0,1);
     LCD.print(this->gainProp);
     // LCD.print(this->errorArray[0]);
-    LCD.print(" ");
+    LCD.print( F(" ") );
     LCD.print(this->gainDer1);
     // LCD.print(this->errorArray[1]);
-    LCD.print(" ");
+    LCD.print( F(" ") );
     LCD.print(this->control);
 }
 

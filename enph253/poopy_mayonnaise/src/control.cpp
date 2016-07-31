@@ -23,19 +23,19 @@ void control::setup()
     Serial.begin(9600);
     randomSeed(analogRead(0));
     LCD.clear();
-    LCD.print("Beefing tears of");
+    LCD.print( F("Beefing tears of") );
     LCD.setCursor(0, 1);
-    LCD.print("soy from my     ");
+    LCD.print( F("soy from my     ") );
     delay(500);
     LCD.clear();
-    LCD.print("heart of cold   ");
+    LCD.print( F("heart of cold   ") );
     LCD.setCursor(0, 1);
-    LCD.print("aardvark fluids!");
+    LCD.print( F("aardvark fluids!") );
     delay(500);
     LCD.clear();
-    LCD.print("Press START to");
+    LCD.print( F("Press START to") );
     LCD.setCursor(0, 1);
-    LCD.print("begin");
+    LCD.print( F("begin") );
 }
 
 
