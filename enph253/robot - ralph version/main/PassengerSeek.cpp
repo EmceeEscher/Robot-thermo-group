@@ -11,22 +11,22 @@
 // const int *QSD_PINS_SIDES {pins::PASSENGER_SENSORS_SIDES};     // left-back, left-mid, left-front, right-front, right-mid, right-back
 // const int NUM_PINS_SIDES  {pins_sizes::PASSENGER_SENSORS_SIDES};
 const int *QSD_PINS_SIDES {PASSENGER_SENSORS_SIDES};     // left-back, left-mid, left-front, right-front, right-mid, right-back
-const int NUM_PINS_SIDES  {sizeof(PASSENGER_SENSORS_SIDES) /
-        sizeof(PASSENGER_SENSORS_SIDES[0])};
+const int NUM_PINS_SIDES  {
+    sizeof(PASSENGER_SENSORS_SIDES) / sizeof(PASSENGER_SENSORS_SIDES[0])};
 
-const int MAX_REGISTER_PERIOD            {10};  // number of consecutive readings above the threshold required to register a max
-const int MAX_NUM_DERIV_REGISTER_PERIOD  {5};  // number of consecutive (+) derivatives and then (-) derivatives required to achieve a max
-const int MAX_REGISTER_THRESHOLD        {150};  // threshold that readings must be above to register
+const int MAX_REGISTER_PERIOD            {10};   // number of consecutive readings above the threshold required to register a max
+const int MAX_NUM_DERIV_REGISTER_PERIOD  {5};    // number of consecutive (+) derivatives and then (-) derivatives required to achieve a max
+const int MAX_REGISTER_THRESHOLD        {150};   // threshold that readings must be above to register
 
-static bool active                {false}; // true if active
+static bool active                {false};       // true if active
 
-static bool approachingPassenger  {false}; // true when approaching a passenger
-static bool atPassenger           {false}; // true when adjacent to a passenger
-static int  passengerSide         {false}; // if atPassenger, specifies the side (-1=left, 1=right)
+static bool approachingPassenger  {false};       // true when approaching a passenger
+static bool atPassenger           {false};       // true when adjacent to a passenger
+static int  passengerSide         {false};       // if atPassenger, specifies the side (-1=left, 1=right)
 
-static bool atMax           [NUM_PINS_SIDES];    // true if the associated pin is at a maximum
-static int  pinReadingsPS     [NUM_PINS_SIDES];    // current pin readings
-static int  lastpinReadingsPS [NUM_PINS_SIDES];    // pin readings from last loop
+static bool atMax             [NUM_PINS_SIDES];  // true if the associated pin is at a maximum
+static int  pinReadingsPS     [NUM_PINS_SIDES];  // current pin readings
+static int  lastpinReadingsPS [NUM_PINS_SIDES];  // pin readings from last loop
 
 static int  numAboveThreshold [NUM_PINS_SIDES];  // number of consecutive reads above threshold for each pin
 static int  numPosDeriv       [NUM_PINS_SIDES];  // number of consecutive positive derivatives THE LAST TIME A POSITIVE DERIVATIVE WAS READ
@@ -85,7 +85,8 @@ void PassengerSeek::updateMax()
         bool imax = (
                 (!lastDerivPositive[i]) &&
                 (numPosDeriv[i] >= MAX_NUM_DERIV_REGISTER_PERIOD) &&
-                (numNegDeriv[i] >= MAX_NUM_DERIV_REGISTER_PERIOD));
+                (numNegDeriv[i] >= MAX_NUM_DERIV_REGISTER_PERIOD)
+        );
         // set array
         atMax[i] = static_cast<int>(aboveThreshold && imax);
     }
@@ -128,9 +129,9 @@ void PassengerSeek::loop()
     
     // Update counters
     for (int i(0); i < NUM_PINS_SIDES; ++i)
-        if (pinReadingsPS[i] <= MAX_REGISTER_THRESHOLD) {
+        if (pinReadingsPS[i] <= MAX_REGISTER_THRESHOLD) 
             numAboveThreshold[i] = 0;
-        } else if (numAboveThreshold[i] < MAX_REGISTER_PERIOD)
+        else if (numAboveThreshold[i] < MAX_REGISTER_PERIOD)
             numAboveThreshold[i] += 1;
     
     // Update atMax array
@@ -142,7 +143,7 @@ void PassengerSeek::loop()
     else if (PassengerSeek::atMaxSideMiddle()) {
         approachingPassenger = false;
         atPassenger = true;
-        if(atMax[0])
+        if (atMax[0])
             passengerSide = -1;
         else
             passengerSide = 1;
