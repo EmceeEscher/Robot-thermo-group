@@ -11,24 +11,24 @@ bool collisionDetected[numSensorsPin];
 int collisionDirection;
 
 void collisionLoop(){
-  // Read collision sensors and update numReads array
-  collisionDirection = -1;
-  for (int i(0); i < numSensorsPin; ++i) {
-    if (!(digitalRead(COLLISION_SENSORS[i]))) 
-        numCollisionReads[i] = 0;
-    else if (numCollisionReads[i] < collisionDetectPeriod) 
-        numCollisionReads[i] += 1;
-    if (numCollisionReads[i] >= collisionDetectPeriod){
-        collisionDetected[i] = 1;
-        collisionDirection = i;
+    // Read collision sensors and update numReads array
+    collisionDirection = -1;
+    for (int i(0); i < numSensorsPin; ++i) {
+        if (!(digitalRead(COLLISION_SENSORS[i]))) 
+            numCollisionReads[i] = 0;
+        else if (numCollisionReads[i] < collisionDetectPeriod) 
+            numCollisionReads[i] += 1;
+        if (numCollisionReads[i] >= collisionDetectPeriod){
+            collisionDetected[i] = 1;
+            collisionDirection = i;
+        }
+        else
+            collisionDetected[i] = 0;
     }
-    else
-        collisionDetected[i] = 0;
-  }
 }
 
 
 bool hasDetectedCollision(){
-  return collisionDetected[0]; //|| collisionDetected[1];
+    return collisionDetected[0]; //|| collisionDetected[1];
 }
 

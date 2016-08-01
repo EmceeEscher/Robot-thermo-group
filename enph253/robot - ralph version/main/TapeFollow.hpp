@@ -3,50 +3,50 @@
 
 #include "Direction.hpp"
 
-  void tapeFollowInit();
+void tapeFollowInit();
 
-  double seekTape();
+double seekTape();
 
-  void intersectionSeen();
+void intersectionSeen();
 
-  void intersectionDetection();
+void intersectionDetection();
 
-  double followTape();
+double followTape();
 
-  bool fnAllLastReadings(int period, int fn);
+bool fnAllLastReadings(int period, int fn);
 
-  bool fnAnyLastReadings(int period, int fn);
+bool fnAnyLastReadings(int period, int fn);
 
-  bool offTape(bool reading[]);
+bool offTape(bool reading[]);
 
-  bool mainsOffTape(bool reading[]);
+bool mainsOffTape(bool reading[]);
 
-  bool intsOffTape(bool reading[]);
+bool intsOffTape(bool reading[]);
 
-  bool intLOnTape(bool reading[]);
+bool intLOnTape(bool reading[]);
 
-  bool intROnTape(bool reading[]);
+bool intROnTape(bool reading[]);
 
-  double makeTurn();
+double makeTurn();
 
-  Direction chooseTurn(bool left, bool right, bool straight);
+Direction chooseTurn(bool left, bool right, bool straight);
 
-  void printLCD();
+void printLCD();
 
-  void tapeFollowLoop();
+void tapeFollowLoop();
 
-  void tapeFollowStart();
+void tapeFollowStart();
 
-  void tapeFollowStop();
+void tapeFollowStop();
 
-  void tapeFollowPause();
+void tapeFollowPause();
 
-  bool isActive();
+bool isActive();
 
-  void tapeFollowTest();
+void tapeFollowTest();
 
-  void giveTurnDirection(float left, float right, float straight);
+void giveTurnDirection(float left, float right, float straight);
 
-  void turnAround();
+void turnAround();
 
 #endif

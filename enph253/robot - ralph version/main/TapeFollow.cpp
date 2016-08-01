@@ -86,7 +86,7 @@ void tapeFollowInit()
     turning         = false;
     halfTurn        = false;
     motorsActive    = false;
-
+    
     turnDirection   = Direction::FRONT;
     control         = 0;
     printCount      = 0;
@@ -94,31 +94,31 @@ void tapeFollowInit()
     motorSpeedTurning = MOTOR_SPEED_TURNING;
     motorSpeed      = motorSpeedFollowing;
     tapeFollowSteps = 0;
-
+    
     lastError       = 0.;
-
+    
     int i;
     int j;
     for(i = 0; i < NUM_SAVED_READINGS; i++){
-      for(j = 0; j < 4; j++){
-        lastPinReadings[i][j] = false;
-      }
+        for(j = 0; j < 4; j++){
+            lastPinReadings[i][j] = false;
+        }
     }
-
+    
     // assign active pins
     for (i = 0; i < 4; i++) 
-      activePins[i] = TAPE_SENSORS_FRONT[i];
-
+        activePins[i] = TAPE_SENSORS_FRONT[i];
+    
     // declare active pins as inputs
     for (i = 0; i < 4; i++)
-      pinMode(activePins[i], INPUT);
-
+        pinMode(activePins[i], INPUT);
+    
     willTurnAround = false;
     turningAround = false;
-
+    
     intersectDetect[0] = false;
     intersectDetect[1] = false;
-
+    
     leftWeight = 50.;
     rightWeight = 50.;
     straightWeight = 50.;
@@ -129,11 +129,11 @@ void tapeFollowInit()
 double seekTape()
 {
     if (lastError < 0.)              // off tape to the right
-  return -ERROR_SEEKING;
+        return -ERROR_SEEKING;
     else if (lastError > 0.)         // off tape to the left
-  return ERROR_SEEKING;
+        return ERROR_SEEKING;
     else
-  return 0.;
+        return 0.;
 }
 
 
@@ -144,17 +144,17 @@ void intersectionSeen()
     bool intersectSeenL = true;
     bool intersectSeenR = true;
     for (int i = 0; i < NUM_SAVED_READINGS; i++) {
-      if (i >= INTERSECT_PERIOD)
-        break;
-      intersectSeenL = (intersectSeenL && lastPinReadings[i][0] && mainsOnTape); //TODO:lastPinReadings must be producing true when it shouldn't  
-      intersectSeenR = (intersectSeenR && lastPinReadings[i][3] && mainsOnTape);
+        if (i >= INTERSECT_PERIOD)
+            break;
+        intersectSeenL = (intersectSeenL && lastPinReadings[i][0] && mainsOnTape); //TODO:lastPinReadings must be producing true when it shouldn't  
+        intersectSeenR = (intersectSeenR && lastPinReadings[i][3] && mainsOnTape);
     }
-
+    
     // if seen, update instance variable
     if (intersectSeenL)
-      intersectSeen[0] = true;
+        intersectSeen[0] = true;
     if (intersectSeenR)
-      intersectSeen[1] = true;
+        intersectSeen[1] = true;
 }
 
 
@@ -165,34 +165,34 @@ void intersectionDetection()
     bool mainL      = pinReadings[1];
     bool mainR      = pinReadings[2];
     bool intersectR = pinReadings[3];
-
+    
     // check if intersections seen
     intersectionSeen();
-
+    
     // check if intersection detected
     if ((!intersectL) && intersectSeen[0])
-      intersectDetect[0] = true;
+        intersectDetect[0] = true;
     if ((!intersectR) && intersectSeen[1])
-      intersectDetect[1] = true;
-
+        intersectDetect[1] = true;
+    
     // if intersection(s) detected, make move decision
     if (fnAllLastReadings(TURN_WAIT_PERIOD, FN_INTS_OFF_TAPE) &&
-          (intersectDetect[0] || intersectDetect[1])) {
-  // wait until both intersections crossed over
-  turnDirection = chooseTurn(
-          intersectDetect[0],
-          intersectDetect[1],
-          (mainL || mainR)
-          ); 
-  if (turnDirection != Direction::FRONT)
-      turning = true;  // activates `makeTurn` function
-  else
-      turning = false;
-  // reset intersection arrays
-  intersectSeen[0] = false;
-  intersectSeen[1] = false;
-  intersectDetect[0] = false;
-  intersectDetect[1] = false;
+        (intersectDetect[0] || intersectDetect[1])) {
+        // wait until both intersections crossed over
+        turnDirection = chooseTurn(
+                intersectDetect[0],
+                intersectDetect[1],
+                (mainL || mainR)
+        ); 
+        if (turnDirection != Direction::FRONT)
+            turning = true;  // activates `makeTurn` function
+        else
+            turning = false;
+        // reset intersection arrays
+        intersectSeen[0] = false;
+        intersectSeen[1] = false;
+        intersectDetect[0] = false;
+        intersectDetect[1] = false;
     }
 }
 
@@ -204,57 +204,57 @@ double followTape()
     bool mainL      = pinReadings[1];
     bool mainR      = pinReadings[2];
     bool intersectR = pinReadings[3];
-
+    
     if (tapeFollowSteps >= PRE_TURN_AROUND_DELAY_PERIOD && willTurnAround) {
-      motorSpeedFollowing = MOTOR_SPEED_FOLLOWING;
-      willTurnAround = false;
-      turningAround = true;
-      turning = true;
-      turnDirection = Direction::RIGHT;
+        motorSpeedFollowing = MOTOR_SPEED_FOLLOWING;
+        willTurnAround = false;
+        turningAround = true;
+        turning = true;
+        turnDirection = Direction::RIGHT;
     }
-
+    
     if (tapeFollowSteps >= INTERSECT_DELAY)
-      intersectionDetection();
-
+        intersectionDetection();
+    
     // determine error
     if (mainL && mainR)                    // both pins over tape
-  return 0.;
+        return 0.;
     else if (mainL)                       // left main over tape
-  return ERROR_SMALL;
+        return ERROR_SMALL;
     else if (mainR)                       // right main over tape
-  return -ERROR_SMALL;
+        return -ERROR_SMALL;
     else if (intersectL && (!intersectR))  // left intersection over tape
-  return ERROR_MEDIUM;
+        return ERROR_MEDIUM;
     else if (intersectR && (!intersectL))  // right intersection over tape
-  return -ERROR_MEDIUM;
+        return -ERROR_MEDIUM;
     else if (lastError < 0.)         // off tape to the right
-  return -ERROR_LARGE;
+        return -ERROR_LARGE;
     else if (lastError > 0.)         // off tape to the left
-  return ERROR_LARGE;
+        return ERROR_LARGE;
     else
-  return 0.;
+        return 0.;
 }
 
 
 bool fnAllLastReadings(int period, int fn)
 {    
     for (int i(0); i < period; ++i) {
-      //auto *reading = lastPinReadings[i];
-      bool reading [4];
-      for(int j(0); j < 4; j++)
-        reading[j] = lastPinReadings[i][j];
-      bool result;
-      if(fn == FN_MAINS_OFF_TAPE){
-        result = mainsOffTape(reading);
-      }else if(fn == FN_OFF_TAPE){
-        result = offTape(reading);
-      }else if(fn == FN_INTS_OFF_TAPE){
-        result = intsOffTape(reading);
-      }else{
-        result = false; //YOU SHOULD NEVER GET HERE
-      }
-      if (!result)
-        return false;
+        //auto *reading = lastPinReadings[i];
+        bool reading [4];
+        for(int j(0); j < 4; j++)
+            reading[j] = lastPinReadings[i][j];
+        bool result;
+        if(fn == FN_MAINS_OFF_TAPE){
+            result = mainsOffTape(reading);
+        }else if(fn == FN_OFF_TAPE){
+            result = offTape(reading);
+        }else if(fn == FN_INTS_OFF_TAPE){
+            result = intsOffTape(reading);
+        }else{
+            result = false; //YOU SHOULD NEVER GET HERE
+        }
+        if (!result)
+            return false;
     }
     return true;
 }
@@ -263,21 +263,21 @@ bool fnAllLastReadings(int period, int fn)
 bool fnAnyLastReadings(int period, int fn)
 {
     for (int i(0); i < period; ++i) {
-    bool reading [4];
-      for(int j(0); j < 4; j++)
-        reading[j] = lastPinReadings[i][j];
-    bool result;
-    if(fn == FN_MAINS_OFF_TAPE){
-        result = mainsOffTape(reading);
-      }else if(fn == FN_OFF_TAPE){
-        result = offTape(reading);
-      }else if(fn == FN_INTS_OFF_TAPE){
-        result = intsOffTape(reading);
-      }else{
-        result = false; //YOU SHOULD NEVER GET HERE
-      }
-    if (result)
-      return true;
+        bool reading [4];
+        for(int j(0); j < 4; j++)
+            reading[j] = lastPinReadings[i][j];
+        bool result;
+        if(fn == FN_MAINS_OFF_TAPE){
+            result = mainsOffTape(reading);
+        }else if(fn == FN_OFF_TAPE){
+            result = offTape(reading);
+        }else if(fn == FN_INTS_OFF_TAPE){
+            result = intsOffTape(reading);
+        }else{
+            result = false; //YOU SHOULD NEVER GET HERE
+        }
+        if (result)
+            return true;
     }
     return false;
 }
@@ -287,8 +287,8 @@ bool offTape(bool reading[])
 {
     int i;
     for (i = 0; i < 4; i++)
-      if (reading[i])
-        return false;
+        if (reading[i])
+            return false;
     return true;
 }
 
@@ -322,51 +322,51 @@ double makeTurn()
 {
     // determine whether end has bee reached
     if ((!halfTurn) && fnAllLastReadings(
-            TURNING_PERIOD, FN_MAINS_OFF_TAPE))
-      halfTurn = true;
+                TURNING_PERIOD, FN_MAINS_OFF_TAPE))
+        halfTurn = true;
     else if (halfTurn && !(fnAnyLastReadings(
-            ON_TAPE_PERIOD, FN_MAINS_OFF_TAPE))) {
-  halfTurn = false;
-  turning = false;
-  turningAround = false; // exit to regular following
+                                  ON_TAPE_PERIOD, FN_MAINS_OFF_TAPE))) {
+        halfTurn = false;
+        turning = false;
+        turningAround = false; // exit to regular following
     }
-
+    
     // determine error
     if (!turning)
-  return 0.;
+        return 0.;
     else
-  return -(static_cast<int>(turnDirection)-1) * ERROR_TURNING;
+        return -(static_cast<int>(turnDirection)-1) * ERROR_TURNING;
 }
 
 Direction chooseTurn(bool left, bool right, bool straight)
 {
     /*if(right)
       return Direction::RIGHT;
-    else if(straight)
+      else if(straight)
       return Direction::FRONT;
-    else
+      else
       return Direction::LEFT;*/
     float total = (
-      left     * leftWeight +
-      right    * rightWeight +
-      straight * straightWeight
+            left     * leftWeight +
+            right    * rightWeight +
+            straight * straightWeight
     );
-
+    
     float leftProb;
     float straightProb;
     if (total == 0) {
-  leftProb     = left     / (left + right + straight) * 100.;
-  straightProb    = straight    / (left + right + straight) * 100.;
+        leftProb     = left     / (left + right + straight) * 100.;
+        straightProb    = straight    / (left + right + straight) * 100.;
     } else {
-  leftProb     = left     * leftWeight     / total * 100.;
-  straightProb    = straight    * straightWeight    / total * 100.;
+        leftProb     = left     * leftWeight     / total * 100.;
+        straightProb    = straight    * straightWeight    / total * 100.;
     }
-
+    
     // TODO: do this randValue part differently?
     float randValue = (static_cast<float>(random(1000))) / 10.;
     float leftMax = 0 + leftProb;
     float straightMax = leftProb + straightProb;
-
+    
     Serial.print("rand: ");
     Serial.println(randValue);
     Serial.print("left: ");
@@ -378,186 +378,186 @@ Direction chooseTurn(bool left, bool right, bool straight)
     leftWeight = 50.;
     rightWeight = 50.;
     straightWeight = 50.;
-
+    
     if (randValue < leftMax){
-      Serial.println("left");
-      return Direction::LEFT;}
+        Serial.println("left");
+        return Direction::LEFT;}
     else if (randValue < straightMax){
-      Serial.println("straight"); 
-      return Direction::FRONT;}
+        Serial.println("straight"); 
+        return Direction::FRONT;}
     else{
-      Serial.println("right"); 
-      return Direction::RIGHT;}
+        Serial.println("right"); 
+        return Direction::RIGHT;}
 }
 
 void printLCD()
 {
     if (!active) {
-      LCD.clear();
-      LCD.print("why");
-      LCD.setCursor(0,1);
-      LCD.print("begin");
+        LCD.clear();
+        LCD.print("why");
+        LCD.setCursor(0,1);
+        LCD.print("begin");
     } else {
-      LCD.clear();
-      // print letter
-      if (!(turning || onTape))
-          LCD.print("S ");  // seeking
-      else if (turning)
-          if(turningAround){
-            LCD.print("TA");
-          }else
-            LCD.print("T ");  // turning
-      else
-          LCD.print("F ");  // following
-      // print arrow
-      if (turning) {
-          if (turnDirection == Direction::LEFT)
-        LCD.print("<--");
-          else if (turnDirection == Direction::RIGHT)
-        LCD.print("-->");
-          else
-        LCD.print(" ^ ");
-      } else {
-          if (control < 0)
-        LCD.print("<  ");
-          else if (control > 0)
-        LCD.print("  >");
-          else
-        LCD.print(" ^ ");
-      }
-      // print QRD readings
-      for (const auto read : pinReadings) {
-          LCD.print(" ");
-          LCD.print(read);
-      }
-      // print gains and control
-      LCD.setCursor(0,1);
-      LCD.print(gainProp);
-      LCD.print(" ");
-      LCD.print(gainDer1);
-      LCD.print(" ");
-      LCD.print(control);
+        LCD.clear();
+        // print letter
+        if (!(turning || onTape))
+            LCD.print("S ");  // seeking
+        else if (turning)
+            if(turningAround){
+                LCD.print("TA");
+            }else
+                LCD.print("T ");  // turning
+        else
+            LCD.print("F ");  // following
+        // print arrow
+        if (turning) {
+            if (turnDirection == Direction::LEFT)
+                LCD.print("<--");
+            else if (turnDirection == Direction::RIGHT)
+                LCD.print("-->");
+            else
+                LCD.print(" ^ ");
+        } else {
+            if (control < 0)
+                LCD.print("<  ");
+            else if (control > 0)
+                LCD.print("  >");
+            else
+                LCD.print(" ^ ");
+        }
+        // print QRD readings
+        for (const auto read : pinReadings) {
+            LCD.print(" ");
+            LCD.print(read);
+        }
+        // print gains and control
+        LCD.setCursor(0,1);
+        LCD.print(gainProp);
+        LCD.print(" ");
+        LCD.print(gainDer1);
+        LCD.print(" ");
+        LCD.print(control);
     }
 }
 
 void tapeFollowLoop()
 {
     if (!active){
-      LCD.clear();
-      LCD.print("in TF loop");
-      return;
+        LCD.clear();
+        LCD.print("in TF loop");
+        return;
     }
-
+    
     if (printCount % PRINT_PERIOD == 0) {
-  //printLCD();
-  PassengerSeek::printLCD();
-  printCount = 0;
+        //printLCD();
+        PassengerSeek::printLCD();
+        printCount = 0;
     }
     ++printCount;
-
+    
     // set gains
     // TODO move this to constructor once values are decided upon
- /*   if (!motorsActive) {
-  gainProp = static_cast<double>(knob(KNOB_PROP_GAIN)) / 50.;
-  gainDer1 = static_cast<double>(knob(KNOB_DER1_GAIN)) / 50.;
-  gainDer2 = .5*gainDer1*gainDer1 /
-          gainProp*(1.-EPSILON);
-    }*/
-
+    /*   if (!motorsActive) {
+         gainProp = static_cast<double>(knob(KNOB_PROP_GAIN)) / 50.;
+         gainDer1 = static_cast<double>(knob(KNOB_DER1_GAIN)) / 50.;
+         gainDer2 = .5*gainDer1*gainDer1 /
+         gainProp*(1.-EPSILON);
+         }*/
+    
     // get readings from tape sensors
     for (auto i(0); i < 4; ++i) {
-  pinReadings[i] = static_cast<bool>(
+        pinReadings[i] = static_cast<bool>(
                 digitalRead(activePins[i]));
     }
-
+    
     // update lastPinReadings array
     for(auto i(NUM_SAVED_READINGS-1); i>0; i--){
-      for(auto j(0); j<4; j++){
-        lastPinReadings[i][j] = lastPinReadings[i-1][j];
-      }
+        for(auto j(0); j<4; j++){
+            lastPinReadings[i][j] = lastPinReadings[i-1][j];
+        }
     }
     for(auto i(0); i<4; i++){
-      lastPinReadings[0][i] = pinReadings[i];
+        lastPinReadings[0][i] = pinReadings[i];
     }
     
     // determine whether on tape
     lastOnTape = onTape;
-
+    
     bool isOnTape(false);
     for (const auto read : pinReadings) 
-  if (read) {
-      isOnTape = true;
-      break;
-  }
+        if (read) {
+            isOnTape = true;
+            break;
+        }
     onTape = isOnTape;
-
+    
     // determine whether mains on tape
     lastMainsOnTape = mainsOnTape;
     mainsOnTape = (pinReadings[1] || pinReadings[2]);
-
+    
     // get error based on current state
     double error(0.);
     if ((!(turning)) && fnAllLastReadings(
-            OFF_TAPE_PERIOD, FN_OFF_TAPE)) {
-  motorSpeed = motorSpeedTurning;
-  tapeFollowSteps = 0;
-  error = seekTape();
+                OFF_TAPE_PERIOD, FN_OFF_TAPE)) {
+        motorSpeed = motorSpeedTurning;
+        tapeFollowSteps = 0;
+        error = seekTape();
     } else if (turning) {
-  motorSpeed = motorSpeedTurning;
-  tapeFollowSteps = 0;
-  error = makeTurn();
+        motorSpeed = motorSpeedTurning;
+        tapeFollowSteps = 0;
+        error = makeTurn();
     } else {
-  motorSpeed = motorSpeedFollowing;
-  tapeFollowSteps += 1;
-  error = followTape();
+        motorSpeed = motorSpeedFollowing;
+        tapeFollowSteps += 1;
+        error = followTape();
     }
     error *= MOTOR_SPEED_FOLLOWING; //TODO: check if this should be variable
-
+    
     // update previous error parameters
     if (error != lastError) {
-      errorArray[1] = errorArray[0];
-      errorArray[0] = lastError;
-      etimeArray[1] = etimeArray[0];
-      etimeArray[0] = 1;
-      lastError  = error;
+        errorArray[1] = errorArray[0];
+        errorArray[0] = lastError;
+        etimeArray[1] = etimeArray[0];
+        etimeArray[0] = 1;
+        lastError  = error;
     }
-
+    
     // get error derivatives
     double der1[2];
     der1[0] = (error - errorArray[0]) /
         static_cast<double>(etimeArray[0]);
     der1[1] = (errorArray[0] - errorArray[1]) /
-      static_cast<double>(etimeArray[1] - etimeArray[0]);
+        static_cast<double>(etimeArray[1] - etimeArray[0]);
     double der2 = (der1[0] - der1[1]) /
-      static_cast<double>(etimeArray[0]);
-
+        static_cast<double>(etimeArray[0]);
+    
     // get the effect of gains
     double ctrlProp (gainProp * error);
     double ctrlDer1 (gainDer1 * der1[0]);
     double ctrlDer2 (gainDer2 * der2);
     control = -static_cast<int>(ctrlProp + ctrlDer1 + ctrlDer2);
-
+    
     int controlMax = 1.5 * MOTOR_SPEED_FOLLOWING;
     if (control > controlMax)
-  control = controlMax;
+        control = controlMax;
     else if (control < -controlMax)
-  control = -controlMax;
-
+        control = -controlMax;
+    
     int dSpeed = control;
-
+    
     // adjust motor speed
     if (motorsActive) {
-  motor.speed(MOTOR_PIN_L, dSpeed - motorSpeed);
-  motor.speed(MOTOR_PIN_R, dSpeed + motorSpeed);
+        motor.speed(MOTOR_PIN_L, dSpeed - motorSpeed);
+        motor.speed(MOTOR_PIN_R, dSpeed + motorSpeed);
     } else {
-  motor.speed(MOTOR_PIN_L, 0);
-  motor.speed(MOTOR_PIN_R, 0);
+        motor.speed(MOTOR_PIN_L, 0);
+        motor.speed(MOTOR_PIN_R, 0);
     }
-
+    
     // increase time counters
     for (auto &t : etimeArray)
-  ++t;
-
+        ++t;
+    
     // delay
     delay(MAIN_LOOP_DELAY);
 }
@@ -566,17 +566,17 @@ void turnAround()
 {
     switch (turnDirection) {
     case Direction::LEFT:
-      turnDirection = Direction::RIGHT;
-    break;
+        turnDirection = Direction::RIGHT;
+        break;
     case Direction::RIGHT:
-      turnDirection = Direction::LEFT;
-    break;
+        turnDirection = Direction::LEFT;
+        break;
     case Direction::FRONT:
-      turnDirection = Direction::RIGHT;  // TODO: make a smarter way of choosing this
-    break;
+        turnDirection = Direction::RIGHT;  // TODO: make a smarter way of choosing this
+        break;
     case Direction::BACK:
-      turnDirection = Direction::RIGHT;  // TODO: make a smarter way of choosing this
-    break;
+        turnDirection = Direction::RIGHT;  // TODO: make a smarter way of choosing this
+        break;
     }
     willTurnAround = true;
     motorSpeedTurning = MOTOR_SPEED_TURNING_AROUND;
@@ -585,7 +585,7 @@ void turnAround()
 }
 
 void backUp(){
-  
+    
 }
 
 void tapeFollowStart()
