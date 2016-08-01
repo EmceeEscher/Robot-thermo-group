@@ -7,7 +7,7 @@ const int dropTime = 400; // Milliseconds
 
 //SPECIFIED GAIN VALUES
 const float PROP_GAIN = 10.;
-const float HOLD_PROP_GAIN = 17.;
+const float HOLD_PROP_GAIN = 10.;
 const float INT_GAIN = 0.;
 const float DERIV_GAIN = 0.5;
 
@@ -20,9 +20,9 @@ float now, lastTime;
 int hasInitialized = 0;
 
 //Rest Positions
-const float BASE_REST_POSITION = 90;
-const float MID_REST_POSITION = 140;
-const float BASE_HOLD_POSITION = 90;
+const float BASE_REST_POSITION = 95;
+const float MID_REST_POSITION = 150;
+const float BASE_HOLD_POSITION = 95;
 const float MID_HOLD_POSITION = 170;
 
 //Iterator for LCD printing
@@ -31,7 +31,7 @@ int LCDControl;
 //Stepper Constants
 const int COUNTERCLOCKWISE = HIGH;
 const int CLOCKWISE = LOW;
-const int stepperMicrosDelay = 1600; //Time delay between pulses in microseconds
+const int stepperMicrosDelay = 1200; //Time delay between pulses in microseconds
 const int numPulses = 680;
 
 //reachAndGrab/reachAndDrop function Constants
