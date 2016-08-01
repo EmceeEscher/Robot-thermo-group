@@ -1,3 +1,5 @@
+#include "Direction.hpp"
+
 
 //MToDestination Constants & Variables
 const int DIFF_THRESHOLD = 50;
@@ -26,7 +28,7 @@ void pickDirection();
 void detectBeaconLoop();
 void updateLeftBeaconArray();
 void updateRightBeaconArray();
-int getBeaconDirection();
+Direction getBeaconDirection();
 int getLeftBeaconReading();
 int getRightBeaconReading();
 float getLeftBeaconAverage();
@@ -109,20 +111,20 @@ void updateRightBeaconArray(){
 }
 
 // returns -1 for left, 1 for right, 0 for no detection
-int getBeaconDirection(){
+Direction getBeaconDirection(){
     int val;
     float leftAverage = getLeftBeaconAverage();
     float rightAverage = getRightBeaconAverage();
     
     if (leftAverage > BEACON_THRESHOLD) {
 	    if (rightAverage > BEACON_THRESHOLD)
-	      return (leftAverage > rightAverage) ? -1 : 1;
+	      return (leftAverage > rightAverage) ? Direction::LEFT : Direction::RIGHT;
 	  else
-	    return -1;
+	    return Direction::LEFT;
     } else if (rightAverage > BEACON_THRESHOLD) 
-	      return 1;
+	      return Direction::RIGHT;
     else
-	      return 0;
+	      return Direction::FRONT;
     
 }
 

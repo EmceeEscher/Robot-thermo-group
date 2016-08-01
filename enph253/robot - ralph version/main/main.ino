@@ -57,8 +57,34 @@ void loop() {
       findPassengerLoop();
     } else if(state == LOAD_PASSENGER_LEFT){
       turnAndReach(false, true);
+      if(holding){
+        LCD.clear();
+        LCD.print("I got something!");
+        delay(5000);
+        state = FIND_PASSENGER;
+        //state = FIND_BEACON;
+      }else{
+        //go forward
+        //turn around
+        //find passenger again 
+        missedPassenger();//TODO: TEST THIS!!!!
+      }
     } else if(state == LOAD_PASSENGER_RIGHT){
       turnAndReach(true, true);
+      if(holding){
+        //state = FIND_BEACON;
+        LCD.clear();
+        LCD.print("I got something!");
+        delay(5000);
+        state = FIND_PASSENGER;
+      }else{
+        //go forward
+        //turn around
+        //find passenger again 
+        missedPassenger();//TODO: TEST THIS!!!!
+      }
+    } else if(state == FIND_BEACON){
+      findBeaconLoop();
     }
   }
 }
@@ -81,5 +107,37 @@ void findPassengerLoop(){
     if(hasDetectedCollision()){
       turnAround();
     }
+}
+
+void findBeaconLoop(){
+  if(hasArrived()){
+    state = DROP_PASSENGER;
+  }else{
+    tapeFollowLoop();
+    collisionLoop();
+    Direction dir = getBeaconDirection();
+    switch(dir){
+      case Direction::LEFT:
+        giveTurnDirection(100,0,0.1);
+        break;
+      case Direction::RIGHT:
+        giveTurnDirection(0,100,0.1);
+        break;
+      default:
+        giveTurnDirection(0.1,0.1,100);
+        break;
+    }
+  } 
+}
+
+void missedPassenger(){
+  /*for(auto i(0); i < 30; i++){
+    tapeFollowLoop();
+  }
+  turnAround();*/
+  LCD.clear();
+  LCD.print("I missed...");
+  delay(5000);
+  state = FIND_PASSENGER;
 }
 
