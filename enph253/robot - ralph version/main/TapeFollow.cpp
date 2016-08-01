@@ -20,8 +20,8 @@ const double ERROR_LARGE   {.08};
 const double ERROR_SEEKING {.64};
 const double ERROR_TURNING {12.80};
 const double EPSILON       {0.1};
-const double GAIN_PROP     {10};
-const double GAIN_DER1     {10};
+const double GAIN_PROP     {7};
+const double GAIN_DER1     {12};
 const double GAIN_DER2     {.5*GAIN_DER1*GAIN_DER1/GAIN_PROP*(1.-EPSILON)};
 // const double GAIN_DER2 {0.};
 const int NUM_SAVED_READINGS {52};
@@ -449,20 +449,20 @@ void tapeFollowLoop()
     }
 
     if (printCount % PRINT_PERIOD == 0) {
-  //printLCD();
-  PassengerSeek::printLCD();
+  printLCD();
+  //PassengerSeek::printLCD();
   printCount = 0;
     }
     ++printCount;
 
     // set gains
     // TODO move this to constructor once values are decided upon
-    if (!motorsActive) {
+ /*   if (!motorsActive) {
   gainProp = static_cast<double>(knob(KNOB_PROP_GAIN)) / 50.;
   gainDer1 = static_cast<double>(knob(KNOB_DER1_GAIN)) / 50.;
   gainDer2 = .5*gainDer1*gainDer1 /
           gainProp*(1.-EPSILON);
-    }
+    }*/
 
     // get readings from tape sensors
     for (auto i(0); i < 4; ++i) {

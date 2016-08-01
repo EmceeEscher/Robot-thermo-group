@@ -25,8 +25,8 @@ static bool atPassenger           {false}; // true when adjacent to a passenger
 static int  passengerSide         {false}; // if atPassenger, specifies the side (-1=left, 1=right)
 
 static bool atMax           [NUM_PINS_SIDES];    // true if the associated pin is at a maximum
-static int  pinReadings     [NUM_PINS_SIDES];    // current pin readings
-static int  lastPinReadings [NUM_PINS_SIDES];    // pin readings from last loop
+static int  pinReadingsPS     [NUM_PINS_SIDES];    // current pin readings
+static int  lastpinReadingsPS [NUM_PINS_SIDES];    // pin readings from last loop
 
 static int  numAboveThreshold [NUM_PINS_SIDES];  // number of consecutive reads above threshold for each pin
 static int  numPosDeriv       [NUM_PINS_SIDES];  // number of consecutive positive derivatives THE LAST TIME A POSITIVE DERIVATIVE WAS READ
@@ -36,7 +36,7 @@ static bool lastDerivPositive [NUM_PINS_SIDES];  // true if the last derivative 
 
 namespace PassengerSeek
 {
-    static void init();
+    //static void init();
     static bool atMaxSideFront();
     static bool atMaxSideMiddle();
     static void updateMax();
@@ -56,8 +56,8 @@ void PassengerSeek::init()
     }
     
     for (int i(0); i < NUM_PINS_SIDES; ++i) {
-	pinReadings[i] = 0;
-	lastPinReadings[i] = 0;
+	pinReadingsPS[i] = 0;
+	lastpinReadingsPS[i] = 0;
 	numAboveThreshold[i] = 0;
 	numPosDeriv[i] = 0;
 	numNegDeriv[i] = 1;
@@ -95,23 +95,23 @@ void PassengerSeek::updateMax()
 // TODO
 void PassengerSeek::loop()
 {
-    static bool initialized(false);
+    /*static bool initialized(false);
 
     // Initialize, if not yet done
     if (!initialized) {
 	PassengerSeek::init();
 	initialized = true;
-    }
+    }*/
 
     // Get pin readings
     for (int i(0); i < NUM_PINS_SIDES; ++i) {
-	lastPinReadings[i] = pinReadings[i];
-	pinReadings[i] = analogRead(QSD_PINS_SIDES[i]);
+	lastpinReadingsPS[i] = pinReadingsPS[i];
+	pinReadingsPS[i] = analogRead(QSD_PINS_SIDES[i]);
     }
     
     // Update derivative counts
     for (int i(0); i < NUM_PINS_SIDES; ++i) {
-	if ((pinReadings[i] - lastPinReadings[i]) <= 0) {
+	if ((pinReadingsPS[i] - lastpinReadingsPS[i]) <= 0) {
 	    if (lastDerivPositive[i])
 		numNegDeriv[i] = 1;
 	    else if (numNegDeriv[i] < MAX_NUM_DERIV_REGISTER_PERIOD)
@@ -128,7 +128,7 @@ void PassengerSeek::loop()
 
     // Update counters
     for (int i(0); i < NUM_PINS_SIDES; ++i)
-	if (pinReadings[i] <= MAX_REGISTER_THRESHOLD) {
+	if (pinReadingsPS[i] <= MAX_REGISTER_THRESHOLD) {
 	    numAboveThreshold[i] = 0;
 	} else if (numAboveThreshold[i] < MAX_REGISTER_PERIOD)
 	    numAboveThreshold[i] += 1;
@@ -188,6 +188,10 @@ bool PassengerSeek::isAtPassenger()
     return atPassenger;
 }
 
+/*void PassengerSeek::pickedUpPassenger()
+{
+  atPassenger = false;
+}*/
 
 int PassengerSeek::getPassengerSide()
 {
@@ -197,17 +201,17 @@ int PassengerSeek::getPassengerSide()
 void PassengerSeek::printLCD(){
   LCD.clear();
   LCD.print("FL: ");
-  LCD.print(analogRead(QSD_PINS_SIDES[1]));
-  //LCD.print(pinReadings[1]);
+  //LCD.print(analogRead(QSD_PINS_SIDES[1]));
+  LCD.print(pinReadingsPS[1]);
   LCD.print(" FR: ");
-  //LCD.print(pinReadings[2]);
-  LCD.print(analogRead(QSD_PINS_SIDES[2]));
+  LCD.print(pinReadingsPS[2]);
+  //LCD.print(analogRead(QSD_PINS_SIDES[2]));
   LCD.setCursor(0,1);
   LCD.print("SL: ");
-  //LCD.print(pinReadings[0]);
-  LCD.print(analogRead(QSD_PINS_SIDES[0]));
+  LCD.print(pinReadingsPS[0]);
+  //LCD.print(analogRead(QSD_PINS_SIDES[0]));
   LCD.print(" SR: ");
-  //LCD.print(pinReadings[3]);
-  LCD.print(analogRead(QSD_PINS_SIDES[3]));
+  LCD.print(pinReadingsPS[3]);
+  //LCD.print(analogRead(QSD_PINS_SIDES[3]));
 }
 
