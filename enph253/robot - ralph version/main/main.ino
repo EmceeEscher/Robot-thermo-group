@@ -40,7 +40,7 @@ void loop() {
   if(startbutton()){
     started = true;
     tapeFollowInit();
-    //PassengerSeek::init();
+    PassengerSeek::init();
     tapeFollowStart();
     LCD.clear();
   }
@@ -66,6 +66,7 @@ void loop() {
 void findPassengerLoop(){
     tapeFollowLoop();
     collisionLoop();
+    PassengerSeek::loop();
     if(PassengerSeek::isAtPassenger()){
       tapeFollowTest();
       //PassengerSeek::pause();

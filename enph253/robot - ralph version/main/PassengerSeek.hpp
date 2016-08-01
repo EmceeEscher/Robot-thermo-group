@@ -10,6 +10,8 @@
 namespace PassengerSeek
 {
 
+    void init();
+
     /*
      * Main loop function to seek passengers. Halts the TapeFollow minor
      * mode when the passenger is directly adjacent to the robot
