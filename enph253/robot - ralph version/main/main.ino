@@ -46,7 +46,7 @@ void loop() {
   }
   if(stopbutton()){
     tapeFollowTest();
-    PassengerSeek::pause();
+    //PassengerSeek::pause();
     LCD.clear();
     LCD.print("stopped!");
   }
