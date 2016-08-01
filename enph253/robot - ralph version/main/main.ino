@@ -4,6 +4,7 @@
 #include "TapeFollow.hpp"
 #include "CollisionWatch.hpp"
 #include "PassengerSeek.hpp"
+#include "ToDestination.hpp"
 
 const int FIND_PASSENGER = 0;
 const int LOAD_PASSENGER_LEFT = 1;
