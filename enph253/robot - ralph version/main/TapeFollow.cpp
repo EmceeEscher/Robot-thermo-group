@@ -20,7 +20,7 @@ const double ERROR_LARGE   {.08};
 const double ERROR_SEEKING {.64};
 const double ERROR_TURNING {12.80};
 const double EPSILON       {0.1};
-const double GAIN_PROP     {7};
+const double GAIN_PROP     {9};
 const double GAIN_DER1     {12};
 const double GAIN_DER2     {.5*GAIN_DER1*GAIN_DER1/GAIN_PROP*(1.-EPSILON)};
 // const double GAIN_DER2 {0.};
@@ -449,8 +449,8 @@ void tapeFollowLoop()
     }
 
     if (printCount % PRINT_PERIOD == 0) {
-  printLCD();
-  //PassengerSeek::printLCD();
+  //printLCD();
+  PassengerSeek::printLCD();
   printCount = 0;
     }
     ++printCount;
