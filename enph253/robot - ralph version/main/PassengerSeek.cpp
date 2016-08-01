@@ -142,7 +142,11 @@ void PassengerSeek::loop()
     else if (PassengerSeek::atMaxSideMiddle()) {
 	approachingPassenger = false;
 	atPassenger = true;
-    }
+  if(atMax[0])
+    passengerSide = -1;
+  else
+    passengerSide = 1;
+    }    
 }
 
 

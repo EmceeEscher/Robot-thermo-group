@@ -68,7 +68,14 @@ void findPassengerLoop(){
     PassengerSeek::loop();
     if(PassengerSeek::isAtPassenger()){
       tapeFollowTest();
-      //PassengerSeek::pause();
+      /*int side = PassengerSeek::getPassengerSide();
+      if(side == 1){
+        state = LOAD_PASSENGER_RIGHT;
+      }else if(side == -1){
+        state = LOAD_PASSENGER_LEFT;
+      }
+      PassengerSeek::stop();*/
+      //TODO: uncomment this once passenger seeking is working
     }
     if(hasDetectedCollision()){
       turnAround();
