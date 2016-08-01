@@ -14,11 +14,17 @@ const int *QSD_PINS_SIDES {PASSENGER_SENSORS_SIDES};     // left-back, left-mid,
 const int NUM_PINS_SIDES  {
     sizeof(PASSENGER_SENSORS_SIDES) / sizeof(PASSENGER_SENSORS_SIDES[0])};
 
-const int MAX_REGISTER_PERIOD            {10};   // number of consecutive readings above the threshold required to register a max
-const int MAX_NUM_DERIV_REGISTER_PERIOD  {5};    // number of consecutive (+) derivatives and then (-) derivatives required to achieve a max
-const int MAX_REGISTER_THRESHOLD        {150};   // threshold that readings must be above to register
 
-static bool active                {false};       // true if active
+const int MAX_REGISTER_PERIOD            {10};  // number of consecutive readings above the threshold required to register a max
+const int MAX_NUM_DERIV_REGISTER_PERIOD  {5};  
+const int MAX_REGISTER_PERIOD_SHIELDED   {4}; // number of consecutive readings above the threshold required to register a max for QSDs with shielding
+const int MAX_NUM_DERIV_REGISTER_PERIOD_SHIELDED  {2}; // number of consecutive (+) derivatives and then (-) derivatives required to achieve a max for QSDs with shielding
+
+
+const int MAX_REGISTER_THRESHOLD        {150};  // threshold that readings must be above to register
+    
+static bool active                {false}; // true if active
+
 
 static bool approachingPassenger  {false};       // true when approaching a passenger
 static bool atPassenger           {false};       // true when adjacent to a passenger
@@ -79,16 +85,26 @@ bool PassengerSeek::atMaxSideMiddle()
 
 // TODO
 void PassengerSeek::updateMax()
-{
+{   
+    //for loop uses different values for non-shielded vs. shielded QSDs
     for (int i(0); i < NUM_PINS_SIDES; ++i) {
-        bool aboveThreshold = (numAboveThreshold[i] >= MAX_REGISTER_PERIOD);
+      if(i == 1 || i == 2){
+	      bool aboveThreshold = (numAboveThreshold[i] >= MAX_REGISTER_PERIOD);
+	      bool imax = (
+		     (!lastDerivPositive[i]) &&
+		     (numPosDeriv[i] >= MAX_NUM_DERIV_REGISTER_PERIOD) &&
+		     (numNegDeriv[i] >= MAX_NUM_DERIV_REGISTER_PERIOD));
+	      // set array
+	      atMax[i] = (aboveThreshold && imax);
+      }else{
+        bool aboveThreshold = (numAboveThreshold[i] >= MAX_REGISTER_PERIOD_SHIELDED);
         bool imax = (
-                (!lastDerivPositive[i]) &&
-                (numPosDeriv[i] >= MAX_NUM_DERIV_REGISTER_PERIOD) &&
-                (numNegDeriv[i] >= MAX_NUM_DERIV_REGISTER_PERIOD)
-        );
+         (!lastDerivPositive[i]) &&
+         (numPosDeriv[i] >= MAX_NUM_DERIV_REGISTER_PERIOD_SHIELDED) &&
+         (numNegDeriv[i] >= MAX_NUM_DERIV_REGISTER_PERIOD_SHIELDED));
         // set array
-        atMax[i] = static_cast<int>(aboveThreshold && imax);
+        atMax[i] = (aboveThreshold && imax);
+      }
     }
 }
 

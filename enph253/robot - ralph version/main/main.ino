@@ -38,11 +38,11 @@ void setup() {
 
 void loop() {
     if(startbutton()){
-        started = true;
-        tapeFollowInit();
-        PassengerSeek::init();
-        tapeFollowStart();
-        LCD.clear();
+      started = true;
+      tapeFollowInit();
+      PassengerSeek::init();
+      tapeFollowStart();
+      LCD.clear();
     }
     if(stopbutton()){
         tapeFollowTest();
@@ -95,13 +95,14 @@ void findPassengerLoop(){
     PassengerSeek::loop();
     if(PassengerSeek::isAtPassenger()){
         tapeFollowTest();
-        /*int side = PassengerSeek::getPassengerSide();
-          if(side == 1){
+        delay(2000);
+        int side = PassengerSeek::getPassengerSide();
+        if(side == 1){
           state = LOAD_PASSENGER_RIGHT;
-          }else if(side == -1){
+        }else if(side == -1){
           state = LOAD_PASSENGER_LEFT;
-          }
-          PassengerSeek::stop();*/
+        }
+        PassengerSeek::stop();
         //TODO: uncomment this once passenger seeking is working
     }
     if(hasDetectedCollision()){
