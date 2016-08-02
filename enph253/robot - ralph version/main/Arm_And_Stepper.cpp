@@ -57,7 +57,6 @@ namespace Arm_And_Stepper
     static void setBaseMotor(long duty);
     static float getControlValue();
     static void grabShit();
-    static void dropShit();
     static void reachAndClaw(bool grabbing);
     static void setRestPosition();
     static void stepperTurn(bool CW,int count);

@@ -13,6 +13,8 @@ namespace Arm_And_Stepper
 
     void turnAndReach(bool turnRight, bool grab);
 
+    void dropShit();
+
 }
 
 #endif // ARM_AND_STEPPER_HPP

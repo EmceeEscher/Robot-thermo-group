@@ -18,6 +18,7 @@ int state = FIND_PASSENGER;
 void findPassengerLoop();
 void loadPassengerLoop();
 void findBeaconLoop();
+void debugSequence();
 
 
 void setup() {
@@ -31,25 +32,31 @@ void setup() {
     LCD.print("Press START to");
     LCD.setCursor(0, 1);
     LCD.print("begin");
-
+    
     Arm_And_Stepper::setup();
 }
 
 void loop() {
-    if (startbutton()) {
-        started = true;
+    if(!started && startbutton()){
+        debugSequence();
         TapeFollow::init();
         PassengerSeek::init();
         TapeFollow::start();
         LCD.clear();
     }
-    if (stopbutton()) {
+    if(startbutton()){
+        TapeFollow::start();
+        PassengerSeek::init();
+        LCD.clear();
+        
+    }
+    if(stopbutton()){
         TapeFollow::test();
         PassengerSeek::pause();
         LCD.clear();
         LCD.print("stopped!");
     }
-    if (started) {
+    if(started){
         Arm_And_Stepper::doControl(); //Can't not do this or the arm will FUCKING EXPLODE
         
         if (state == FIND_PASSENGER)
@@ -71,7 +78,6 @@ void findPassengerLoop(){
         TapeFollow::test();
         PassengerSeek::pause();
         TapeFollow::loop();
-        delay(2000);
         int side = PassengerSeek::getPassengerSide();
         if(side == 1){
             state = LOAD_PASSENGER_RIGHT;
@@ -101,15 +107,15 @@ void findBeaconLoop(){
         ToDestination::loop();
         Direction dir = ToDestination::getBeaconDirection();
         switch (dir) {
-            case Direction::LEFT:
-                TapeFollow::giveTurnDirection(100,0,0.1);
-                break;
-            case Direction::RIGHT:
-                TapeFollow::giveTurnDirection(0,100,0.1);
-                break;
-            default:
-                TapeFollow::giveTurnDirection(50,50,50);
-                break;
+        case Direction::LEFT:
+            TapeFollow::giveTurnDirection(100,0,0.1);
+            break;
+        case Direction::RIGHT:
+            TapeFollow::giveTurnDirection(0,100,0.1);
+            break;
+        default:
+            TapeFollow::giveTurnDirection(50,50,50);
+            break;
         }
     } 
 }
@@ -131,7 +137,7 @@ void loadPassengerLoop(){
         LCD.print("I got something!");
         delay(5000);
         state = FIND_PASSENGER;
-        TapeFollow::init();
+        //TapeFollow::init();
         PassengerSeek::init();
         TapeFollow::start();
     }else{
@@ -139,11 +145,77 @@ void loadPassengerLoop(){
         //turn around
         //find passenger again 
         state = FIND_PASSENGER;
-        TapeFollow::init();
+        //TapeFollow::init();
         PassengerSeek::init();
         TapeFollow::start();
         //missedPassenger();//TODO: TEST THIS!!!!
     }
+}
+
+void debugSequence(){
+    LCD.clear();
+    LCD.print("right motor forward");
+    LCD.setCursor(0,1);
+    LCD.print("START to continue");
+    delay(500);
+    while(!startbutton()){
+        motor.speed(MOTOR_PIN_L, -100);
+    }
+    motor.speed(MOTOR_PIN_L, 0);
+    while(startbutton()){}
+    delay(500);
+    LCD.clear();
+    LCD.print("left motor forward");
+    LCD.setCursor(0,1);
+    LCD.print("START to continue");
+    while(!startbutton()){
+        motor.speed(MOTOR_PIN_R, 100);
+    }
+    motor.speed(MOTOR_PIN_R, 0);
+    while(startbutton()){}
+    delay(500);
+    LCD.clear();
+    LCD.print("disengage arm gear");
+    LCD.setCursor(0,1);
+    LCD.print("START to continue");
+    while(!startbutton()){}
+    while(startbutton()){}
+    delay(500);
+    LCD.clear();
+    LCD.print("arm gear upward");
+    LCD.setCursor(0,1);
+    LCD.print("START to continue");
+    while(!startbutton()){
+        Arm_And_Stepper::doControl();
+    }
+    motor.speed(MOTOR_PIN_ARM, 0);
+    while(startbutton()){}
+    delay(500);
+    LCD.clear();
+    LCD.print("set claw to midpoint");
+    LCD.setCursor(0,1);
+    LCD.print("START to continue");
+    while(!startbutton()){
+        LCD.clear();
+        LCD.print("STOP to open");
+        LCD.setCursor(0,1);
+        LCD.print("START to continue");
+        delay(50);
+        if(stopbutton()){
+            delay(500);
+            Arm_And_Stepper::dropShit();
+        }
+    }
+    while(startbutton()){}
+    delay(500);
+    LCD.clear();
+    LCD.print("START to begin loop");
+    while(!startbutton()){
+        delay(10);
+    }
+    while(startbutton()){}
+    delay(500);
+    started = true;
 }
 
 void missedPassenger(){
