@@ -20,10 +20,10 @@ float now, lastTime;
 int hasInitialized = 0;
 
 //Rest Positions
-const float BASE_REST_POSITION = 95;
+const float BASE_REST_POSITION = 100;
 const float MID_REST_POSITION = 150;
-const float BASE_HOLD_POSITION = 95;
-const float MID_HOLD_POSITION = 170;
+const float BASE_HOLD_POSITION = 100;
+const float MID_HOLD_POSITION = 150;//TODO: switch back to 170
 
 //Iterator for LCD printing
 int LCDControl;

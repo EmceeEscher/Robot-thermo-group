@@ -13,7 +13,7 @@ const int FIND_BEACON = 3;
 const int DROP_PASSENGER = 4;
 
 bool started = false;
-int state = FIND_PASSENGER;
+int state = FIND_BEACON;
 
 
 void setup() {
@@ -51,7 +51,7 @@ void loop() {
         LCD.print("stopped!");
     }
     if(started){
-        doControl(); //Can't not do this or the arm will FUCKING EXPLODE
+        //doControl(); //Can't not do this or the arm will FUCKING EXPLODE
         
         if(state == FIND_PASSENGER){
             findPassengerLoop();
@@ -62,6 +62,8 @@ void loop() {
                 LCD.print("I got something!");
                 delay(5000);
                 state = FIND_PASSENGER;
+                tapeFollowInit();
+                PassengerSeek::init();
                 //state = FIND_BEACON;
             }else{
                 //go forward
@@ -77,6 +79,8 @@ void loop() {
                 LCD.print("I got something!");
                 delay(5000);
                 state = FIND_PASSENGER;
+                tapeFollowInit();
+                PassengerSeek::init();
             }else{
                 //go forward
                 //turn around
@@ -95,6 +99,8 @@ void findPassengerLoop(){
     PassengerSeek::loop();
     if(PassengerSeek::isAtPassenger()){
         tapeFollowTest();
+        PassengerSeek::pause();
+        tapeFollowLoop();
         delay(2000);
         int side = PassengerSeek::getPassengerSide();
         if(side == 1){
@@ -102,7 +108,7 @@ void findPassengerLoop(){
         }else if(side == -1){
           state = LOAD_PASSENGER_LEFT;
         }
-        PassengerSeek::stop();
+        //PassengerSeek::stop();
         //TODO: uncomment this once passenger seeking is working
     }
     if(hasDetectedCollision()){
@@ -112,10 +118,16 @@ void findPassengerLoop(){
 
 void findBeaconLoop(){
     if(hasArrived()){
-        state = DROP_PASSENGER;
+        tapeFollowTest();
+        LCD.clear();
+        LCD.print("I have arrived");
+        delay(10000);
+        tapeFollowInit();      
+        //state = DROP_PASSENGER;
     }else{
         tapeFollowLoop();
         collisionLoop();
+        detectBeaconLoop();
         Direction dir = getBeaconDirection();
         switch(dir){
         case Direction::LEFT:
@@ -125,7 +137,7 @@ void findBeaconLoop(){
             giveTurnDirection(0,100,0.1);
             break;
         default:
-            giveTurnDirection(0.1,0.1,100);
+            giveTurnDirection(50,50,50);
             break;
         }
     } 
@@ -139,5 +151,7 @@ void missedPassenger(){
     LCD.clear();
     LCD.print("I missed...");
     delay(5000);
+    tapeFollowInit();
+    PassengerSeek::init();
     state = FIND_PASSENGER;
 }
