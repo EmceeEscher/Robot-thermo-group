@@ -3,6 +3,7 @@
 #include "TapeFollow.hpp"
 #include "pins.hpp"
 #include "PassengerSeek.hpp"
+#include "ToDestination.hpp"
 
 const int MOTOR_SPEED_FOLLOWING       {120};
 const int MOTOR_SPEED_PASSENGER_SEEK  {64};
@@ -450,7 +451,8 @@ void tapeFollowLoop()
     
     if (printCount % PRINT_PERIOD == 0) {
         //printLCD();
-        PassengerSeek::printLCD();
+        //PassengerSeek::printLCD();
+        detectBeaconPrintLCD();
         printCount = 0;
     }
     ++printCount;
