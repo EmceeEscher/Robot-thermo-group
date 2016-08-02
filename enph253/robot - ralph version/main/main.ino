@@ -37,19 +37,25 @@ void setup() {
 }
 
 void loop() {
-    if(startbutton()){
-      started = true;
-      tapeFollowInit();
-      PassengerSeek::init();
+  if(!started && startbutton()){
+    debugSequence();
+    tapeFollowInit();
+    PassengerSeek::init();
+    tapeFollowStart();
+    LCD.clear();
+  }
+  if(startbutton()){
       tapeFollowStart();
+      PassengerSeek::init();
       LCD.clear();
-    }
-    if(stopbutton()){
+      
+  }
+  if(stopbutton()){
         tapeFollowTest();
         PassengerSeek::pause();
         LCD.clear();
         LCD.print("stopped!");
-    }
+  }
     if(started){
         doControl(); //Can't not do this or the arm will FUCKING EXPLODE
         
@@ -73,7 +79,6 @@ void findPassengerLoop(){
         tapeFollowTest();
         PassengerSeek::pause();
         tapeFollowLoop();
-        delay(2000);
         int side = PassengerSeek::getPassengerSide();
         if(side == 1){
           state = LOAD_PASSENGER_RIGHT;
@@ -133,7 +138,7 @@ void loadPassengerLoop(){
        LCD.print("I got something!");
        delay(5000);
        state = FIND_PASSENGER;
-       tapeFollowInit();
+       //tapeFollowInit();
        PassengerSeek::init();
        tapeFollowStart();
     }else{
@@ -141,11 +146,77 @@ void loadPassengerLoop(){
        //turn around
        //find passenger again 
        state = FIND_PASSENGER;
-       tapeFollowInit();
+       //tapeFollowInit();
        PassengerSeek::init();
        tapeFollowStart();
        //missedPassenger();//TODO: TEST THIS!!!!
     }
+}
+
+void debugSequence(){
+  LCD.clear();
+  LCD.print("right motor forward");
+  LCD.setCursor(0,1);
+  LCD.print("START to continue");
+  delay(500);
+  while(!startbutton()){
+    motor.speed(MOTOR_PIN_L, -100);
+  }
+  motor.speed(MOTOR_PIN_L, 0);
+  while(startbutton()){}
+  delay(500);
+  LCD.clear();
+  LCD.print("left motor forward");
+  LCD.setCursor(0,1);
+  LCD.print("START to continue");
+  while(!startbutton()){
+    motor.speed(MOTOR_PIN_R, 100);
+  }
+  motor.speed(MOTOR_PIN_R, 0);
+  while(startbutton()){}
+  delay(500);
+  LCD.clear();
+  LCD.print("disengage arm gear");
+  LCD.setCursor(0,1);
+  LCD.print("START to continue");
+  while(!startbutton()){}
+  while(startbutton()){}
+  delay(500);
+  LCD.clear();
+  LCD.print("arm gear upward");
+  LCD.setCursor(0,1);
+  LCD.print("START to continue");
+  while(!startbutton()){
+    doControl();
+  }
+  motor.speed(MOTOR_PIN_ARM, 0);
+  while(startbutton()){}
+  delay(500);
+  LCD.clear();
+  LCD.print("set claw to midpoint");
+  LCD.setCursor(0,1);
+  LCD.print("START to continue");
+  while(!startbutton()){
+    LCD.clear();
+    LCD.print("STOP to open");
+    LCD.setCursor(0,1);
+    LCD.print("START to continue");
+    delay(50);
+    if(stopbutton()){
+      delay(500);
+      dropShit();
+    }
+  }
+  while(startbutton()){}
+  delay(500);
+  LCD.clear();
+  LCD.print("START to begin loop");
+  while(!startbutton()){
+    delay(10);
+  }
+  while(startbutton()){}
+  delay(500);
+  started = true;
 }
 
 void missedPassenger(){
