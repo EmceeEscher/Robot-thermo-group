@@ -9,11 +9,13 @@
 
 #include "Direction.hpp"
 
-int getNextCardinalDirection(int);
+extern Direction graphTurnDirection;
 
-int getNextNode(int, int);
+int getNextCardinalDirection();
 
-Direction getTurnDirection(int, int);
+int getNextNode();
+
+Direction getTurnDirection();
 
 void graphLoop();
 

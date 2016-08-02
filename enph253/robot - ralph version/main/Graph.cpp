@@ -36,7 +36,8 @@ int graph[20][4]{
 int getNextCardinalDirection(int currNode){
   int randomDirection = random(4);
   
-  while (graph[currNode][randomDirection] == -1){
+  while (graph[currNode][randomDirection] == -1
+      && graph[currNode][randomDirection] != previousNode){
     randomDirection = random(4);
   }
   
@@ -67,6 +68,8 @@ void graphLoop(){
   nextCardinalDirection = getNextCardinalDirection(currentNode);
   nextNode = getNextNode(currentNode, nextCardinalDirection);
   graphTurnDirection = getTurnDirection(cardinalDirection, nextCardinalDirection);
+
+  Serial.print("CD: "); Serial.print(cardinalDirection); Serial.print(" to "); 
   
   if (isClockwise != -1 && (nextNode == 9 || nextNode == 10 || nextNode == 12)){
     
@@ -86,7 +89,10 @@ void graphLoop(){
   else
     isClockwise = -1;
     cardinalDirection = nextCardinalDirection;
-    
+
+  Serial.println(nextCardinalDirection);
+  Serial.print("node: "); Serial.print(previousNode); Serial.print(" -> "); Serial.print(currentNode); Serial.print(" -> "); Serial.println(nextNode);
+  
   previousNode = currentNode;
   currentNode = nextNode;
 }
@@ -118,7 +124,7 @@ void graphLoop(int setNode){
   if (isClockwise != -1 && (nextNode == 9 || nextNode == 10 || nextNode == 12)){
     if (isClockwise = 1){
       cardinalDirection = setCardinalDirection + 1;
-
+      
       if (cardinalDirection > 3)
         cardinalDirection = 0;
     }
