@@ -17,7 +17,7 @@ const int COLLISION_SENSORS[]  { 4,  5};  // left front right back
 
 // Analog in
 const int PASSENGER_SENSORS_SIDES[]  {2, 7, 6, 0}; //side-left, front-left, front-right, side-right
-const int BEACON_SENSORS_SIDES[]     {6, 7}; // left right (Requires loss of knobs)
+const int BEACON_SENSORS_SIDES[]     {3, 4}; // left right (Requires loss of knobs)
 const int POTENTIOMETER {5};
 
 // Digital out
