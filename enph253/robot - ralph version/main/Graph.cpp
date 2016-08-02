@@ -1,11 +1,12 @@
 #include "Arduino.h"
+#include "Graph.hpp"
 
 int cardinalDirection = 2;
 int nextCardinalDirection;
 int previousNode = 1;
 int currentNode = 2;
 int nextNode;
-int graphTurnDirection;
+Direction graphTurnDirection;
 int isClockwise = -1;
 
 int graph[20][4]{
@@ -18,7 +19,7 @@ int graph[20][4]{
   {-1,  6, -1, -1}, //5
   { 4, -1,  7,  2}, //6
   { 6,  9,  8,  2}, //7
-  {-1, -1, -1, -1}, //8
+  { 7, 17, -1,  3}, //8
   {10, -1, 12, -1}, //9
   {11, -1, 12,  9}, //10
   {-1, -1, 10, -1}, //11
@@ -35,7 +36,8 @@ int graph[20][4]{
 int getNextCardinalDirection(int currNode){
   int randomDirection = random(4);
   
-  while (graph[currNode][randomDirection] == -1){
+  while (graph[currNode][randomDirection] == -1
+      && graph[currNode][randomDirection] != previousNode){
     randomDirection = random(4);
   }
   
@@ -46,27 +48,28 @@ int getNextNode(int currNode, int nextDir){
   return graph[currNode][nextDir];
 }
 
-int getTurnDirection(int cardinalDir, int nextCardinalDir){
+Direction getTurnDirection(int cardinalDir, int nextCardinalDir){
   if (cardinalDir == 0 && nextCardinalDir == 3){
-    return -1;
+    return Direction::LEFT;
   }
-  else{
-    return nextCardinalDir - cardinalDir;
-  }
+  else
+    return static_cast<Direction>(nextCardinalDir - cardinalDir + 1);
 }
 
 void graphLoop(){
   if (isClockwise == -1 && (currentNode == 9 || currentNode == 10 || currentNode == 12)){
     
-    if (graphTurnDirection == -1)
+    if (graphTurnDirection == Direction::LEFT)
       isClockwise = 1;
-    else if (graphTurnDirection == 1)
+    else if (graphTurnDirection == Direction::RIGHT)
       isClockwise = 0;
   }
   
   nextCardinalDirection = getNextCardinalDirection(currentNode);
   nextNode = getNextNode(currentNode, nextCardinalDirection);
   graphTurnDirection = getTurnDirection(cardinalDirection, nextCardinalDirection);
+
+  Serial.print("CD: "); Serial.print(cardinalDirection); Serial.print(" to "); 
   
   if (isClockwise != -1 && (nextNode == 9 || nextNode == 10 || nextNode == 12)){
     
@@ -86,7 +89,10 @@ void graphLoop(){
   else
     isClockwise = -1;
     cardinalDirection = nextCardinalDirection;
-    
+
+  Serial.println(nextCardinalDirection);
+  Serial.print("node: "); Serial.print(previousNode); Serial.print(" -> "); Serial.print(currentNode); Serial.print(" -> "); Serial.println(nextNode);
+  
   previousNode = currentNode;
   currentNode = nextNode;
 }
@@ -107,9 +113,9 @@ void graphLoop(int setNode){
   }
 
   if (isClockwise == -1 && (currentNode == 9 || currentNode == 10 || currentNode == 12)){
-    if (graphTurnDirection == -1)
+    if (graphTurnDirection == Direction::LEFT)
       isClockwise = 1;
-    else if (graphTurnDirection == 1)
+    else if (graphTurnDirection == Direction::RIGHT)
       isClockwise = 0;
   }
 
@@ -118,7 +124,7 @@ void graphLoop(int setNode){
   if (isClockwise != -1 && (nextNode == 9 || nextNode == 10 || nextNode == 12)){
     if (isClockwise = 1){
       cardinalDirection = setCardinalDirection + 1;
-
+      
       if (cardinalDirection > 3)
         cardinalDirection = 0;
     }
