@@ -13,7 +13,7 @@ namespace Arm_And_Stepper
 
     void turnAndReach(bool turnRight, bool grab);
 
-    void dropShit();
+    void dropCrap();
 
 }
 

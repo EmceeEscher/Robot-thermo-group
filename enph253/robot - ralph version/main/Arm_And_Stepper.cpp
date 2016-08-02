@@ -51,63 +51,19 @@ const float finalAdjBaseTarget = 20;
 //Holding a passenger?
 static bool holding = false;
 
+
 namespace Arm_And_Stepper
 {
+
     static float getAngle();
     static void setBaseMotor(long duty);
     static float getControlValue();
-    static void grabShit();
+    static void grabCrap();
     static void reachAndClaw(bool grabbing);
     static void setRestPosition();
     static void stepperTurn(bool CW,int count);
+    
 }
-
-/*
-  void setup() {
-  #include <phys253setup.txt>
-  portMode(1,OUTPUT);
-  pinMode(DIR_PIN,OUTPUT);
-  pinMode(PULSE_PIN,OUTPUT);
-  Serial.begin(9600);
-  baseTarget = BASE_REST_POSITION;
-  midTarget = MID_REST_POSITION;
-  lastPropErr = 0.;
-  LCDControl = 1;
-  }
-*/
-
-/*
-  void loop() {
-  doControl();
-  
-  if(startbutton()){
-  if(knob(7) > 900){
-  turnAndReach(true,true);
-  } else if(knob(7) < 150){
-  turnAndReach(false,true);
-  } else{
-  reachAndGrab();
-  }
-  } else if (stopbutton()){
-  if(knob(7) > 900){
-  turnAndReach(true,false);
-  } else if(knob(7) < 150){
-  turnAndReach(false,false);
-  } else{
-  reachAndDrop();
-  }
-  } else if(knob(6) > 900){
-  stepperTurn(true, 20);
-  } else if(knob(6) < 150){
-  stepperTurn(false, 20);
-  }
-  
-  if(Serial.available() > 0){
-  //TODO, add any serial input processing here
-  }
-  delay(10);
-  }
-*/
 
 
 void Arm_And_Stepper::setup()
@@ -132,9 +88,9 @@ void Arm_And_Stepper::doControl()
     
     now = micros();
     propErr = angle - baseTarget;
-    derivErr = (propErr - lastPropErr)/(now - lastTime) * 1000000.;
-    intErr += (propErr + lastPropErr)/2 * (now - lastTime) / 1000000.;
-    setBaseMotor((long) getControlValue());
+    derivErr = (propErr - lastPropErr) / (now - lastTime) * 1000000.;
+    intErr += (propErr + lastPropErr) / 2 * (now - lastTime) / 1000000.;
+    setBaseMotor(static_cast<long>(getControlValue()));
     
     RCServo0.write(midTarget);
     
@@ -142,83 +98,84 @@ void Arm_And_Stepper::doControl()
     lastPropErr = propErr;
     
     
-    if(LCDControl % 25 == 0){
+    if (LCDControl % 25 == 0) {
         //printState();
         LCDControl = 1;
     }
     LCDControl++;
 }
 
+
 //Converts base potentiometer voltage to corresponding angle
-float Arm_And_Stepper::getAngle() {
-    float voltage = (float) analogRead(POTENTIOMETER) * 5./1024.;
+float Arm_And_Stepper::getAngle()
+{
+    float voltage = static_cast<float>(analogRead(POTENTIOMETER)) * 5./1024.;
     return 130.814 * (3. * voltage - 10.) / (voltage - 5.) + 60.;
 }
 
+
 //Wrapper function for setting motor speed
 //Prevents values larger than 255 in either direction
-void Arm_And_Stepper::setBaseMotor(long duty){
-    if(duty > 255){
+void Arm_And_Stepper::setBaseMotor(long duty)
+{
+    if (duty > 255) 
         duty = 255;
-    }
-    else if(duty < -255){
+    else if (duty < -255) 
         duty = -255;
-    }
-    motor.speed(MOTOR_PIN_ARM,duty);
+    
+    motor.speed(MOTOR_PIN_ARM, duty);
 }
 
+
 //Returns the motor speed based on PID control
-float Arm_And_Stepper::getControlValue(){
+float Arm_And_Stepper::getControlValue()
+{
     float control = 0;
-    if(holding){
+    if (holding) 
         control += HOLD_PROP_GAIN * propErr;
-    }else{
+    else
         control += PROP_GAIN * propErr;
-    }
     control += DERIV_GAIN * derivErr;
     control += INT_GAIN * intErr;
     return control;
 }
 
+
 //Closes the claw until something is detected in claw, the claw
 //closes on itself or a timeout is reached
-void Arm_And_Stepper::grabShit(){
-    
+void Arm_And_Stepper::grabCrap()
+{
     //If switches are already triggered, then do nothing
-    if(!digitalRead(ARM_SWITCHES[0]) || !digitalRead(ARM_SWITCHES[1])){}
-    
-    else{
-        motor.speed(MOTOR_PIN_BABY,190);
+    if (digitalRead(ARM_SWITCHES[0]) && digitalRead(ARM_SWITCHES[1])) {
+        motor.speed(MOTOR_PIN_BABY, 190);
         unsigned long startTime = millis();
-        while(1){
+        while (true) {
             Arm_And_Stepper::doControl();
-            if(!digitalRead(ARM_SWITCHES[0])){
+            if (!digitalRead(ARM_SWITCHES[0])) {
                 holding = true;
                 break;
-            }
-            if(!digitalRead(ARM_SWITCHES[1])){
+            } else if (!digitalRead(ARM_SWITCHES[1])) {
                 holding = false;
                 break;
-            }
-            if(millis() - startTime > 2000){
+            } else if (millis() - startTime > 2000) {
                 holding = true;
                 break;
             }
         }
-        if(holding){
-            motor.speed(MOTOR_PIN_BABY,20);
-        }else{
-            dropShit();
-        }
+        if (holding) 
+            motor.speed(MOTOR_PIN_BABY, 20);
+        else
+            dropCrap();
     }
 }
 
 //Opens the claw for specified time
-void Arm_And_Stepper::dropShit(){
-    motor.speed(MOTOR_PIN_BABY,-140);
+void Arm_And_Stepper::dropCrap()
+{
+    motor.speed(MOTOR_PIN_BABY, -140);
     holding = false;
     delay(dropTime);
-    motor.speed(MOTOR_PIN_BABY,0);
+    motor.speed(MOTOR_PIN_BABY, 0);
 }
 
 /*
@@ -321,9 +278,9 @@ void Arm_And_Stepper::reachAndClaw(bool grabbing)
         } 
     }
     if (grabbing) 
-        grabShit();
+        grabCrap();
     else 
-        dropShit();
+        dropCrap();
     setRestPosition();
 }
 
@@ -341,7 +298,8 @@ midTarget = MID_REST_POSITION;
 }
 */
 
-void Arm_And_Stepper::setRestPosition(){
+void Arm_And_Stepper::setRestPosition()
+{
     unsigned long startTime = millis();
     baseTarget = midAdjBaseTarget; 
     midTarget = midAdjMidTarget;
@@ -362,24 +320,24 @@ void Arm_And_Stepper::setRestPosition(){
     }
 }
 
+
 //Turns the stepper motor a specified number of steps
 void Arm_And_Stepper::stepperTurn(bool CW,int count){
-    if(CW){
-        digitalWrite(DIR_PIN,CLOCKWISE);
-    } else{
-        digitalWrite(DIR_PIN,COUNTERCLOCKWISE);
-    }
-    int i;
+    if (CW)
+        digitalWrite(DIR_PIN, CLOCKWISE);
+    else
+        digitalWrite(DIR_PIN, COUNTERCLOCKWISE);
+    
     unsigned long prevTime = millis();
-    for(i = 0; i < count; i++){
-        if(millis() - prevTime > 10){
+    for (int i = 0; i < count; i++) {
+        if (millis() - prevTime > 10) {
             Arm_And_Stepper::doControl();
             prevTime = millis();
         }
-        digitalWrite(PULSE_PIN,HIGH);
+        digitalWrite(PULSE_PIN, HIGH);
         delayMicroseconds(stepperMicrosDelay);
         
-        digitalWrite(PULSE_PIN,LOW);
+        digitalWrite(PULSE_PIN, LOW);
         delayMicroseconds(stepperMicrosDelay);
     }
 }
@@ -388,15 +346,16 @@ void Arm_And_Stepper::stepperTurn(bool CW,int count){
  * Parameter: turnRight - Turn right if true, left otherwise
  * Parameter: grab - grab if true, drop otherwise
  */
-void Arm_And_Stepper::turnAndReach(bool turnRight, bool grab){
+void Arm_And_Stepper::turnAndReach(bool turnRight, bool grab)
+{
     LCD.clear();
-    LCD.print("initial turn");
+    LCD.print( F("initial turn") );
     stepperTurn(turnRight, numPulses);
     LCD.clear();
-    LCD.print("grabbing in turn and reach");
+    LCD.print( F("grabbing in turn and reach") );
     reachAndClaw(grab);
     LCD.clear();
-    LCD.print("turning back");
+    LCD.print( F("turning back") );
     stepperTurn(!turnRight, numPulses);
 }
 

@@ -1,9 +1,13 @@
+///
+// TapeFollow.cpp
+//
 #include <StandardCplusplus.h>
 #include <phys253.h>
 #include "TapeFollow.hpp"
 #include "pins.hpp"
 #include "PassengerSeek.hpp"
 #include "ToDestination.hpp"
+
 
 const int MOTOR_SPEED_FOLLOWING       {120};
 const int MOTOR_SPEED_PASSENGER_SEEK  {64};
@@ -111,8 +115,8 @@ void TapeFollow::init()
     control         = 0;
     printCount      = 0;
     motorSpeedFollowing = MOTOR_SPEED_FOLLOWING;
-    motorSpeedTurning = MOTOR_SPEED_TURNING;
-    motorSpeed      = motorSpeedFollowing;
+    motorSpeedTurning   = MOTOR_SPEED_TURNING;
+    motorSpeed          = motorSpeedFollowing;
     tapeFollowSteps = 0;
     
     lastError       = 0.;
@@ -280,18 +284,17 @@ bool TapeFollow::fnAnyLastReadings(int period, int fn)
 {
     for (int i(0); i < period; ++i) {
         bool reading [4];
-        for(int j(0); j < 4; j++)
+        for (int j(0); j < 4; ++j)
             reading[j] = lastPinReadings[i][j];
         bool result;
-        if(fn == FN_MAINS_OFF_TAPE){
+        if (fn == FN_MAINS_OFF_TAPE) 
             result = mainsOffTape(reading);
-        }else if(fn == FN_OFF_TAPE){
+        else if (fn == FN_OFF_TAPE)
             result = offTape(reading);
-        }else if(fn == FN_INTS_OFF_TAPE){
+        else if (fn == FN_INTS_OFF_TAPE)
             result = intsOffTape(reading);
-        }else{
+        else
             result = false; //YOU SHOULD NEVER GET HERE
-        }
         if (result)
             return true;
     }
@@ -338,8 +341,8 @@ float TapeFollow::makeTurn()
     // determine whether end has bee reached
     if ((!halfTurn) && fnAllLastReadings(TURNING_PERIOD, FN_MAINS_OFF_TAPE))
         halfTurn = true;
-    else if (halfTurn && !(fnAnyLastReadings(
-                                  ON_TAPE_PERIOD, FN_MAINS_OFF_TAPE))) {
+    else if (halfTurn &&
+             !(fnAnyLastReadings(ON_TAPE_PERIOD, FN_MAINS_OFF_TAPE))) {
         halfTurn = false;
         turning = false;
         turningAround = false; // exit to regular following
@@ -382,26 +385,26 @@ Direction TapeFollow::chooseTurn(bool left, bool right, bool straight)
     float leftMax = 0 + leftProb;
     float straightMax = leftProb + straightProb;
     
-    Serial.print(F("rand: "));
+    Serial.print( F("rand: ") );
     Serial.println(randValue);
-    Serial.print(F("left: "));
+    Serial.print( F("left: ") );
     Serial.println(leftMax);
-    Serial.print(F("straight: "));
+    Serial.print( F("straight: ") );
     Serial.println(straightMax);
-    Serial.print(F("direction: "));
+    Serial.print( F("direction: ") );
     
     leftWeight = 50.;
     rightWeight = 50.;
     straightWeight = 50.;
     
     if (randValue < leftMax){
-        Serial.println(F("left"));
+        Serial.println( F("left") );
         return Direction::LEFT;}
     else if (randValue < straightMax){
-        Serial.println(F("straight")); 
+        Serial.println( F("straight") ); 
         return Direction::FRONT;}
     else{
-        Serial.println(F("right")); 
+        Serial.println( F("right") ); 
         return Direction::RIGHT;}
 }
 
@@ -410,48 +413,48 @@ void TapeFollow::printLCD()
 {
     if (!active) {
         LCD.clear();
-        LCD.print("why");
+        LCD.print( F("why") );
         LCD.setCursor(0,1);
-        LCD.print("begin");
+        LCD.print( F("begin") );
     } else {
         LCD.clear();
         // print letter
         if (!(turning || onTape))
-            LCD.print("S ");  // seeking
+            LCD.print( F("S ") );  // seeking
         else if (turning)
-            if(turningAround){
-                LCD.print("TA");
-            }else
-                LCD.print("T ");  // turning
+            if (turningAround)
+                LCD.print( F("TA") );
+            else
+                LCD.print( F("T ") );  // turning
         else
-            LCD.print("F ");  // following
+            LCD.print( F("F ") );  // following
         // print arrow
         if (turning) {
             if (turnDirection == Direction::LEFT)
-                LCD.print("<--");
+                LCD.print( F("<--") );
             else if (turnDirection == Direction::RIGHT)
-                LCD.print("-->");
+                LCD.print( F("-->") );
             else
-                LCD.print(" ^ ");
+                LCD.print( F(" ^ ") );
         } else {
             if (control < 0)
-                LCD.print("<  ");
+                LCD.print( F("<  ") );
             else if (control > 0)
-                LCD.print("  >");
+                LCD.print( F("  >") );
             else
-                LCD.print(" ^ ");
+                LCD.print( F(" ^ ") );
         }
         // print QRD readings
         for (const auto read : pinReadings) {
-            LCD.print(" ");
+            LCD.print( F(" ") );
             LCD.print(read);
         }
         // print gains and control
         LCD.setCursor(0,1);
         LCD.print(gainProp);
-        LCD.print(" ");
+        LCD.print( F(" ") );
         LCD.print(gainDer1);
-        LCD.print(" ");
+        LCD.print( F(" ") );
         LCD.print(control);
     }
 }
@@ -461,7 +464,7 @@ void TapeFollow::loop()
 {
     if (!active){
         LCD.clear();
-        LCD.print("in TF loop");
+        LCD.print( F("in TF loop") );
         return;
     }
     
@@ -488,22 +491,23 @@ void TapeFollow::loop()
     
     // update lastPinReadings array
     for (int i(NUM_SAVED_READINGS-1); i > 0; --i) 
-        for (auto j(0); j < 4; ++j) 
+        for (int j(0); j < 4; ++j) 
             lastPinReadings[i][j] = lastPinReadings[i-1][j];
     
-    for (int i(0); i < 4; i++)
+    for (int i(0); i < 4; ++i)
         lastPinReadings[0][i] = pinReadings[i];
-    
     
     // determine whether on tape
     lastOnTape = onTape;
     
     bool isOnTape(false);
-    for (const auto read : pinReadings) 
+    for (int i(0); i < 4; ++i) {
+        bool read = pinReadings[i];
         if (read) {
             isOnTape = true;
             break;
         }
+    }
     onTape = isOnTape;
     
     // determine whether mains on tape
@@ -512,8 +516,7 @@ void TapeFollow::loop()
     
     // get error based on current state
     float error(0.);
-    if ((!(turning)) && fnAllLastReadings(
-                OFF_TAPE_PERIOD, FN_OFF_TAPE)) {
+    if ((!(turning)) && fnAllLastReadings(OFF_TAPE_PERIOD, FN_OFF_TAPE)) {
         motorSpeed = motorSpeedTurning;
         tapeFollowSteps = 0;
         error = seekTape();

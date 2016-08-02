@@ -29,36 +29,33 @@ void setup() {
     Serial.begin(9600);
     randomSeed(analogRead(0));
     LCD.clear();
-    LCD.print("Press START to");
+    LCD.print( F("Press START to") );
     LCD.setCursor(0, 1);
-    LCD.print("begin");
+    LCD.print( F("begin") );
     
     Arm_And_Stepper::setup();
 }
 
 void loop() {
-    if(!started && startbutton()){
+    if (!started && startbutton()) {
         debugSequence();
         TapeFollow::init();
         PassengerSeek::init();
         TapeFollow::start();
         LCD.clear();
-    }
-    if(startbutton()){
+    } else if (startbutton()) {
         TapeFollow::start();
         PassengerSeek::init();
         LCD.clear();
         
-    }
-    if(stopbutton()){
+    } else if (stopbutton()) {
         TapeFollow::test();
         PassengerSeek::pause();
         LCD.clear();
         LCD.print("stopped!");
     }
-    if(started){
-        Arm_And_Stepper::doControl(); //Can't not do this or the arm will FUCKING EXPLODE
-        
+    if (started) {
+        Arm_And_Stepper::doControl(); //Can't not do this or the arm will F*CKING EXPLODE
         if (state == FIND_PASSENGER)
             findPassengerLoop();
         else if (state == LOAD_PASSENGER_LEFT)
@@ -70,29 +67,30 @@ void loop() {
     }
 }
 
-void findPassengerLoop(){
+
+void findPassengerLoop()
+{
     TapeFollow::loop();
     CollisionWatch::loop();
     PassengerSeek::loop();
-    if(PassengerSeek::isAtPassenger()){
+    if (PassengerSeek::isAtPassenger()) {
         TapeFollow::test();
         PassengerSeek::pause();
         TapeFollow::loop();
         int side = PassengerSeek::getPassengerSide();
-        if(side == 1){
+        if (side == 1) 
             state = LOAD_PASSENGER_RIGHT;
-        }else if(side == -1){
+        else if (side == -1)
             state = LOAD_PASSENGER_LEFT;
-        }
         //PassengerSeek::stop();
         //TODO: uncomment this once passenger seeking is working
     }
-    if(CollisionWatch::hasDetectedCollision()){
+    if (CollisionWatch::hasDetectedCollision()) 
         TapeFollow::turnAround();
-    }
 }
 
-void findBeaconLoop(){
+void findBeaconLoop()
+{
     if (ToDestination::hasArrived()) {
         TapeFollow::test();
         TapeFollow::loop();
@@ -108,39 +106,41 @@ void findBeaconLoop(){
         Direction dir = ToDestination::getBeaconDirection();
         switch (dir) {
         case Direction::LEFT:
-            TapeFollow::giveTurnDirection(100,0,0.1);
+            TapeFollow::giveTurnDirection(100, 0, 0.1);
             break;
         case Direction::RIGHT:
-            TapeFollow::giveTurnDirection(0,100,0.1);
+            TapeFollow::giveTurnDirection(0, 100, 0.1);
             break;
         default:
-            TapeFollow::giveTurnDirection(50,50,50);
+            TapeFollow::giveTurnDirection(50, 50, 50);
             break;
         }
     } 
 }
 
-void loadPassengerLoop(){
-    if(state == LOAD_PASSENGER_RIGHT){
+
+void loadPassengerLoop()
+{
+    if (state == LOAD_PASSENGER_RIGHT) {
         LCD.clear();
-        LCD.print("grabbing on right");
+        LCD.print( F("grabbing on right") );
         Arm_And_Stepper::turnAndReach(true, true);
-    }else{
+    } else {
         LCD.clear();
-        LCD.print("grabbing on left");
-        Arm_And_Stepper::turnAndReach(false,true);
+        LCD.print( F("grabbing on left") );
+        Arm_And_Stepper::turnAndReach(false, true);
     }
     
-    if(/*holding*/true){ //TODO: change back to holding variable!!!! (once we have switches hooked up again)
+    if (/*holding*/true) { //TODO: change back to holding variable!!!! (once we have switches hooked up again)
         //state = FIND_BEACON;
         LCD.clear();
-        LCD.print("I got something!");
+        LCD.print( F("I got something!") );
         delay(5000);
         state = FIND_PASSENGER;
         //TapeFollow::init();
         PassengerSeek::init();
         TapeFollow::start();
-    }else{
+    } else {
         //go forward
         //turn around
         //find passenger again 
@@ -152,81 +152,81 @@ void loadPassengerLoop(){
     }
 }
 
-void debugSequence(){
+
+void debugSequence()
+{
     LCD.clear();
-    LCD.print("right motor forward");
-    LCD.setCursor(0,1);
-    LCD.print("START to continue");
+    LCD.print( F("right motor forward") );
+    LCD.setCursor(0, 1);
+    LCD.print( F("START to continue") );
     delay(500);
-    while(!startbutton()){
+    while (!startbutton()) 
         motor.speed(MOTOR_PIN_L, -100);
-    }
     motor.speed(MOTOR_PIN_L, 0);
-    while(startbutton()){}
+    while (startbutton()) {}
     delay(500);
     LCD.clear();
-    LCD.print("left motor forward");
+    LCD.print( F("left motor forward") );
     LCD.setCursor(0,1);
-    LCD.print("START to continue");
-    while(!startbutton()){
+    LCD.print( F("START to continue") );
+    while (!startbutton()) 
         motor.speed(MOTOR_PIN_R, 100);
-    }
     motor.speed(MOTOR_PIN_R, 0);
-    while(startbutton()){}
+    while (startbutton()) {}
     delay(500);
     LCD.clear();
-    LCD.print("disengage arm gear");
+    LCD.print( F("disengage arm gear") );
     LCD.setCursor(0,1);
-    LCD.print("START to continue");
-    while(!startbutton()){}
-    while(startbutton()){}
+    LCD.print( F("START to continue") );
+    while (!startbutton()) {}
+    while (startbutton()) {}
     delay(500);
     LCD.clear();
-    LCD.print("arm gear upward");
-    LCD.setCursor(0,1);
-    LCD.print("START to continue");
-    while(!startbutton()){
+    LCD.print( F("arm gear upward") );
+    LCD.setCursor(0, 1);
+    LCD.print( F("START to continue") );
+    while (!startbutton())
         Arm_And_Stepper::doControl();
-    }
     motor.speed(MOTOR_PIN_ARM, 0);
-    while(startbutton()){}
+    while (startbutton()) {}
     delay(500);
     LCD.clear();
-    LCD.print("set claw to midpoint");
-    LCD.setCursor(0,1);
-    LCD.print("START to continue");
-    while(!startbutton()){
+    LCD.print( F("set claw to midpoint") );
+    LCD.setCursor(0, 1);
+    LCD.print( F("START to continue") );
+    while (!startbutton()) {
         LCD.clear();
-        LCD.print("STOP to open");
-        LCD.setCursor(0,1);
-        LCD.print("START to continue");
+        LCD.print( F("STOP to open") );
+        LCD.setCursor(0, 1);
+        LCD.print( F("START to continue") );
         delay(50);
-        if(stopbutton()){
+        if (stopbutton()) {
             delay(500);
-            Arm_And_Stepper::dropShit();
+            Arm_And_Stepper::dropCrap();
         }
     }
-    while(startbutton()){}
+    while (startbutton()) {}
     delay(500);
     LCD.clear();
-    LCD.print("START to begin loop");
-    while(!startbutton()){
+    LCD.print( F("START to begin loop") );
+    while (!startbutton()) 
         delay(10);
-    }
-    while(startbutton()){}
+    while (startbutton()) {}
     delay(500);
     started = true;
 }
 
-void missedPassenger(){
+
+void missedPassenger()
+{
     LCD.clear();
-    LCD.print("I missed...");
+    LCD.print( F("I missed...") );
     delay(5000);
     unsigned long prevTime = millis();
     TapeFollow::init();
     PassengerSeek::init();   
     TapeFollow::start();
-    while((millis() - prevTime) < 750){
+    while ((millis() - prevTime) < 750) {
         Arm_And_Stepper::doControl();
         TapeFollow::loop();
     }

@@ -7,17 +7,9 @@
 //MToDestination Constants & Variables
 const int DIFF_THRESHOLD = 50;
 
-// static int lastLeft = 0;
-// static int lastRight = 0;
-// static int currLeft = 0;
-// static int currRight = 0;
-// static int lastDiff = 0;
-// static int currDiff = 0;
-//int printCount = 0;
-
 //DetectBeacon Constants & Variables
 const int BEACON_THRESHOLD = 100;
-const int *beaconSensorPins(BEACON_SENSORS_SIDES);
+const int *beaconSensorPins {BEACON_SENSORS_SIDES};
 const int numBeaconReadings = 5;
 
 static int leftBeaconReadings[numBeaconReadings];
@@ -74,7 +66,7 @@ void ToDestination::loop()
 {
     updateLeftBeaconArray();
     updateRightBeaconArray();
-    beaconReadingIndex++;
+    ++beaconReadingIndex;
     if (beaconReadingIndex >= numBeaconReadings) 
         beaconReadingIndex = 0;    
 }
@@ -106,7 +98,8 @@ Direction ToDestination::getBeaconDirection()
     
     if (leftAverage > BEACON_THRESHOLD) {
         if (rightAverage > BEACON_THRESHOLD)
-            return (leftAverage > rightAverage) ? Direction::LEFT : Direction::RIGHT;
+            return (leftAverage > rightAverage) ?
+                Direction::LEFT : Direction::RIGHT;
         else
 	    return Direction::LEFT;
     } else if (rightAverage > BEACON_THRESHOLD) 
@@ -122,20 +115,24 @@ int ToDestination::getLeftBeaconReading()
     return analogRead(beaconSensorPins[0]);
 }
 
+
 int ToDestination::getRightBeaconReading()
 {
     return analogRead(beaconSensorPins[1]);
 }
+
 
 float ToDestination::getLeftBeaconAverage()
 {
     return leftBeaconSum / numBeaconReadings;
 }
 
+
 float ToDestination::getRightBeaconAverage()
 {
     return rightBeaconSum / numBeaconReadings;
 }
+
 
 bool ToDestination::hasArrived()
 {

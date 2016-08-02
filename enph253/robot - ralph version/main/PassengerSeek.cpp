@@ -221,17 +221,17 @@ int PassengerSeek::getPassengerSide()
 
 void PassengerSeek::printLCD(){
     LCD.clear();
-    LCD.print("FL: ");
+    LCD.print( F("FL: ") );
     //LCD.print(analogRead(QSD_PINS_SIDES[1]));
     LCD.print(pinReadingsPS[1]);
-    LCD.print(" FR: ");
+    LCD.print( F(" FR: ") );
     LCD.print(pinReadingsPS[2]);
     //LCD.print(analogRead(QSD_PINS_SIDES[2]));
-    LCD.setCursor(0,1);
-    LCD.print("SL: ");
+    LCD.setCursor(0, 1);
+    LCD.print( F("SL: ") );
     LCD.print(pinReadingsPS[0]);
     //LCD.print(analogRead(QSD_PINS_SIDES[0]));
-    LCD.print(" SR: ");
+    LCD.print( F(" SR: ") );
     LCD.print(pinReadingsPS[3]);
     //LCD.print(analogRead(QSD_PINS_SIDES[3]));
 }

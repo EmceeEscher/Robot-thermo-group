@@ -1,3 +1,6 @@
+///
+// CollisionWatch.cpp
+//
 #include <phys253.h>    
 #include <LiquidCrystal.h>
 #include "CollisionWatch.hpp"
@@ -6,13 +9,15 @@
 
 //const int COLLISION_SENSORS[]  { 4,  5};  // left front right back
 const int collisionDetectPeriod {5};
-const int numSensorsPin = sizeof(COLLISION_SENSORS)/sizeof(COLLISION_SENSORS[0]);
+const int numSensorsPin = sizeof(COLLISION_SENSORS) /
+    sizeof(COLLISION_SENSORS[0]);
 int numCollisionReads[numSensorsPin];
 bool collisionDetected[numSensorsPin];
 int collisionDirection;
 
 
-void CollisionWatch::loop(){
+void CollisionWatch::loop()
+{
     // Read collision sensors and update numReads array
     collisionDirection = -1;
     for (int i(0); i < numSensorsPin; ++i) {
@@ -33,4 +38,3 @@ void CollisionWatch::loop(){
 bool CollisionWatch::hasDetectedCollision(){
     return collisionDetected[0]; //|| collisionDetected[1];
 }
-
