@@ -70,7 +70,7 @@ void graphLoop(){
   
   if (isClockwise != -1 && (nextNode == 9 || nextNode == 10 || nextNode == 12)){
     
-    if (isClockwise = 1){
+    if (isClockwise == 1){
       cardinalDirection = nextCardinalDirection + 1;
 
       if (cardinalDirection > 3)
@@ -116,7 +116,7 @@ void graphLoop(int setNode){
   graphTurnDirection = getTurnDirection(setNode, setCardinalDirection);
 
   if (isClockwise != -1 && (nextNode == 9 || nextNode == 10 || nextNode == 12)){
-    if (isClockwise = 1){
+    if (isClockwise == 1){
       cardinalDirection = setCardinalDirection + 1;
 
       if (cardinalDirection > 3)

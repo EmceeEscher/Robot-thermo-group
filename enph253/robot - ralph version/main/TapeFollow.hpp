@@ -3,50 +3,31 @@
 
 #include "Direction.hpp"
 
-void tapeFollowInit();
+namespace TapeFollow
+{
 
-double seekTape();
+    void init();
 
-void intersectionSeen();
+    void printLCD();
+    
+    void loop();
+    
+    void start();
+    
+    void stop();
+    
+    void pause();
+    
+    bool isActive();
+    
+    void test();
+    
+    void giveTurnDirection(float left, float right, float straight);
 
-void intersectionDetection();
+    void turnAround();
 
-double followTape();
+    void backUp();
 
-bool fnAllLastReadings(int period, int fn);
-
-bool fnAnyLastReadings(int period, int fn);
-
-bool offTape(bool reading[]);
-
-bool mainsOffTape(bool reading[]);
-
-bool intsOffTape(bool reading[]);
-
-bool intLOnTape(bool reading[]);
-
-bool intROnTape(bool reading[]);
-
-double makeTurn();
-
-Direction chooseTurn(bool left, bool right, bool straight);
-
-void printLCD();
-
-void tapeFollowLoop();
-
-void tapeFollowStart();
-
-void tapeFollowStop();
-
-void tapeFollowPause();
-
-bool isActive();
-
-void tapeFollowTest();
-
-void giveTurnDirection(float left, float right, float straight);
-
-void turnAround();
+}
 
 #endif

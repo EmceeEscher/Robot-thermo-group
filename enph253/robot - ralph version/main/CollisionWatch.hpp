@@ -1,9 +1,11 @@
 #ifndef COLLISION_WATCH_HPP
 #define COLLISION_WATCH_HPP
 
-void collisionLoop();
+namespace CollisionWatch
+{
+    void loop();
 
-bool hasDetectedCollision();
-
+    bool hasDetectedCollision();
+}
 
 #endif

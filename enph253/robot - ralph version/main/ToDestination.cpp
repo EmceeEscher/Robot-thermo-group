@@ -7,12 +7,12 @@
 //MToDestination Constants & Variables
 const int DIFF_THRESHOLD = 50;
 
-int lastLeft = 0;
-int lastRight = 0;
-int currLeft = 0;
-int currRight = 0;
-int lastDiff = 0;
-int currDiff = 0;
+// static int lastLeft = 0;
+// static int lastRight = 0;
+// static int currLeft = 0;
+// static int currRight = 0;
+// static int lastDiff = 0;
+// static int currDiff = 0;
 //int printCount = 0;
 
 //DetectBeacon Constants & Variables
@@ -20,69 +20,87 @@ const int BEACON_THRESHOLD = 100;
 const int *beaconSensorPins(BEACON_SENSORS_SIDES);
 const int numBeaconReadings = 5;
 
-int leftBeaconReadings[numBeaconReadings];
-float leftBeaconSum = 0;
-int rightBeaconReadings[numBeaconReadings];
-float rightBeaconSum = 0;
-int beaconReadingIndex = 0;
+static int leftBeaconReadings[numBeaconReadings];
+static float leftBeaconSum = 0;
+static int rightBeaconReadings[numBeaconReadings];
+static float rightBeaconSum = 0;
+static int beaconReadingIndex = 0;
 
-void pickDirection(){
-    
-    float leftAverage = getLeftBeaconAverage();
-    float rightAverage = getRightBeaconAverage();
-    // if(printCount>25){
-    // LCD.clear();
-    // LCD.print("L: ");
-    // LCD.print(leftAverage);
-    // LCD.setCursor(0,1);
-    // LCD.print("R: ");
-    // LCD.print(rightAverage);
-    // printCount = 0;
-    // }
-    // printCount++;
-    
-    float diff = rightAverage - leftAverage;
-    if(abs(diff)>DIFF_THRESHOLD){
-        if(diff>0){
-            giveTurnDirection(0,100,0.1);
-        }else{
-            giveTurnDirection(100,0,0.1);
-        }
-    }else{
-        if(diff>0){
-            giveTurnDirection(0,0.1,100);
-        }else{
-            giveTurnDirection(0.1,0,100);
-        }
-    }
+
+namespace ToDestination
+{
+    // static void pickDirection();
+    static void updateLeftBeaconArray();
+    static void updateRightBeaconArray();
+    static int getLeftBeaconReading();
+    static int getRightBeaconReading();
+    static float getLeftBeaconAverage();
+    static float getRightBeaconAverage();
+    // static void detectBeaconPrintLCD();
 }
 
-void detectBeaconLoop() {
+
+// void ToDestination::pickDirection()
+// {
+//     float leftAverage = getLeftBeaconAverage();
+//     float rightAverage = getRightBeaconAverage();
+//     // if(printCount>25){
+//     // LCD.clear();
+//     // LCD.print("L: ");
+//     // LCD.print(leftAverage);
+//     // LCD.setCursor(0,1);
+//     // LCD.print("R: ");
+//     // LCD.print(rightAverage);
+//     // printCount = 0;
+//     // }
+//     // printCount++;
+    
+//     float diff = rightAverage - leftAverage;
+//     if (abs(diff) > DIFF_THRESHOLD) {
+//         if (diff > 0)
+//             TapeFollow::giveTurnDirection(0,100,0.1);
+//         else
+//             TapeFollow::giveTurnDirection(100,0,0.1);
+//     } else {
+//         if (diff > 0) 
+//             TapeFollow::giveTurnDirection(0,0.1,100);
+//         else
+//             TapeFollow::giveTurnDirection(0.1,0,100);
+//     }
+// }
+
+
+void ToDestination::loop()
+{
     updateLeftBeaconArray();
     updateRightBeaconArray();
     beaconReadingIndex++;
-    if(beaconReadingIndex >= numBeaconReadings){
+    if (beaconReadingIndex >= numBeaconReadings) 
         beaconReadingIndex = 0;    
-    }
 }
 
-void updateLeftBeaconArray(){
+
+void ToDestination::updateLeftBeaconArray()
+{
     int newReading = getLeftBeaconReading();
     leftBeaconSum -= leftBeaconReadings[beaconReadingIndex];
     leftBeaconReadings[beaconReadingIndex] = newReading;
     leftBeaconSum += leftBeaconReadings[beaconReadingIndex];
 }
 
-void updateRightBeaconArray(){
+
+void ToDestination::updateRightBeaconArray()
+{
     int newReading = getRightBeaconReading();
     rightBeaconSum -= rightBeaconReadings[beaconReadingIndex];
     rightBeaconReadings[beaconReadingIndex] = newReading;
     rightBeaconSum += rightBeaconReadings[beaconReadingIndex];
 }
 
+
 // returns -1 for left, 1 for right, 0 for no detection
-Direction getBeaconDirection(){
-    int val;
+Direction ToDestination::getBeaconDirection()
+{
     float leftAverage = getLeftBeaconAverage();
     float rightAverage = getRightBeaconAverage();
     
@@ -98,39 +116,46 @@ Direction getBeaconDirection(){
     
 }
 
-int getLeftBeaconReading(){
+
+int ToDestination::getLeftBeaconReading()
+{
     return analogRead(beaconSensorPins[0]);
 }
 
-int getRightBeaconReading(){
+int ToDestination::getRightBeaconReading()
+{
     return analogRead(beaconSensorPins[1]);
 }
 
-float getLeftBeaconAverage(){
+float ToDestination::getLeftBeaconAverage()
+{
     return leftBeaconSum / numBeaconReadings;
 }
 
-float getRightBeaconAverage(){
+float ToDestination::getRightBeaconAverage()
+{
     return rightBeaconSum / numBeaconReadings;
 }
 
-bool hasArrived(){
+bool ToDestination::hasArrived()
+{
     float leftAverage = getLeftBeaconAverage();
     float rightAverage = getRightBeaconAverage();
     return ((leftAverage > BEACON_THRESHOLD) ||
 	    (rightAverage > BEACON_THRESHOLD));
 }
 
-void detectBeaconPrintLCD(){
-  LCD.clear();
-  LCD.print("LR: ");
-  LCD.print(getLeftBeaconReading());
-  LCD.print(" LA: ");
-  LCD.print(getLeftBeaconAverage());
-  LCD.setCursor(0,1);
-  LCD.print("RR: ");
-  LCD.print(getRightBeaconReading());
-  LCD.print(" RA: ");
-  LCD.print(getRightBeaconAverage());
-}
+// void ToDestination::detectBeaconPrintLCD()
+// {
+//     LCD.clear();
+//     LCD.print(F("LR: "));
+//     LCD.print(getLeftBeaconReading());
+//     LCD.print(F(" LA: "));
+//     LCD.print(getLeftBeaconAverage());
+//     LCD.setCursor(0,1);
+//     LCD.print(F("RR: "));
+//     LCD.print(getRightBeaconReading());
+//     LCD.print(F(" RA: "));
+//     LCD.print(getRightBeaconAverage());
+// }
 

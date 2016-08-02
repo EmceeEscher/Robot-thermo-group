@@ -15,6 +15,10 @@ const int DROP_PASSENGER = 4;
 bool started = false;
 int state = FIND_PASSENGER;
 
+void findPassengerLoop();
+void loadPassengerLoop();
+void findBeaconLoop();
+
 
 void setup() {
     // put your setup code here, to run once:
@@ -37,114 +41,113 @@ void setup() {
 }
 
 void loop() {
-    if(startbutton()){
-      started = true;
-      tapeFollowInit();
-      PassengerSeek::init();
-      tapeFollowStart();
-      LCD.clear();
+    if (startbutton()) {
+        started = true;
+        TapeFollow::init();
+        PassengerSeek::init();
+        TapeFollow::start();
+        LCD.clear();
     }
-    if(stopbutton()){
-        tapeFollowTest();
+    if (stopbutton()) {
+        TapeFollow::test();
         PassengerSeek::pause();
         LCD.clear();
         LCD.print("stopped!");
     }
-    if(started){
+    if (started) {
         doControl(); //Can't not do this or the arm will FUCKING EXPLODE
         
-        if(state == FIND_PASSENGER){
+        if (state == FIND_PASSENGER)
             findPassengerLoop();
-        } else if(state == LOAD_PASSENGER_LEFT){
+        else if (state == LOAD_PASSENGER_LEFT)
             loadPassengerLoop();
-        } else if(state == LOAD_PASSENGER_RIGHT){
+        else if (state == LOAD_PASSENGER_RIGHT)
             loadPassengerLoop();
-        } else if(state == FIND_BEACON){
+        else if (state == FIND_BEACON)
             findBeaconLoop();
-        }
     }
 }
 
 void findPassengerLoop(){
-    tapeFollowLoop();
-    collisionLoop();
+    TapeFollow::loop();
+    CollisionWatch::loop();
     PassengerSeek::loop();
     if(PassengerSeek::isAtPassenger()){
-        tapeFollowTest();
+        TapeFollow::test();
         PassengerSeek::pause();
-        tapeFollowLoop();
+        TapeFollow::loop();
         delay(2000);
         int side = PassengerSeek::getPassengerSide();
         if(side == 1){
-          state = LOAD_PASSENGER_RIGHT;
+            state = LOAD_PASSENGER_RIGHT;
         }else if(side == -1){
-          state = LOAD_PASSENGER_LEFT;
+            state = LOAD_PASSENGER_LEFT;
         }
         //PassengerSeek::stop();
         //TODO: uncomment this once passenger seeking is working
     }
-    if(hasDetectedCollision()){
-        turnAround();
+    if(CollisionWatch::hasDetectedCollision()){
+        TapeFollow::turnAround();
     }
 }
 
 void findBeaconLoop(){
-    if(hasArrived()){
-        tapeFollowTest();
-        tapeFollowLoop();
+    if (ToDestination::hasArrived()) {
+        TapeFollow::test();
+        TapeFollow::loop();
         //LCD.clear();
         //LCD.print("I have arrived");
         //delay(10000);
-        //tapeFollowInit();      
+        //TapeFollow::init();      
         //state = DROP_PASSENGER;
-    }else{
-        tapeFollowLoop();
-        collisionLoop();
-        detectBeaconLoop();
-        Direction dir = getBeaconDirection();
-        switch(dir){
-        case Direction::LEFT:
-            giveTurnDirection(100,0,0.1);
-            break;
-        case Direction::RIGHT:
-            giveTurnDirection(0,100,0.1);
-            break;
-        default:
-            giveTurnDirection(50,50,50);
-            break;
+    } else {
+        TapeFollow::loop();
+        CollisionWatch::loop();
+        ToDestination::loop();
+        Direction dir = ToDestination::getBeaconDirection();
+        switch (dir) {
+            case Direction::LEFT:
+                TapeFollow::giveTurnDirection(100,0,0.1);
+                break;
+            case Direction::RIGHT:
+                TapeFollow::giveTurnDirection(0,100,0.1);
+                break;
+            default:
+                TapeFollow::giveTurnDirection(50,50,50);
+                break;
         }
     } 
 }
 
 void loadPassengerLoop(){
     if(state == LOAD_PASSENGER_RIGHT){
-      LCD.clear();
-      LCD.print("grabbing on right");
-      turnAndReach(true, true);
+        LCD.clear();
+        LCD.print("grabbing on right");
+        turnAndReach(true, true);
     }else{
-      LCD.clear();
-      LCD.print("grabbing on left");
-      turnAndReach(false,true);
+        LCD.clear();
+        LCD.print("grabbing on left");
+        turnAndReach(false,true);
     }
     
     if(/*holding*/true){ //TODO: change back to holding variable!!!! (once we have switches hooked up again)
-       //state = FIND_BEACON;
-       LCD.clear();
-       LCD.print("I got something!");
-       delay(5000);
-       state = FIND_PASSENGER;
-       tapeFollowInit();
-       PassengerSeek::init();
-       tapeFollowStart();
+        //state = FIND_BEACON;
+        LCD.clear();
+        LCD.print("I got something!");
+        delay(5000);
+        state = FIND_PASSENGER;
+        TapeFollow::init();
+        PassengerSeek::init();
+        TapeFollow::start();
     }else{
-       //go forward
-       //turn around
-       //find passenger again 
-       state = FIND_PASSENGER;
-       tapeFollowInit();
-       PassengerSeek::init();
-       tapeFollowStart();
-       //missedPassenger();//TODO: TEST THIS!!!!
+        //go forward
+        //turn around
+        //find passenger again 
+        state = FIND_PASSENGER;
+        TapeFollow::init();
+        PassengerSeek::init();
+        TapeFollow::start();
+        //missedPassenger();//TODO: TEST THIS!!!!
     }
 }
 
@@ -153,13 +156,13 @@ void missedPassenger(){
     LCD.print("I missed...");
     delay(5000);
     unsigned long prevTime = millis();
-    tapeFollowInit();
+    TapeFollow::init();
     PassengerSeek::init();   
-    tapeFollowStart();
+    TapeFollow::start();
     while((millis() - prevTime) < 750){
-      doControl();
-      tapeFollowLoop();
+        doControl();
+        TapeFollow::loop();
     }
-    turnAround();
+    TapeFollow::turnAround();
     state = FIND_PASSENGER;
 }
