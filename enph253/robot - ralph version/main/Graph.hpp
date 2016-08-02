@@ -3,14 +3,17 @@
 //
 // Track location of robot
 //
+
 #ifndef GRAPH_HPP
 #define GRAPH_HPP
+
+#include "Direction.hpp"
 
 int getNextCardinalDirection(int);
 
 int getNextNode(int, int);
 
-int getTurnDirection(int, int);
+Direction getTurnDirection(int, int);
 
 void graphLoop();
 
