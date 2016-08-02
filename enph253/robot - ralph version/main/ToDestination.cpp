@@ -16,7 +16,7 @@ int currDiff = 0;
 //int printCount = 0;
 
 //DetectBeacon Constants & Variables
-const int BEACON_THRESHOLD = 512;
+const int BEACON_THRESHOLD = 100;
 const int *beaconSensorPins(BEACON_SENSORS_SIDES);
 const int numBeaconReadings = 5;
 
@@ -25,27 +25,6 @@ float leftBeaconSum = 0;
 int rightBeaconReadings[numBeaconReadings];
 float rightBeaconSum = 0;
 int beaconReadingIndex = 0;
-
-// void loop()
-// {
-// MajorMode::loop();
-
-// if(this->mmCollisionWatch->collisionHasOccurred()){
-// this->mmTapeFollow->turnAround();
-// }
-
-// this->pickDirection();
-
-// if(this->mmDetectBeacon->hasArrived()){
-// this->nextMode = MajorModeEnum::DROP_PASSENGER;
-// }
-// /*
-// * tapeFollow
-// * if at intersection, turn whichever direction has higher reading
-// *    if you can't turn that direction, turn whichever is closest
-// * if reading passes threshold, drop off
-// */
-// }
 
 void pickDirection(){
     

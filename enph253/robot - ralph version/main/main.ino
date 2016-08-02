@@ -13,7 +13,7 @@ const int FIND_BEACON = 3;
 const int DROP_PASSENGER = 4;
 
 bool started = false;
-int state = FIND_BEACON;
+int state = FIND_PASSENGER;
 
 
 void setup() {
@@ -37,56 +37,34 @@ void setup() {
 }
 
 void loop() {
-    if(startbutton()){
-      started = true;
-      tapeFollowInit();
-      PassengerSeek::init();
+  if(!started && startbutton()){
+    debugSequence();
+    tapeFollowInit();
+    PassengerSeek::init();
+    tapeFollowStart();
+    LCD.clear();
+  }
+  if(startbutton()){
       tapeFollowStart();
+      PassengerSeek::init();
       LCD.clear();
-    }
-    if(stopbutton()){
+      
+  }
+  if(stopbutton()){
         tapeFollowTest();
         PassengerSeek::pause();
         LCD.clear();
         LCD.print("stopped!");
-    }
+  }
     if(started){
-        //doControl(); //Can't not do this or the arm will FUCKING EXPLODE
+        doControl(); //Can't not do this or the arm will FUCKING EXPLODE
         
         if(state == FIND_PASSENGER){
             findPassengerLoop();
         } else if(state == LOAD_PASSENGER_LEFT){
-            turnAndReach(false, true);
-            if(holding){
-                LCD.clear();
-                LCD.print("I got something!");
-                delay(5000);
-                state = FIND_PASSENGER;
-                tapeFollowInit();
-                PassengerSeek::init();
-                //state = FIND_BEACON;
-            }else{
-                //go forward
-                //turn around
-                //find passenger again 
-                missedPassenger();//TODO: TEST THIS!!!!
-            }
+            loadPassengerLoop();
         } else if(state == LOAD_PASSENGER_RIGHT){
-            turnAndReach(true, true);
-            if(holding){
-                //state = FIND_BEACON;
-                LCD.clear();
-                LCD.print("I got something!");
-                delay(5000);
-                state = FIND_PASSENGER;
-                tapeFollowInit();
-                PassengerSeek::init();
-            }else{
-                //go forward
-                //turn around
-                //find passenger again 
-                missedPassenger();//TODO: TEST THIS!!!!
-            }
+            loadPassengerLoop();
         } else if(state == FIND_BEACON){
             findBeaconLoop();
         }
@@ -101,7 +79,6 @@ void findPassengerLoop(){
         tapeFollowTest();
         PassengerSeek::pause();
         tapeFollowLoop();
-        delay(2000);
         int side = PassengerSeek::getPassengerSide();
         if(side == 1){
           state = LOAD_PASSENGER_RIGHT;
@@ -119,10 +96,11 @@ void findPassengerLoop(){
 void findBeaconLoop(){
     if(hasArrived()){
         tapeFollowTest();
-        LCD.clear();
-        LCD.print("I have arrived");
-        delay(10000);
-        tapeFollowInit();      
+        tapeFollowLoop();
+        //LCD.clear();
+        //LCD.print("I have arrived");
+        //delay(10000);
+        //tapeFollowInit();      
         //state = DROP_PASSENGER;
     }else{
         tapeFollowLoop();
@@ -143,15 +121,116 @@ void findBeaconLoop(){
     } 
 }
 
+void loadPassengerLoop(){
+    if(state == LOAD_PASSENGER_RIGHT){
+      LCD.clear();
+      LCD.print("grabbing on right");
+      turnAndReach(true, true);
+    }else{
+      LCD.clear();
+      LCD.print("grabbing on left");
+      turnAndReach(false,true);
+    }
+    
+    if(/*holding*/true){ //TODO: change back to holding variable!!!! (once we have switches hooked up again)
+       //state = FIND_BEACON;
+       LCD.clear();
+       LCD.print("I got something!");
+       delay(5000);
+       state = FIND_PASSENGER;
+       //tapeFollowInit();
+       PassengerSeek::init();
+       tapeFollowStart();
+    }else{
+       //go forward
+       //turn around
+       //find passenger again 
+       state = FIND_PASSENGER;
+       //tapeFollowInit();
+       PassengerSeek::init();
+       tapeFollowStart();
+       //missedPassenger();//TODO: TEST THIS!!!!
+    }
+}
+
+void debugSequence(){
+  LCD.clear();
+  LCD.print("right motor forward");
+  LCD.setCursor(0,1);
+  LCD.print("START to continue");
+  delay(500);
+  while(!startbutton()){
+    motor.speed(MOTOR_PIN_L, -100);
+  }
+  motor.speed(MOTOR_PIN_L, 0);
+  while(startbutton()){}
+  delay(500);
+  LCD.clear();
+  LCD.print("left motor forward");
+  LCD.setCursor(0,1);
+  LCD.print("START to continue");
+  while(!startbutton()){
+    motor.speed(MOTOR_PIN_R, 100);
+  }
+  motor.speed(MOTOR_PIN_R, 0);
+  while(startbutton()){}
+  delay(500);
+  LCD.clear();
+  LCD.print("disengage arm gear");
+  LCD.setCursor(0,1);
+  LCD.print("START to continue");
+  while(!startbutton()){}
+  while(startbutton()){}
+  delay(500);
+  LCD.clear();
+  LCD.print("arm gear upward");
+  LCD.setCursor(0,1);
+  LCD.print("START to continue");
+  while(!startbutton()){
+    doControl();
+  }
+  motor.speed(MOTOR_PIN_ARM, 0);
+  while(startbutton()){}
+  delay(500);
+  LCD.clear();
+  LCD.print("set claw to midpoint");
+  LCD.setCursor(0,1);
+  LCD.print("START to continue");
+  while(!startbutton()){
+    LCD.clear();
+    LCD.print("STOP to open");
+    LCD.setCursor(0,1);
+    LCD.print("START to continue");
+    delay(50);
+    if(stopbutton()){
+      delay(500);
+      dropShit();
+    }
+  }
+  while(startbutton()){}
+  delay(500);
+  LCD.clear();
+  LCD.print("START to begin loop");
+  while(!startbutton()){
+    delay(10);
+  }
+  while(startbutton()){}
+  delay(500);
+  started = true;
+}
+
 void missedPassenger(){
-    /*for(auto i(0); i < 30; i++){
-      tapeFollowLoop();
-      }
-      turnAround();*/
     LCD.clear();
     LCD.print("I missed...");
     delay(5000);
+    unsigned long prevTime = millis();
     tapeFollowInit();
-    PassengerSeek::init();
+    PassengerSeek::init();   
+    tapeFollowStart();
+    while((millis() - prevTime) < 750){
+      doControl();
+      tapeFollowLoop();
+    }
+    turnAround();
     state = FIND_PASSENGER;
 }

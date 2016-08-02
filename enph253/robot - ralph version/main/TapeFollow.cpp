@@ -451,8 +451,8 @@ void tapeFollowLoop()
     
     if (printCount % PRINT_PERIOD == 0) {
         //printLCD();
-        //PassengerSeek::printLCD();
-        detectBeaconPrintLCD();
+        PassengerSeek::printLCD();
+        //detectBeaconPrintLCD();
         printCount = 0;
     }
     ++printCount;

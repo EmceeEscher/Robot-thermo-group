@@ -169,8 +169,6 @@ void grabShit(){
     if(!digitalRead(ARM_SWITCHES[0]) || !digitalRead(ARM_SWITCHES[1])){}
     
     else{
-        LCD.clear();
-        LCD.print("Grabbing");
         motor.speed(MOTOR_PIN_BABY,190);
         unsigned long startTime = millis();
         while(1){
@@ -372,8 +370,14 @@ void stepperTurn(bool CW,int count){
  * Parameter: grab - grab if true, drop otherwise
  */
 void turnAndReach(bool turnRight, bool grab){
+    LCD.clear();
+    LCD.print("initial turn");
     stepperTurn(turnRight, numPulses);
+    LCD.clear();
+    LCD.print("grabbing in turn and reach");
     reachAndClaw(grab);
+    LCD.clear();
+    LCD.print("turning back");
     stepperTurn(!turnRight, numPulses);
 }
 
