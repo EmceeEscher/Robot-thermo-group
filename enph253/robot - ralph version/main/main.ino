@@ -12,9 +12,11 @@ const int LOAD_PASSENGER_RIGHT = 2;
 const int FIND_BEACON = 3;
 const int DROP_PASSENGER = 4;
 
+const int PRINT_PERIOD {200};
+
 bool started = false;
 int state = FIND_PASSENGER;
-
+int printCount = 0;
 
 void setup() {
     // put your setup code here, to run once:
@@ -24,9 +26,9 @@ void setup() {
     Serial.begin(9600);
     randomSeed(analogRead(0));
     LCD.clear();
-    LCD.print("Press START to");
+    LCD.print("START: compete");
     LCD.setCursor(0, 1);
-    LCD.print("begin");
+    LCD.print("STOP: debug");
     
     //Arm & Stepper Initialization code
     pinMode(DIR_PIN,OUTPUT);
@@ -38,25 +40,44 @@ void setup() {
 
 void loop() {
   if(!started && startbutton()){
+    //debugSequence();
+    started = true;
+    tapeFollowInit();
+    PassengerSeek::init();
+    tapeFollowStart();
+    LCD.clear();
+  }
+  if(!started && stopbutton()){
     debugSequence();
     tapeFollowInit();
     PassengerSeek::init();
     tapeFollowStart();
     LCD.clear();
   }
-  if(startbutton()){
+  if(startbutton() && started){
       tapeFollowStart();
       PassengerSeek::init();
       LCD.clear();
       
   }
-  if(stopbutton()){
+  if(stopbutton() && started){
         tapeFollowTest();
         PassengerSeek::pause();
         LCD.clear();
         LCD.print("stopped!");
   }
-    if(started){
+
+  if (started && printCount % PRINT_PERIOD == 0) {
+        
+        if(state == FIND_PASSENGER){
+          printLCD();
+          //PassengerSeek::printLCD();
+        }else if(state == FIND_BEACON)
+          detectBeaconPrintLCD();
+        printCount = 0;
+    }
+    ++printCount;
+  if(started){
         doControl(); //Can't not do this or the arm will FUCKING EXPLODE
         
         if(state == FIND_PASSENGER){
@@ -85,6 +106,9 @@ void findPassengerLoop(){
         }else if(side == -1){
           state = LOAD_PASSENGER_LEFT;
         }
+        //state = FIND_BEACON;
+        //tapeFollowStart();
+        PassengerSeek::init();
         //PassengerSeek::stop();
         //TODO: uncomment this once passenger seeking is working
     }
@@ -118,6 +142,9 @@ void findBeaconLoop(){
             giveTurnDirection(50,50,50);
             break;
         }
+        if(hasDetectedCollision()){
+          turnAround();
+        }
     } 
 }
 
@@ -132,12 +159,11 @@ void loadPassengerLoop(){
       turnAndReach(false,true);
     }
     
-    if(/*holding*/true){ //TODO: change back to holding variable!!!! (once we have switches hooked up again)
-       //state = FIND_BEACON;
+    if(holding){ //TODO: change back to holding variable!!!! (once we have switches hooked up again)
+       state = FIND_BEACON;
        LCD.clear();
        LCD.print("I got something!");
-       delay(5000);
-       state = FIND_PASSENGER;
+       //2state = FIND_PASSENGER;
        //tapeFollowInit();
        PassengerSeek::init();
        tapeFollowStart();
@@ -186,7 +212,14 @@ void debugSequence(){
   LCD.print("arm gear upward");
   LCD.setCursor(0,1);
   LCD.print("START to continue");
+  int printCounter  = 0;
   while(!startbutton()){
+    if(printCounter % 50 == 0){
+      LCD.clear();
+      LCD.print(getAngle());
+      printCounter = 0;
+    }
+    printCounter++;
     doControl();
   }
   motor.speed(MOTOR_PIN_ARM, 0);
@@ -204,10 +237,31 @@ void debugSequence(){
     delay(50);
     if(stopbutton()){
       delay(500);
-      dropShit();
+      motor.speed(MOTOR_PIN_BABY,-140);
+      holding = false;
+      delay(dropTime/2);
+      motor.speed(MOTOR_PIN_BABY,0);
     }
   }
   while(startbutton()){}
+  delay(500);
+  LCD.clear();
+  LCD.print("stepper test left");
+  LCD.setCursor(0,1);
+  LCD.print("START to continue");
+  while(!startbutton()){}
+  delay(500);
+  stepperTurn(false, 200);
+  motor.speed(MOTOR_PIN_ARM, 0);
+  delay(500);
+  LCD.clear();
+  LCD.print("stepper test right");
+  LCD.setCursor(0,1);
+  LCD.print("START to continue");
+  while(!startbutton()){}
+  delay(500);
+  stepperTurn(true,200);
+  motor.speed(MOTOR_PIN_ARM, 0);
   delay(500);
   LCD.clear();
   LCD.print("START to begin loop");
@@ -222,7 +276,6 @@ void debugSequence(){
 void missedPassenger(){
     LCD.clear();
     LCD.print("I missed...");
-    delay(5000);
     unsigned long prevTime = millis();
     tapeFollowInit();
     PassengerSeek::init();   

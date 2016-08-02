@@ -49,4 +49,6 @@ void giveTurnDirection(float left, float right, float straight);
 
 void turnAround();
 
+bool isTurning();
+
 #endif

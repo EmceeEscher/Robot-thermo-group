@@ -4,6 +4,7 @@
 #include <phys253.h>
 #include "pins.hpp"
 #include "PassengerSeek.hpp"
+#include "TapeFollow.hpp"
 
 
 //TODO: add code for QSD that's on digital pin
@@ -154,9 +155,9 @@ void PassengerSeek::loop()
     PassengerSeek::updateMax();
     
     // If at a maximum, signal to stop tape following
-    if (PassengerSeek::atMaxSideFront())
+    if (PassengerSeek::atMaxSideFront() && !isTurning())
         approachingPassenger = true;
-    else if (PassengerSeek::atMaxSideMiddle()) {
+    else if (PassengerSeek::atMaxSideMiddle() && !isTurning()) {
         approachingPassenger = false;
         atPassenger = true;
         if (atMax[0])

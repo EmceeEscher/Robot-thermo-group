@@ -20,9 +20,9 @@ float now, lastTime;
 int hasInitialized = 0;
 
 //Rest Positions
-const float BASE_REST_POSITION = 100;
+const float BASE_REST_POSITION = 115;
 const float MID_REST_POSITION = 150;
-const float BASE_HOLD_POSITION = 100;
+const float BASE_HOLD_POSITION = 115;
 const float MID_HOLD_POSITION = 150;//TODO: switch back to 170
 
 //Iterator for LCD printing
@@ -35,12 +35,12 @@ const int stepperMicrosDelay = 1200; //Time delay between pulses in microseconds
 const int numPulses = 680;
 
 //reachAndGrab/reachAndDrop function Constants
-const float initialAdjMidTarget = 100;
-const float initialAdjBaseTarget = 60;
-const float midAdjMidTarget = 135;
-const float midAdjBaseTarget = 40;
-const float finalAdjMidTarget = 170;
-const float finalAdjBaseTarget = 20;
+const float initialAdjMidTarget = 120;
+const float initialAdjBaseTarget = 120;
+const float midAdjMidTarget = 60;
+const float midAdjBaseTarget = 115;
+const float finalAdjMidTarget = 60;
+const float finalAdjBaseTarget = 100;
 
 //Holding a passenger?
 bool holding = false;
