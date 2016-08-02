@@ -31,13 +31,8 @@ void setup() {
     LCD.print("Press START to");
     LCD.setCursor(0, 1);
     LCD.print("begin");
-    
-    //Arm & Stepper Initialization code
-    pinMode(DIR_PIN,OUTPUT);
-    pinMode(PULSE_PIN,OUTPUT);
-    baseTarget = BASE_REST_POSITION;
-    midTarget = MID_REST_POSITION;
-    lastPropErr = 0.;
+
+    Arm_And_Stepper::setup();
 }
 
 void loop() {
@@ -55,7 +50,7 @@ void loop() {
         LCD.print("stopped!");
     }
     if (started) {
-        doControl(); //Can't not do this or the arm will FUCKING EXPLODE
+        Arm_And_Stepper::doControl(); //Can't not do this or the arm will FUCKING EXPLODE
         
         if (state == FIND_PASSENGER)
             findPassengerLoop();
@@ -123,11 +118,11 @@ void loadPassengerLoop(){
     if(state == LOAD_PASSENGER_RIGHT){
         LCD.clear();
         LCD.print("grabbing on right");
-        turnAndReach(true, true);
+        Arm_And_Stepper::turnAndReach(true, true);
     }else{
         LCD.clear();
         LCD.print("grabbing on left");
-        turnAndReach(false,true);
+        Arm_And_Stepper::turnAndReach(false,true);
     }
     
     if(/*holding*/true){ //TODO: change back to holding variable!!!! (once we have switches hooked up again)
@@ -160,7 +155,7 @@ void missedPassenger(){
     PassengerSeek::init();   
     TapeFollow::start();
     while((millis() - prevTime) < 750){
-        doControl();
+        Arm_And_Stepper::doControl();
         TapeFollow::loop();
     }
     TapeFollow::turnAround();
