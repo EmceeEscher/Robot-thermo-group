@@ -1,3 +1,6 @@
+///
+// Arm_And_Stepper.cpp
+//
 #include <phys253.h>
 #include <phys253pins.h>
 #include "pins.hpp"
@@ -97,19 +100,18 @@ void Arm_And_Stepper::doControl()
     lastTime = now;
     lastPropErr = propErr;
     
-    
     if (LCDControl % 25 == 0) {
         //printState();
         LCDControl = 1;
     }
-    LCDControl++;
+    ++LCDControl;
 }
 
 
 //Converts base potentiometer voltage to corresponding angle
 float Arm_And_Stepper::getAngle()
 {
-    float voltage = static_cast<float>(analogRead(POTENTIOMETER)) * 5./1024.;
+    float voltage = static_cast<float>(analogRead(POTENTIOMETER)) * 5. / 1024.;
     return 130.814 * (3. * voltage - 10.) / (voltage - 5.) + 60.;
 }
 
@@ -122,7 +124,6 @@ void Arm_And_Stepper::setBaseMotor(long duty)
         duty = 255;
     else if (duty < -255) 
         duty = -255;
-    
     motor.speed(MOTOR_PIN_ARM, duty);
 }
 
@@ -329,7 +330,7 @@ void Arm_And_Stepper::stepperTurn(bool CW,int count){
         digitalWrite(DIR_PIN, COUNTERCLOCKWISE);
     
     unsigned long prevTime = millis();
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < count; ++i) {
         if (millis() - prevTime > 10) {
             Arm_And_Stepper::doControl();
             prevTime = millis();
@@ -341,6 +342,7 @@ void Arm_And_Stepper::stepperTurn(bool CW,int count){
         delayMicroseconds(stepperMicrosDelay);
     }
 }
+
 
 /* 
  * Parameter: turnRight - Turn right if true, left otherwise

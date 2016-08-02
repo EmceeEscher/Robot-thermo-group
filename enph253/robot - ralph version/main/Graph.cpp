@@ -1,15 +1,20 @@
-#include "Arduino.h"
+///
+// Graph.cpp
+//
+#include <phys253.h>
 #include "Graph.hpp"
 
-int cardinalDirection = 2;
-int nextCardinalDirection;
-int previousNode = 1;
-int currentNode = 2;
-int nextNode;
-Direction graphTurnDirection;
-int isClockwise = -1;
 
-int graph[20][4] {
+Direction graphTurnDirection;
+
+static int cardinalDirection = 2;
+static int nextCardinalDirection;
+static int previousNode = 1;
+static int currentNode = 2;
+static int nextNode;
+static int isClockwise = -1;
+
+static int graph[20][4] {
     // N,  E,  S,  W
     { -1, -1, 19, -1 }, // 0
     { -1, -1,  2, -1 }, // 1
@@ -108,14 +113,14 @@ void graphLoop(int setNode)
 {
     int setCardinalDirection = -1;
 
-    for (int i{0}; i < 4; ++i) {
-        if (graph[currentNode][i] == setNode){
+    for (int i(0); i < 4; ++i) {
+        if (graph[currentNode][i] == setNode) {
             setCardinalDirection = i;
             break;
         }
     }
     
-    if (setCardinalDirection == -1){
+    if (setCardinalDirection == -1) {
         graphLoop();
         return;
     }
@@ -131,11 +136,11 @@ void graphLoop(int setNode)
     graphTurnDirection = getTurnDirection(setNode, setCardinalDirection);
     
     if (isClockwise != -1 && (nextNode == 9 || nextNode == 10 || nextNode == 12)) {
-        if (isClockwise == 1){
+        if (isClockwise == 1) {
             cardinalDirection = setCardinalDirection + 1;
             if (cardinalDirection > 3)
                 cardinalDirection = 0;
-        } else{
+        } else {
             cardinalDirection = setCardinalDirection - 1;
             if (cardinalDirection < 0)
                 cardinalDirection = 3;

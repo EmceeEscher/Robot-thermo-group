@@ -88,23 +88,24 @@ void PassengerSeek::updateMax()
 {   
     //for loop uses different values for non-shielded vs. shielded QSDs
     for (int i(0); i < NUM_PINS_SIDES; ++i) {
-      if(i == 1 || i == 2){
-	      bool aboveThreshold = (numAboveThreshold[i] >= MAX_REGISTER_PERIOD);
-	      bool imax = (
-		     (!lastDerivPositive[i]) &&
-		     (numPosDeriv[i] >= MAX_NUM_DERIV_REGISTER_PERIOD) &&
-		     (numNegDeriv[i] >= MAX_NUM_DERIV_REGISTER_PERIOD));
-	      // set array
-	      atMax[i] = (aboveThreshold && imax);
-      }else{
-        bool aboveThreshold = (numAboveThreshold[i] >= MAX_REGISTER_PERIOD_SHIELDED);
-        bool imax = (
-         (!lastDerivPositive[i]) &&
-         (numPosDeriv[i] >= MAX_NUM_DERIV_REGISTER_PERIOD_SHIELDED) &&
-         (numNegDeriv[i] >= MAX_NUM_DERIV_REGISTER_PERIOD_SHIELDED));
-        // set array
-        atMax[i] = (aboveThreshold && imax);
-      }
+        if (i == 1 || i == 2) {
+            bool aboveThreshold = (numAboveThreshold[i] >= MAX_REGISTER_PERIOD);
+            bool imax = (
+                    (!lastDerivPositive[i]) &&
+                    (numPosDeriv[i] >= MAX_NUM_DERIV_REGISTER_PERIOD) &&
+                    (numNegDeriv[i] >= MAX_NUM_DERIV_REGISTER_PERIOD));
+            // set array
+            atMax[i] = (aboveThreshold && imax);
+        } else {
+            bool aboveThreshold = (numAboveThreshold[i] >=
+                                   MAX_REGISTER_PERIOD_SHIELDED);
+            bool imax = (
+                    (!lastDerivPositive[i]) &&
+                    (numPosDeriv[i] >= MAX_NUM_DERIV_REGISTER_PERIOD_SHIELDED) &&
+                    (numNegDeriv[i] >= MAX_NUM_DERIV_REGISTER_PERIOD_SHIELDED));
+            // set array
+            atMax[i] = (aboveThreshold && imax);
+        }
     }
 }
 

@@ -166,8 +166,10 @@ void TapeFollow::intersectionSeen()
     for (int i = 0; i < NUM_SAVED_READINGS; ++i) {
         if (i >= INTERSECT_PERIOD)
             break;
-        intersectSeenL = (intersectSeenL && lastPinReadings[i][0] && mainsOnTape); //TODO:lastPinReadings must be producing true when it shouldn't  
-        intersectSeenR = (intersectSeenR && lastPinReadings[i][3] && mainsOnTape);
+        intersectSeenL = (
+                intersectSeenL && lastPinReadings[i][0] && mainsOnTape); //TODO:lastPinReadings must be producing true when it shouldn't  
+        intersectSeenR = (
+                intersectSeenR && lastPinReadings[i][3] && mainsOnTape);
     }
     
     // if seen, update instance variable
@@ -373,10 +375,10 @@ Direction TapeFollow::chooseTurn(bool left, bool right, bool straight)
     float leftProb;
     float straightProb;
     if (total == 0) {
-        leftProb = left / (left + right + straight) * 100.;
+        leftProb     = left     / (left + right + straight) * 100.;
         straightProb = straight / (left + right + straight) * 100.;
     } else {
-        leftProb = left * leftWeight / total * 100.;
+        leftProb     = left     * leftWeight     / total * 100.;
         straightProb = straight * straightWeight / total * 100.;
     }
     
@@ -445,12 +447,12 @@ void TapeFollow::printLCD()
                 LCD.print( F(" ^ ") );
         }
         // print QRD readings
-        for (const auto read : pinReadings) {
+        for (int i(0); i < 4; ++i) {
             LCD.print( F(" ") );
-            LCD.print(read);
+            LCD.print(pinReadings[i]);
         }
         // print gains and control
-        LCD.setCursor(0,1);
+        LCD.setCursor(0, 1);
         LCD.print(gainProp);
         LCD.print( F(" ") );
         LCD.print(gainDer1);

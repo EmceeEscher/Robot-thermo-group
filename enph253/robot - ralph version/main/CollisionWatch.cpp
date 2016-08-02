@@ -11,9 +11,9 @@
 const int collisionDetectPeriod {5};
 const int numSensorsPin = sizeof(COLLISION_SENSORS) /
     sizeof(COLLISION_SENSORS[0]);
-int numCollisionReads[numSensorsPin];
-bool collisionDetected[numSensorsPin];
-int collisionDirection;
+static int numCollisionReads[numSensorsPin];
+static bool collisionDetected[numSensorsPin];
+static int collisionDirection;
 
 
 void CollisionWatch::loop()
@@ -35,6 +35,7 @@ void CollisionWatch::loop()
 }
 
 
-bool CollisionWatch::hasDetectedCollision(){
+bool CollisionWatch::hasDetectedCollision()
+{
     return collisionDetected[0]; //|| collisionDetected[1];
 }
