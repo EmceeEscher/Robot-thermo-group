@@ -172,8 +172,8 @@ const int PRE_TURN_DELAY_PERIOD             {75};  // number of iterations to wa
 const int PRE_TURN_AROUND_DELAY_PERIOD     {145};  // number of reverse steps to make before turning around
 const int OFF_TAPE_PERIOD                   {50};  // number of consecutive readings required to signal that the robot has lost the tape
 const int ON_TAPE_PERIOD                     {5};  // number of consecutive readings required to confirm that the robot is back on the tape after turning
-const long TURN_AROUND_SPEED_SWITCH_PERIOD {2048};  // number of steps before switching between forward and reverse while turning around
-const long TURN_AROUND_TIMEOUT_PERIOD      {8192};
+const long TURN_AROUND_SPEED_SWITCH_PERIOD {1024};  // number of steps before switching between forward and reverse while turning around
+const long TURN_AROUND_TIMEOUT_PERIOD      {4192};
 const long COUNTER_MAX                    {16384}; // maximum value for onTapeCounter and offTapeCounter
 
 // Speeds
