@@ -121,7 +121,7 @@ void findPassengerLoop()
 void findBeaconLoop()
 {
     if (Arm_And_Stepper::holding) {
-        if (!digitalRead(ARM_SWITCHES[1])) {
+        if (!digitalRead(pins::ARM_SWITCHES[1])) {
             Arm_And_Stepper::holding = false;
             state = FIND_PASSENGER;
             Arm_And_Stepper::dropCrap();
@@ -206,8 +206,8 @@ void debugSequence()
     LCD.print( F("START to continue") );
     delay(500);
     while (!startbutton())
-        motor.speed(MOTOR_PIN_L, -100);
-    motor.speed(MOTOR_PIN_L, 0);
+        motor.speed(pins::MOTOR_PIN_L, -100);
+    motor.speed(pins::MOTOR_PIN_L, 0);
     while (startbutton()) {}
     delay(500);
     LCD.clear();
@@ -215,8 +215,8 @@ void debugSequence()
     LCD.setCursor(0, 1);
     LCD.print( F("START to continue") );
     while (!startbutton()) 
-        motor.speed(MOTOR_PIN_R, 100);
-    motor.speed(MOTOR_PIN_R, 0);
+        motor.speed(pins::MOTOR_PIN_R, 100);
+    motor.speed(pins::MOTOR_PIN_R, 0);
     while (startbutton()) {}
     delay(500);
     LCD.clear();
@@ -237,7 +237,7 @@ void debugSequence()
         LCD.print(Arm_And_Stepper::getAngle());
         printCounter = 0;
     }
-    motor.speed(MOTOR_PIN_ARM, 0);
+    motor.speed(pins::MOTOR_PIN_ARM, 0);
     while (startbutton()) {}
     delay(500);
     LCD.clear();
@@ -252,10 +252,10 @@ void debugSequence()
         delay(50);
         if (stopbutton()) {
             delay(500);
-            motor.speed(MOTOR_PIN_BABY,-140);
+            motor.speed(pins::MOTOR_PIN_BABY,-140);
             Arm_And_Stepper::holding = false;
             delay(Arm_And_Stepper::dropTime/2);
-            motor.speed(MOTOR_PIN_BABY,0);
+            motor.speed(pins::MOTOR_PIN_BABY,0);
         }
     }
     while (startbutton()) {}
@@ -267,7 +267,7 @@ void debugSequence()
     while (!startbutton()) {}
     delay(500);
     Arm_And_Stepper::stepperTurn(false, 200);
-    motor.speed(MOTOR_PIN_ARM, 0);
+    motor.speed(pins::MOTOR_PIN_ARM, 0);
     delay(500);
     LCD.clear();
     LCD.print( F("stepper test right") );
@@ -276,7 +276,7 @@ void debugSequence()
     while (!startbutton()) {}
     delay(500);
     Arm_And_Stepper::stepperTurn(true, 200);
-    motor.speed(MOTOR_PIN_ARM, 0);
+    motor.speed(pins::MOTOR_PIN_ARM, 0);
     delay(500);
     LCD.clear();
     LCD.print( F("START to begin loop") );

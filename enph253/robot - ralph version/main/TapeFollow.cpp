@@ -4,23 +4,23 @@
 #include <phys253.h>
 #include "pins.hpp"
 #include "Direction.hpp"
-#include "debug.hpp"
 #include "TapeFollow.hpp"
 
 
-// const int MOTOR_SPEED_FOLLOWING      {120};
-const int MOTOR_SPEED_FOLLOWING       {84};
-const int MOTOR_SPEED_PASSENGER_SEEK  {64};
-const int MOTOR_SPEED_TURNING         {32};
-const int MOTOR_SPEED_TURNING_AROUND  {-8};
-// const int MOTOR_SPEED_SEEKING          {8};
-const int MOTOR_SPEED_SEEKING         {32};
-const int MOTOR_SPEED_REVERSE        {-64};
-const float ERROR_SMALL     {.02};
-const float ERROR_MEDIUM    {.04};
-const float ERROR_LARGE     {.08};
-const float ERROR_SEEKING   {.64};
-const float ERROR_TURNING {12.80};
+namespace TapeFollow
+{
+
+    const int motorPinL         {pins::MOTOR_PIN_L};
+    const int motorPinR         {pins::MOTOR_PIN_R};
+    const int *tapeSensorsFront {pins::TAPE_SENSORS_FRONT};
+    const int *tapeSensorsBack  {pins::TAPE_SENSORS_BACK};
+    const int numSensors        {pins_sizes::TAPE_SENSORS_FRONT};
+    const int numActions        {4};
+    
+}
+
+const unsigned long RANDOM_MAX_VAL     {100000};
+
 const float EPSILON         {.10};
 const float GAIN_PROP      {9.84};
 const float GAIN_DER1     {11.78};
@@ -29,81 +29,224 @@ const float GAIN_DER2     {
                 .5 * GAIN_DER1 * GAIN_DER1 / GAIN_PROP * (1. - EPSILON)
         )
 };
-// const float GAIN_DER2 {0.};
-const int COUNTER_MAX                  {256};
-const int INTERSECT_DETECT_PERIOD       {15};  
-const int TURN_CONFIRM_PERIOD           {10}; 
-const int PRE_TURN_DELAY_PERIOD         {75};
-const int PRE_TURN_AROUND_DELAY_PERIOD {145};
-const int OFF_TAPE_PERIOD               {50};
-// const int ON_TAPE_PERIOD               {10};
-const int ON_TAPE_PERIOD                {5};
-const int INTERSECT_SEEK_DELAY_PERIOD {100};
-const unsigned long RANDOM_MAX_VAL     {100000};
-const int TapeFollow::motorPinL         {pins::MOTOR_PIN_L};
-const int TapeFollow::motorPinR         {pins::MOTOR_PIN_R};
-const int *TapeFollow::tapeSensorsFront {pins::TAPE_SENSORS_FRONT};
-const int *TapeFollow::tapeSensorsBack  {pins::TAPE_SENSORS_BACK};
-const TFAction TapeFollow::allActions[TapeFollow::numActions] = {
+
+const float ERROR_SMALL     {.02};            // one main on tape
+const float ERROR_MEDIUM    {.04};            // both mains off, one intersection on tape
+const float ERROR_LARGE     {.08};            // all QRDs off tape
+const float ERROR_SEEKING   {.64};            // error to apply while seeking tape
+const float ERROR_TURNING {12.80};            // error to be applied during turning
+
+const int INTERSECT_SEEK_DELAY_PERIOD  {100}; // while tape following, waits for this many steps before searching for intersections
+const int INTERSECT_DETECT_PERIOD       {15}; // number of consecutive readings required to see an intersection
+const int TURN_CONFIRM_PERIOD           {10}; // number of consecutive readings required to register start of turning
+const int PRE_TURN_DELAY_PERIOD         {75}; // number of iterations to wait after detecting intersections before making decision
+const int PRE_TURN_AROUND_DELAY_PERIOD {145}; // number of reverse steps to make before turning around
+const int OFF_TAPE_PERIOD               {50}; // number of consecutive readings required to signal that the robot has lost the tape
+const int ON_TAPE_PERIOD                 {5}; // number of consecutive readings required to confirm that the robot is back on the tape after turning
+
+const int COUNTER_MAX                  {256}; // maximum value for onTapeCounter and offTapeCounter
+
+const int MOTOR_SPEED_FOLLOWING       {84};  // default motor speed for tape following
+const int MOTOR_SPEED_REVERSING      {-64};  // default motor speed for backing up
+const int MOTOR_SPEED_SEEKING         {32};  // default motor speed for seeking tape
+const int MOTOR_SPEED_TURNING         {32};  // default motor speed for making turn
+const int MOTOR_SPEED_PASSENGER_SEEK  {64};  // motor speed for turning around
+const int MOTOR_SPEED_TURNING_AROUND  {-8};  // motor speed for following after initial passenger sighting
+
+static int motorSpeedFollowing {MOTOR_SPEED_FOLLOWING};        // current motor speed for following tape
+static int motorSpeedReversing {MOTOR_SPEED_REVERSING};
+static int motorSpeedSeeking   {MOTOR_SPEED_SEEKING};
+static int motorSpeedTurning   {MOTOR_SPEED_TURNING};
+
+const int motorSpeedTurningAround {MOTOR_SPEED_TURNING_AROUND};   
+const int motorSpeedPassengerSeek {MOTOR_SPEED_PASSENGER_SEEK};   
+
+static bool active          {false};
+static bool turningAround   {false};           // true if the robot is turning around
+static bool willTurnAround  {false};           // true if the robot is about to turn around
+static bool halfTurn        {false};           // if true, bot has turned far enough that mains are off tape
+static bool motorsActive    {false};           // true if motors are active
+
+static TFAction action {TFAction::SEEKING};    // what the tapefollowing is currently doing (i.e. following, seeking, etc)
+
+static Direction turnDirection {Direction::FRONT};      // current turn direction
+static float leftWeight      {1.};             // TODO: come up with a better way of doing this weight stuff
+static float straightWeight  {1.};
+static float rightWeight     {1.};
+
+static int control      {0};                  // current control parameter
+static int motorSpeed   {motorSpeedSeeking};  // speed to add to motors
+static float error      {0.};
+static float lastError  {0.};                 // last calculated error
+
+static bitset<TapeFollow::numSensors> pinReadings;    // current readings on QRD pins
+static bitset<2> intersectSeen;            // true if an intersection was seen
+static bitset<2> intersectDetect;          // true when an intersection has been detected (seen and passed over)
+
+static vector<float> errorArray;           // array of last 2 distinct errors
+static vector<unsigned long> etimeArray;   // array of times (since read) assoc with errorArray
+static int activePins[TapeFollow::numSensors];         // pin numbers (intL, mainL, mainR, intR)
+
+static int steps[TapeFollow::numActions];  // number of steps for associated action
+
+static int onTapeCounter[TapeFollow::numSensors];      // counts the number of consecutive onTape reads for each pin
+static int offTapeCounter[TapeFollow::numSensors];     // counts the number of consecutive offTape reads for each pin
+
+
+namespace TapeFollow
+{
+
+    const TFAction allActions[numActions] = {
         TFAction::FOLLOWING,
         TFAction::REVERSING,
         TFAction::SEEKING,
         TFAction::TURNING
-};
+    };
+
+    /*
+     * Returns true if off tape (no readings) for longer than OFF_TAPE_PERIOD
+     */
+    static bool offTape();
+
+    /*
+     * Returns true if both mains are off tape for longer than OFF_TAPE_PERIOD
+     */
+    static bool mainsOffTape();
+
+    /*
+     * Based on the lastPinReadings array, determines whether an
+     * intersection has been seen and updates the intersectSeen
+     * array
+     */
+    static void updateIntersectionsSeen();
+
+    /*
+     * Look for intersection. If found, make decision and turn?
+     */
+    static void updateIntersectionsDetected();
+
+    /*
+     * Function which chooses what direction to turn, based on its available
+     * options
+     * 
+     * Chooses randomly, but weighted by values giveTurnDirection.
+     * If giveTurnDirection hasn't been called since last call of chooseTurn,
+     * will choose randomly with equal weights given to available options.
+     * 
+     * param left: true if left is an option, false otherwise
+     * param right: true if right is an option, false otherwise
+     * param straight: true if straight is an option, false otherwise
+     */
+    static Direction chooseTurn(bool left, bool right, bool straight);
+
+    /*
+     * Chooses direction to turn but not randomly. It will always turn in the highest
+     * weighted direction if it can, next highest if it can't, etc.
+     * 
+     * If all weights are equal, behavior is undefined
+     */
+    static Direction chooseTurnDeterministic(bool left, bool right, bool straight);
+
+    /*
+     * Loop function for seeking tape. 
+     * Intersection sensors are used to help find tape. When found,
+     * `followTape` is entered.
+     * The appropriate error is set.
+     */
+    static void setErrorSeekTape();
+
+    /*
+     * Loop function for following tape with no intersections.
+     * If an intersection is detected (and a turn is to be made) 
+     * `makeTurn` is called.
+     * The appropriate error is set.
+     */
+    static void setErrorFollowTape();
+
+    /*
+     * Loop function for completing a turn in a single direction.
+     * Continues until both main detecters loss current tape and find the
+     * next, at which point `followTape` is entered.
+     * The appropriate error is returned.
+     */
+    static void setErrorMakeTurn();
+
+    /*
+     * Based on whether the robot is currently seeking, turning, or following,
+     * set the error to apply.
+     */
+    static void setError();
+
+    /*
+     * Based on the error and following speed, set the control to apply to
+     * the motor speed
+     */
+    static void setControl();
+
+    /*
+     * Update on/off tape counters
+     */
+    static void updateCounters();
+
+    /*
+     * Updates the state of the robot based on the latest reads and
+     * counter values
+     */
+    static void updateState();
+
+}
 
 
 void TapeFollow::init()
 {
-    MinorMode::init();
+    turningAround       = false;
+    willTurnAround      = false;
+    halfTurn            = false;
+    motorsActive        = false;
     
-    this->turningAround       = false;
-    this->willTurnAround      = false;
-    this->halfTurn            = false;
-    this->motorsActive        = false;
+    action              = TFAction::FOLLOWING;
     
-    this->action              = TFAction::FOLLOWING;
+    turnDirection       = Direction::FRONT;  // not turning
+    control             = 0;
+    motorSpeedFollowing = MOTOR_SPEED_FOLLOWING;
+    motorSpeedTurning   = MOTOR_SPEED_TURNING;
+    motorSpeed          = 0;
     
-    this->turnDirection       = Direction::FRONT;  // not turning
-    this->control             = 0;
-    this->motorSpeedFollowing = this->motorSpeedFollowingDefault;
-    this->motorSpeedTurning   = this->motorSpeedTurningDefault;
-    this->motorSpeed          = 0;
+    error               = 0.;
+    lastError           = 0.;
     
-    this->error               = 0.;
-    this->lastError           = 0.;
+    intersectSeen.reset();    // 00
+    intersectDetect.reset();  // 00
+    pinReadings.reset();      // 0000
     
-    this->intersectSeen.reset();    // 00
-    this->intersectDetect.reset();  // 00
-    this->pinReadings.reset();      // 0000
-    
-    this->etimeArray          = {0,  1};
-    this->errorArray          = {0., 0.};
+    etimeArray          = {0,  1};
+    errorArray          = {0., 0.};
     
     for (int i(0); i < TapeFollow::numSensors; ++i) {
         // reset counters
-        this->onTapeCounter[i] = 0;
-        this->offTapeCounter[i] = 0;
+        onTapeCounter[i] = 0;
+        offTapeCounter[i] = 0;
         // assign active pins
-        this->activePins[i] = TapeFollow::tapeSensorsFront[i];
+        activePins[i] = TapeFollow::tapeSensorsFront[i];
     }
     
     for (int i(0); i < TapeFollow::numActions; ++i)
-        this->steps[i] = 0;
+        steps[i] = 0;
     
-    this->leftWeight = 0.;
-    this->rightWeight = 0.;
-    this->straightWeight = 0.;
+    leftWeight = 0.;
+    rightWeight = 0.;
+    straightWeight = 0.;
     
     // declare active pins as inputs
     for (int i(0); i < TapeFollow::numSensors; ++i)
-        pinMode(this->activePins[i], INPUT);
+        pinMode(activePins[i], INPUT);
 }
 
 
 bool TapeFollow::offTape()
 {
     for (int i(0); i < TapeFollow::numSensors; ++i)
-        if (this->offTapeCounter[i] < this->offTapePeriod)
+        if (offTapeCounter[i] < OFF_TAPE_PERIOD)
             return false;
     return true;
 }
@@ -112,7 +255,7 @@ bool TapeFollow::offTape()
 bool TapeFollow::mainsOffTape()
 {
     for (int i(0); i < 2; ++i)
-        if (this->offTapeCounter[i+1] < this->offTapePeriod)
+        if (offTapeCounter[i+1] < OFF_TAPE_PERIOD)
             return false;
     return true;
 }
@@ -121,45 +264,45 @@ bool TapeFollow::mainsOffTape()
 // TODO
 void TapeFollow::updateIntersectionsSeen()
 {
-    bool intSeenL = (!this->mainsOffTape() &&
-                     (this->onTapeCounter[0] >= this->intersectDetectPeriod));
-    bool intSeenR = (!this->mainsOffTape() &&
-                     (this->onTapeCounter[3] >= this->intersectDetectPeriod));
+    bool intSeenL = (!mainsOffTape() &&
+                     (onTapeCounter[0] >= INTERSECT_DETECT_PERIOD));
+    bool intSeenR = (!mainsOffTape() &&
+                     (onTapeCounter[3] >= INTERSECT_DETECT_PERIOD));
     
     // if seen, update instance variable
     if (intSeenL)
-        this->intersectSeen[0] = 1;
+        intersectSeen[0] = 1;
     if (intSeenR)
-        this->intersectSeen[1] = 1;
+        intersectSeen[1] = 1;
 }
 
 
 void TapeFollow::updateIntersectionsDetected()
 {
     // check if intersections seen
-    this->updateIntersectionsSeen();
+    updateIntersectionsSeen();
     
     // check if intersection detected
     for (int i(0); i < 2; ++i)
-        this->intersectDetect[i] = (!this->pinReadings[i]) &&
-            this->intersectSeen[i];
+        intersectDetect[i] = (!pinReadings[i]) &&
+            intersectSeen[i];
     
     // if intersection(s) detected, make move decision
-    if ((this->offTapeCounter[0] >= this->preTurnDelayPeriod) &&
-        (this->offTapeCounter[3] >= this->preTurnDelayPeriod)) {
+    if ((offTapeCounter[0] >= PRE_TURN_DELAY_PERIOD) &&
+        (offTapeCounter[3] >= PRE_TURN_DELAY_PERIOD)) {
         
         // TODO: do this a better way
-        this->turnDirection = this->chooseTurnDeterministic(  // TODO: specify this function from major mode
-                this->intersectDetect[0],
-                this->intersectDetect[1],
-                !this->mainsOffTape()
+        turnDirection = chooseTurnDeterministic(  // TODO: specify this function from major mode
+                intersectDetect[0],
+                intersectDetect[1],
+                !mainsOffTape()
         );
-        if (this->turnDirection != Direction::FRONT)  // TODO: move to updateSTate?
-            this->action = TFAction::TURNING;
+        if (turnDirection != Direction::FRONT)  // TODO: move to updateSTate?
+            action = TFAction::TURNING;
         
         // reset intersection arrays
-        this->intersectSeen.reset();    // 00
-        this->intersectDetect.reset();  // 00
+        intersectSeen.reset();    // 00
+        intersectDetect.reset();  // 00
     }
 }
 
@@ -168,14 +311,14 @@ Direction TapeFollow::chooseTurnDeterministic(
         bool left, bool right, bool straight)
 { 
     int prefLeft = left * (
-            (this->leftWeight > this->rightWeight) +
-            (this->leftWeight > this->straightWeight));
+            (leftWeight > rightWeight) +
+            (leftWeight > straightWeight));
     int prefRight = right * (
-            (this->rightWeight > this->leftWeight) +
-            (this->rightWeight > this->straightWeight));
+            (rightWeight > leftWeight) +
+            (rightWeight > straightWeight));
     int prefStraight = straight * (
-            (this->straightWeight > this->leftWeight) +
-            (this->straightWeight > this->rightWeight));
+            (straightWeight > leftWeight) +
+            (straightWeight > rightWeight));
     
     if (straight && (prefStraight >= prefLeft) && (prefStraight >= prefRight))
         return Direction::FRONT;
@@ -197,9 +340,9 @@ Direction TapeFollow::chooseTurnDeterministic(
 Direction TapeFollow::chooseTurn(bool left, bool right, bool straight)
 {
     float total = (
-            left     * this->leftWeight +
-            right    * this->rightWeight +
-            straight * this->straightWeight
+            left     * leftWeight +
+            right    * rightWeight +
+            straight * straightWeight
     );
     float leftProb;
     float rightProb;
@@ -208,8 +351,8 @@ Direction TapeFollow::chooseTurn(bool left, bool right, bool straight)
         leftProb  = left  / (left + right + straight);
         rightProb = right / (left + right + straight);
     } else {
-        leftProb  = left  * this->leftWeight  / total;
-        rightProb = right * this->rightWeight / total;
+        leftProb  = left  * leftWeight  / total;
+        rightProb = right * rightWeight / total;
     }
     
     // TODO: do this randValue part differently?
@@ -218,9 +361,9 @@ Direction TapeFollow::chooseTurn(bool left, bool right, bool straight)
     float leftMax = 0 + leftProb;
     float rightMax = leftProb + rightProb;
     
-    this->leftWeight = 0.;
-    this->rightWeight = 0.;
-    this->straightWeight = 0.;
+    leftWeight = 0.;
+    rightWeight = 0.;
+    straightWeight = 0.;
     
     if (randValue < leftMax) 
         return Direction::LEFT;
@@ -234,71 +377,71 @@ Direction TapeFollow::chooseTurn(bool left, bool right, bool straight)
 // TODO: make this more advanced
 void TapeFollow::setErrorSeekTape()
 {
-    if (this->lastError < 0.)              // off tape to the right
-        this->error = -this->errorSeeking;
-    else if (this->lastError > 0.)         // off tape to the left
-        this->error = this->errorSeeking;
+    if (lastError < 0.)              // off tape to the right
+        error = -ERROR_SEEKING;
+    else if (lastError > 0.)         // off tape to the left
+        error = ERROR_SEEKING;
     else
-        this->error = 0.;
+        error = 0.;
 }
 
 
 void TapeFollow::setErrorFollowTape()
 {
     // Define aliases for the readings
-    bool intrL = this->pinReadings[0];
-    bool mainL = this->pinReadings[1];
-    bool mainR = this->pinReadings[2];
-    bool intrR = this->pinReadings[3];
+    bool intrL = pinReadings[0];
+    bool mainL = pinReadings[1];
+    bool mainR = pinReadings[2];
+    bool intrR = pinReadings[3];
     
     // determine error
     if (mainL && mainR)               // both main pins over tape
-        this->error = 0.;
+        error = 0.;
     else if (mainL)                  // left main over tape
-        this->error = this->errorSmall;
+        error = ERROR_SMALL;
     else if (mainR)                  // right main over tape
-        this->error = -this->errorSmall;
+        error = -ERROR_SMALL;
     else if (intrL && (!intrR))       // left intersection over tape
-        this->error = this->errorMedium;
+        error = ERROR_MEDIUM;
     else if (intrR && (!intrL))       // right intersection over tape
-        this->error = -this->errorMedium;
-    else if (this->lastError < 0.)    // off tape to the right
-        this->error = -this->errorLarge;
-    else if (this->lastError > 0.)    // off tape to the left
-        this->error = this->errorLarge;
+        error = -ERROR_MEDIUM;
+    else if (lastError < 0.)    // off tape to the right
+        error = -ERROR_LARGE;
+    else if (lastError > 0.)    // off tape to the left
+        error = ERROR_LARGE;
     else 
-        this->error = 0.;
+        error = 0.;
 }
 
 
 // TODO: is this correct?
 void TapeFollow::setErrorMakeTurn()
 {
-    this->error = -(static_cast<int>(this->turnDirection)-1) * this->errorTurning;
+    error = -(static_cast<int>(turnDirection)-1) * ERROR_TURNING;
 }
 
 
 void TapeFollow::setError()
 {
     // choose error based on current action
-    switch (this->action) {  // TODO: handle all cases
+    switch (action) {  // TODO: handle all cases
         case TFAction::SEEKING:
-            this->setErrorSeekTape();
+            setErrorSeekTape();
             break;
         case TFAction::TURNING:
-            this->setErrorMakeTurn();
+            setErrorMakeTurn();
             break;
         default:
-            this->setErrorFollowTape();
+            setErrorFollowTape();
             break;
     }
-    this->error *= std::abs(this->motorSpeedFollowing);  // TODO
+    error *= std::abs(motorSpeedFollowing);  // TODO
     
     // update previous error parameters
-    if (this->error != this->lastError) {
-        this->errorArray = {this->lastError, this->errorArray[0]};
-        this->etimeArray = {0,              this->etimeArray[0]};
-        this->lastError  = this->error;
+    if (error != lastError) {
+        errorArray = {lastError, errorArray[0]};
+        etimeArray = {0,         etimeArray[0]};
+        lastError  = error;
     }
     
     // increase time counters
@@ -311,24 +454,24 @@ void TapeFollow::setControl()
 {
     // get error derivatives
     float der1[2];
-    der1[0] = (this->error - this->errorArray[0]) /
-        static_cast<float>(this->etimeArray[0]);
-    der1[1] = (this->errorArray[0] - this->errorArray[1]) /
-        static_cast<float>(this->etimeArray[1] - this->etimeArray[0]);
+    der1[0] = (error - errorArray[0]) /
+        static_cast<float>(etimeArray[0]);
+    der1[1] = (errorArray[0] - errorArray[1]) /
+        static_cast<float>(etimeArray[1] - etimeArray[0]);
     float der2 = (der1[0] - der1[1]) /
-        static_cast<float>(this->etimeArray[0]);
+        static_cast<float>(etimeArray[0]);
     
     // get the effect of gains
-    float ctrlProp (this->gainProp * this->error);
-    float ctrlDer1 (this->gainDer1 * der1[0]);
-    float ctrlDer2 (this->gainDer2 * der2);
-    this->control = -static_cast<int>(ctrlProp + ctrlDer1 + ctrlDer2);
+    float ctrlProp (GAIN_PROP * error);
+    float ctrlDer1 (GAIN_DER1 * der1[0]);
+    float ctrlDer2 (GAIN_DER2 * der2);
+    control = -static_cast<int>(ctrlProp + ctrlDer1 + ctrlDer2);
     
-    int controlMax = std::abs(this->motorSpeedFollowing) * 3 / 2;  // TODO
-    if (this->control > controlMax)
-        this->control = controlMax;
-    else if (this->control < -controlMax)
-        this->control = -controlMax;
+    int controlMax = std::abs(motorSpeedFollowing) * 3 / 2;  // TODO
+    if (control > controlMax)
+        control = controlMax;
+    else if (control < -controlMax)
+        control = -controlMax;
 }
 
 
@@ -336,57 +479,57 @@ void TapeFollow::setControl()
 // TODO: !!! Serious cleanup needed !
 void TapeFollow::updateState()
 {
-    int followSteps  = this->steps[static_cast<int>(TFAction::FOLLOWING)];
-    int reverseSteps = this->steps[static_cast<int>(TFAction::REVERSING)];
+    int followSteps  = steps[static_cast<int>(TFAction::FOLLOWING)];
+    int reverseSteps = steps[static_cast<int>(TFAction::REVERSING)];
     
-    switch (this->action) {
+    switch (action) {
         
         case TFAction::FOLLOWING:
-            if (this->offTape())
-                this->action = TFAction::SEEKING;
-            else if (followSteps >= this->intersectSeekDelayPeriod)
-                this->updateIntersectionsDetected();
+            if (offTape())
+                action = TFAction::SEEKING;
+            else if (followSteps >= INTERSECT_SEEK_DELAY_PERIOD)
+                updateIntersectionsDetected();
             break;
 
         case TFAction::REVERSING:
-            if (this->offTape())
-                this->action = TFAction::SEEKING;
-            else if (this->willTurnAround) {
-                if (reverseSteps >= this->preTurnAroundDelayPeriod) {
-                    this->motorSpeedFollowing = this->motorSpeedFollowingDefault;
-                    this->motorSpeedTurning = this->motorSpeedTurningAround;
-                    this->willTurnAround = false;
-                    this->turningAround = true;
-                    this->action = TFAction::TURNING;
+            if (offTape())
+                action = TFAction::SEEKING;
+            else if (willTurnAround) {
+                if (reverseSteps >= PRE_TURN_AROUND_DELAY_PERIOD) {
+                    motorSpeedFollowing = MOTOR_SPEED_FOLLOWING;
+                    motorSpeedTurning = motorSpeedTurningAround;
+                    willTurnAround = false;
+                    turningAround = true;
+                    action = TFAction::TURNING;
                 }
             }
             break;
         
         case TFAction::SEEKING:
-            if (!this->offTape()) {
-                if (!this->willTurnAround)
-                    this->action = TFAction::FOLLOWING;
+            if (!offTape()) {
+                if (!willTurnAround)
+                    action = TFAction::FOLLOWING;
                 else
-                    this->action = TFAction::REVERSING;
+                    action = TFAction::REVERSING;
             }
             break;
 
         case TFAction::TURNING:
-            if ((!this->halfTurn) &&
-                (this->offTapeCounter[1] >= this->turnConfirmPeriod) &&
-                (this->offTapeCounter[2] >= this->turnConfirmPeriod)) {
-                this->halfTurn = true;
+            if ((!halfTurn) &&
+                (offTapeCounter[1] >= TURN_CONFIRM_PERIOD) &&
+                (offTapeCounter[2] >= TURN_CONFIRM_PERIOD)) {
+                halfTurn = true;
             } else if (
-                    this->halfTurn &&
-                    ((this->onTapeCounter[1] >= this->onTapePeriod) ||
-                     (this->onTapeCounter[2] >= this->onTapePeriod))) {
-                this->willTurnAround = false;
-                this->halfTurn = false;
-                this->action = TFAction::FOLLOWING; // exit to regular following
-                this->turningAround = false;
-                this->turnDirection = Direction::FRONT;
-                this->motorSpeedTurning = this->motorSpeedTurningDefault;
-                this->motorSpeedFollowing = this->motorSpeedFollowingDefault;
+                    halfTurn &&
+                    ((onTapeCounter[1] >= ON_TAPE_PERIOD) ||
+                     (onTapeCounter[2] >= ON_TAPE_PERIOD))) {
+                willTurnAround = false;
+                halfTurn = false;
+                action = TFAction::FOLLOWING; // exit to regular following
+                turningAround = false;
+                turnDirection = Direction::FRONT;
+                motorSpeedTurning = MOTOR_SPEED_TURNING;
+                motorSpeedFollowing = MOTOR_SPEED_FOLLOWING;
             }
             break;
         
@@ -398,108 +541,65 @@ void TapeFollow::updateCounters()
 {
     // update steps counters
     for (int i(0); i < TapeFollow::numActions; ++i) {
-        if (this->action != TapeFollow::allActions[i]) 
-            this->steps[i] = 0;
-        else if (this->steps[i] < this->counterMax)
-            this->steps[i] += 1;
+        if (action != TapeFollow::allActions[i]) 
+            steps[i] = 0;
+        else if (steps[i] < COUNTER_MAX)
+            steps[i] += 1;
     }
     
     // update on/off tape counters
     for (int i(0); i < TapeFollow::numSensors; ++i) {
-        if (this->pinReadings[i]) {
-            this->offTapeCounter[i] = 0;
-            if (this->onTapeCounter[i] < this->counterMax)
-                this->onTapeCounter[i] += 1;
+        if (pinReadings[i]) {
+            offTapeCounter[i] = 0;
+            if (onTapeCounter[i] < COUNTER_MAX)
+                onTapeCounter[i] += 1;
         } else {
-            this->onTapeCounter[i] = 0;
-            if (this->offTapeCounter[i] < this->counterMax)
-                this->offTapeCounter[i] += 1;
+            onTapeCounter[i] = 0;
+            if (offTapeCounter[i] < COUNTER_MAX)
+                offTapeCounter[i] += 1;
         }
     }
 }
 
 
-TapeFollow::TapeFollow()
-        : MinorMode(),
-          gainProp                   (GAIN_PROP),
-          gainDer1                   (GAIN_DER1),
-          gainDer2                   (GAIN_DER2),
-          errorSmall                 (ERROR_SMALL),
-          errorMedium                (ERROR_MEDIUM),
-          errorLarge                 (ERROR_LARGE),
-          errorSeeking               (ERROR_SEEKING),
-          errorTurning               (ERROR_TURNING),
-          intersectSeekDelayPeriod   (INTERSECT_SEEK_DELAY_PERIOD),
-          intersectDetectPeriod      (INTERSECT_DETECT_PERIOD),
-          turnConfirmPeriod          (TURN_CONFIRM_PERIOD),
-          preTurnDelayPeriod         (PRE_TURN_DELAY_PERIOD),
-          preTurnAroundDelayPeriod   (PRE_TURN_AROUND_DELAY_PERIOD),
-          offTapePeriod              (OFF_TAPE_PERIOD),
-          onTapePeriod               (ON_TAPE_PERIOD),
-          counterMax                 (COUNTER_MAX),
-          motorSpeedTurningDefault   (MOTOR_SPEED_TURNING),
-          motorSpeedTurningAround    (MOTOR_SPEED_TURNING_AROUND),
-          motorSpeedSeeking          (MOTOR_SPEED_SEEKING),
-          motorSpeedFollowingDefault (MOTOR_SPEED_FOLLOWING),
-          motorSpeedPassengerSeek    (MOTOR_SPEED_PASSENGER_SEEK),
-          motorSpeedReverse          (MOTOR_SPEED_REVERSE),
-          motorSpeedFollowing        (MOTOR_SPEED_FOLLOWING),
-          motorSpeedTurning          (MOTOR_SPEED_TURNING)
-{
-    this->init();
-}
-
-
-TapeFollow::~TapeFollow() {}
-
-
 void TapeFollow::loop()
 {
-    // set gains
-    // TODO move this to constructor once values are decided upon
-    if (!this->motorsActive) {
-        this->gainProp = static_cast<float>(knob(pins::KNOB_PROP_GAIN)) / 50.;
-        this->gainDer1 = static_cast<float>(knob(pins::KNOB_DER1_GAIN)) / 50.;
-        this->gainDer2 = .5*this->gainDer1*this->gainDer1 /
-            this->gainProp*(1.-EPSILON);
-    }
-    
     // get readings from tape sensors
     for (int i(0); i < TapeFollow::numSensors; ++i) 
-        this->pinReadings[i] = digitalRead(this->activePins[i]);
+        pinReadings[i] = digitalRead(activePins[i]);
     
     // update counters
-    this->updateCounters();
+    updateCounters();
     
     // update state variables
-    this->updateState();
+    updateState();
     
     // set motor speed based on action
-    switch (this->action) {
+    switch (action) {
         case TFAction::FOLLOWING:
-            this->motorSpeed = this->motorSpeedFollowing;
+            motorSpeed = motorSpeedFollowing;
             break;
         case TFAction::REVERSING:
-            this->motorSpeed = this->motorSpeedReverse;
+            motorSpeed = motorSpeedReversing;
             break;
         case TFAction::SEEKING:
-            this->motorSpeed = this->motorSpeedSeeking;
+            motorSpeed = motorSpeedSeeking;
             break;
         case TFAction::TURNING:
-            this->motorSpeed = this->motorSpeedTurning;
+            motorSpeed = motorSpeedTurning;
             break;
     }
     
     // get error based on current state
-    this->setError();
+    setError();
     
     // get the control to apply to the motor speed
-    this->setControl();
+    setControl();
     
     // adjust motor speed
-    if (this->motorsActive) {
-        motor.speed(TapeFollow::motorPinL, this->control - this->motorSpeed);
-        motor.speed(TapeFollow::motorPinR, this->control + this->motorSpeed);
+    if (motorsActive) {
+        motor.speed(TapeFollow::motorPinL, control - motorSpeed);
+        motor.speed(TapeFollow::motorPinR, control + motorSpeed);
     } else {
         motor.speed(TapeFollow::motorPinL, 0);
         motor.speed(TapeFollow::motorPinR, 0);
@@ -510,24 +610,24 @@ void TapeFollow::loop()
 
 void TapeFollow::start()
 {
-    MinorMode::start();
-    this->motorsActive = true;
+    active = true;
+    motorsActive = true;
 }
 
 
 void TapeFollow::pause()
 {
-    MinorMode::pause();
+    active = false;
     motor.speed(TapeFollow::motorPinL, 0);
     motor.speed(TapeFollow::motorPinR, 0);
-    this->motorsActive = false;
+    motorsActive = false;
 }
 
 
 void TapeFollow::test()
 {
-    MinorMode::test();
-    this->pause();
+    active = true;
+    pause();
 }
 
 
@@ -535,7 +635,7 @@ void TapeFollow::printLCD()
 {
     LCD.clear();
     // print letter
-    switch (this->action) {
+    switch (action) {
         case TFAction::SEEKING:
             LCD.print( F("S ") );  // seeking
             break;
@@ -554,10 +654,10 @@ void TapeFollow::printLCD()
     }
     
     // print arrow
-    if (this->turningAround)
+    if (turningAround)
         LCD.print( F("v") );
-    else if (this->action == TFAction::TURNING) {
-        switch (this->turnDirection) {
+    else if (action == TFAction::TURNING) {
+        switch (turnDirection) {
             case Direction::LEFT:
                 LCD.print( F("<") );
                 break;
@@ -572,9 +672,9 @@ void TapeFollow::printLCD()
                 break;
         }
     } else {
-        if (this->control < 0)
+        if (control < 0)
             LCD.print( F("<") );
-        else if (this->control > 0)
+        else if (control > 0)
             LCD.print( F(">") );
         else
             LCD.print( F("^") );
@@ -583,76 +683,72 @@ void TapeFollow::printLCD()
     // print QRD readings
     for (int i(0); i < TapeFollow::numSensors; ++i) {
         LCD.print( F(" ") );
-        LCD.print(this->pinReadings[i]);
+        LCD.print(pinReadings[i]);
     }
-    
-    // print current available RAM
-    LCD.print( F(" ") );
-    LCD.print(freeRam());
     
     // print gains and control
     LCD.setCursor(0,1);
-    LCD.print(this->gainProp);
-    // LCD.print(this->errorArray[0]);
+    LCD.print(GAIN_PROP);
+    // LCD.print(errorArray[0]);
     LCD.print( F(" ") );
-    LCD.print(this->gainDer1);
-    // LCD.print(this->errorArray[1]);
+    LCD.print(GAIN_DER1);
+    // LCD.print(errorArray[1]);
     LCD.print( F(" ") );
-    LCD.print(this->control);
+    LCD.print(control);
 }
 
 
 // TODO: !!! find a better way
 void TapeFollow::setMotorSpeedPassengerSeek()
 {
-    this->motorSpeedFollowing = this->motorSpeedPassengerSeek;
+    motorSpeedFollowing = motorSpeedPassengerSeek;
 }
 
 
 // TODO: !!! find a better way
 void TapeFollow::resetMotorSpeed()
 {
-    this->motorSpeedFollowing = this->motorSpeedFollowingDefault;
+    motorSpeedFollowing = MOTOR_SPEED_FOLLOWING;
 }
 
 
 // TODO: !!! check if this is correct
 void TapeFollow::turnAround()
 {
-    switch (this->turnDirection) {
+    switch (turnDirection) {
         case Direction::LEFT:
-            this->turnDirection = Direction::RIGHT;
+            turnDirection = Direction::RIGHT;
             break;
         case Direction::RIGHT:
-            this->turnDirection = Direction::LEFT;
+            turnDirection = Direction::LEFT;
             break;
         case Direction::FRONT:
-            this->turnDirection = Direction::RIGHT;  // TODO: make a smarter way of choosing this
+            turnDirection = Direction::RIGHT;  // TODO: make a smarter way of choosing this
             break;
         case Direction::BACK:
-            this->turnDirection = Direction::RIGHT;  // TODO: make a smarter way of choosing this
+            turnDirection = Direction::RIGHT;  // TODO: make a smarter way of choosing this
             break;
     }
-    this->willTurnAround = true;
-    this->action = TFAction::SEEKING;
+    willTurnAround = true;
+    action = TFAction::SEEKING;
 }
 
 
 bool TapeFollow::isTurning()
 {
-    return this->action == TFAction::TURNING;
+    return action == TFAction::TURNING;
 }
 
 
 bool TapeFollow::isSeeking()
 {
-    return this->action == TFAction::SEEKING;
+    return action == TFAction::SEEKING;
 }
 
 
 void TapeFollow::giveTurnDirection(float left, float right, float straight)
 {
-    this->leftWeight = left;
-    this->rightWeight = right;
-    this->straightWeight = straight;
+    leftWeight = left;
+    rightWeight = right;
+    straightWeight = straight;
 }
