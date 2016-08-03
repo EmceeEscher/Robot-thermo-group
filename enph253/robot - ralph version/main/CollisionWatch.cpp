@@ -7,7 +7,7 @@
 const int collisionDetectPeriod {5};
 const int numSensorsPin = sizeof(COLLISION_SENSORS)/sizeof(COLLISION_SENSORS[0]);
 int numCollisionReads[numSensorsPin];
-bool collisionDetected[numSensorsPin];
+bool collisionDetected[numSensorsPin] = {false, false};
 int collisionDirection;
 
 void collisionLoop(){
@@ -19,11 +19,11 @@ void collisionLoop(){
         else if (numCollisionReads[i] < collisionDetectPeriod) 
             numCollisionReads[i] += 1;
         if (numCollisionReads[i] >= collisionDetectPeriod){
-            collisionDetected[i] = 1;
+            collisionDetected[i] = true;
             collisionDirection = i;
         }
         else
-            collisionDetected[i] = 0;
+            collisionDetected[i] = false;
     }
 }
 

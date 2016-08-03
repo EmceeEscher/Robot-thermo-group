@@ -3,7 +3,7 @@
 
 
 //Amount of time to run motor to drop animal
-const int dropTime = 400; // Milliseconds
+const int dropTime = 350; // Milliseconds
 
 //SPECIFIED GAIN VALUES
 const float PROP_GAIN = 12.;
@@ -22,8 +22,8 @@ int hasInitialized = 0;
 //Rest Positions
 const float BASE_REST_POSITION = 130;
 const float MID_REST_POSITION = 150;
-const float BASE_HOLD_POSITION = 130;
-const float MID_HOLD_POSITION = 150;//TODO: switch back to 170
+const float BASE_HOLD_POSITION = 135;
+const float MID_HOLD_POSITION = 170;//TODO: switch back to 170
 
 //Iterator for LCD printing
 int LCDControl;
@@ -31,16 +31,19 @@ int LCDControl;
 //Stepper Constants
 const int COUNTERCLOCKWISE = HIGH;
 const int CLOCKWISE = LOW;
-const int stepperMicrosDelay = 1200; //Time delay between pulses in microseconds
+const int stepperMicrosDelay = 1000; //Time delay between pulses in microseconds
 const int numPulses = 680;
 
 //reachAndGrab/reachAndDrop function Constants
-const float initialAdjMidTarget = 60;
+const float initialAdjMidTarget = 100;
 const float initialAdjBaseTarget = 120;
-const float midAdjMidTarget = 30;
+const float midAdjMidTarget = 60;
 const float midAdjBaseTarget = 120;
 const float finalAdjMidTarget = 10;
 const float finalAdjBaseTarget = 115;
+
+const float midGrabTarget = 60;
+const float baseGrabTarget = 100;
 
 //Holding a passenger?
 bool holding = false;
@@ -317,20 +320,22 @@ void reachAndClaw(bool grabbing)
 }
 
 void refinedReachAndGrab(){
-  midTarget = midAdjMidTarget;
-  baseTarget = initialAdjBaseTarget;
+  midTarget = midGrabTarget;
+  baseTarget = baseGrabTarget;
   unsigned long startTime = millis();
     while(true){
       doControl();
-      if(digitalRead(ARM_SWITCHES[2]) 
-      && ((millis()-startTime)>250)
-      && baseTarget > 80){
-        baseTarget -= 5;
-        if(midTarget < 160)
+      if(/*digitalRead(ARM_SWITCHES[2]) 
+      &&*/ ((millis()-startTime)>250)
+      /*&& baseTarget > 80*/){
+        if(baseTarget > 100){
+          baseTarget -= 5;
+        }
+        else if(midTarget < 160 && baseTarget <= 100)
           midTarget += 10;
         startTime = millis();
       }
-      if(!digitalRead(ARM_SWITCHES[2]) || baseTarget <= 80)
+      if(/*!digitalRead(ARM_SWITCHES[2]) || */(baseTarget <= 100 && midTarget >= 160))
         break;
       delay(5);
     }

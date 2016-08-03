@@ -29,7 +29,13 @@ void setup() {
     LCD.print("START: compete");
     LCD.setCursor(0, 1);
     LCD.print("STOP: debug");
-    
+
+    for(auto i(0); i < 16; i++){
+      pinMode(i, INPUT_PULLUP);
+    }
+//    for(auto i(40); i < 48, i++){
+//      pinMode(i, INPUT);
+//    }
     //Arm & Stepper Initialization code
     pinMode(DIR_PIN,OUTPUT);
     pinMode(PULSE_PIN,OUTPUT);
@@ -75,8 +81,8 @@ void loop() {
           printLCD();
           //PassengerSeek::printLCD();
         }else if(state == FIND_BEACON)
-          //detectBeaconPrintLCD();
-          printLCD();
+          detectBeaconPrintLCD();
+          //printLCD();
         printCount = 0;
     }
     ++printCount;
@@ -175,7 +181,7 @@ void loadPassengerLoop(){
     if(holding){ //TODO: change back to holding variable!!!! (once we have switches hooked up again)
        state = FIND_BEACON;
        LCD.clear();
-       LCD.print("I got something!");
+       //LCD.print("I got something!");
        //2state = FIND_PASSENGER;
        //tapeFollowInit();
        PassengerSeek::init();
@@ -269,6 +275,27 @@ void debugSequence(){
   while(startbutton()){}
   delay(500);
   LCD.clear();
+  LCD.print("test claw switches");
+  LCD.setCursor(0,1);
+  LCD.print("START to continue");
+  while(!startbutton()){
+    collisionLoop();
+    if(printCounter % 50 == 0){
+      LCD.clear();
+      if(!digitalRead(ARM_SWITCHES[0])){
+        LCD.print("catch switch");
+    }else if(!digitalRead(ARM_SWITCHES[1])){
+        LCD.print("miss switch");
+    }else if(!digitalRead(ARM_SWITCHES[2])){
+        LCD.print("detect switch");
+    }
+      printCounter = 0;
+    }
+    printCounter++;
+  }
+  while(startbutton()){}
+  delay(500);
+  LCD.clear();
   LCD.print("stepper test left");
   LCD.setCursor(0,1);
   LCD.print("START to continue");
@@ -286,6 +313,83 @@ void debugSequence(){
   stepperTurn(true,200);
   motor.speed(MOTOR_PIN_ARM, 0);
   delay(500);
+  LCD.clear();
+  LCD.print("collision sensor test");
+  LCD.setCursor(0,1);
+  LCD.print("START to continue");
+  while(!startbutton()){}
+  delay(500);
+  while(!startbutton()){
+    collisionLoop();
+    if(printCounter % 50 == 0){
+      LCD.clear();
+      if(hasDetectedCollision()){
+        LCD.print("COLLISION!");
+      }else{
+        LCD.print("NO COLLISION");
+    }
+      printCounter = 0;
+    }
+    printCounter++;
+  }
+  while(startbutton()){}
+  delay(500);
+  LCD.clear();
+  LCD.print("QRD test");
+  LCD.setCursor(0,1);
+  LCD.print("START to continue");
+  while(!startbutton()){}
+  delay(500);
+  tapeFollowInit();
+  tapeFollowTest();
+  while(!startbutton()){
+    tapeFollowLoop();
+    if(printCounter % 50 == 0){
+      LCD.clear();
+      printLCD();
+      printCounter = 0;
+    }
+    printCounter++;
+  }
+  tapeFollowTest();
+  delay(500);
+  LCD.clear();
+  LCD.print("pass. QSD test");
+  LCD.setCursor(0,1);
+  LCD.print("START to continue");
+  while(!startbutton()){}
+  delay(500);
+  PassengerSeek::init();
+  while(!startbutton()){
+    PassengerSeek::loop();
+    if(printCounter % 50 == 0){
+      LCD.clear();
+      PassengerSeek::printLCD();
+      printCounter = 0;
+    }
+    printCounter++;
+  }
+  PassengerSeek::pause();
+  delay(500);
+  LCD.clear();
+  LCD.print("beacon QSD test");
+  LCD.setCursor(0,1);
+  LCD.print("START to continue");
+  while(!startbutton()){}
+  delay(500);
+  beaconInit();
+  while(!startbutton()){
+    detectBeaconLoop();
+    if(printCounter % 50 == 0){
+      LCD.clear();
+      detectBeaconPrintLCD();
+      printCounter = 0;
+    }
+    printCounter++;
+  }
+  PassengerSeek::pause();
+  delay(500);
+  LCD.clear();
   LCD.clear();
   LCD.print("START to begin loop");
   while(!startbutton()){
