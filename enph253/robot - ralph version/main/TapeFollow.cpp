@@ -1,10 +1,17 @@
 ///
 // TapeFollow.cpp
 //
+#include <StandardCplusplus.h>
+#include <vector>
+#include <bitset>
 #include <phys253.h>
 #include "pins.hpp"
 #include "Direction.hpp"
 #include "TapeFollow.hpp"
+
+
+using std::vector;
+using std::bitset;
 
 
 namespace TapeFollow
@@ -57,44 +64,43 @@ const int MOTOR_SPEED_TURNING         {32};  // default motor speed for making t
 const int MOTOR_SPEED_PASSENGER_SEEK  {64};  // motor speed for turning around
 const int MOTOR_SPEED_TURNING_AROUND  {-8};  // motor speed for following after initial passenger sighting
 
-static int motorSpeedFollowing {MOTOR_SPEED_FOLLOWING};        // current motor speed for following tape
-static int motorSpeedReversing {MOTOR_SPEED_REVERSING};
-static int motorSpeedSeeking   {MOTOR_SPEED_SEEKING};
-static int motorSpeedTurning   {MOTOR_SPEED_TURNING};
-
+static int motorSpeedFollowing    {MOTOR_SPEED_FOLLOWING};        // current motor speed for following tape
+static int motorSpeedReversing    {MOTOR_SPEED_REVERSING};
+static int motorSpeedSeeking      {MOTOR_SPEED_SEEKING};
+static int motorSpeedTurning      {MOTOR_SPEED_TURNING};
 const int motorSpeedTurningAround {MOTOR_SPEED_TURNING_AROUND};   
 const int motorSpeedPassengerSeek {MOTOR_SPEED_PASSENGER_SEEK};   
 
-static bool active          {false};
-static bool turningAround   {false};           // true if the robot is turning around
-static bool willTurnAround  {false};           // true if the robot is about to turn around
-static bool halfTurn        {false};           // if true, bot has turned far enough that mains are off tape
-static bool motorsActive    {false};           // true if motors are active
+// General following variables
+static bool active       {false};
+static bool motorsActive {false};           // true if motors are active
+static int control     {0};                  // current control parameter
+static int motorSpeed  {motorSpeedSeeking};  // speed to add to motors
+static float error     {0.};
+static float lastError {0.};                 // last calculated error
 
+// Action and counters
 static TFAction action {TFAction::SEEKING};    // what the tapefollowing is currently doing (i.e. following, seeking, etc)
+static int steps[TapeFollow::numActions];  // number of steps for associated action
+static int onTapeCounter[TapeFollow::numSensors];      // counts the number of consecutive onTape reads for each pin
+static int offTapeCounter[TapeFollow::numSensors];     // counts the number of consecutive offTape reads for each pin
 
-static Direction turnDirection {Direction::FRONT};      // current turn direction
-static float leftWeight      {1.};             // TODO: come up with a better way of doing this weight stuff
-static float straightWeight  {1.};
-static float rightWeight     {1.};
-
-static int control      {0};                  // current control parameter
-static int motorSpeed   {motorSpeedSeeking};  // speed to add to motors
-static float error      {0.};
-static float lastError  {0.};                 // last calculated error
-
+// Readings
+static int activePins[TapeFollow::numSensors];         // pin numbers (intL, mainL, mainR, intR)
 static bitset<TapeFollow::numSensors> pinReadings;    // current readings on QRD pins
+static vector<float> errorArray;           // array of last 2 distinct errors
+static vector<unsigned long> etimeArray;   // array of times (since read) assoc with errorArray
 static bitset<2> intersectSeen;            // true if an intersection was seen
 static bitset<2> intersectDetect;          // true when an intersection has been detected (seen and passed over)
 
-static vector<float> errorArray;           // array of last 2 distinct errors
-static vector<unsigned long> etimeArray;   // array of times (since read) assoc with errorArray
-static int activePins[TapeFollow::numSensors];         // pin numbers (intL, mainL, mainR, intR)
-
-static int steps[TapeFollow::numActions];  // number of steps for associated action
-
-static int onTapeCounter[TapeFollow::numSensors];      // counts the number of consecutive onTape reads for each pin
-static int offTapeCounter[TapeFollow::numSensors];     // counts the number of consecutive offTape reads for each pin
+// Turning variables
+static bool turningAround  {false};           // true if the robot is turning around
+static bool willTurnAround {false};           // true if the robot is about to turn around
+static bool halfTurn       {false};           // if true, bot has turned far enough that mains are off tape
+static Direction turnDirection {Direction::FRONT};      // current turn direction
+static float leftWeight     {1.};             // TODO: come up with a better way of doing this weight stuff
+static float straightWeight {1.};
+static float rightWeight    {1.};
 
 
 namespace TapeFollow
@@ -439,7 +445,7 @@ void TapeFollow::setError()
             setErrorFollowTape();
             break;
     }
-    error *= std::abs(motorSpeedFollowing);  // TODO
+    error *= abs(motorSpeedFollowing);  // TODO
     
     // update previous error parameters
     if (error != lastError) {
@@ -471,7 +477,7 @@ void TapeFollow::setControl()
     float ctrlDer2 (GAIN_DER2 * der2);
     control = -static_cast<int>(ctrlProp + ctrlDer1 + ctrlDer2);
     
-    int controlMax = std::abs(motorSpeedFollowing) * 3 / 2;  // TODO
+    int controlMax = abs(motorSpeedFollowing) * 3 / 2;  // TODO
     if (control > controlMax)
         control = controlMax;
     else if (control < -controlMax)

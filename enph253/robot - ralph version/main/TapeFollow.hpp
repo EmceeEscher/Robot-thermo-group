@@ -6,14 +6,7 @@
 #ifndef TAPE_FOLLOW_HPP
 #define TAPE_FOLLOW_HPP
 
-#include <StandardCplusplus.h>
-#include <bitset>
-#include <vector>
-#include "pins.hpp"
 #include "Direction.hpp"
-
-using std::vector;
-using std::bitset;
 
 
 enum class TFAction
