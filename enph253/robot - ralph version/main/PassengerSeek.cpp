@@ -163,22 +163,22 @@ void PassengerSeek::loop()
 
 //currently unutilized
 //will be called in PassengerSeek::loop eventually maybe
-void PassengerSeek::pickDirection(){
-    if(!PassengerSeek::atMaxSideMiddle() && !isTurning()){
-      float left = pinReadingsPS[1];
-      float right = pinReadingsPS[2];
-      if(left > DISTANCE_REGISTER_THRESHOLD && left > right){
-        if(right > DISTANCE_REGISTER_THRESHOLD)
-          giveTurnDirection(100, 50, 10);
-        else{
-          giveTurnDirection(100, 10, 30);
+void PassengerSeek::pickDirection()
+{
+    if (!PassengerSeek::atMaxSideMiddle() && !TapeFollow::isTurning()) {
+        float left = pinReadingsPS[1];
+        float right = pinReadingsPS[2];
+        if (left > DISTANCE_REGISTER_THRESHOLD && left > right) {
+            if (right > DISTANCE_REGISTER_THRESHOLD)
+                TapeFollow::giveTurnDirection(100, 50, 10);
+            else
+                TapeFollow::giveTurnDirection(100, 10, 30);
+        } if (right > DISTANCE_REGISTER_THRESHOLD && right > left) {
+            if (left > DISTANCE_REGISTER_THRESHOLD)
+                TapeFollow::giveTurnDirection(50, 100, 10);
+            else
+                TapeFollow::giveTurnDirection(10, 100, 30);
         }
-      }if(right > DISTANCE_REGISTER_THRESHOLD && right > left){
-        if(left > DISTANCE_REGISTER_THRESHOLD)
-          giveTurnDirection(50, 100, 10);
-        else
-          giveTurnDirection(10, 100, 30);
-      }
     }
 }
 
