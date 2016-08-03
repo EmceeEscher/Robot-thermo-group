@@ -11,8 +11,8 @@
 extern const int Arm_And_Stepper::dropTime = 400; // Milliseconds
 
 //SPECIFIED GAIN VALUES
-const float PROP_GAIN = 10.;
-const float HOLD_PROP_GAIN = 10.;
+const float PROP_GAIN = 12.;
+const float HOLD_PROP_GAIN = 12.;
 const float INT_GAIN = 0.;
 const float DERIV_GAIN = 0.5;
 
@@ -29,10 +29,10 @@ static float now, lastTime;
 // static int hasInitialized = 0;
 
 //Rest Positions
-const float BASE_REST_POSITION = 115;
-const float MID_REST_POSITION  = 150;
-const float BASE_HOLD_POSITION = 115;
-const float MID_HOLD_POSITION  = 150;//TODO: switch back to 170
+const float BASE_REST_POSITION = 130;
+const float MID_REST_POSITION = 150;
+const float BASE_HOLD_POSITION = 130;
+const float MID_HOLD_POSITION = 150;//TODO: switch back to 170
 
 //Iterator for LCD printing
 static int LCDControl;
@@ -44,12 +44,12 @@ const int stepperMicrosDelay = 1200; //Time delay between pulses in microseconds
 const int numPulses = 680;
 
 //reachAndGrab/reachAndDrop function Constants
-const float initialAdjMidTarget  = 120;
+const float initialAdjMidTarget  = 60;
 const float initialAdjBaseTarget = 120;
-const float midAdjMidTarget      = 60;
-const float midAdjBaseTarget     = 115;
-const float finalAdjMidTarget    = 60;
-const float finalAdjBaseTarget   = 100;
+const float midAdjMidTarget      = 30;
+const float midAdjBaseTarget     = 120;
+const float finalAdjMidTarget    = 10;
+const float finalAdjBaseTarget   = 115;
 
 //Holding a passenger?
 bool Arm_And_Stepper::holding = false;
@@ -63,6 +63,7 @@ namespace Arm_And_Stepper
     static void grabCrap();
     static void reachAndClaw(bool grabbing);
     static void setRestPosition();
+    static void refinedReachAndGrab();
     
 }
 
@@ -265,9 +266,35 @@ void Arm_And_Stepper::turnAndReach(bool turnRight, bool grab)
     stepperTurn(turnRight, numPulses);
     LCD.clear();
     LCD.print( F("grabbing in turn and reach") );
-    reachAndClaw(grab);
+    if (grab)
+        refinedReachAndGrab();
+    else
+        reachAndClaw(grab);
     LCD.clear();
     LCD.print( F("turning back") );
     stepperTurn(!turnRight, numPulses);
 }
 
+
+void Arm_And_Stepper::refinedReachAndGrab()
+{
+    midTarget = midAdjMidTarget;
+    baseTarget = initialAdjBaseTarget;
+    unsigned long startTime = millis();
+    while(true){
+        doControl();
+        if (digitalRead(ARM_SWITCHES[2]) 
+            && ((millis()-startTime)>250)
+            && baseTarget > 80) {
+            baseTarget -= 5;
+            if (midTarget < 160)
+                midTarget += 10;
+            startTime = millis();
+        }
+        if (!digitalRead(ARM_SWITCHES[2]) || baseTarget <= 80)
+            break;
+        delay(5);
+    }
+    grabCrap();
+    setRestPosition();
+}

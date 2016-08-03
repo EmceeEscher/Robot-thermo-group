@@ -11,7 +11,8 @@
 const int DIFF_THRESHOLD = 50;
 
 //DetectBeacon Constants & Variables
-const int BEACON_THRESHOLD = 100;
+const int BEACON_THRESHOLD = 50;
+const int ARRIVED_THRESHOLD = 650;
 const int *beaconSensorPins {BEACON_SENSORS_SIDES};
 const int numBeaconReadings = 5;
 
@@ -31,38 +32,37 @@ namespace ToDestination
     static int getRightBeaconReading();
     static float getLeftBeaconAverage();
     static float getRightBeaconAverage();
+    static void pickDirection();
     // static void detectBeaconPrintLCD();
 }
 
 
-// void ToDestination::pickDirection()
-// {
-//     float leftAverage = getLeftBeaconAverage();
-//     float rightAverage = getRightBeaconAverage();
-//     // if(printCount>25){
-//     // LCD.clear();
-//     // LCD.print("L: ");
-//     // LCD.print(leftAverage);
-//     // LCD.setCursor(0,1);
-//     // LCD.print("R: ");
-//     // LCD.print(rightAverage);
-//     // printCount = 0;
-//     // }
-//     // printCount++;
-    
-//     float diff = rightAverage - leftAverage;
-//     if (abs(diff) > DIFF_THRESHOLD) {
-//         if (diff > 0)
-//             TapeFollow::giveTurnDirection(0,100,0.1);
-//         else
-//             TapeFollow::giveTurnDirection(100,0,0.1);
-//     } else {
-//         if (diff > 0) 
-//             TapeFollow::giveTurnDirection(0,0.1,100);
-//         else
-//             TapeFollow::giveTurnDirection(0.1,0,100);
-//     }
-// }
+void ToDestination::init()
+{
+    for (int i(0); i < numBeaconReadings; ++i) {
+        leftBeaconReadings[i] = getLeftBeaconReading();
+        rightBeaconReadings[i] = getRightBeaconReading();
+    }
+}
+
+
+void ToDestination::pickDirection()
+{
+    float leftAverage = getLeftBeaconAverage();
+    float rightAverage = getRightBeaconAverage();
+    float diff = rightAverage - leftAverage;
+    if (abs(diff) > DIFF_THRESHOLD) {
+        if (diff > 0) 
+            TapeFollow::giveTurnDirection(0, 100, 0.1);
+        else
+            TapeFollow::giveTurnDirection(100,0,0.1);
+    } else {
+        if (diff > 0) 
+            TapeFollow::giveTurnDirection(0, 0.1, 100);
+        else
+            TapeFollow::giveTurnDirection(0.1, 0, 100);
+    }
+}
 
 
 void ToDestination::loop()
@@ -141,8 +141,8 @@ bool ToDestination::hasArrived()
 {
     float leftAverage = getLeftBeaconAverage();
     float rightAverage = getRightBeaconAverage();
-    return ((leftAverage > BEACON_THRESHOLD) ||
-	    (rightAverage > BEACON_THRESHOLD));
+    return ((leftAverage > ARRIVED_THRESHOLD) ||
+	    (rightAverage > ARRIVED_THRESHOLD));
 }
 
 

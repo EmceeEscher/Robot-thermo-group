@@ -13,16 +13,7 @@ namespace ToDestination
     void loop();
     Direction getBeaconDirection();
     void printLCD();
+    void init();
 }
-
-//Function Declarations:::::::::::::
-// void pickDirection();
-// void updateLeftBeaconArray();
-// void updateRightBeaconArray();
-// int getLeftBeaconReading();
-// int getRightBeaconReading();
-// float getLeftBeaconAverage();
-// float getRightBeaconAverage();
-// void detectBeaconPrintLCD();
 
 #endif // TO_DESTINATION_HPP

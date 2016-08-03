@@ -468,17 +468,6 @@ void TapeFollow::loop()
         return;
     }
     
-    
-    
-    // set gains
-    // TODO move this to constructor once values are decided upon
-    /*   if (!motorsActive) {
-         gainProp = static_cast<double>(knob(KNOB_PROP_GAIN)) / 50.;
-         gainDer1 = static_cast<double>(knob(KNOB_DER1_GAIN)) / 50.;
-         gainDer2 = .5*gainDer1*gainDer1 /
-         gainProp*(1.-EPSILON);
-         }*/
-    
     // get readings from tape sensors
     for (int i(0); i < 4; ++i) 
         pinReadings[i] = static_cast<bool>(digitalRead(activePins[i]));

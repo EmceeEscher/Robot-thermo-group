@@ -50,12 +50,14 @@ void loop() {
         TapeFollow::init();
         PassengerSeek::init();
         TapeFollow::start();
+        ToDestination::init();
         LCD.clear();
     } else if (!started && stopbutton()) {
         debugSequence();
         TapeFollow::init();
         PassengerSeek::init();
         TapeFollow::start();
+        ToDestination::init();
         LCD.clear();
     } else if (startbutton()) {
         TapeFollow::start();
@@ -67,12 +69,10 @@ void loop() {
         LCD.clear();
         LCD.print( F("stopped!") );
     }
-    
     if (started && printCount % PRINT_PERIOD == 0) {
-        if (state == FIND_PASSENGER) {
+        if (state == FIND_PASSENGER)
             PassengerSeek::printLCD();
-            //PassengerSeek::printLCD();
-        } else if (state == FIND_BEACON)
+        else if (state == FIND_BEACON)
             ToDestination::printLCD();
         printCount = 0;
     }

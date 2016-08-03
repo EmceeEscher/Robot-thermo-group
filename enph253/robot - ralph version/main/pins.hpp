@@ -18,9 +18,9 @@ const int ARM_SWITCHES[]       {12, 13, 14};      //catch, miss, inner
 const int COLLISION_SENSORS[]  { 4,  5};  // left front right back
 
 // Analog in
-const int PASSENGER_SENSORS_SIDES[]  {2, 7, 6, 0}; //side-left, front-left, front-right, side-right
-const int BEACON_SENSORS_SIDES[]     {3, 4}; // left right (Requires loss of knobs)
-const int POTENTIOMETER {5};
+const int PASSENGER_SENSORS_SIDES[]  {2, 0, 1, 4}; //side-left, front-left, front-right, side-right
+const int BEACON_SENSORS_SIDES[]     {5, 6}; // left right (Requires loss of knobs)
+const int POTENTIOMETER {7};
 
 // Digital out
 const int MOTOR_PIN_L    {0};
