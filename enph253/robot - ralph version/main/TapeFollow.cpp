@@ -17,11 +17,11 @@ using std::bitset;
 namespace TapeFollow
 {
 
-    const int motorPinL         {pins::MOTOR_PIN_L};
-    const int motorPinR         {pins::MOTOR_PIN_R};
-    const int *tapeSensorsFront {pins::TAPE_SENSORS_FRONT};
-    const int *tapeSensorsBack  {pins::TAPE_SENSORS_BACK};
-    const int numSensors        {pins_sizes::TAPE_SENSORS_FRONT};
+    const int motorPinL         { pins::MOTOR_PIN_L };
+    const int motorPinR         { pins::MOTOR_PIN_R };
+    const int *tapeSensorsFront { pins::TAPE_SENSORS_FRONT };
+    const int *tapeSensorsBack  { pins::TAPE_SENSORS_BACK };
+    const int numSensors        { pins_sizes::TAPE_SENSORS_FRONT };
     const int numActions        {4};
 
 }
@@ -34,16 +34,15 @@ const float GAIN_PROP      {9.84};
 const float GAIN_DER1     {11.78};
 const float GAIN_DER2     {
         static_cast<const float>(
-                .5 * GAIN_DER1 * GAIN_DER1 / GAIN_PROP * (1. - EPSILON)
-        )
+                .5 * GAIN_DER1 * GAIN_DER1 / GAIN_PROP * (1. - EPSILON))
 };
 
 // Errors
-const float ERROR_SMALL     {.02};            // one main on tape
-const float ERROR_MEDIUM    {.04};            // both mains off, one intersection on tape
-const float ERROR_LARGE     {.08};            // all QRDs off tape
-const float ERROR_SEEKING   {.64};            // error to apply while seeking tape
-const float ERROR_TURNING {12.80};            // error to be applied during turning
+const float ERROR_SMALL     {.02};   // one main on tape
+const float ERROR_MEDIUM    {.04};   // both mains off, one intersection on tape
+const float ERROR_LARGE     {.08};   // all QRDs off tape
+const float ERROR_SEEKING   {.64};   // error to apply while seeking tape
+const float ERROR_TURNING {12.80};   // error to be applied during turning
 
 // Delays
 const int INTERSECT_SEEK_DELAY_PERIOD      {100}; // while tape following, waits for this many steps before searching for intersections
@@ -96,11 +95,11 @@ static bitset<2> intersectSeen;            // true if an intersection was seen
 static bitset<2> intersectDetect;          // true when an intersection has been detected (seen and passed over)
 
 // Turning variables
-static bool turningAround  {false};           // true if the robot is turning around
-static bool willTurnAround {false};           // true if the robot is about to turn around
-static bool halfTurn       {false};           // if true, bot has turned far enough that mains are off tape
-static Direction turnDirection {Direction::FRONT};      // current turn direction
-static float leftWeight     {1.};             // TODO: come up with a better way of doing this weight stuff
+static bool turningAround  {false};                 // true if the robot is turning around
+static bool willTurnAround {false};                 // true if the robot is about to turn around
+static bool halfTurn       {false};                 // if true, bot has turned far enough that mains are off tape
+static Direction turnDirection {Direction::FRONT};  // current turn direction
+static float leftWeight     {1.};                   // TODO: come up with a better way of doing this weight stuff
 static float straightWeight {1.};
 static float rightWeight    {1.};
 
@@ -396,19 +395,19 @@ void TapeFollow::setErrorFollowing()
     bool intrR = pinReadings[3];
 
     // determine error
-    if (mainL && mainR)               // both main pins over tape
+    if (mainL && mainR)           // both main pins over tape
         error = 0.;
-    else if (mainL)                  // left main over tape
+    else if (mainL)              // left main over tape
         error = ERROR_SMALL;
-    else if (mainR)                  // right main over tape
+    else if (mainR)              // right main over tape
         error = -ERROR_SMALL;
-    else if (intrL && (!intrR))       // left intersection over tape
+    else if (intrL && (!intrR))   // left intersection over tape
         error = ERROR_MEDIUM;
-    else if (intrR && (!intrL))       // right intersection over tape
+    else if (intrR && (!intrL))   // right intersection over tape
         error = -ERROR_MEDIUM;
-    else if (lastError < 0.)    // off tape to the right
+    else if (lastError < 0.)     // off tape to the right
         error = -ERROR_LARGE;
-    else if (lastError > 0.)    // off tape to the left
+    else if (lastError > 0.)     // off tape to the left
         error = ERROR_LARGE;
     else 
         error = 0.;
@@ -505,8 +504,7 @@ void TapeFollow::updateStateFollowing()
         action = TFAction::SEEKING;
     else if (followSteps >= INTERSECT_SEEK_DELAY_PERIOD) {
         updateIntersectionsDetected();
-        
-        // if intersection(s) detected, make move decision
+        // if intersection(s) detected, make turn decision
         if (intersectDetect.any() &&
             (offTapeCounter[0] >= PRE_TURN_DELAY_PERIOD) &&
             (offTapeCounter[3] >= PRE_TURN_DELAY_PERIOD)) {
