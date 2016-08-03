@@ -7,8 +7,8 @@
 #include "Arm_And_Stepper.hpp"
 
 
-//Amount of time to run motor to drop animal
-extern const int Arm_And_Stepper::dropTime = 400; // Milliseconds
+extern bool Arm_And_Stepper::holding = false; // Holding a passenger?
+extern const int Arm_And_Stepper::dropTime = 350; // Amount of time to run motor to drop animal (ms)
 
 //SPECIFIED GAIN VALUES
 const float PROP_GAIN = 12.;
@@ -24,15 +24,13 @@ static float derivErr;
 static float intErr;
 static float lastPropErr;
 static float angle;
-// static float currAngle = 0;
 static float now, lastTime;
-// static int hasInitialized = 0;
 
 //Rest Positions
 const float BASE_REST_POSITION = 130;
 const float MID_REST_POSITION = 150;
-const float BASE_HOLD_POSITION = 130;
-const float MID_HOLD_POSITION = 150;//TODO: switch back to 170
+const float BASE_HOLD_POSITION = 135;
+const float MID_HOLD_POSITION = 170;//TODO: switch back to 170
 
 //Iterator for LCD printing
 static int LCDControl;
@@ -44,15 +42,14 @@ const int stepperMicrosDelay = 1200; //Time delay between pulses in microseconds
 const int numPulses = 680;
 
 //reachAndGrab/reachAndDrop function Constants
-const float initialAdjMidTarget  = 60;
+const float initialAdjMidTarget = 100;
 const float initialAdjBaseTarget = 120;
-const float midAdjMidTarget      = 30;
-const float midAdjBaseTarget     = 120;
-const float finalAdjMidTarget    = 10;
-const float finalAdjBaseTarget   = 115;
-
-//Holding a passenger?
-bool Arm_And_Stepper::holding = false;
+const float midAdjMidTarget = 60;
+const float midAdjBaseTarget = 120;
+const float finalAdjMidTarget = 10;
+const float finalAdjBaseTarget = 115;
+const float midGrabTarget = 60;
+const float baseGrabTarget = 100;
 
 
 namespace Arm_And_Stepper
@@ -280,24 +277,22 @@ void Arm_And_Stepper::turnAndReach(bool turnRight, bool grab)
 }
 
 
-void Arm_And_Stepper::refinedReachAndGrab()
-{
-    midTarget = midAdjMidTarget;
-    baseTarget = initialAdjBaseTarget;
+void Arm_And_Stepper::refinedReachAndGrab(){
+    midTarget = midGrabTarget;
+    baseTarget = baseGrabTarget;
     unsigned long startTime = millis();
     while (true) {
-        Arm_And_Stepper::doControl();
-        if (digitalRead(pins::ARM_SWITCHES[2]) &&
-            ((millis()-startTime)>250) && baseTarget > 80) {
-            baseTarget -= 5;
-            if (midTarget < 160)
+        if ((millis() - startTime) > 250) {
+            if (baseTarget > 100) 
+                baseTarget -= 5;
+            else if (midTarget < 160 && baseTarget <= 100)
                 midTarget += 10;
             startTime = millis();
         }
-        if (!digitalRead(pins::ARM_SWITCHES[2]) || baseTarget <= 80)
+        if (baseTarget <= 100 && midTarget >= 160)
             break;
         delay(5);
     }
-    Arm_And_Stepper::grabCrap();
-    Arm_And_Stepper::setRestPosition();
+    grabCrap();
+    setRestPosition();
 }
