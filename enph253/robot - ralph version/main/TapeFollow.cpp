@@ -160,28 +160,24 @@ namespace TapeFollow
     static Direction chooseTurnDeterministic(bool left, bool right, bool straight);
 
     /*
-     * Loop function for seeking tape. 
-     * Intersection sensors are used to help find tape. When found,
-     * `followTape` is entered.
-     * The appropriate error is set.
+     * Set the error for following
      */
-    static void setErrorSeekTape();
+    static void setErrorFollowing();
 
     /*
-     * Loop function for following tape with no intersections.
-     * If an intersection is detected (and a turn is to be made) 
-     * `makeTurn` is called.
-     * The appropriate error is set.
+     * Set the error for reversing
      */
-    static void setErrorFollowTape();
+    static void setErrorReversing();
 
     /*
-     * Loop function for completing a turn in a single direction.
-     * Continues until both main detecters loss current tape and find the
-     * next, at which point `followTape` is entered.
-     * The appropriate error is returned.
+     * Set the error for seeking
      */
-    static void setErrorMakeTurn();
+    static void setErrorSeeking();
+
+    /*
+     * Set the error for turning
+     */
+    static void setErrorTurning();
 
     /*
      * Based on whether the robot is currently seeking, turning, or following,
@@ -391,19 +387,7 @@ Direction TapeFollow::chooseTurn(bool left, bool right, bool straight)
 }
 
 
-// TODO: make this more advanced
-void TapeFollow::setErrorSeekTape()
-{
-    if (lastError < 0.)              // off tape to the right
-        error = -ERROR_SEEKING;
-    else if (lastError > 0.)         // off tape to the left
-        error = ERROR_SEEKING;
-    else
-        error = 0.;
-}
-
-
-void TapeFollow::setErrorFollowTape()
+void TapeFollow::setErrorFollowing()
 {
     // Define aliases for the readings
     bool intrL = pinReadings[0];
@@ -431,8 +415,27 @@ void TapeFollow::setErrorFollowTape()
 }
 
 
+// TODO: !!! For now this is the same as setErrorFollowing
+void TapeFollow::setErrorReversing()
+{
+    TapeFollow::setErrorFollowing();
+}
+
+
+// TODO: make this more advanced
+void TapeFollow::setErrorSeeking()
+{
+    if (lastError < 0.)              // off tape to the right
+        error = -ERROR_SEEKING;
+    else if (lastError > 0.)         // off tape to the left
+        error = ERROR_SEEKING;
+    else
+        error = 0.;
+}
+
+
 // TODO: is this correct?
-void TapeFollow::setErrorMakeTurn()
+void TapeFollow::setErrorTurning()
 {
     error = -(static_cast<int>(turnDirection)-1) * ERROR_TURNING;
 }
@@ -442,14 +445,17 @@ void TapeFollow::setError()
 {
     // choose error based on current action
     switch (action) {  // TODO: handle all cases
+        case TFAction::FOLLOWING:
+            setErrorFollowing();
+            break;
+        case TFAction::REVERSING:
+            setErrorFollowing();
+            break;
         case TFAction::SEEKING:
-            setErrorSeekTape();
+            setErrorSeeking();
             break;
         case TFAction::TURNING:
-            setErrorMakeTurn();
-            break;
-        default:
-            setErrorFollowTape();
+            setErrorTurning();
             break;
     }
     error *= abs(motorSpeedFollowing);  // TODO
