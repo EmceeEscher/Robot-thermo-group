@@ -172,8 +172,9 @@ const int PRE_TURN_DELAY_PERIOD             {75};  // number of iterations to wa
 const int PRE_TURN_AROUND_DELAY_PERIOD     {145};  // number of reverse steps to make before turning around
 const int OFF_TAPE_PERIOD                   {50};  // number of consecutive readings required to signal that the robot has lost the tape
 const int ON_TAPE_PERIOD                     {5};  // number of consecutive readings required to confirm that the robot is back on the tape after turning
-const int TURN_AROUND_SPEED_SWITCH_PERIOD  {512};  // number of steps before switching between forward and reverse while turning around
-const int COUNTER_MAX {2048}; // maximum value for onTapeCounter and offTapeCounter
+const long TURN_AROUND_SPEED_SWITCH_PERIOD {2048};  // number of steps before switching between forward and reverse while turning around
+const long TURN_AROUND_TIMEOUT_PERIOD      {8192};
+const long COUNTER_MAX                    {16384}; // maximum value for onTapeCounter and offTapeCounter
 
 // Speeds
 const int MOTOR_SPEED_FOLLOWING       {84};  // default motor speed for tape following
@@ -187,7 +188,7 @@ const int DEFAULT_MOTOR_SPEEDS[TapeFollow::numActions] {
         MOTOR_SPEED_TURNING
 };
 const int MOTOR_SPEED_PASSENGER_SEEK  {64};  // motor speed for turning around
-const int MOTOR_SPEED_TURNING_AROUND  {-8};  // motor speed for following after initial passenger sighting
+const int MOTOR_SPEED_TURNING_AROUND  {-16};  // motor speed for following after initial passenger sighting
 
 static int motorSpeedFollowing    { MOTOR_SPEED_FOLLOWING };      // current motor speed for following 
 static int motorSpeedReversing    { MOTOR_SPEED_REVERSING };      // current motor speed for reversing
@@ -212,10 +213,11 @@ static float lastError {0.};                 // last calculated error
 
 // Action and counters
 static TFAction action {TFAction::SEEKING};           // what the tapefollowing is currently doing (i.e. following, seeking, etc)
-static int steps[TapeFollow::numActions];             // number of steps for associated action
-static int onTapeCounter  [TapeFollow::numSensors];   // counts the number of consecutive onTape reads for each pin
-static int offTapeCounter [TapeFollow::numSensors];   // counts the number of consecutive offTape reads for each pin
-static int turnAroundCounter {0};
+static long steps[TapeFollow::numActions];             // number of steps for associated action
+static long onTapeCounter  [TapeFollow::numSensors];   // counts the number of consecutive onTape reads for each pin
+static long offTapeCounter [TapeFollow::numSensors];   // counts the number of consecutive offTape reads for each pin
+static long turnAroundPhaseCounter {0};                // counter for the turn around forward/reverse phase
+static long turnAroundCounter      {0};                // counter for total steps turning around
 
 // Readings
 static int activePins[TapeFollow::numSensors];       // pin numbers (intL, mainL, mainR, intR)
@@ -588,13 +590,20 @@ void TapeFollow::updateStateTurning()
         turnDirection = Direction::FRONT;
         motorSpeedTurning = MOTOR_SPEED_TURNING;
         motorSpeedFollowing = MOTOR_SPEED_FOLLOWING;
-    } else {  // during turn
-        if (turningAround &&
-            (turnAroundCounter >= TURN_AROUND_SPEED_SWITCH_PERIOD)) {
+    } else if (turningAround) {  // during turn around
+        if (turnAroundPhaseCounter >= TURN_AROUND_SPEED_SWITCH_PERIOD) {
             motorSpeedTurning = -motorSpeedTurning;
+            turnAroundPhaseCounter = 0;
+        } else if (turnAroundCounter >= TURN_AROUND_TIMEOUT_PERIOD) {
             turnAroundCounter = 0;
-        } else if (turningAround) 
+            if (turnDirection == Direction::LEFT)
+                turnDirection = Direction::RIGHT;
+            else
+                turnDirection = Direction::LEFT;
+        } else {
             ++turnAroundCounter;
+            ++turnAroundPhaseCounter;
+        }
     }
 }
 
@@ -769,21 +778,23 @@ void TapeFollow::resetMotorSpeed()
 // TODO: !!! check if this is correct
 void TapeFollow::turnAround()
 {
-    switch (turnDirection) {
-        case Direction::LEFT:
-            turnDirection = Direction::RIGHT;
-            break;
-        case Direction::RIGHT:
-            turnDirection = Direction::LEFT;
-            break;
-        case Direction::FRONT:
-            turnDirection = Direction::RIGHT;  // TODO: make a smarter way of choosing this
-            break;
-        case Direction::BACK:
-            turnDirection = Direction::RIGHT;  // TODO: make a smarter way of choosing this
-            break;
+    if (!turningAround) {
+        switch (turnDirection) {
+            case Direction::LEFT:
+                turnDirection = Direction::RIGHT;
+                break;
+            case Direction::RIGHT:
+                turnDirection = Direction::LEFT;
+                break;
+            case Direction::FRONT:
+                turnDirection = Direction::RIGHT;  // TODO: make a smarter way of choosing this
+                break;
+            case Direction::BACK:
+                turnDirection = Direction::RIGHT;  // TODO: make a smarter way of choosing this
+                break;
+        }
+        willTurnAround = true;
     }
-    willTurnAround = true;
 }
 
 
