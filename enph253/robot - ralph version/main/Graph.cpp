@@ -5,7 +5,7 @@
 #include "Graph.hpp"
 
 
-Direction graphTurnDirection;
+static Direction graphTurnDirection;
 
 static int cardinalDirection = 2;
 static int nextCardinalDirection;
@@ -39,7 +39,7 @@ static int graph[20][4] {
 };
 
 
-int getNextCardinalDirection(int currNode)
+int Graph::getNextCardinalDirection(int currNode)
 {
     int randomDirection = random(4);
     while (graph[currNode][randomDirection] == -1
@@ -50,13 +50,13 @@ int getNextCardinalDirection(int currNode)
 }
 
 
-int getNextNode(int currNode, int nextDir)
+int Graph::getNextNode(int currNode, int nextDir)
 {
     return graph[currNode][nextDir];
 }
 
 
-Direction getTurnDirection(int cardinalDir, int nextCardinalDir) {
+Direction Graph::getTurnDirection(int cardinalDir, int nextCardinalDir) {
     if (cardinalDir == 0 && nextCardinalDir == 3) 
         return Direction::LEFT;
     else
@@ -64,7 +64,7 @@ Direction getTurnDirection(int cardinalDir, int nextCardinalDir) {
 }
 
 
-void graphLoop()
+void Graph::loop()
 {
     if (isClockwise == -1 &&
         (currentNode == 9 || currentNode == 10 || currentNode == 12)) {
@@ -109,7 +109,7 @@ void graphLoop()
 }
 
 
-void graphLoop(int setNode)
+void Graph::loop(int setNode)
 {
     int setCardinalDirection = -1;
 
@@ -121,7 +121,7 @@ void graphLoop(int setNode)
     }
     
     if (setCardinalDirection == -1) {
-        graphLoop();
+        Graph::loop();
         return;
     }
     
