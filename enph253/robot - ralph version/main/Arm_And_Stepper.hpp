@@ -188,7 +188,7 @@ void grabShit(){
             }
         }
         if(holding){
-            motor.speed(MOTOR_PIN_BABY,80);
+            motor.speed(MOTOR_PIN_BABY,140);
         }else{
             dropShit();
         }

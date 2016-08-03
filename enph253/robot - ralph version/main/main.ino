@@ -120,6 +120,13 @@ void findPassengerLoop(){
 }
 
 void findBeaconLoop(){
+    if(holding){
+      if(!digitalRead(ARM_SWITCHES[1])){
+        holding = false;
+        state = FIND_PASSENGER;
+        dropShit();
+      }
+    }
     if(hasArrived()){
         tapeFollowTest();
         tapeFollowLoop();
