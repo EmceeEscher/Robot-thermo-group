@@ -63,6 +63,13 @@ namespace PassengerSeek
     int getPassengerSide();
 
     void printLCD();
+
+
+    /*
+     * Picks a direction to turn at the next intersection based on whether
+     * or not the front QSDs can see an IR beacon
+     */
+    void pickDirection();
     
 }
 
