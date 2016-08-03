@@ -21,6 +21,7 @@ namespace TapeFollow
 
 const unsigned long RANDOM_MAX_VAL     {100000};
 
+// Gains
 const float EPSILON         {.10};
 const float GAIN_PROP      {9.84};
 const float GAIN_DER1     {11.78};
@@ -30,12 +31,14 @@ const float GAIN_DER2     {
         )
 };
 
+// Errors
 const float ERROR_SMALL     {.02};            // one main on tape
 const float ERROR_MEDIUM    {.04};            // both mains off, one intersection on tape
 const float ERROR_LARGE     {.08};            // all QRDs off tape
 const float ERROR_SEEKING   {.64};            // error to apply while seeking tape
 const float ERROR_TURNING {12.80};            // error to be applied during turning
 
+// Delays
 const int INTERSECT_SEEK_DELAY_PERIOD  {100}; // while tape following, waits for this many steps before searching for intersections
 const int INTERSECT_DETECT_PERIOD       {15}; // number of consecutive readings required to see an intersection
 const int TURN_CONFIRM_PERIOD           {10}; // number of consecutive readings required to register start of turning
@@ -46,6 +49,7 @@ const int ON_TAPE_PERIOD                 {5}; // number of consecutive readings 
 
 const int COUNTER_MAX                  {256}; // maximum value for onTapeCounter and offTapeCounter
 
+// Speeds
 const int MOTOR_SPEED_FOLLOWING       {84};  // default motor speed for tape following
 const int MOTOR_SPEED_REVERSING      {-64};  // default motor speed for backing up
 const int MOTOR_SPEED_SEEKING         {32};  // default motor speed for seeking tape
