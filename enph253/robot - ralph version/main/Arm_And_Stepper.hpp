@@ -6,8 +6,8 @@
 const int dropTime = 400; // Milliseconds
 
 //SPECIFIED GAIN VALUES
-const float PROP_GAIN = 10.;
-const float HOLD_PROP_GAIN = 10.;
+const float PROP_GAIN = 12.;
+const float HOLD_PROP_GAIN = 12.;
 const float INT_GAIN = 0.;
 const float DERIV_GAIN = 0.5;
 
@@ -20,9 +20,9 @@ float now, lastTime;
 int hasInitialized = 0;
 
 //Rest Positions
-const float BASE_REST_POSITION = 115;
+const float BASE_REST_POSITION = 130;
 const float MID_REST_POSITION = 150;
-const float BASE_HOLD_POSITION = 115;
+const float BASE_HOLD_POSITION = 130;
 const float MID_HOLD_POSITION = 150;//TODO: switch back to 170
 
 //Iterator for LCD printing
@@ -35,12 +35,12 @@ const int stepperMicrosDelay = 1200; //Time delay between pulses in microseconds
 const int numPulses = 680;
 
 //reachAndGrab/reachAndDrop function Constants
-const float initialAdjMidTarget = 120;
+const float initialAdjMidTarget = 60;
 const float initialAdjBaseTarget = 120;
-const float midAdjMidTarget = 60;
-const float midAdjBaseTarget = 115;
-const float finalAdjMidTarget = 60;
-const float finalAdjBaseTarget = 100;
+const float midAdjMidTarget = 30;
+const float midAdjBaseTarget = 120;
+const float finalAdjMidTarget = 10;
+const float finalAdjBaseTarget = 115;
 
 //Holding a passenger?
 bool holding = false;
@@ -55,6 +55,7 @@ void reachAndClaw(bool grabbing);
 void setRestPosition();
 void stepperTurn(bool CW,int count);
 void turnAndReach(bool turnRight, bool grab);
+void refinedReachAndGrab();
 
 /*
   void setup() {
@@ -187,7 +188,7 @@ void grabShit(){
             }
         }
         if(holding){
-            motor.speed(MOTOR_PIN_BABY,20);
+            motor.speed(MOTOR_PIN_BABY,80);
         }else{
             dropShit();
         }
@@ -283,19 +284,26 @@ void reachAndClaw(bool grabbing)
     midTarget = initialAdjMidTarget;
     baseTarget = initialAdjBaseTarget;
     unsigned long startTime = millis();
-    while (millis() - startTime < 500) 
+    while (millis() - startTime < 500){ 
         doControl();
+        LCD.clear();
+        LCD.print(getAngle());
+    }
     
     midTarget = midAdjMidTarget;
     baseTarget = midAdjBaseTarget;
     
-    while (millis() - startTime < 1000) 
+    while (millis() - startTime < 1000){ 
         doControl();
-    
+        LCD.clear();
+        LCD.print(getAngle());
+    }
     baseTarget = finalAdjBaseTarget; 
     midTarget = finalAdjMidTarget;
     while (millis() - startTime < 1500) {  
         doControl();
+        LCD.clear();
+        LCD.print(getAngle());
         if (!digitalRead(ARM_SWITCHES[2])) {
             baseTarget = getAngle() + 5;
             break;
@@ -305,6 +313,28 @@ void reachAndClaw(bool grabbing)
         grabShit();
     else 
         dropShit();
+    setRestPosition();
+}
+
+void refinedReachAndGrab(){
+  midTarget = midAdjMidTarget;
+  baseTarget = initialAdjBaseTarget;
+  unsigned long startTime = millis();
+    while(true){
+      doControl();
+      if(digitalRead(ARM_SWITCHES[2]) 
+      && ((millis()-startTime)>500)
+      && baseTarget > 80){
+        baseTarget -= 5;
+        if(midTarget < 160)
+          midTarget += 10;
+        startTime = millis();
+      }
+      if(!digitalRead(ARM_SWITCHES[2]) || baseTarget <= 80)
+        break;
+      delay(5);
+    }
+    grabShit();
     setRestPosition();
 }
 
@@ -362,6 +392,9 @@ void stepperTurn(bool CW,int count){
         
         digitalWrite(PULSE_PIN,LOW);
         delayMicroseconds(stepperMicrosDelay);
+
+        LCD.clear();
+        LCD.print(getAngle());
     }
 }
 
@@ -375,7 +408,10 @@ void turnAndReach(bool turnRight, bool grab){
     stepperTurn(turnRight, numPulses);
     LCD.clear();
     LCD.print("grabbing in turn and reach");
-    reachAndClaw(grab);
+    if(grab)
+      refinedReachAndGrab();
+    else
+      reachAndClaw(grab);
     LCD.clear();
     LCD.print("turning back");
     stepperTurn(!turnRight, numPulses);

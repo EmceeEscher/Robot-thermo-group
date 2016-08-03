@@ -577,9 +577,6 @@ void turnAround()
     tapeFollowSteps = 0;  // reset steps counter
 }
 
-void backUp(){
-    
-}
 
 void tapeFollowStart()
 {
