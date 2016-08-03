@@ -46,15 +46,16 @@ const float ERROR_SEEKING   {.64};            // error to apply while seeking ta
 const float ERROR_TURNING {12.80};            // error to be applied during turning
 
 // Delays
-const int INTERSECT_SEEK_DELAY_PERIOD  {100}; // while tape following, waits for this many steps before searching for intersections
-const int INTERSECT_DETECT_PERIOD       {15}; // number of consecutive readings required to see an intersection
-const int TURN_CONFIRM_PERIOD           {10}; // number of consecutive readings required to register start of turning
-const int PRE_TURN_DELAY_PERIOD         {75}; // number of iterations to wait after detecting intersections before making decision
-const int PRE_TURN_AROUND_DELAY_PERIOD {145}; // number of reverse steps to make before turning around
-const int OFF_TAPE_PERIOD               {50}; // number of consecutive readings required to signal that the robot has lost the tape
-const int ON_TAPE_PERIOD                 {5}; // number of consecutive readings required to confirm that the robot is back on the tape after turning
+const int INTERSECT_SEEK_DELAY_PERIOD      {100}; // while tape following, waits for this many steps before searching for intersections
+const int INTERSECT_DETECT_PERIOD           {15}; // number of consecutive readings required to see an intersection
+const int TURN_CONFIRM_PERIOD               {10}; // number of consecutive readings required to register start of turning
+const int PRE_TURN_DELAY_PERIOD             {75}; // number of iterations to wait after detecting intersections before making decision
+const int PRE_TURN_AROUND_DELAY_PERIOD     {145}; // number of reverse steps to make before turning around
+const int OFF_TAPE_PERIOD                   {50}; // number of consecutive readings required to signal that the robot has lost the tape
+const int ON_TAPE_PERIOD                     {5}; // number of consecutive readings required to confirm that the robot is back on the tape after turning
+const int TURN_AROUND_SPEED_SWITCH_PERIOD  {512}; // number of steps before switching between forward and reverse while turning around
 
-const int COUNTER_MAX                  {256}; // maximum value for onTapeCounter and offTapeCounter
+const int COUNTER_MAX                 {2048}; // maximum value for onTapeCounter and offTapeCounter
 
 // Speeds
 const int MOTOR_SPEED_FOLLOWING       {84};  // default motor speed for tape following
@@ -64,12 +65,12 @@ const int MOTOR_SPEED_TURNING         {32};  // default motor speed for making t
 const int MOTOR_SPEED_PASSENGER_SEEK  {64};  // motor speed for turning around
 const int MOTOR_SPEED_TURNING_AROUND  {-8};  // motor speed for following after initial passenger sighting
 
-static int motorSpeedFollowing    {MOTOR_SPEED_FOLLOWING};        // current motor speed for following tape
-static int motorSpeedReversing    {MOTOR_SPEED_REVERSING};
-static int motorSpeedSeeking      {MOTOR_SPEED_SEEKING};
-static int motorSpeedTurning      {MOTOR_SPEED_TURNING};
-const int motorSpeedTurningAround {MOTOR_SPEED_TURNING_AROUND};
-const int motorSpeedPassengerSeek {MOTOR_SPEED_PASSENGER_SEEK};
+static int motorSpeedFollowing    { MOTOR_SPEED_FOLLOWING };        // current motor speed for following tape
+static int motorSpeedReversing    { MOTOR_SPEED_REVERSING };
+static int motorSpeedSeeking      { MOTOR_SPEED_SEEKING };
+static int motorSpeedTurning      { MOTOR_SPEED_TURNING };
+const int motorSpeedTurningAround { MOTOR_SPEED_TURNING_AROUND };
+const int motorSpeedPassengerSeek { MOTOR_SPEED_PASSENGER_SEEK };
 
 // General following variables
 static bool active       {false};
@@ -84,6 +85,7 @@ static TFAction action {TFAction::SEEKING};    // what the tapefollowing is curr
 static int steps[TapeFollow::numActions];  // number of steps for associated action
 static int onTapeCounter[TapeFollow::numSensors];      // counts the number of consecutive onTape reads for each pin
 static int offTapeCounter[TapeFollow::numSensors];     // counts the number of consecutive offTape reads for each pin
+static int turnAroundCounter {0};
 
 // Readings
 static int activePins[TapeFollow::numSensors];         // pin numbers (intL, mainL, mainR, intR)
@@ -199,6 +201,30 @@ namespace TapeFollow
     static void updateCounters();
 
     /*
+     * Update the state and `action` of the robot, given that it is 
+     * currenty following
+     */
+    static void updateStateFollowing();
+
+    /*
+     * Update the state and `action` of the robot, given that it is 
+     * currenty reversing
+     */
+    static void updateStateReversing();
+
+    /*
+     * Update the state and `action` of the robot, given that it is 
+     * currenty seeking
+     */
+    static void updateStateSeeking();
+
+    /*
+     * Update the state and `action` of the robot, given that it is 
+     * currenty turning
+     */
+    static void updateStateTurning();
+
+    /*
      * Updates the state of the robot based on the latest reads and
      * counter values
      */
@@ -294,26 +320,7 @@ void TapeFollow::updateIntersectionsDetected()
 
     // check if intersection detected
     for (int i(0); i < 2; ++i)
-        intersectDetect[i] = (!pinReadings[i]) &&
-            intersectSeen[i];
-
-    // if intersection(s) detected, make move decision
-    if ((offTapeCounter[0] >= PRE_TURN_DELAY_PERIOD) &&
-        (offTapeCounter[3] >= PRE_TURN_DELAY_PERIOD)) {
-
-        // TODO: do this a better way
-        turnDirection = chooseTurnDeterministic(  // TODO: specify this function from major mode
-                intersectDetect[0],
-                intersectDetect[1],
-                !mainsOffTape()
-        );
-        if (turnDirection != Direction::FRONT)  // TODO: move to updateSTate?
-            action = TFAction::TURNING;
-
-        // reset intersection arrays
-        intersectSeen.reset();    // 00
-        intersectDetect.reset();  // 00
-    }
+        intersectDetect[i] = (!pinReadings[i]) && intersectSeen[i];
 }
 
 
@@ -484,64 +491,111 @@ void TapeFollow::setControl()
 }
 
 
-// TODO: !!! Determine how to modify/respond to action
-// TODO: !!! Serious cleanup needed !
-void TapeFollow::updateState()
+// TODO: !!!
+void TapeFollow::updateStateFollowing()
 {
     int followSteps  = steps[static_cast<int>(TFAction::FOLLOWING)];
+    if (offTape())
+        action = TFAction::SEEKING;
+    else if (followSteps >= INTERSECT_SEEK_DELAY_PERIOD) {
+        updateIntersectionsDetected();
+        
+        // if intersection(s) detected, make move decision
+        if (intersectDetect.any() &&
+            (offTapeCounter[0] >= PRE_TURN_DELAY_PERIOD) &&
+            (offTapeCounter[3] >= PRE_TURN_DELAY_PERIOD)) {
+            
+            // TODO: do this a better way
+            turnDirection = chooseTurnDeterministic(  // TODO: specify this function from major mode
+                    intersectDetect[0], intersectDetect[1],
+                    !mainsOffTape()
+            );
+            if (turnDirection != Direction::FRONT)  // TODO: move to updateSTate?
+                action = TFAction::TURNING;
+            
+            // reset intersection arrays
+            intersectSeen.reset();    // 00
+            intersectDetect.reset();  // 00
+        }
+    }
+}
+
+
+// TODO: !!!
+void TapeFollow::updateStateReversing()
+{
     int reverseSteps = steps[static_cast<int>(TFAction::REVERSING)];
+    if (offTape())
+        action = TFAction::SEEKING;
+    else if (willTurnAround) {
+        if (reverseSteps >= PRE_TURN_AROUND_DELAY_PERIOD) {
+            motorSpeedFollowing = MOTOR_SPEED_FOLLOWING;
+            motorSpeedTurning = motorSpeedTurningAround;
+            willTurnAround = false;
+            turningAround = true;
+            turnAroundCounter = 0;
+            action = TFAction::TURNING;
+        }
+    }
+}
 
+
+// TODO: !!!
+void TapeFollow::updateStateSeeking()
+{
+    if (!offTape()) {
+        if (!willTurnAround)
+            action = TFAction::FOLLOWING;
+        else
+            action = TFAction::REVERSING;
+    }
+}
+
+
+// TODO: !!!
+void TapeFollow::updateStateTurning()
+{
+    if ((!halfTurn) &&
+        (offTapeCounter[1] >= TURN_CONFIRM_PERIOD) &&
+        (offTapeCounter[2] >= TURN_CONFIRM_PERIOD)) {  // turn begins
+        halfTurn = true;
+    } else if (
+            halfTurn &&
+            ((onTapeCounter[1] >= ON_TAPE_PERIOD) ||
+             (onTapeCounter[2] >= ON_TAPE_PERIOD))) {  // turn ends
+        willTurnAround = false;
+        halfTurn = false;
+        action = TFAction::FOLLOWING; // exit to regular following
+        turningAround = false;
+        turnDirection = Direction::FRONT;
+        motorSpeedTurning = MOTOR_SPEED_TURNING;
+        motorSpeedFollowing = MOTOR_SPEED_FOLLOWING;
+    } else {  // during turn
+        if (turningAround &&
+            (turnAroundCounter >= TURN_AROUND_SPEED_SWITCH_PERIOD)) {
+            motorSpeedTurning = -motorSpeedTurning;
+            turnAroundCounter = 0;
+        } else if (turningAround) 
+            ++turnAroundCounter;
+    }
+}
+
+
+void TapeFollow::updateState()
+{
     switch (action) {
-
         case TFAction::FOLLOWING:
-            if (offTape())
-                action = TFAction::SEEKING;
-            else if (followSteps >= INTERSECT_SEEK_DELAY_PERIOD)
-                updateIntersectionsDetected();
+            TapeFollow::updateStateFollowing();
             break;
-
         case TFAction::REVERSING:
-            if (offTape())
-                action = TFAction::SEEKING;
-            else if (willTurnAround) {
-                if (reverseSteps >= PRE_TURN_AROUND_DELAY_PERIOD) {
-                    motorSpeedFollowing = MOTOR_SPEED_FOLLOWING;
-                    motorSpeedTurning = motorSpeedTurningAround;
-                    willTurnAround = false;
-                    turningAround = true;
-                    action = TFAction::TURNING;
-                }
-            }
+            TapeFollow::updateStateReversing();
             break;
-
         case TFAction::SEEKING:
-            if (!offTape()) {
-                if (!willTurnAround)
-                    action = TFAction::FOLLOWING;
-                else
-                    action = TFAction::REVERSING;
-            }
+            TapeFollow::updateStateSeeking();
             break;
-
         case TFAction::TURNING:
-            if ((!halfTurn) &&
-                (offTapeCounter[1] >= TURN_CONFIRM_PERIOD) &&
-                (offTapeCounter[2] >= TURN_CONFIRM_PERIOD)) {
-                halfTurn = true;
-            } else if (
-                    halfTurn &&
-                    ((onTapeCounter[1] >= ON_TAPE_PERIOD) ||
-                     (onTapeCounter[2] >= ON_TAPE_PERIOD))) {
-                willTurnAround = false;
-                halfTurn = false;
-                action = TFAction::FOLLOWING; // exit to regular following
-                turningAround = false;
-                turnDirection = Direction::FRONT;
-                motorSpeedTurning = MOTOR_SPEED_TURNING;
-                motorSpeedFollowing = MOTOR_SPEED_FOLLOWING;
-            }
+            TapeFollow::updateStateTurning();
             break;
-
     }
 }
 
@@ -738,7 +792,6 @@ void TapeFollow::turnAround()
             break;
     }
     willTurnAround = true;
-    action = TFAction::SEEKING;
 }
 
 
