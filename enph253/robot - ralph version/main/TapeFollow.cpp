@@ -30,88 +30,7 @@ namespace TapeFollow
         TFAction::TURNING
     };
 
-}
-
-const unsigned long RANDOM_MAX_VAL     {100000};
-
-// Gains
-const float EPSILON         {.10};
-const float GAIN_PROP      {9.84};
-const float GAIN_DER1     {11.78};
-const float GAIN_DER2     {
-        static_cast<const float>(
-                .5 * GAIN_DER1 * GAIN_DER1 / GAIN_PROP * (1. - EPSILON))
-};
-
-// Errors
-const float ERROR_SMALL     {.02};   // one main on tape
-const float ERROR_MEDIUM    {.04};   // both mains off, one intersection on tape
-const float ERROR_LARGE     {.08};   // all QRDs off tape
-const float ERROR_SEEKING   {.64};   // error to apply while seeking tape
-const float ERROR_TURNING {12.80};   // error to be applied during turning
-
-// Delays
-const int INTERSECT_SEEK_DELAY_PERIOD      {100};  // while tape following, waits for this many steps before searching for intersections
-const int INTERSECT_DETECT_PERIOD           {15};  // number of consecutive readings required to see an intersection
-const int TURN_CONFIRM_PERIOD               {10};  // number of consecutive readings required to register start of turning
-const int PRE_TURN_DELAY_PERIOD             {75};  // number of iterations to wait after detecting intersections before making decision
-const int PRE_TURN_AROUND_DELAY_PERIOD     {145};  // number of reverse steps to make before turning around
-const int OFF_TAPE_PERIOD                   {50};  // number of consecutive readings required to signal that the robot has lost the tape
-const int ON_TAPE_PERIOD                     {5};  // number of consecutive readings required to confirm that the robot is back on the tape after turning
-const int TURN_AROUND_SPEED_SWITCH_PERIOD  {512};  // number of steps before switching between forward and reverse while turning around
-const int COUNTER_MAX {2048}; // maximum value for onTapeCounter and offTapeCounter
-
-// Speeds
-const int MOTOR_SPEED_FOLLOWING       {84};  // default motor speed for tape following
-const int MOTOR_SPEED_REVERSING      {-64};  // default motor speed for backing up
-const int MOTOR_SPEED_SEEKING         {32};  // default motor speed for seeking tape
-const int MOTOR_SPEED_TURNING         {32};  // default motor speed for making turn
-const int MOTOR_SPEED_PASSENGER_SEEK  {64};  // motor speed for turning around
-const int MOTOR_SPEED_TURNING_AROUND  {-8};  // motor speed for following after initial passenger sighting
-
-static int motorSpeedFollowing    { MOTOR_SPEED_FOLLOWING };      // current motor speed for following 
-static int motorSpeedReversing    { MOTOR_SPEED_REVERSING };      // current motor speed for reversing
-static int motorSpeedSeeking      { MOTOR_SPEED_SEEKING   };      // current motor speed for seeking
-static int motorSpeedTurning      { MOTOR_SPEED_TURNING   };      // current motor speed for turning
-const int motorSpeedTurningAround { MOTOR_SPEED_TURNING_AROUND };
-const int motorSpeedPassengerSeek { MOTOR_SPEED_PASSENGER_SEEK };
-
-// General following variables
-static bool active       {false};
-static bool motorsActive {false};           // true if motors are active
-static int control     {0};                  // current control parameter
-static int motorSpeed  {motorSpeedSeeking};  // speed to add to motors
-static float error     {0.};
-static float lastError {0.};                 // last calculated error
-
-// Action and counters
-static TFAction action {TFAction::SEEKING};           // what the tapefollowing is currently doing (i.e. following, seeking, etc)
-static int steps[TapeFollow::numActions];             // number of steps for associated action
-static int onTapeCounter  [TapeFollow::numSensors];   // counts the number of consecutive onTape reads for each pin
-static int offTapeCounter [TapeFollow::numSensors];   // counts the number of consecutive offTape reads for each pin
-static int turnAroundCounter {0};
-
-// Readings
-static int activePins[TapeFollow::numSensors];       // pin numbers (intL, mainL, mainR, intR)
-static bitset<TapeFollow::numSensors> pinReadings;   // current readings on QRD pins
-static vector<float> errorArray;                     // array of last 2 distinct errors
-static vector<unsigned long> etimeArray;             // array of times (since read) assoc with errorArray
-static bitset<2> intersectSeen;                      // true if an intersection was seen
-static bitset<2> intersectDetect;                    // true when an intersection has been detected (seen and passed over)
-
-// Turning variables
-static bool turningAround  {false};                 // true if the robot is turning around
-static bool willTurnAround {false};                 // true if the robot is about to turn around
-static bool halfTurn       {false};                 // if true, bot has turned far enough that mains are off tape
-static Direction turnDirection {Direction::FRONT};  // current turn direction
-static float leftWeight     {1.};                   // TODO: come up with a better way of doing this weight stuff
-static float straightWeight {1.};
-static float rightWeight    {1.};
-
-
-// Static function forward declarations
-namespace TapeFollow
-{
+    // Static function forward declarations
 
     /*
      * Returns true if off tape (no readings) for longer than OFF_TAPE_PERIOD
@@ -227,6 +146,112 @@ namespace TapeFollow
 }
 
 
+const unsigned long RANDOM_MAX_VAL     {100000};
+
+// Gains
+const float EPSILON         {.10};
+const float GAIN_PROP      {9.84};
+const float GAIN_DER1     {11.78};
+const float GAIN_DER2     {
+        static_cast<const float>(
+                .5 * GAIN_DER1 * GAIN_DER1 / GAIN_PROP * (1. - EPSILON))
+};
+
+// Errors
+const float ERROR_SMALL     {.02};   // one main on tape
+const float ERROR_MEDIUM    {.04};   // both mains off, one intersection on tape
+const float ERROR_LARGE     {.08};   // all QRDs off tape
+const float ERROR_SEEKING   {.64};   // error to apply while seeking tape
+const float ERROR_TURNING {12.80};   // error to be applied during turning
+
+// Delays
+const int INTERSECT_SEEK_DELAY_PERIOD      {100};  // while tape following, waits for this many steps before searching for intersections
+const int INTERSECT_DETECT_PERIOD           {15};  // number of consecutive readings required to see an intersection
+const int TURN_CONFIRM_PERIOD               {10};  // number of consecutive readings required to register start of turning
+const int PRE_TURN_DELAY_PERIOD             {75};  // number of iterations to wait after detecting intersections before making decision
+const int PRE_TURN_AROUND_DELAY_PERIOD     {145};  // number of reverse steps to make before turning around
+const int OFF_TAPE_PERIOD                   {50};  // number of consecutive readings required to signal that the robot has lost the tape
+const int ON_TAPE_PERIOD                     {5};  // number of consecutive readings required to confirm that the robot is back on the tape after turning
+const int TURN_AROUND_SPEED_SWITCH_PERIOD  {512};  // number of steps before switching between forward and reverse while turning around
+const int COUNTER_MAX {2048}; // maximum value for onTapeCounter and offTapeCounter
+
+// Speeds
+const int MOTOR_SPEED_FOLLOWING       {84};  // default motor speed for tape following
+const int MOTOR_SPEED_REVERSING      {-64};  // default motor speed for backing up
+const int MOTOR_SPEED_SEEKING         {32};  // default motor speed for seeking tape
+const int MOTOR_SPEED_TURNING         {32};  // default motor speed for making turn
+const int DEFAULT_MOTOR_SPEEDS[TapeFollow::numActions] {
+        MOTOR_SPEED_FOLLOWING,
+        MOTOR_SPEED_REVERSING,
+        MOTOR_SPEED_SEEKING,
+        MOTOR_SPEED_TURNING
+};
+const int MOTOR_SPEED_PASSENGER_SEEK  {64};  // motor speed for turning around
+const int MOTOR_SPEED_TURNING_AROUND  {-8};  // motor speed for following after initial passenger sighting
+
+static int motorSpeedFollowing    { MOTOR_SPEED_FOLLOWING };      // current motor speed for following 
+static int motorSpeedReversing    { MOTOR_SPEED_REVERSING };      // current motor speed for reversing
+static int motorSpeedSeeking      { MOTOR_SPEED_SEEKING   };      // current motor speed for seeking
+static int motorSpeedTurning      { MOTOR_SPEED_TURNING   };      // current motor speed for turning
+static int *motorSpeeds[TapeFollow::numActions] {
+        &motorSpeedFollowing,
+        &motorSpeedReversing,
+        &motorSpeedSeeking,
+        &motorSpeedTurning
+};
+const int motorSpeedTurningAround { MOTOR_SPEED_TURNING_AROUND };
+const int motorSpeedPassengerSeek { MOTOR_SPEED_PASSENGER_SEEK };
+
+// General following variables
+static bool active       {false};
+static bool motorsActive {false};           // true if motors are active
+static int control     {0};                  // current control parameter
+static int motorSpeed  {motorSpeedSeeking};  // speed to add to motors
+static float error     {0.};
+static float lastError {0.};                 // last calculated error
+
+// Action and counters
+static TFAction action {TFAction::SEEKING};           // what the tapefollowing is currently doing (i.e. following, seeking, etc)
+static int steps[TapeFollow::numActions];             // number of steps for associated action
+static int onTapeCounter  [TapeFollow::numSensors];   // counts the number of consecutive onTape reads for each pin
+static int offTapeCounter [TapeFollow::numSensors];   // counts the number of consecutive offTape reads for each pin
+static int turnAroundCounter {0};
+
+// Readings
+static int activePins[TapeFollow::numSensors];       // pin numbers (intL, mainL, mainR, intR)
+static bitset<TapeFollow::numSensors> pinReadings;   // current readings on QRD pins
+static vector<float>         errorArray {0., 0.};    // array of last 2 distinct errors
+static vector<unsigned long> etimeArray {0,  1};     // array of times (since read) assoc with errorArray
+static bitset<2> intersectSeen;                      // true if an intersection was seen
+static bitset<2> intersectDetect;                    // true when an intersection has been detected (seen and passed over)
+
+// Turning variables
+static bool turningAround  {false};                 // true if the robot is turning around
+static bool willTurnAround {false};                 // true if the robot is about to turn around
+static bool halfTurn       {false};                 // if true, bot has turned far enough that mains are off tape
+static Direction turnDirection {Direction::FRONT};  // current turn direction
+static float leftWeight     {1.};                   // TODO: come up with a better way of doing this weight stuff
+static float straightWeight {1.};
+static float rightWeight    {1.};
+
+// Functions
+using setErrorFn_t = void (*) ();
+static setErrorFn_t setErrorFunction[TapeFollow::numActions] {
+        &TapeFollow::setErrorFollowing,
+        &TapeFollow::setErrorReversing,
+        &TapeFollow::setErrorSeeking,
+        &TapeFollow::setErrorTurning
+};
+
+using updateStateFn_t = void (*) ();
+static updateStateFn_t updateStateFunction[TapeFollow::numActions] {
+        &TapeFollow::updateStateFollowing,
+        &TapeFollow::updateStateReversing,
+        &TapeFollow::updateStateSeeking,
+        &TapeFollow::updateStateTurning
+};
+
+
 void TapeFollow::init()
 {
     turningAround       = false;
@@ -238,8 +263,9 @@ void TapeFollow::init()
 
     turnDirection       = Direction::FRONT;  // not turning
     control             = 0;
-    motorSpeedFollowing = MOTOR_SPEED_FOLLOWING;
-    motorSpeedTurning   = MOTOR_SPEED_TURNING;
+
+    for (int i(0); i < TapeFollow::numActions; ++i)
+        *(motorSpeeds[i]) = DEFAULT_MOTOR_SPEEDS[i];
     motorSpeed          = 0;
 
     error               = 0.;
@@ -442,21 +468,7 @@ void TapeFollow::setErrorTurning()
 
 void TapeFollow::setError()
 {
-    // choose error based on current action
-    switch (action) {  // TODO: handle all cases
-        case TFAction::FOLLOWING:
-            setErrorFollowing();
-            break;
-        case TFAction::REVERSING:
-            setErrorFollowing();
-            break;
-        case TFAction::SEEKING:
-            setErrorSeeking();
-            break;
-        case TFAction::TURNING:
-            setErrorTurning();
-            break;
-    }
+    setErrorFunction[static_cast<int>(action)]();
     error *= abs(motorSpeedFollowing);  // TODO
 
     // update previous error parameters
@@ -587,20 +599,7 @@ void TapeFollow::updateStateTurning()
 
 void TapeFollow::updateState()
 {
-    switch (action) {
-        case TFAction::FOLLOWING:
-            TapeFollow::updateStateFollowing();
-            break;
-        case TFAction::REVERSING:
-            TapeFollow::updateStateReversing();
-            break;
-        case TFAction::SEEKING:
-            TapeFollow::updateStateSeeking();
-            break;
-        case TFAction::TURNING:
-            TapeFollow::updateStateTurning();
-            break;
-    }
+    updateStateFunction[static_cast<int>(action)]();
 }
 
 
@@ -642,20 +641,7 @@ void TapeFollow::loop()
     updateState();
 
     // set motor speed based on action
-    switch (action) {
-        case TFAction::FOLLOWING:
-            motorSpeed = motorSpeedFollowing;
-            break;
-        case TFAction::REVERSING:
-            motorSpeed = motorSpeedReversing;
-            break;
-        case TFAction::SEEKING:
-            motorSpeed = motorSpeedSeeking;
-            break;
-        case TFAction::TURNING:
-            motorSpeed = motorSpeedTurning;
-            break;
-    }
+    motorSpeed = *(motorSpeeds[static_cast<int>(action)]);
 
     // get error based on current state
     setError();
