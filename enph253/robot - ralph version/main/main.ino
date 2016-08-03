@@ -288,13 +288,6 @@ void debugSequence()
     motor.speed(pins::MOTOR_PIN_ARM, 0);
     delay(500);
     LCD.clear();
-    LCD.print( F("START to begin loop") );
-    while (!startbutton()) {
-        delay(10);
-    }
-    while (startbutton()) {}
-    delay(500);
-    LCD.clear();
     LCD.print( F("test claw switches") );
     LCD.setCursor(0, 1);
     LCD.print( F("START to continue") );
