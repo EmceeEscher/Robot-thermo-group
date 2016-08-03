@@ -12,6 +12,7 @@ namespace ToDestination
     bool hasArrived();
     void loop();
     Direction getBeaconDirection();
+    void printLCD();
 }
 
 //Function Declarations:::::::::::::

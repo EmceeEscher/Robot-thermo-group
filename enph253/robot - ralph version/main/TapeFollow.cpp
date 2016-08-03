@@ -11,28 +11,27 @@
 
 const int MOTOR_SPEED_FOLLOWING       {120};
 const int MOTOR_SPEED_PASSENGER_SEEK  {64};
-const int MOTOR_SPEED_TURNING         {32};
+const int MOTOR_SPEED_TURNING         {16};
 const int MOTOR_SPEED_TURNING_AROUND  {-8};
 const int MOTOR_SPEED_SEEKING          {8};
 const int MOTOR_SPEED_REVERSE        {-64};
-const int PRINT_PERIOD {200};
 const int PRE_TURN_AROUND_DELAY_PERIOD {145};
 const int INTERSECT_DELAY {100};  // steps following before intersection seeking
 const unsigned long MAIN_LOOP_DELAY {1};     // milliseconds
-const float ERROR_SMALL   {.02};
-const float ERROR_MEDIUM  {.04};
-const float ERROR_LARGE   {.08};
-const float ERROR_SEEKING {.64};
-const float ERROR_TURNING {12.80};
-const float EPSILON       {0.1};
-const float GAIN_PROP     {9};
-const float GAIN_DER1     {12};
-const float GAIN_DER2     {.5*GAIN_DER1*GAIN_DER1/GAIN_PROP*(1.-EPSILON)};
+const double ERROR_SMALL   {.02};
+const double ERROR_MEDIUM  {.04};
+const double ERROR_LARGE   {.08};
+const double ERROR_SEEKING {.64};
+const double ERROR_TURNING {12.80};
+const double EPSILON       {0.1};
+const double GAIN_PROP     {7};
+const double GAIN_DER1     {12};
+const double GAIN_DER2     {.5*GAIN_DER1*GAIN_DER1/GAIN_PROP*(1.-EPSILON)};
 // const double GAIN_DER2 {0.};
 const int NUM_SAVED_READINGS {52};
 const int INTERSECT_PERIOD {5};  
 const int TURNING_PERIOD   {10}; 
-const int TURN_WAIT_PERIOD {45};
+const int TURN_WAIT_PERIOD {25};
 const int OFF_TAPE_PERIOD  {50};
 const int ON_TAPE_PERIOD   {10};
 
@@ -113,7 +112,7 @@ void TapeFollow::init()
     
     turnDirection   = Direction::FRONT;
     control         = 0;
-    printCount      = 0;
+
     motorSpeedFollowing = MOTOR_SPEED_FOLLOWING;
     motorSpeedTurning   = MOTOR_SPEED_TURNING;
     motorSpeed          = motorSpeedFollowing;
@@ -160,7 +159,6 @@ float TapeFollow::seekTape()
 // TODO
 void TapeFollow::intersectionSeen()
 {
-    // bool intersectSeenL = true;
     bool intersectSeenL = true;
     bool intersectSeenR = true;
     for (int i = 0; i < NUM_SAVED_READINGS; ++i) {
@@ -470,13 +468,7 @@ void TapeFollow::loop()
         return;
     }
     
-    if (printCount % PRINT_PERIOD == 0) {
-        //printLCD();
-        PassengerSeek::printLCD();
-        //detectBeaconPrintLCD();
-        printCount = 0;
-    }
-    ++printCount;
+    
     
     // set gains
     // TODO move this to constructor once values are decided upon
@@ -650,3 +642,10 @@ void TapeFollow::giveTurnDirection(float left, float right, float straight)
     rightWeight = right;
     straightWeight = straight;
 }
+
+
+bool TapeFollow::isTurning()
+{
+    return turning;
+}
+

@@ -31,6 +31,8 @@ namespace TapeFollow
 
     void backUp();
 
+    bool isTurning();
+
 }
 
 #endif

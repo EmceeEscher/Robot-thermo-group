@@ -8,7 +8,7 @@
 
 
 //Amount of time to run motor to drop animal
-const int dropTime = 400; // Milliseconds
+extern const int Arm_And_Stepper::dropTime = 400; // Milliseconds
 
 //SPECIFIED GAIN VALUES
 const float PROP_GAIN = 10.;
@@ -29,10 +29,10 @@ static float now, lastTime;
 // static int hasInitialized = 0;
 
 //Rest Positions
-const float BASE_REST_POSITION = 100;
-const float MID_REST_POSITION = 150;
-const float BASE_HOLD_POSITION = 100;
-const float MID_HOLD_POSITION = 150;//TODO: switch back to 170
+const float BASE_REST_POSITION = 115;
+const float MID_REST_POSITION  = 150;
+const float BASE_HOLD_POSITION = 115;
+const float MID_HOLD_POSITION  = 150;//TODO: switch back to 170
 
 //Iterator for LCD printing
 static int LCDControl;
@@ -44,27 +44,25 @@ const int stepperMicrosDelay = 1200; //Time delay between pulses in microseconds
 const int numPulses = 680;
 
 //reachAndGrab/reachAndDrop function Constants
-const float initialAdjMidTarget = 100;
-const float initialAdjBaseTarget = 60;
-const float midAdjMidTarget = 135;
-const float midAdjBaseTarget = 40;
-const float finalAdjMidTarget = 170;
-const float finalAdjBaseTarget = 20;
+const float initialAdjMidTarget  = 120;
+const float initialAdjBaseTarget = 120;
+const float midAdjMidTarget      = 60;
+const float midAdjBaseTarget     = 115;
+const float finalAdjMidTarget    = 60;
+const float finalAdjBaseTarget   = 100;
 
 //Holding a passenger?
-static bool holding = false;
+bool Arm_And_Stepper::holding = false;
 
 
 namespace Arm_And_Stepper
 {
 
-    static float getAngle();
     static void setBaseMotor(long duty);
     static float getControlValue();
     static void grabCrap();
     static void reachAndClaw(bool grabbing);
     static void setRestPosition();
-    static void stepperTurn(bool CW,int count);
     
 }
 
@@ -179,81 +177,6 @@ void Arm_And_Stepper::dropCrap()
     motor.speed(MOTOR_PIN_BABY, 0);
 }
 
-/*
-//Function to update the LCD periodically
-void printState(){
-LCD.clear();
-LCD.print("A");
-LCD.print(getAngle());
-LCD.print(" TaR:");
-if(knob(7) > 900){
-LCD.print("R");
-} else if (knob(7) < 150){
-LCD.print("L");
-} else {
-LCD.print("S");
-}
-LCD.print(holding);
-}
-*/
-
-/*
-//Extends arm over two periods and calls grab function
-void reachAndGrab(){
-
-//baseTarget = initialAdjBaseTarget; 
-midTarget = initialAdjMidTarget;
-unsigned long startTime = millis();
-while(millis() - startTime < 500){
-doControl();
-}
-
-baseTarget = initialAdjBaseTarget;
-
-while(millis() - startTime < 1000){
-doControl();
-}
-
-baseTarget = finalAdjBaseTarget; 
-midTarget = finalAdjMidTarget;
-startTime = millis();
-while(millis() - startTime < 2500){
-doControl();
-if(!digitalRead(ARM_SWITCHES[2])){
-baseTarget = getAngle() + 5;
-break;
-}
-}
-grabShit();
-setRestPosition();
-}
-
-
-//equivalent to reachAndGrab, but calls drop function
-void reachAndDrop(){
-
-//baseTarget = initialAdjBaseTarget; 
-midTarget = initialAdjMidTarget;
-unsigned long startTime = millis();
-while(millis() - startTime < 500){
-doControl();
-}
-
-baseTarget = initialAdjBaseTarget;
-while(millis() - startTime < 1000){
-doControl();
-}
-
-baseTarget = finalAdjBaseTarget; 
-midTarget = finalAdjMidTarget;
-startTime = millis();
-while(millis() - startTime < 2500){
-doControl();
-}
-dropShit();
-setRestPosition();
-}
-*/
 
 void Arm_And_Stepper::reachAndClaw(bool grabbing)
 {
@@ -285,19 +208,6 @@ void Arm_And_Stepper::reachAndClaw(bool grabbing)
     setRestPosition();
 }
 
-/*
-//Sets the control target values to rest position
-void setRestPosition(){
-if(holding){
-baseTarget = BASE_HOLD_POSITION;
-midTarget = MID_HOLD_POSITION;
-}else{
-baseTarget = BASE_REST_POSITION;
-midTarget = MID_REST_POSITION;
-}
-
-}
-*/
 
 void Arm_And_Stepper::setRestPosition()
 {

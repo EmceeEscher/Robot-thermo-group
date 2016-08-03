@@ -145,17 +145,18 @@ bool ToDestination::hasArrived()
 	    (rightAverage > BEACON_THRESHOLD));
 }
 
-// void ToDestination::detectBeaconPrintLCD()
-// {
-//     LCD.clear();
-//     LCD.print(F("LR: "));
-//     LCD.print(getLeftBeaconReading());
-//     LCD.print(F(" LA: "));
-//     LCD.print(getLeftBeaconAverage());
-//     LCD.setCursor(0,1);
-//     LCD.print(F("RR: "));
-//     LCD.print(getRightBeaconReading());
-//     LCD.print(F(" RA: "));
-//     LCD.print(getRightBeaconAverage());
-// }
+
+void ToDestination::printLCD()
+{
+    LCD.clear();
+    LCD.print(F("LR: "));
+    LCD.print(getLeftBeaconReading());
+    LCD.print(F(" LA: "));
+    LCD.print(getLeftBeaconAverage());
+    LCD.setCursor(0,1);
+    LCD.print(F("RR: "));
+    LCD.print(getRightBeaconReading());
+    LCD.print(F(" RA: "));
+    LCD.print(getRightBeaconAverage());
+}
 
