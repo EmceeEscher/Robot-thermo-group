@@ -23,6 +23,12 @@ namespace TapeFollow
     const int *tapeSensorsBack  { pins::TAPE_SENSORS_BACK };
     const int numSensors        { pins_sizes::TAPE_SENSORS_FRONT };
     const int numActions        {4};
+    const TFAction allActions[numActions] = {
+        TFAction::FOLLOWING,
+        TFAction::REVERSING,
+        TFAction::SEEKING,
+        TFAction::TURNING
+    };
 
 }
 
@@ -45,16 +51,15 @@ const float ERROR_SEEKING   {.64};   // error to apply while seeking tape
 const float ERROR_TURNING {12.80};   // error to be applied during turning
 
 // Delays
-const int INTERSECT_SEEK_DELAY_PERIOD      {100}; // while tape following, waits for this many steps before searching for intersections
-const int INTERSECT_DETECT_PERIOD           {15}; // number of consecutive readings required to see an intersection
-const int TURN_CONFIRM_PERIOD               {10}; // number of consecutive readings required to register start of turning
-const int PRE_TURN_DELAY_PERIOD             {75}; // number of iterations to wait after detecting intersections before making decision
-const int PRE_TURN_AROUND_DELAY_PERIOD     {145}; // number of reverse steps to make before turning around
-const int OFF_TAPE_PERIOD                   {50}; // number of consecutive readings required to signal that the robot has lost the tape
-const int ON_TAPE_PERIOD                     {5}; // number of consecutive readings required to confirm that the robot is back on the tape after turning
-const int TURN_AROUND_SPEED_SWITCH_PERIOD  {512}; // number of steps before switching between forward and reverse while turning around
-
-const int COUNTER_MAX                 {2048}; // maximum value for onTapeCounter and offTapeCounter
+const int INTERSECT_SEEK_DELAY_PERIOD      {100};  // while tape following, waits for this many steps before searching for intersections
+const int INTERSECT_DETECT_PERIOD           {15};  // number of consecutive readings required to see an intersection
+const int TURN_CONFIRM_PERIOD               {10};  // number of consecutive readings required to register start of turning
+const int PRE_TURN_DELAY_PERIOD             {75};  // number of iterations to wait after detecting intersections before making decision
+const int PRE_TURN_AROUND_DELAY_PERIOD     {145};  // number of reverse steps to make before turning around
+const int OFF_TAPE_PERIOD                   {50};  // number of consecutive readings required to signal that the robot has lost the tape
+const int ON_TAPE_PERIOD                     {5};  // number of consecutive readings required to confirm that the robot is back on the tape after turning
+const int TURN_AROUND_SPEED_SWITCH_PERIOD  {512};  // number of steps before switching between forward and reverse while turning around
+const int COUNTER_MAX {2048}; // maximum value for onTapeCounter and offTapeCounter
 
 // Speeds
 const int MOTOR_SPEED_FOLLOWING       {84};  // default motor speed for tape following
@@ -64,10 +69,10 @@ const int MOTOR_SPEED_TURNING         {32};  // default motor speed for making t
 const int MOTOR_SPEED_PASSENGER_SEEK  {64};  // motor speed for turning around
 const int MOTOR_SPEED_TURNING_AROUND  {-8};  // motor speed for following after initial passenger sighting
 
-static int motorSpeedFollowing    { MOTOR_SPEED_FOLLOWING };        // current motor speed for following tape
-static int motorSpeedReversing    { MOTOR_SPEED_REVERSING };
-static int motorSpeedSeeking      { MOTOR_SPEED_SEEKING };
-static int motorSpeedTurning      { MOTOR_SPEED_TURNING };
+static int motorSpeedFollowing    { MOTOR_SPEED_FOLLOWING };      // current motor speed for following 
+static int motorSpeedReversing    { MOTOR_SPEED_REVERSING };      // current motor speed for reversing
+static int motorSpeedSeeking      { MOTOR_SPEED_SEEKING   };      // current motor speed for seeking
+static int motorSpeedTurning      { MOTOR_SPEED_TURNING   };      // current motor speed for turning
 const int motorSpeedTurningAround { MOTOR_SPEED_TURNING_AROUND };
 const int motorSpeedPassengerSeek { MOTOR_SPEED_PASSENGER_SEEK };
 
@@ -80,19 +85,19 @@ static float error     {0.};
 static float lastError {0.};                 // last calculated error
 
 // Action and counters
-static TFAction action {TFAction::SEEKING};    // what the tapefollowing is currently doing (i.e. following, seeking, etc)
-static int steps[TapeFollow::numActions];  // number of steps for associated action
-static int onTapeCounter[TapeFollow::numSensors];      // counts the number of consecutive onTape reads for each pin
-static int offTapeCounter[TapeFollow::numSensors];     // counts the number of consecutive offTape reads for each pin
+static TFAction action {TFAction::SEEKING};           // what the tapefollowing is currently doing (i.e. following, seeking, etc)
+static int steps[TapeFollow::numActions];             // number of steps for associated action
+static int onTapeCounter  [TapeFollow::numSensors];   // counts the number of consecutive onTape reads for each pin
+static int offTapeCounter [TapeFollow::numSensors];   // counts the number of consecutive offTape reads for each pin
 static int turnAroundCounter {0};
 
 // Readings
-static int activePins[TapeFollow::numSensors];         // pin numbers (intL, mainL, mainR, intR)
-static bitset<TapeFollow::numSensors> pinReadings;    // current readings on QRD pins
-static vector<float> errorArray;           // array of last 2 distinct errors
-static vector<unsigned long> etimeArray;   // array of times (since read) assoc with errorArray
-static bitset<2> intersectSeen;            // true if an intersection was seen
-static bitset<2> intersectDetect;          // true when an intersection has been detected (seen and passed over)
+static int activePins[TapeFollow::numSensors];       // pin numbers (intL, mainL, mainR, intR)
+static bitset<TapeFollow::numSensors> pinReadings;   // current readings on QRD pins
+static vector<float> errorArray;                     // array of last 2 distinct errors
+static vector<unsigned long> etimeArray;             // array of times (since read) assoc with errorArray
+static bitset<2> intersectSeen;                      // true if an intersection was seen
+static bitset<2> intersectDetect;                    // true when an intersection has been detected (seen and passed over)
 
 // Turning variables
 static bool turningAround  {false};                 // true if the robot is turning around
@@ -104,15 +109,9 @@ static float straightWeight {1.};
 static float rightWeight    {1.};
 
 
+// Static function forward declarations
 namespace TapeFollow
 {
-
-    const TFAction allActions[numActions] = {
-        TFAction::FOLLOWING,
-        TFAction::REVERSING,
-        TFAction::SEEKING,
-        TFAction::TURNING
-    };
 
     /*
      * Returns true if off tape (no readings) for longer than OFF_TAPE_PERIOD
