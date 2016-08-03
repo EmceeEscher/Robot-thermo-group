@@ -126,7 +126,7 @@ void TapeFollow::init()
     
     // assign active pins
     for (int i = 0; i < 4; ++i) 
-        activePins[i] = TAPE_SENSORS_FRONT[i];
+        activePins[i] = pins::TAPE_SENSORS_FRONT[i];
     
     // declare active pins as inputs
     for (const auto pin : activePins)
@@ -541,11 +541,11 @@ void TapeFollow::loop()
     
     // adjust motor speed
     if (motorsActive) {
-        motor.speed(MOTOR_PIN_L, dSpeed - motorSpeed);
-        motor.speed(MOTOR_PIN_R, dSpeed + motorSpeed);
+        motor.speed(pins::MOTOR_PIN_L, dSpeed - motorSpeed);
+        motor.speed(pins::MOTOR_PIN_R, dSpeed + motorSpeed);
     } else {
-        motor.speed(MOTOR_PIN_L, 0);
-        motor.speed(MOTOR_PIN_R, 0);
+        motor.speed(pins::MOTOR_PIN_L, 0);
+        motor.speed(pins::MOTOR_PIN_R, 0);
     }
     
     // increase time counters

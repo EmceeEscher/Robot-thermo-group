@@ -13,7 +13,7 @@ const int DIFF_THRESHOLD = 50;
 //DetectBeacon Constants & Variables
 const int BEACON_THRESHOLD = 50;
 const int ARRIVED_THRESHOLD = 650;
-const int *beaconSensorPins {BEACON_SENSORS_SIDES};
+const int *beaconSensorPins {pins::BEACON_SENSORS_SIDES};
 const int numBeaconReadings = 5;
 
 static int leftBeaconReadings[numBeaconReadings];

@@ -71,8 +71,8 @@ namespace Arm_And_Stepper
 void Arm_And_Stepper::setup()
 {
     //Arm & Stepper Initialization code
-    pinMode(DIR_PIN,OUTPUT);
-    pinMode(PULSE_PIN,OUTPUT);
+    pinMode(pins::DIR_PIN, OUTPUT);
+    pinMode(pins::PULSE_PIN, OUTPUT);
     baseTarget = BASE_REST_POSITION;
     midTarget = MID_REST_POSITION;
     lastPropErr = 0.;
@@ -110,7 +110,8 @@ void Arm_And_Stepper::doControl()
 //Converts base potentiometer voltage to corresponding angle
 float Arm_And_Stepper::getAngle()
 {
-    float voltage = static_cast<float>(analogRead(POTENTIOMETER)) * 5. / 1024.;
+    float voltage = static_cast<float>(analogRead(pins::POTENTIOMETER)) *
+        5. / 1024.;
     return 130.814 * (3. * voltage - 10.) / (voltage - 5.) + 60.;
 }
 
@@ -123,7 +124,7 @@ void Arm_And_Stepper::setBaseMotor(long duty)
         duty = 255;
     else if (duty < -255) 
         duty = -255;
-    motor.speed(MOTOR_PIN_ARM, duty);
+    motor.speed(pins::MOTOR_PIN_ARM, duty);
 }
 
 
@@ -146,15 +147,16 @@ float Arm_And_Stepper::getControlValue()
 void Arm_And_Stepper::grabCrap()
 {
     //If switches are already triggered, then do nothing
-    if (digitalRead(ARM_SWITCHES[0]) && digitalRead(ARM_SWITCHES[1])) {
-        motor.speed(MOTOR_PIN_BABY,190);
+    if (digitalRead(pins::ARM_SWITCHES[0]) &&
+        digitalRead(pins::ARM_SWITCHES[1])) {
+        motor.speed(pins::MOTOR_PIN_BABY,190);
         unsigned long startTime = millis();
         while (true) {
             Arm_And_Stepper::doControl();
-            if (!digitalRead(ARM_SWITCHES[0])) {
+            if (!digitalRead(pins::ARM_SWITCHES[0])) {
                 holding = true;
                 break;
-            } else if (!digitalRead(ARM_SWITCHES[1])) {
+            } else if (!digitalRead(pins::ARM_SWITCHES[1])) {
                 holding = false;
                 break;
             }
@@ -164,7 +166,7 @@ void Arm_And_Stepper::grabCrap()
             }
         }
         if (holding) 
-            motor.speed(MOTOR_PIN_BABY,140);
+            motor.speed(pins::MOTOR_PIN_BABY, 140);
         else
             Arm_And_Stepper::dropCrap();
     }
@@ -174,10 +176,10 @@ void Arm_And_Stepper::grabCrap()
 //Opens the claw for specified time
 void Arm_And_Stepper::dropCrap()
 {
-    motor.speed(MOTOR_PIN_BABY, -140);
+    motor.speed(pins::MOTOR_PIN_BABY, -140);
     holding = false;
     delay(dropTime);
-    motor.speed(MOTOR_PIN_BABY, 0);
+    motor.speed(pins::MOTOR_PIN_BABY, 0);
 }
 
 
@@ -199,7 +201,7 @@ void Arm_And_Stepper::reachAndClaw(bool grabbing)
     midTarget = finalAdjMidTarget;
     while (millis() - startTime < 1500) {  
         Arm_And_Stepper::doControl();
-        if (!digitalRead(ARM_SWITCHES[2])) {
+        if (!digitalRead(pins::ARM_SWITCHES[2])) {
             baseTarget = getAngle() + 5;
             break;
         } 
@@ -238,9 +240,9 @@ void Arm_And_Stepper::setRestPosition()
 //Turns the stepper motor a specified number of steps
 void Arm_And_Stepper::stepperTurn(bool CW,int count){
     if (CW)
-        digitalWrite(DIR_PIN, CLOCKWISE);
+        digitalWrite(pins::DIR_PIN, CLOCKWISE);
     else
-        digitalWrite(DIR_PIN, COUNTERCLOCKWISE);
+        digitalWrite(pins::DIR_PIN, COUNTERCLOCKWISE);
     
     unsigned long prevTime = millis();
     for (int i = 0; i < count; ++i) {
@@ -248,10 +250,10 @@ void Arm_And_Stepper::stepperTurn(bool CW,int count){
             Arm_And_Stepper::doControl();
             prevTime = millis();
         }
-        digitalWrite(PULSE_PIN, HIGH);
+        digitalWrite(pins::PULSE_PIN, HIGH);
         delayMicroseconds(stepperMicrosDelay);
         
-        digitalWrite(PULSE_PIN, LOW);
+        digitalWrite(pins::PULSE_PIN, LOW);
         delayMicroseconds(stepperMicrosDelay);
     }
 }
@@ -285,14 +287,14 @@ void Arm_And_Stepper::refinedReachAndGrab()
     unsigned long startTime = millis();
     while (true) {
         Arm_And_Stepper::doControl();
-        if (digitalRead(ARM_SWITCHES[2]) &&
+        if (digitalRead(pins::ARM_SWITCHES[2]) &&
             ((millis()-startTime)>250) && baseTarget > 80) {
             baseTarget -= 5;
             if (midTarget < 160)
                 midTarget += 10;
             startTime = millis();
         }
-        if (!digitalRead(ARM_SWITCHES[2]) || baseTarget <= 80)
+        if (!digitalRead(pins::ARM_SWITCHES[2]) || baseTarget <= 80)
             break;
         delay(5);
     }

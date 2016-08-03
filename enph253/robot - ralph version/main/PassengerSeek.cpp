@@ -11,9 +11,8 @@
 
 // const int *QSD_PINS_SIDES {pins::PASSENGER_SENSORS_SIDES};     // left-back, left-mid, left-front, right-front, right-mid, right-back
 // const int NUM_PINS_SIDES  {pins_sizes::PASSENGER_SENSORS_SIDES};
-const int *QSD_PINS_SIDES {PASSENGER_SENSORS_SIDES};     // left-back, left-mid, left-front, right-front, right-mid, right-back
-const int NUM_PINS_SIDES  {
-    sizeof(PASSENGER_SENSORS_SIDES) / sizeof(PASSENGER_SENSORS_SIDES[0])};
+const int *QSD_PINS_SIDES {pins::PASSENGER_SENSORS_SIDES};     // left-back, left-mid, left-front, right-front, right-mid, right-back
+const int NUM_PINS_SIDES  {pins_sizes::PASSENGER_SENSORS_SIDES};
 
 
 const int MAX_REGISTER_PERIOD            {10};  // number of consecutive readings above the threshold required to register a max
