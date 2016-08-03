@@ -8,8 +8,8 @@
 namespace Arm_And_Stepper
 {
 
-    extern const int dropTime;
     extern bool holding;
+    extern const int dropTime;
 
     void setup();
     void doControl();

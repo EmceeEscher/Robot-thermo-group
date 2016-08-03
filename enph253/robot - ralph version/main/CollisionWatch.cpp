@@ -11,7 +11,7 @@
 const int collisionDetectPeriod {5};
 const int numSensorsPin = pins_sizes::COLLISION_SENSORS;
 static int numCollisionReads[numSensorsPin];
-static bool collisionDetected[numSensorsPin];
+static bool collisionDetected[numSensorsPin] = {false, false};
 static int collisionDirection;
 
 
@@ -25,11 +25,11 @@ void CollisionWatch::loop()
         else if (numCollisionReads[i] < collisionDetectPeriod) 
             numCollisionReads[i] += 1;
         if (numCollisionReads[i] >= collisionDetectPeriod) {
-            collisionDetected[i] = 1;
+            collisionDetected[i] = true;
             collisionDirection = i;
         }
         else
-            collisionDetected[i] = 0;
+            collisionDetected[i] = false;
     }
 }
 
