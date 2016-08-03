@@ -36,6 +36,13 @@ void setup() {
     Serial.begin(9600);
     randomSeed(analogRead(0));
     LCD.clear();
+    LCD.print( F("Bruhh...") );
+    delay(250);
+    LCD.print( F("MURPH IS") );
+    LCD.setCursor(0, 1);
+    LCD.print( F("DRURPH  ") );
+    delay(500);
+    LCD.clear();
     LCD.print( F("START: compete") );
     LCD.setCursor(0, 1);
     LCD.print( F("STOP: debug") );
