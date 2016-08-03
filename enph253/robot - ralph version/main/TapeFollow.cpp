@@ -424,8 +424,9 @@ void printLCD()
                 LCD.print(" ^ ");
         }
         // print QRD readings
-        for (auto i(0); i < 4; i++) {
-            bool read = pinReadings[i];
+        for (const auto read : pinReadings){
+        /*for (auto i(0); i < 4; i++) {
+            bool read = pinReadings[i];*/
             LCD.print(" ");
             LCD.print(read);
         }
@@ -478,8 +479,9 @@ void tapeFollowLoop()
     lastOnTape = onTape;
     
     bool isOnTape(false);
-    for (auto i(0); i < 4; i++){ 
-        bool read = pinReadings[i];
+    for(const auto read : pinReadings){
+    //for (auto i(0); i < 4; i++){ 
+        //bool read = pinReadings[i];
         if (read) {
             isOnTape = true;
             break;
@@ -551,10 +553,10 @@ void tapeFollowLoop()
     }
     
     // increase time counters
-    //for (auto &t : etimeArray)
-    //    ++t;
-    ++etimeArray[0];
-    ++etimeArray[1];
+    for (auto &t : etimeArray)
+       ++t;
+    //++etimeArray[0];
+    //++etimeArray[1];
     
     // delay
     delay(MAIN_LOOP_DELAY);

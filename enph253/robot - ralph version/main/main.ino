@@ -72,10 +72,11 @@ void loop() {
   if (started && printCount % PRINT_PERIOD == 0) {
         
         if(state == FIND_PASSENGER){
-          //printLCD();
-          PassengerSeek::printLCD();
+          printLCD();
+          //PassengerSeek::printLCD();
         }else if(state == FIND_BEACON)
-          detectBeaconPrintLCD();
+          //detectBeaconPrintLCD();
+          printLCD();
         printCount = 0;
     }
     ++printCount;
@@ -90,6 +91,8 @@ void loop() {
             loadPassengerLoop();
         } else if(state == FIND_BEACON){
             findBeaconLoop();
+        } else if(state == DROP_PASSENGER){
+            dropPassengerLoop();
         }
     }
 }
@@ -130,6 +133,7 @@ void findBeaconLoop(){
     if(hasArrived()){
         tapeFollowTest();
         tapeFollowLoop();
+        state = DROP_PASSENGER;
         //LCD.clear();
         //LCD.print("I have arrived");
         //delay(10000);
@@ -186,6 +190,16 @@ void loadPassengerLoop(){
        tapeFollowStart();
        //missedPassenger();//TODO: TEST THIS!!!!
     }
+}
+
+void dropPassengerLoop(){
+  Direction dir = getBeaconDirection();
+  if(dir == Direction::LEFT){
+    turnAndReach(false,false);
+  }else if(dir == Direction::RIGHT){
+    turnAndReach(true,false);
+  }
+  state = FIND_PASSENGER;
 }
 
 void debugSequence(){
