@@ -258,10 +258,28 @@ void debugSequence(){
     while(startbutton()){}
     delay(500);
     LCD.clear();
-    LCD.print("test claw switches");
-    LCD.setCursor(0,1);
-    LCD.print("START to continue");
-    while(!startbutton()){
+    LCD.print( F("stepper test left") );
+    LCD.setCursor(0, 1);
+    LCD.print( F("START to continue") );
+    while (!startbutton()) {}
+    delay(500);
+    Arm_And_Stepper::stepperTurn(false, 200);
+    motor.speed(pins::MOTOR_PIN_ARM, 0);
+    delay(500);
+    LCD.clear();
+    LCD.print( F("stepper test right") );
+    LCD.setCursor(0, 1);
+    LCD.print( F("START to continue") );
+    while (!startbutton()) {}
+    delay(500);
+    Arm_And_Stepper::stepperTurn(true, 200);
+    motor.speed(pins::MOTOR_PIN_ARM, 0);
+    delay(500);
+    LCD.clear();
+    LCD.print( F("test claw switches") );
+    LCD.setCursor(0, 1);
+    LCD.print( F("START to continue") );
+    while (!startbutton()) {
         CollisionWatch::loop();
         if(printCounter % 50 == 0){
             LCD.clear();
