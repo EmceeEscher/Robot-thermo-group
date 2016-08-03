@@ -23,7 +23,7 @@ namespace TapeFollow
     const int *tapeSensorsBack  {pins::TAPE_SENSORS_BACK};
     const int numSensors        {pins_sizes::TAPE_SENSORS_FRONT};
     const int numActions        {4};
-    
+
 }
 
 const unsigned long RANDOM_MAX_VAL     {100000};
@@ -68,8 +68,8 @@ static int motorSpeedFollowing    {MOTOR_SPEED_FOLLOWING};        // current mot
 static int motorSpeedReversing    {MOTOR_SPEED_REVERSING};
 static int motorSpeedSeeking      {MOTOR_SPEED_SEEKING};
 static int motorSpeedTurning      {MOTOR_SPEED_TURNING};
-const int motorSpeedTurningAround {MOTOR_SPEED_TURNING_AROUND};   
-const int motorSpeedPassengerSeek {MOTOR_SPEED_PASSENGER_SEEK};   
+const int motorSpeedTurningAround {MOTOR_SPEED_TURNING_AROUND};
+const int motorSpeedPassengerSeek {MOTOR_SPEED_PASSENGER_SEEK};
 
 // General following variables
 static bool active       {false};
@@ -213,25 +213,25 @@ void TapeFollow::init()
     willTurnAround      = false;
     halfTurn            = false;
     motorsActive        = false;
-    
+
     action              = TFAction::FOLLOWING;
-    
+
     turnDirection       = Direction::FRONT;  // not turning
     control             = 0;
     motorSpeedFollowing = MOTOR_SPEED_FOLLOWING;
     motorSpeedTurning   = MOTOR_SPEED_TURNING;
     motorSpeed          = 0;
-    
+
     error               = 0.;
     lastError           = 0.;
-    
+
     intersectSeen.reset();    // 00
     intersectDetect.reset();  // 00
     pinReadings.reset();      // 0000
-    
+
     etimeArray          = {0,  1};
     errorArray          = {0., 0.};
-    
+
     for (int i(0); i < TapeFollow::numSensors; ++i) {
         // reset counters
         onTapeCounter[i] = 0;
@@ -239,14 +239,14 @@ void TapeFollow::init()
         // assign active pins
         activePins[i] = TapeFollow::tapeSensorsFront[i];
     }
-    
+
     for (int i(0); i < TapeFollow::numActions; ++i)
         steps[i] = 0;
-    
+
     leftWeight = 0.;
     rightWeight = 0.;
     straightWeight = 0.;
-    
+
     // declare active pins as inputs
     for (int i(0); i < TapeFollow::numSensors; ++i)
         pinMode(activePins[i], INPUT);
@@ -278,7 +278,7 @@ void TapeFollow::updateIntersectionsSeen()
                      (onTapeCounter[0] >= INTERSECT_DETECT_PERIOD));
     bool intSeenR = (!mainsOffTape() &&
                      (onTapeCounter[3] >= INTERSECT_DETECT_PERIOD));
-    
+
     // if seen, update instance variable
     if (intSeenL)
         intersectSeen[0] = 1;
@@ -291,16 +291,16 @@ void TapeFollow::updateIntersectionsDetected()
 {
     // check if intersections seen
     updateIntersectionsSeen();
-    
+
     // check if intersection detected
     for (int i(0); i < 2; ++i)
         intersectDetect[i] = (!pinReadings[i]) &&
             intersectSeen[i];
-    
+
     // if intersection(s) detected, make move decision
     if ((offTapeCounter[0] >= PRE_TURN_DELAY_PERIOD) &&
         (offTapeCounter[3] >= PRE_TURN_DELAY_PERIOD)) {
-        
+
         // TODO: do this a better way
         turnDirection = chooseTurnDeterministic(  // TODO: specify this function from major mode
                 intersectDetect[0],
@@ -309,7 +309,7 @@ void TapeFollow::updateIntersectionsDetected()
         );
         if (turnDirection != Direction::FRONT)  // TODO: move to updateSTate?
             action = TFAction::TURNING;
-        
+
         // reset intersection arrays
         intersectSeen.reset();    // 00
         intersectDetect.reset();  // 00
@@ -329,7 +329,7 @@ Direction TapeFollow::chooseTurnDeterministic(
     int prefStraight = straight * (
             (straightWeight > leftWeight) +
             (straightWeight > rightWeight));
-    
+
     if (straight && (prefStraight >= prefLeft) && (prefStraight >= prefRight))
         return Direction::FRONT;
     else if (left && (prefLeft >= prefRight) && (prefLeft >= prefStraight))
@@ -356,7 +356,7 @@ Direction TapeFollow::chooseTurn(bool left, bool right, bool straight)
     );
     float leftProb;
     float rightProb;
-    
+
     if (total == 0) {
         leftProb  = left  / (left + right + straight);
         rightProb = right / (left + right + straight);
@@ -364,17 +364,17 @@ Direction TapeFollow::chooseTurn(bool left, bool right, bool straight)
         leftProb  = left  * leftWeight  / total;
         rightProb = right * rightWeight / total;
     }
-    
+
     // TODO: do this randValue part differently?
     float randValue = static_cast<float>(random(RANDOM_MAX_VAL)) /
         (RANDOM_MAX_VAL+1);
     float leftMax = 0 + leftProb;
     float rightMax = leftProb + rightProb;
-    
+
     leftWeight = 0.;
     rightWeight = 0.;
     straightWeight = 0.;
-    
+
     if (randValue < leftMax) 
         return Direction::LEFT;
     else if (randValue < rightMax) 
@@ -403,7 +403,7 @@ void TapeFollow::setErrorFollowTape()
     bool mainL = pinReadings[1];
     bool mainR = pinReadings[2];
     bool intrR = pinReadings[3];
-    
+
     // determine error
     if (mainL && mainR)               // both main pins over tape
         error = 0.;
@@ -446,14 +446,14 @@ void TapeFollow::setError()
             break;
     }
     error *= abs(motorSpeedFollowing);  // TODO
-    
+
     // update previous error parameters
     if (error != lastError) {
         errorArray = {lastError, errorArray[0]};
         etimeArray = {0,         etimeArray[0]};
         lastError  = error;
     }
-    
+
     // increase time counters
     for (auto &t : etimeArray)
         ++t;
@@ -468,15 +468,14 @@ void TapeFollow::setControl()
         static_cast<float>(etimeArray[0]);
     der1[1] = (errorArray[0] - errorArray[1]) /
         static_cast<float>(etimeArray[1] - etimeArray[0]);
-    float der2 = (der1[0] - der1[1]) /
-        static_cast<float>(etimeArray[0]);
+    float der2 = (der1[0] - der1[1]) / static_cast<float>(etimeArray[0]);
     
     // get the effect of gains
     float ctrlProp (GAIN_PROP * error);
     float ctrlDer1 (GAIN_DER1 * der1[0]);
     float ctrlDer2 (GAIN_DER2 * der2);
     control = -static_cast<int>(ctrlProp + ctrlDer1 + ctrlDer2);
-    
+
     int controlMax = abs(motorSpeedFollowing) * 3 / 2;  // TODO
     if (control > controlMax)
         control = controlMax;
@@ -491,9 +490,9 @@ void TapeFollow::updateState()
 {
     int followSteps  = steps[static_cast<int>(TFAction::FOLLOWING)];
     int reverseSteps = steps[static_cast<int>(TFAction::REVERSING)];
-    
+
     switch (action) {
-        
+
         case TFAction::FOLLOWING:
             if (offTape())
                 action = TFAction::SEEKING;
@@ -514,7 +513,7 @@ void TapeFollow::updateState()
                 }
             }
             break;
-        
+
         case TFAction::SEEKING:
             if (!offTape()) {
                 if (!willTurnAround)
@@ -542,7 +541,7 @@ void TapeFollow::updateState()
                 motorSpeedFollowing = MOTOR_SPEED_FOLLOWING;
             }
             break;
-        
+
     }
 }
 
@@ -577,13 +576,13 @@ void TapeFollow::loop()
     // get readings from tape sensors
     for (int i(0); i < TapeFollow::numSensors; ++i) 
         pinReadings[i] = digitalRead(activePins[i]);
-    
+
     // update counters
     updateCounters();
-    
+
     // update state variables
     updateState();
-    
+
     // set motor speed based on action
     switch (action) {
         case TFAction::FOLLOWING:
@@ -599,13 +598,13 @@ void TapeFollow::loop()
             motorSpeed = motorSpeedTurning;
             break;
     }
-    
+
     // get error based on current state
     setError();
-    
+
     // get the control to apply to the motor speed
     setControl();
-    
+
     // adjust motor speed
     if (motorsActive) {
         motor.speed(TapeFollow::motorPinL, control - motorSpeed);
@@ -614,7 +613,6 @@ void TapeFollow::loop()
         motor.speed(TapeFollow::motorPinL, 0);
         motor.speed(TapeFollow::motorPinR, 0);
     }
-    
 }
 
 
@@ -662,7 +660,7 @@ void TapeFollow::printLCD()
             LCD.print( F("? ") );
             break;
     }
-    
+
     // print arrow
     if (turningAround)
         LCD.print( F("v") );
@@ -689,13 +687,13 @@ void TapeFollow::printLCD()
         else
             LCD.print( F("^") );
     }
-    
+
     // print QRD readings
     for (int i(0); i < TapeFollow::numSensors; ++i) {
         LCD.print( F(" ") );
         LCD.print(pinReadings[i]);
     }
-    
+
     // print gains and control
     LCD.setCursor(0,1);
     LCD.print(GAIN_PROP);
