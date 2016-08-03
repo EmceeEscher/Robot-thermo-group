@@ -323,7 +323,7 @@ void refinedReachAndGrab(){
     while(true){
       doControl();
       if(digitalRead(ARM_SWITCHES[2]) 
-      && ((millis()-startTime)>500)
+      && ((millis()-startTime)>250)
       && baseTarget > 80){
         baseTarget -= 5;
         if(midTarget < 160)

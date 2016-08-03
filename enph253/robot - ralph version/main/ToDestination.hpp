@@ -5,6 +5,7 @@
 #include "Direction.hpp"
 
 //Function Declarations:::::::::::::
+void beaconInit();
 void pickDirection();
 void detectBeaconLoop();
 void updateLeftBeaconArray();

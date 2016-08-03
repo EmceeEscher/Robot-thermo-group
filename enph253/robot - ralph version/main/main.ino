@@ -45,6 +45,7 @@ void loop() {
     tapeFollowInit();
     PassengerSeek::init();
     tapeFollowStart();
+    beaconInit();
     LCD.clear();
   }
   if(!started && stopbutton()){
@@ -52,6 +53,7 @@ void loop() {
     tapeFollowInit();
     PassengerSeek::init();
     tapeFollowStart();
+    beaconInit();
     LCD.clear();
   }
   if(startbutton() && started){

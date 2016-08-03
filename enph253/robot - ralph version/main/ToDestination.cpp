@@ -16,7 +16,8 @@ int currDiff = 0;
 //int printCount = 0;
 
 //DetectBeacon Constants & Variables
-const int BEACON_THRESHOLD = 100;
+const int BEACON_THRESHOLD = 50;
+const int ARRIVED_THRESHOLD = 650;
 const int *beaconSensorPins(BEACON_SENSORS_SIDES);
 const int numBeaconReadings = 5;
 
@@ -25,6 +26,13 @@ float leftBeaconSum = 0;
 int rightBeaconReadings[numBeaconReadings];
 float rightBeaconSum = 0;
 int beaconReadingIndex = 0;
+
+void beaconInit(){
+  for(auto i(0); i < numBeaconReadings; i++){
+    leftBeaconReadings[i] = getLeftBeaconReading();
+    rightBeaconReadings[i] = getRightBeaconReading();
+  }
+}
 
 void pickDirection(){
     
@@ -117,8 +125,8 @@ float getRightBeaconAverage(){
 bool hasArrived(){
     float leftAverage = getLeftBeaconAverage();
     float rightAverage = getRightBeaconAverage();
-    return ((leftAverage > BEACON_THRESHOLD) ||
-	    (rightAverage > BEACON_THRESHOLD));
+    return ((leftAverage > ARRIVED_THRESHOLD) ||
+	    (rightAverage > ARRIVED_THRESHOLD));
 }
 
 void detectBeaconPrintLCD(){
