@@ -347,6 +347,7 @@ Direction TapeFollow::chooseTurnDeterministic(
         return Direction::FRONT;
 }
 
+
 // TODO: Allow specifying probabilities from outside
 Direction TapeFollow::chooseTurn(bool left, bool right, bool straight)
 {
