@@ -168,6 +168,7 @@ const float ERROR_TURNING {12.80};   // error to be applied during turning
 const int INTERSECT_SEEK_DELAY_PERIOD      {100};  // while tape following, waits for this many steps before searching for intersections
 const int INTERSECT_DETECT_PERIOD           {15};  // number of consecutive readings required to see an intersection
 const int TURN_CONFIRM_PERIOD               {10};  // number of consecutive readings required to register start of turning
+const long TURN_TIMEOUT_PERIOD            {4096};
 const int PRE_TURN_DELAY_PERIOD             {75};  // number of iterations to wait after detecting intersections before making decision
 const int PRE_TURN_AROUND_DELAY_PERIOD     {145};  // number of reverse steps to make before turning around
 const int OFF_TAPE_PERIOD                   {50};  // number of consecutive readings required to signal that the robot has lost the tape
@@ -190,10 +191,10 @@ const int DEFAULT_MOTOR_SPEEDS[TapeFollow::numActions] {
 const int MOTOR_SPEED_PASSENGER_SEEK  {64};  // motor speed for turning around
 const int MOTOR_SPEED_TURNING_AROUND  {-16};  // motor speed for following after initial passenger sighting
 
-static int motorSpeedFollowing    { MOTOR_SPEED_FOLLOWING };      // current motor speed for following 
-static int motorSpeedReversing    { MOTOR_SPEED_REVERSING };      // current motor speed for reversing
-static int motorSpeedSeeking      { MOTOR_SPEED_SEEKING   };      // current motor speed for seeking
-static int motorSpeedTurning      { MOTOR_SPEED_TURNING   };      // current motor speed for turning
+static int motorSpeedFollowing    { MOTOR_SPEED_FOLLOWING };  // current motor speed for following 
+static int motorSpeedReversing    { MOTOR_SPEED_REVERSING };  // current motor speed for reversing
+static int motorSpeedSeeking      { MOTOR_SPEED_SEEKING   };  // current motor speed for seeking
+static int motorSpeedTurning      { MOTOR_SPEED_TURNING   };  // current motor speed for turning
 static int *motorSpeeds[TapeFollow::numActions] {
         &motorSpeedFollowing,
         &motorSpeedReversing,
@@ -205,14 +206,14 @@ const int motorSpeedPassengerSeek { MOTOR_SPEED_PASSENGER_SEEK };
 
 // General following variables
 static bool active       {false};
-static bool motorsActive {false};           // true if motors are active
+static bool motorsActive {false};            // true if motors are active
 static int control     {0};                  // current control parameter
 static int motorSpeed  {motorSpeedSeeking};  // speed to add to motors
 static float error     {0.};
 static float lastError {0.};                 // last calculated error
 
 // Action and counters
-static TFAction action {TFAction::SEEKING};           // what the tapefollowing is currently doing (i.e. following, seeking, etc)
+static TFAction action {TFAction::SEEKING};            // what the tapefollowing is currently doing (i.e. following, seeking, etc)
 static long steps[TapeFollow::numActions];             // number of steps for associated action
 static long onTapeCounter  [TapeFollow::numSensors];   // counts the number of consecutive onTape reads for each pin
 static long offTapeCounter [TapeFollow::numSensors];   // counts the number of consecutive offTape reads for each pin
@@ -585,7 +586,7 @@ void TapeFollow::updateStateTurning()
              (onTapeCounter[2] >= ON_TAPE_PERIOD))) {  // turn ends
         willTurnAround = false;
         halfTurn = false;
-        action = TFAction::FOLLOWING; // exit to regular following
+        action = TFAction::FOLLOWING; 
         turningAround = false;
         turnDirection = Direction::FRONT;
         motorSpeedTurning = MOTOR_SPEED_TURNING;
@@ -603,6 +604,14 @@ void TapeFollow::updateStateTurning()
         } else {
             ++turnAroundCounter;
             ++turnAroundPhaseCounter;
+        }
+    } else {  // during regular turn
+        if (steps[static_cast<int>(TFAction::TURNING)] >= TURN_TIMEOUT_PERIOD) {
+            if (turnDirection == Direction::LEFT)
+                turnDirection = Direction::RIGHT;
+            else
+                turnDirection = Direction::LEFT;
+            steps[static_cast<int>(TFAction::TURNING)] = 0;
         }
     }
 }
