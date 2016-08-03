@@ -129,8 +129,8 @@ void TapeFollow::init()
         activePins[i] = TAPE_SENSORS_FRONT[i];
     
     // declare active pins as inputs
-    for (int i = 0; i < 4; ++i)
-        pinMode(activePins[i], INPUT);
+    for (const auto pin : activePins)
+        pinMode(pin, INPUT);
     
     willTurnAround = false;
     turningAround = false;
@@ -302,7 +302,7 @@ bool TapeFollow::fnAnyLastReadings(int period, int fn)
 }
 
 
-bool TapeFollow::offTape(bool reading[])
+bool TapeFollow::offTape(bool *reading)
 {
     for (int i = 0; i < 4; ++i)
         if (reading[i])
@@ -358,12 +358,6 @@ float TapeFollow::makeTurn()
 
 Direction TapeFollow::chooseTurn(bool left, bool right, bool straight)
 {
-    /*if(right)
-      return Direction::RIGHT;
-      else if(straight)
-      return Direction::FRONT;
-      else
-      return Direction::LEFT;*/
     float total = (
             left     * leftWeight +
             right    * rightWeight +
@@ -445,9 +439,9 @@ void TapeFollow::printLCD()
                 LCD.print( F(" ^ ") );
         }
         // print QRD readings
-        for (int i(0); i < 4; ++i) {
+        for (const auto read : pinReadings) {
             LCD.print( F(" ") );
-            LCD.print(pinReadings[i]);
+            LCD.print(read);
         }
         // print gains and control
         LCD.setCursor(0, 1);
@@ -484,8 +478,7 @@ void TapeFollow::loop()
     lastOnTape = onTape;
     
     bool isOnTape(false);
-    for (int i(0); i < 4; ++i) {
-        bool read = pinReadings[i];
+    for(const auto read : pinReadings){
         if (read) {
             isOnTape = true;
             break;
@@ -556,8 +549,8 @@ void TapeFollow::loop()
     }
     
     // increase time counters
-    for (int i(0); i < 2; ++i)
-        etimeArray[i] += 1;
+    for (auto &t : etimeArray)
+       ++t;
     
     // delay
     delay(MAIN_LOOP_DELAY);

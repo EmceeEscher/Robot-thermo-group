@@ -147,7 +147,7 @@ void Arm_And_Stepper::grabCrap()
 {
     //If switches are already triggered, then do nothing
     if (digitalRead(ARM_SWITCHES[0]) && digitalRead(ARM_SWITCHES[1])) {
-        motor.speed(MOTOR_PIN_BABY, 190);
+        motor.speed(MOTOR_PIN_BABY,190);
         unsigned long startTime = millis();
         while (true) {
             Arm_And_Stepper::doControl();
@@ -157,17 +157,19 @@ void Arm_And_Stepper::grabCrap()
             } else if (!digitalRead(ARM_SWITCHES[1])) {
                 holding = false;
                 break;
-            } else if (millis() - startTime > 2000) {
+            }
+            if (millis() - startTime > 2000) {
                 holding = true;
                 break;
             }
         }
         if (holding) 
-            motor.speed(MOTOR_PIN_BABY, 20);
+            motor.speed(MOTOR_PIN_BABY,140);
         else
-            dropCrap();
+            Arm_And_Stepper::dropCrap();
     }
 }
+
 
 //Opens the claw for specified time
 void Arm_And_Stepper::dropCrap()
@@ -263,16 +265,16 @@ void Arm_And_Stepper::turnAndReach(bool turnRight, bool grab)
 {
     LCD.clear();
     LCD.print( F("initial turn") );
-    stepperTurn(turnRight, numPulses);
+    Arm_And_Stepper::stepperTurn(turnRight, numPulses);
     LCD.clear();
     LCD.print( F("grabbing in turn and reach") );
     if (grab)
-        refinedReachAndGrab();
+        Arm_And_Stepper::refinedReachAndGrab();
     else
-        reachAndClaw(grab);
+        Arm_And_Stepper::reachAndClaw(grab);
     LCD.clear();
     LCD.print( F("turning back") );
-    stepperTurn(!turnRight, numPulses);
+    Arm_And_Stepper::stepperTurn(!turnRight, numPulses);
 }
 
 
@@ -281,11 +283,10 @@ void Arm_And_Stepper::refinedReachAndGrab()
     midTarget = midAdjMidTarget;
     baseTarget = initialAdjBaseTarget;
     unsigned long startTime = millis();
-    while(true){
-        doControl();
-        if (digitalRead(ARM_SWITCHES[2]) 
-            && ((millis()-startTime)>250)
-            && baseTarget > 80) {
+    while (true) {
+        Arm_And_Stepper::doControl();
+        if (digitalRead(ARM_SWITCHES[2]) &&
+            ((millis()-startTime)>250) && baseTarget > 80) {
             baseTarget -= 5;
             if (midTarget < 160)
                 midTarget += 10;
@@ -295,6 +296,6 @@ void Arm_And_Stepper::refinedReachAndGrab()
             break;
         delay(5);
     }
-    grabCrap();
-    setRestPosition();
+    Arm_And_Stepper::grabCrap();
+    Arm_And_Stepper::setRestPosition();
 }

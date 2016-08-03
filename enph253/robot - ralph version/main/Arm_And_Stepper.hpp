@@ -12,16 +12,11 @@ namespace Arm_And_Stepper
     extern bool holding;
 
     void setup();
-
     void doControl();
-
-    void turnAndReach(bool turnRight, bool grab);
-
-    void dropCrap();
-
-    void stepperTurn(bool CW,int count);
-
     float getAngle();
+    void dropCrap();
+    void stepperTurn(bool CW,int count);
+    void turnAndReach(bool turnRight, bool grab);
 
 }
 

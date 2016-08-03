@@ -24,6 +24,7 @@ static int printCount = 0;
 void findPassengerLoop();
 void loadPassengerLoop();
 void findBeaconLoop();
+void dropPassengerLoop();
 void debugSequence();
 
 
@@ -69,10 +70,11 @@ void loop() {
         LCD.clear();
         LCD.print( F("stopped!") );
     }
+
     if (started && printCount % PRINT_PERIOD == 0) {
         if (state == FIND_PASSENGER)
             PassengerSeek::printLCD();
-        else if (state == FIND_BEACON)
+        else if(state == FIND_BEACON)
             ToDestination::printLCD();
         printCount = 0;
     }
@@ -87,6 +89,8 @@ void loop() {
             loadPassengerLoop();
         else if (state == FIND_BEACON)
             findBeaconLoop();
+        else if(state == DROP_PASSENGER)
+            dropPassengerLoop();
     }
 }
     
@@ -113,11 +117,20 @@ void findPassengerLoop()
         TapeFollow::turnAround();
 }
 
+
 void findBeaconLoop()
 {
+    if (Arm_And_Stepper::holding) {
+        if (!digitalRead(ARM_SWITCHES[1])) {
+            Arm_And_Stepper::holding = false;
+            state = FIND_PASSENGER;
+            Arm_And_Stepper::dropCrap();
+        }
+    }
     if (ToDestination::hasArrived()) {
         TapeFollow::test();
         TapeFollow::loop();
+        state = DROP_PASSENGER;
     } else {
         TapeFollow::loop();
         CollisionWatch::loop();
@@ -174,6 +187,17 @@ void loadPassengerLoop()
 }
 
 
+void dropPassengerLoop()
+{
+    Direction dir = ToDestination::getBeaconDirection();
+    if (dir == Direction::LEFT) 
+        Arm_And_Stepper::turnAndReach(false,false);
+    else if(dir == Direction::RIGHT)
+        Arm_And_Stepper::turnAndReach(true,false);
+    state = FIND_PASSENGER;
+}
+
+
 void debugSequence()
 {
     LCD.clear();
@@ -190,7 +214,7 @@ void debugSequence()
     LCD.print( F("left motor forward") );
     LCD.setCursor(0, 1);
     LCD.print( F("START to continue") );
-    while (!startbutton())
+    while (!startbutton()) 
         motor.speed(MOTOR_PIN_R, 100);
     motor.speed(MOTOR_PIN_R, 0);
     while (startbutton()) {}
@@ -206,15 +230,12 @@ void debugSequence()
     LCD.print( F("arm gear upward") );
     LCD.setCursor(0, 1);
     LCD.print( F("START to continue") );
-    int printCounter  = 0;
-    while (!startbutton()) {
-        if (printCounter % 50 == 0) {
-            LCD.clear();
-            LCD.print(Arm_And_Stepper::getAngle());
-            printCounter = 0;
-        }
-        ++printCounter;
-        Arm_And_Stepper::doControl();
+    int printCounter = 0;
+    while (!startbutton()) {}
+    if (printCounter % 50 == 0) {
+        LCD.clear();
+        LCD.print(Arm_And_Stepper::getAngle());
+        printCounter = 0;
     }
     motor.speed(MOTOR_PIN_ARM, 0);
     while (startbutton()) {}
@@ -267,7 +288,7 @@ void debugSequence()
     started = true;
 }
 
-
+    
 void missedPassenger()
 {
     LCD.clear();
