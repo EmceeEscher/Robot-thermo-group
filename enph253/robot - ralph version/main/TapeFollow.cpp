@@ -514,6 +514,8 @@ void TapeFollow::updateStateFollowing()
     int followSteps  = steps[static_cast<int>(TFAction::FOLLOWING)];
     if (offTape())
         action = TFAction::SEEKING;
+    else if (willTurnAround)
+        action = TFAction::REVERSING;
     else if (followSteps >= INTERSECT_SEEK_DELAY_PERIOD) {
         updateIntersectionsDetected();
         // if intersection(s) detected, make turn decision
