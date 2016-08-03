@@ -85,7 +85,7 @@ void loop() {
 
     if (started && printCount % PRINT_PERIOD == 0) {
         if (state == FIND_PASSENGER)
-            PassengerSeek::printLCD();
+            TapeFollow::printLCD();
         else if(state == FIND_BEACON)
             ToDestination::printLCD();
         printCount = 0;
@@ -112,7 +112,7 @@ void findPassengerLoop()
     TapeFollow::loop();
     CollisionWatch::loop();
     PassengerSeek::loop();
-    if (PassengerSeek::isAtPassenger()) {
+    /*if (PassengerSeek::isAtPassenger()) {
         TapeFollow::test();
         PassengerSeek::pause();
         TapeFollow::loop();
@@ -124,7 +124,7 @@ void findPassengerLoop()
         PassengerSeek::init();
         //PassengerSeek::stop();
         //TODO: uncomment this once passenger seeking is working
-    }
+    }*/
     if (CollisionWatch::hasDetectedCollision()) 
         TapeFollow::turnAround();
 }
@@ -238,14 +238,16 @@ void debugSequence()
     LCD.setCursor(0, 1);
     LCD.print( F("START to continue") );
     int printCounter = 0;
-    while (!startbutton()) {}
-    if (printCounter % 50 == 0) {
+    while (!startbutton()) {
+      Arm_And_Stepper::doControl();
+      if (printCounter % 50 == 0) {
         LCD.clear();
         LCD.print(Arm_And_Stepper::getAngle());
         printCounter = 0;
+      }
     }
-    motor.speed(pins::MOTOR_PIN_ARM, 0);
     while (startbutton()) {}
+    motor.speed(pins::MOTOR_PIN_ARM, 0);
     delay(500);
     LCD.clear();
     LCD.print( F("set claw to midpoint") );
