@@ -260,11 +260,10 @@ void TapeFollow::init()
 {
     turningAround       = false;
     willTurnAround      = false;
-    turnStarted            = false;
+    turnStarted         = false;
     motorsActive        = false;
 
     action              = TFAction::FOLLOWING;
-
     turnDirection       = Direction::FRONT;  // not turning
     control             = 0;
 
@@ -521,7 +520,7 @@ void TapeFollow::setControl()
 // TODO: !!!
 void TapeFollow::updateStateFollowing()
 {
-    int followSteps&  = steps[static_cast<int>(TFAction::FOLLOWING)];
+    long &followSteps  = steps[static_cast<int>(TFAction::FOLLOWING)];
     if (offTape())
         action = TFAction::SEEKING;
     else if (willTurnAround)
@@ -552,7 +551,7 @@ void TapeFollow::updateStateFollowing()
 // TODO: !!!
 void TapeFollow::updateStateReversing()
 {
-    int reverseSteps& = steps[static_cast<int>(TFAction::REVERSING)];
+    long &reverseSteps = steps[static_cast<int>(TFAction::REVERSING)];
     if (offTape())
         action = TFAction::SEEKING;
     else if (willTurnAround) {
