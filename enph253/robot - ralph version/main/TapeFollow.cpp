@@ -5,7 +5,7 @@
 #include "PassengerSeek.hpp"
 #include "ToDestination.hpp"
 
-const int MOTOR_SPEED_FOLLOWING       {140}; //was doing ok at 175, but with lots of grinding at the turns
+const int MOTOR_SPEED_FOLLOWING       {130}; //was doing ok at 175, but with lots of grinding at the turns
 const int MOTOR_SPEED_PASSENGER_SEEK  {64};
 const int MOTOR_SPEED_TURNING         {16};
 const int MOTOR_SPEED_TURNING_AROUND  {-8};
@@ -16,7 +16,7 @@ const unsigned long INTERSECT_DELAY {100};  // steps following before intersecti
 const unsigned long MAIN_LOOP_DELAY {1};     // milliseconds
 const double ERROR_SMALL   {.02};
 const double ERROR_MEDIUM  {.04};
-const double ERROR_LARGE   {.08};
+const double ERROR_LARGE   {.06};
 const double ERROR_SEEKING {.64};
 const double ERROR_TURNING {12.80};
 const double EPSILON       {0.1};
@@ -26,7 +26,7 @@ const double GAIN_DER2     {.5*GAIN_DER1*GAIN_DER1/GAIN_PROP*(1.-EPSILON)};
 // const double GAIN_DER2 {0.};
 const int NUM_SAVED_READINGS {52};
 const int INTERSECT_PERIOD {5};  
-const int TURNING_PERIOD   {10}; 
+const int TURNING_PERIOD   {500}; //previously 50
 const int TURN_WAIT_PERIOD {25};
 const int OFF_TAPE_PERIOD  {50};
 const int ON_TAPE_PERIOD   {10};
@@ -439,7 +439,7 @@ void printLCD()
         LCD.print(" ");
         LCD.print(gainDer1);
         LCD.print(" ");
-        LCD.print(control);
+        LCD.print(lastError);
     }
 }
 

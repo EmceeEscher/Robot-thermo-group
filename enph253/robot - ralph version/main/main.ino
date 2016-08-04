@@ -80,8 +80,8 @@ void loop() {
 
   if (started && printCount % PRINT_PERIOD == 0) {
         if(state == FIND_PASSENGER){
-          //printLCD();
-          PassengerSeek::printLCD();
+          printLCD();
+          //PassengerSeek::printLCD();
         }else if(state == FIND_BEACON)
           detectBeaconPrintLCD();
           //printLCD();

@@ -23,7 +23,7 @@ int hasInitialized = 0;
 const float BASE_REST_POSITION = 125;
 const float MID_REST_POSITION = 165;
 const float BASE_HOLD_POSITION = 125;
-const float MID_HOLD_POSITION = 165;//TODO: switch back to 170
+const float MID_HOLD_POSITION = 170;//TODO: switch back to 170
 
 //Iterator for LCD printing
 int LCDControl;
