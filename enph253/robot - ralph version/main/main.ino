@@ -32,9 +32,9 @@ void setup() {
     Serial.begin(9600);
     randomSeed(analogRead(0));
     LCD.clear();
-    LCD.print("START: compete");
+    LCD.print(F("START: compete"));
     LCD.setCursor(0, 1);
-    LCD.print("STOP: debug");
+    LCD.print(F("STOP: debug"));
     
     for(auto i(0); i < 16; i++){
         pinMode(i, INPUT_PULLUP);
@@ -74,7 +74,7 @@ void loop() {
         TapeFollow::test();
         PassengerSeek::pause();
         LCD.clear();
-        LCD.print("stopped!");
+        LCD.print(F("stopped!"));
     }
     
     if (started && printCount % PRINT_PERIOD == 0) {
@@ -153,11 +153,11 @@ void findBeaconLoop(){
 void loadPassengerLoop(){
     if(state == LOAD_PASSENGER_RIGHT){
         LCD.clear();
-        LCD.print("grabbing on right");
+        LCD.print(F("grabbing on right"));
         Arm_And_Stepper::turnAndReach(true, true);
     }else{
         LCD.clear();
-        LCD.print("grabbing on left");
+        LCD.print(F("grabbing on left"));
         Arm_And_Stepper::turnAndReach(false,true);
     }
     
@@ -193,9 +193,9 @@ void dropPassengerLoop(){
 
 void debugSequence(){
     LCD.clear();
-    LCD.print("right motor forward");
+    LCD.print(F("right motor forward"));
     LCD.setCursor(0,1);
-    LCD.print("START to continue");
+    LCD.print(F("START to continue"));
     delay(500);
     while(!startbutton()){
         motor.speed(pins::MOTOR_PIN_L, -100);
@@ -204,9 +204,9 @@ void debugSequence(){
     while(startbutton()){}
     delay(500);
     LCD.clear();
-    LCD.print("left motor forward");
+    LCD.print(F("left motor forward"));
     LCD.setCursor(0,1);
-    LCD.print("START to continue");
+    LCD.print(F("START to continue"));
     while(!startbutton()){
         motor.speed(pins::MOTOR_PIN_R, 100);
     }
@@ -214,16 +214,16 @@ void debugSequence(){
     while(startbutton()){}
     delay(500);
     LCD.clear();
-    LCD.print("disengage arm gear");
+    LCD.print(F("disengage arm gear"));
     LCD.setCursor(0,1);
-    LCD.print("START to continue");
+    LCD.print(F("START to continue"));
     while(!startbutton()){}
     while(startbutton()){}
     delay(500);
     LCD.clear();
-    LCD.print("arm gear upward");
+    LCD.print(F("arm gear upward"));
     LCD.setCursor(0,1);
-    LCD.print("START to continue");
+    LCD.print(F("START to continue"));
     int printCounter  = 0;
     while(!startbutton()){
         if(printCounter % 50 == 0){
@@ -238,14 +238,14 @@ void debugSequence(){
     while(startbutton()){}
     delay(500);
     LCD.clear();
-    LCD.print("set claw to midpoint");
+    LCD.print(F("set claw to midpoint"));
     LCD.setCursor(0,1);
-    LCD.print("START to continue");
+    LCD.print(F("START to continue"));
     while(!startbutton()){
         LCD.clear();
-        LCD.print("STOP to open");
+        LCD.print(F("STOP to open"));
         LCD.setCursor(0,1);
-        LCD.print("START to continue");
+        LCD.print(F("START to continue"));
         delay(50);
         if(stopbutton()){
             delay(500);
@@ -284,11 +284,11 @@ void debugSequence(){
         if(printCounter % 50 == 0){
             LCD.clear();
             if(!digitalRead(pins::ARM_SWITCHES[0])){
-                LCD.print("catch switch");
+                LCD.print(F("catch switch"));
             }else if(!digitalRead(pins::ARM_SWITCHES[1])){
-                LCD.print("miss switch");
+                LCD.print(F("miss switch"));
             }else if(!digitalRead(pins::ARM_SWITCHES[2])){
-                LCD.print("detect switch");
+                LCD.print(F("detect switch"));
             }
             printCounter = 0;
         }
@@ -297,27 +297,27 @@ void debugSequence(){
     while(startbutton()){}
     delay(500);
     LCD.clear();
-    LCD.print("stepper test left");
+    LCD.print(F("stepper test left"));
     LCD.setCursor(0,1);
-    LCD.print("START to continue");
+    LCD.print(F("START to continue"));
     while(!startbutton()){}
     delay(500);
     Arm_And_Stepper::stepperTurn(false, 200);
     motor.speed(pins::MOTOR_PIN_ARM, 0);
     delay(500);
     LCD.clear();
-    LCD.print("stepper test right");
+    LCD.print(F("stepper test right"));
     LCD.setCursor(0,1);
-    LCD.print("START to continue");
+    LCD.print(F("START to continue"));
     while(!startbutton()){}
     delay(500);
     Arm_And_Stepper::stepperTurn(true,200);
     motor.speed(pins::MOTOR_PIN_ARM, 0);
     delay(500);
     LCD.clear();
-    LCD.print("collision sensor test");
+    LCD.print(F("collision sensor test"));
     LCD.setCursor(0,1);
-    LCD.print("START to continue");
+    LCD.print(F("START to continue"));
     while(!startbutton()){}
     delay(500);
     while(!startbutton()){
@@ -325,9 +325,9 @@ void debugSequence(){
         if(printCounter % 50 == 0){
             LCD.clear();
             if(CollisionWatch::hasDetectedCollision()){
-                LCD.print("COLLISION!");
+                LCD.print(F("COLLISION!"));
             }else{
-                LCD.print("NO COLLISION");
+                LCD.print(F("NO COLLISION"));
             }
             printCounter = 0;
         }
@@ -336,9 +336,9 @@ void debugSequence(){
     while(startbutton()){}
     delay(500);
     LCD.clear();
-    LCD.print("QRD test");
+    LCD.print(F("QRD test"));
     LCD.setCursor(0,1);
-    LCD.print("START to continue");
+    LCD.print(F("START to continue"));
     while(!startbutton()){}
     delay(500);
     TapeFollow::init();
@@ -355,9 +355,9 @@ void debugSequence(){
     TapeFollow::test();
     delay(500);
     LCD.clear();
-    LCD.print("pass. QSD test");
+    LCD.print(F("pass. QSD test"));
     LCD.setCursor(0,1);
-    LCD.print("START to continue");
+    LCD.print(F("START to continue"));
     while(!startbutton()){}
     delay(500);
     PassengerSeek::init();
@@ -373,9 +373,9 @@ void debugSequence(){
     PassengerSeek::pause();
     delay(500);
     LCD.clear();
-    LCD.print("beacon QSD test");
+    LCD.print(F("beacon QSD test"));
     LCD.setCursor(0,1);
-    LCD.print("START to continue");
+    LCD.print(F("START to continue"));
     while(!startbutton()){}
     delay(500);
     ToDestination::init();
@@ -392,7 +392,7 @@ void debugSequence(){
     delay(500);
     LCD.clear();
     LCD.clear();
-    LCD.print("START to begin loop");
+    LCD.print(F("START to begin loop"));
     while(!startbutton()){
         delay(10);
     }
@@ -403,7 +403,7 @@ void debugSequence(){
 
 void missedPassenger(){
     LCD.clear();
-    LCD.print("I missed...");
+    LCD.print(F("I missed..."));
     unsigned long prevTime = millis();
     TapeFollow::init();
     PassengerSeek::init();   
