@@ -51,4 +51,6 @@ void turnAround();
 
 bool isTurning();
 
+float getTimeTurningAround();
+
 #endif

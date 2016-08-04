@@ -70,6 +70,8 @@ int activePins [4];
 
 bool willTurnAround;
 bool turningAround;
+float timeTurningAround = 0;
+const float TURN_AROUND_LIMIT = 700;
 
 float leftWeight;
 float rightWeight;
@@ -209,6 +211,7 @@ double followTape()
         turningAround = true;
         turning = true;
         turnDirection = Direction::RIGHT;
+        timeTurningAround = 0;
     }
     
     if (tapeFollowSteps >= INTERSECT_DELAY)
@@ -447,8 +450,15 @@ void tapeFollowLoop()
         LCD.print("in TF loop");
         return;
     }
-    
-    
+    if(turningAround){
+      timeTurningAround++;
+    }
+    if(timeTurningAround > TURN_AROUND_LIMIT){
+      turnAround();
+      turning = false;
+      turningAround = false;
+      tapeFollowSteps = 0;
+    }
     
     // set gains
     // TODO move this to constructor once values are decided upon
@@ -564,24 +574,27 @@ void tapeFollowLoop()
 
 void turnAround()
 {
-    switch (turnDirection) {
-    case Direction::LEFT:
-        turnDirection = Direction::RIGHT;
-        break;
-    case Direction::RIGHT:
-        turnDirection = Direction::LEFT;
-        break;
-    case Direction::FRONT:
-        turnDirection = Direction::RIGHT;  // TODO: make a smarter way of choosing this
-        break;
-    case Direction::BACK:
-        turnDirection = Direction::RIGHT;  // TODO: make a smarter way of choosing this
-        break;
+    if(!turningAround){
+      switch (turnDirection) {
+      case Direction::LEFT:
+          turnDirection = Direction::RIGHT;
+          break;
+      case Direction::RIGHT:
+          turnDirection = Direction::LEFT;
+          break;
+      case Direction::FRONT:
+          turnDirection = Direction::RIGHT;  // TODO: make a smarter way of choosing this
+          break;
+      case Direction::BACK:
+          turnDirection = Direction::RIGHT;  // TODO: make a smarter way of choosing this
+          break;
+      }
+      willTurnAround = true;
+      motorSpeedTurning = MOTOR_SPEED_TURNING_AROUND;
+      motorSpeedFollowing = MOTOR_SPEED_REVERSE;
+      tapeFollowSteps = 0;  // reset steps counter
+      timeTurningAround = 0;
     }
-    willTurnAround = true;
-    motorSpeedTurning = MOTOR_SPEED_TURNING_AROUND;
-    motorSpeedFollowing = MOTOR_SPEED_REVERSE;
-    tapeFollowSteps = 0;  // reset steps counter
 }
 
 
@@ -627,5 +640,9 @@ void giveTurnDirection(float left, float right, float straight){
 
 bool isTurning(){
   return turning;
+}
+
+float getTimeTurningAround(){
+  return timeTurningAround;
 }
 
