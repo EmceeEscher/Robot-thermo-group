@@ -67,6 +67,7 @@ void loop() {
   if(startbutton() && started){
       tapeFollowStart();
       PassengerSeek::init();
+      beaconInit();
       LCD.clear();
       
   }
@@ -159,7 +160,7 @@ void findBeaconLoop(){
             giveTurnDirection(0,100,0.1);
             break;
         default:
-            giveTurnDirection(50,50,50);
+            //giveTurnDirection(50,50,50);
             break;
         }
         if(hasDetectedCollision()){
@@ -185,6 +186,7 @@ void loadPassengerLoop(){
        //LCD.print("I got something!");
        //2state = FIND_PASSENGER;
        //tapeFollowInit();
+       beaconInit();
        PassengerSeek::init();
        tapeFollowStart();
     }else{

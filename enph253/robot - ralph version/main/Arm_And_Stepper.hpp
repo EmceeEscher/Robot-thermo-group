@@ -31,15 +31,15 @@ int LCDControl;
 //Stepper Constants
 const int COUNTERCLOCKWISE = HIGH;
 const int CLOCKWISE = LOW;
-const int stepperMicrosDelay = 1000; //Time delay between pulses in microseconds
+const int stepperMicrosDelay = 500; //Time delay between pulses in microseconds
 const int numPulses = 680;
 
 //reachAndGrab/reachAndDrop function Constants
 const float initialAdjMidTarget = 100;
 const float initialAdjBaseTarget = 120;
-const float midAdjMidTarget = 60;
+const float midAdjMidTarget = 80;
 const float midAdjBaseTarget = 120;
-const float finalAdjMidTarget = 10;
+const float finalAdjMidTarget = 80;
 const float finalAdjBaseTarget = 115;
 
 const float midGrabTarget = 40;
@@ -331,8 +331,8 @@ void refinedReachAndGrab(){
         if(baseTarget > 120){
           baseTarget -= 5;
         }
-        if(midTarget < 140/* && baseTarget <= 100*/)
-          midTarget += 5;
+        if(midTarget < 140 && baseTarget <= 135)
+          midTarget += 10;
         startTime = millis();
       }
       if(!digitalRead(ARM_SWITCHES[2]) || (baseTarget <= 120 && midTarget >= 140))

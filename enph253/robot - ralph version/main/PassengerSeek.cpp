@@ -23,7 +23,7 @@ const int MAX_NUM_DERIV_REGISTER_PERIOD_SHIELDED  {2}; // number of consecutive 
 
 
 const int MAX_REGISTER_THRESHOLD        {150};  // threshold that readings must be above to register
-const int DISTANCE_REGISTER_THRESHOLD   {200};
+const int DISTANCE_REGISTER_THRESHOLD   {50};
     
 static bool active                {false}; // true if active
 
@@ -166,13 +166,15 @@ void PassengerSeek::loop()
         else
             passengerSide = 1;
     }    
+
+    PassengerSeek::pickDirection();
 }
 
 //currently unutilized
 //will be called in PassengerSeek::loop eventually maybe
 void PassengerSeek::pickDirection(){
     if(!PassengerSeek::atMaxSideMiddle() && !isTurning()){
-      float left = pinReadingsPS[1];
+      float left = pinReadingsPS[1]-49;
       float right = pinReadingsPS[2];
       if(left > DISTANCE_REGISTER_THRESHOLD && left > right){
         if(right > DISTANCE_REGISTER_THRESHOLD)

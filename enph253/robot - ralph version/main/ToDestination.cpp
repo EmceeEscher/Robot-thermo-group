@@ -16,7 +16,7 @@ int currDiff = 0;
 //int printCount = 0;
 
 //DetectBeacon Constants & Variables
-const int BEACON_THRESHOLD = 50;
+const int BEACON_THRESHOLD = 10;
 const int ARRIVED_THRESHOLD = 650;
 const int *beaconSensorPins(BEACON_SENSORS_SIDES);
 const int numBeaconReadings = 5;
@@ -30,7 +30,9 @@ int beaconReadingIndex = 0;
 void beaconInit(){
   for(auto i(0); i < numBeaconReadings; i++){
     leftBeaconReadings[i] = getLeftBeaconReading();
+    leftBeaconSum += leftBeaconReadings[i];
     rightBeaconReadings[i] = getRightBeaconReading();
+    rightBeaconSum += rightBeaconReadings[i];
   }
 }
 
