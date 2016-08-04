@@ -22,7 +22,7 @@ const int MAX_REGISTER_PERIOD_SHIELDED   {4}; // number of consecutive readings 
 const int MAX_NUM_DERIV_REGISTER_PERIOD_SHIELDED  {2}; // number of consecutive (+) derivatives and then (-) derivatives required to achieve a max for QSDs with shielding
 
 
-const int MAX_REGISTER_THRESHOLD        {150};  // threshold that readings must be above to register
+const int MAX_REGISTER_THRESHOLD        {175};  // threshold that readings must be above to register
 const int DISTANCE_REGISTER_THRESHOLD   {50};
     
 static bool active                {false}; // true if active

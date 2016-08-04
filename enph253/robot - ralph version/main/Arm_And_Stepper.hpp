@@ -20,10 +20,10 @@ float now, lastTime;
 int hasInitialized = 0;
 
 //Rest Positions
-const float BASE_REST_POSITION = 145;
-const float MID_REST_POSITION = 150;
-const float BASE_HOLD_POSITION = 150;
-const float MID_HOLD_POSITION = 170;//TODO: switch back to 170
+const float BASE_REST_POSITION = 125;
+const float MID_REST_POSITION = 165;
+const float BASE_HOLD_POSITION = 125;
+const float MID_HOLD_POSITION = 165;//TODO: switch back to 170
 
 //Iterator for LCD printing
 int LCDControl;
@@ -37,13 +37,13 @@ const int numPulses = 680;
 //reachAndGrab/reachAndDrop function Constants
 const float initialAdjMidTarget = 100;
 const float initialAdjBaseTarget = 120;
-const float midAdjMidTarget = 80;
+const float midAdjMidTarget = 100;
 const float midAdjBaseTarget = 120;
-const float finalAdjMidTarget = 80;
-const float finalAdjBaseTarget = 115;
+const float finalAdjMidTarget = 100;
+const float finalAdjBaseTarget = 120;
 
-const float midGrabTarget = 40;
-const float baseGrabTarget = 145;
+const float midGrabTarget = 80;
+const float baseGrabTarget = 125;
 
 //Holding a passenger?
 bool holding = false;
@@ -326,16 +326,15 @@ void refinedReachAndGrab(){
     while(true){
       doControl();
       if(digitalRead(ARM_SWITCHES[2]) 
-      && ((millis()-startTime)>250)
-      /*&& baseTarget > 80*/){
-        if(baseTarget > 120){
+      && ((millis()-startTime)>250)){
+        if(baseTarget > 95){
           baseTarget -= 5;
         }
-        if(midTarget < 140 && baseTarget <= 135)
+        if(midTarget < 120 && baseTarget <= 115)
           midTarget += 10;
         startTime = millis();
       }
-      if(!digitalRead(ARM_SWITCHES[2]) || (baseTarget <= 120 && midTarget >= 140))
+      if(!digitalRead(ARM_SWITCHES[2]) || (baseTarget <= 95 && midTarget >= 120))
         break;
       delay(5);
     }

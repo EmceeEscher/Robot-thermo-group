@@ -209,6 +209,8 @@ void dropPassengerLoop(){
     turnAndReach(true,false);
   }
   state = FIND_PASSENGER;
+  tapeFollowStart();
+  PassengerSeek::init();
 }
 
 void debugSequence(){
