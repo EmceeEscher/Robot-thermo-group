@@ -31,7 +31,7 @@ int LCDControl;
 //Stepper Constants
 const int COUNTERCLOCKWISE = HIGH;
 const int CLOCKWISE = LOW;
-const int stepperMicrosDelay = 500; //Time delay between pulses in microseconds
+const int stepperMicrosDelay = 50; //Time delay between pulses in microseconds
 const int numPulses = 680;
 
 //reachAndGrab/reachAndDrop function Constants

@@ -28,11 +28,14 @@ float rightBeaconSum = 0;
 int beaconReadingIndex = 0;
 
 void beaconInit(){
-  for(auto i(0); i < numBeaconReadings; i++){
-    leftBeaconReadings[i] = getLeftBeaconReading();
-    leftBeaconSum += leftBeaconReadings[i];
-    rightBeaconReadings[i] = getRightBeaconReading();
-    rightBeaconSum += rightBeaconReadings[i];
+  int i;
+  for(i = 0; i < numBeaconReadings; i++){
+    //leftBeaconReadings[i] = getLeftBeaconReading();
+    leftBeaconReadings[i] = 0;
+    leftBeaconSum = 0;
+    //rightBeaconReadings[i] = getRightBeaconReading();
+    rightBeaconReadings[i] = 0;
+    rightBeaconSum = 0;
   }
 }
 

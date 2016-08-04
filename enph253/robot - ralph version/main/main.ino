@@ -79,18 +79,19 @@ void loop() {
   }
 
   if (started && printCount % PRINT_PERIOD == 0) {
-        if(state == FIND_PASSENGER){
+        /*if(state == FIND_PASSENGER){
           printLCD();
           //PassengerSeek::printLCD();
         }else if(state == FIND_BEACON)
-          detectBeaconPrintLCD();
+          detectBeaconPrintLCD();*/
           //printLCD();
+        detectBeaconPrintLCD();
         printCount = 0;
     }
     ++printCount;
   if(started){
         doControl(); //Can't not do this or the arm will FUCKING EXPLODE
-        
+        detectBeaconLoop();
         if(state == FIND_PASSENGER){
             findPassengerLoop();
         } else if(state == LOAD_PASSENGER_LEFT){
@@ -150,7 +151,7 @@ void findBeaconLoop(){
     }else{
         tapeFollowLoop();
         collisionLoop();
-        detectBeaconLoop();
+        //detectBeaconLoop();
         Direction dir = getBeaconDirection();
         switch(dir){
         case Direction::LEFT:
@@ -211,6 +212,7 @@ void dropPassengerLoop(){
   state = FIND_PASSENGER;
   tapeFollowStart();
   PassengerSeek::init();
+  beaconInit();
 }
 
 void debugSequence(){

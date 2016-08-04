@@ -5,7 +5,7 @@
 #include "PassengerSeek.hpp"
 #include "ToDestination.hpp"
 
-const int MOTOR_SPEED_FOLLOWING       {130}; //was doing ok at 175, but with lots of grinding at the turns
+const int MOTOR_SPEED_FOLLOWING       {140}; //was doing ok at 175, but with lots of grinding at the turns
 const int MOTOR_SPEED_PASSENGER_SEEK  {64};
 const int MOTOR_SPEED_TURNING         {16};
 const int MOTOR_SPEED_TURNING_AROUND  {-8};
