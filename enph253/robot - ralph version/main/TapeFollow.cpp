@@ -231,7 +231,7 @@ static bitset<2> intersectDetect;                    // true when an intersectio
 // Turning variables
 static bool turningAround  {false};                 // true if the robot is turning around
 static bool willTurnAround {false};                 // true if the robot is about to turn around
-static bool halfTurn       {false};                 // if true, bot has turned far enough that mains are off tape
+static bool turnStarted       {false};                 // if true, bot has turned far enough that mains are off tape
 static Direction turnDirection {Direction::FRONT};  // current turn direction
 static float leftWeight     {1.};                   // TODO: come up with a better way of doing this weight stuff
 static float straightWeight {1.};
@@ -259,7 +259,7 @@ void TapeFollow::init()
 {
     turningAround       = false;
     willTurnAround      = false;
-    halfTurn            = false;
+    turnStarted            = false;
     motorsActive        = false;
 
     action              = TFAction::FOLLOWING;
@@ -576,16 +576,16 @@ void TapeFollow::updateStateSeeking()
 // TODO: !!!
 void TapeFollow::updateStateTurning()
 {
-    if ((!halfTurn) &&
+    if ((!turnStarted) &&
         (offTapeCounter[1] >= TURN_CONFIRM_PERIOD) &&
         (offTapeCounter[2] >= TURN_CONFIRM_PERIOD)) {  // turn begins
-        halfTurn = true;
+        turnStarted = true;
     } else if (
-            halfTurn &&
+            turnStarted &&
             ((onTapeCounter[1] >= ON_TAPE_PERIOD) ||
              (onTapeCounter[2] >= ON_TAPE_PERIOD))) {  // turn ends
         willTurnAround = false;
-        halfTurn = false;
+        turnStarted = false;
         action = TFAction::FOLLOWING; 
         turningAround = false;
         turnDirection = Direction::FRONT;
