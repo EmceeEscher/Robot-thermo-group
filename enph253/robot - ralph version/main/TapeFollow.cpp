@@ -592,19 +592,21 @@ void TapeFollow::updateStateTurning()
         motorSpeedTurning = MOTOR_SPEED_TURNING;
         motorSpeedFollowing = MOTOR_SPEED_FOLLOWING;
     } else if (turningAround) {  // during turn around
-        if (turnAroundPhaseCounter >= TURN_AROUND_SPEED_SWITCH_PERIOD) {
-            motorSpeedTurning = -motorSpeedTurning;
-            turnAroundPhaseCounter = 0;
-        } else if (turnAroundCounter >= TURN_AROUND_TIMEOUT_PERIOD) {
+        // Check if turning for too long
+        if (turnAroundCounter >= TURN_AROUND_TIMEOUT_PERIOD) {
             turnAroundCounter = 0;
             if (turnDirection == Direction::LEFT)
                 turnDirection = Direction::RIGHT;
             else
                 turnDirection = Direction::LEFT;
-        } else {
+        } else
             ++turnAroundCounter;
+        // Check if time to switch speed direction
+        if (turnAroundPhaseCounter >= TURN_AROUND_SPEED_SWITCH_PERIOD) {
+            motorSpeedTurning = -motorSpeedTurning;
+            turnAroundPhaseCounter = 0;
+        } else 
             ++turnAroundPhaseCounter;
-        }
     } else {  // during regular turn
         if (steps[static_cast<int>(TFAction::TURNING)] >= TURN_TIMEOUT_PERIOD) {
             if (turnDirection == Direction::LEFT)
