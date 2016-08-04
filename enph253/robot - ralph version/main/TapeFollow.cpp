@@ -168,12 +168,13 @@ const float ERROR_TURNING {12.80};   // error to be applied during turning
 const int INTERSECT_SEEK_DELAY_PERIOD      {100};  // while tape following, waits for this many steps before searching for intersections
 const int INTERSECT_DETECT_PERIOD           {15};  // number of consecutive readings required to see an intersection
 const int TURN_CONFIRM_PERIOD               {10};  // number of consecutive readings required to register start of turning
-const long TURN_TIMEOUT_PERIOD            {4096};
 const int PRE_TURN_DELAY_PERIOD             {75};  // number of iterations to wait after detecting intersections before making decision
 const int PRE_TURN_AROUND_DELAY_PERIOD     {145};  // number of reverse steps to make before turning around
 const int OFF_TAPE_PERIOD                   {50};  // number of consecutive readings required to signal that the robot has lost the tape
 const int ON_TAPE_PERIOD                     {5};  // number of consecutive readings required to confirm that the robot is back on the tape after turning
 const long TURN_AROUND_SPEED_SWITCH_PERIOD {1024};  // number of steps before switching between forward and reverse while turning around
+const long SEEK_TIMEOUT_PERIOD             {4096};
+const long TURN_TIMEOUT_PERIOD             {4096};
 const long TURN_AROUND_TIMEOUT_PERIOD      {4096};
 const long COUNTER_MAX                    {16384}; // maximum value for onTapeCounter and offTapeCounter
 
@@ -459,6 +460,12 @@ void TapeFollow::setErrorSeeking()
         error = ERROR_SEEKING;
     else
         error = 0.;
+
+    // reverse error if time out
+    if (steps[static_cast<int>(TFAction::SEEKING)] >= SEEK_TIMEOUT_PERIOD) {
+        error = -error;
+        steps[static_cast<int>(TFAction::SEEKING)] = 0;
+    }
 }
 
 
@@ -514,7 +521,7 @@ void TapeFollow::setControl()
 // TODO: !!!
 void TapeFollow::updateStateFollowing()
 {
-    int followSteps  = steps[static_cast<int>(TFAction::FOLLOWING)];
+    int followSteps&  = steps[static_cast<int>(TFAction::FOLLOWING)];
     if (offTape())
         action = TFAction::SEEKING;
     else if (willTurnAround)
@@ -545,7 +552,7 @@ void TapeFollow::updateStateFollowing()
 // TODO: !!!
 void TapeFollow::updateStateReversing()
 {
-    int reverseSteps = steps[static_cast<int>(TFAction::REVERSING)];
+    int reverseSteps& = steps[static_cast<int>(TFAction::REVERSING)];
     if (offTape())
         action = TFAction::SEEKING;
     else if (willTurnAround) {
@@ -576,6 +583,7 @@ void TapeFollow::updateStateSeeking()
 // TODO: !!!
 void TapeFollow::updateStateTurning()
 {
+    long &turningSteps = steps[static_cast<int>(TFAction::TURNING)];
     if ((!turnStarted) &&
         (offTapeCounter[1] >= TURN_CONFIRM_PERIOD) &&
         (offTapeCounter[2] >= TURN_CONFIRM_PERIOD)) {  // turn begins
@@ -592,7 +600,7 @@ void TapeFollow::updateStateTurning()
         motorSpeedTurning = MOTOR_SPEED_TURNING;
         motorSpeedFollowing = MOTOR_SPEED_FOLLOWING;
     } else if (turningAround) {  // during turn around
-        // Check if turning for too long
+        // Check if turning around for too long
         if (turnAroundCounter >= TURN_AROUND_TIMEOUT_PERIOD) {
             turnAroundCounter = 0;
             if (turnDirection == Direction::LEFT)
@@ -608,12 +616,13 @@ void TapeFollow::updateStateTurning()
         } else 
             ++turnAroundPhaseCounter;
     } else {  // during regular turn
-        if (steps[static_cast<int>(TFAction::TURNING)] >= TURN_TIMEOUT_PERIOD) {
+        // Check if turning for too long
+        if (turningSteps >= TURN_TIMEOUT_PERIOD) {
             if (turnDirection == Direction::LEFT)
                 turnDirection = Direction::RIGHT;
             else
                 turnDirection = Direction::LEFT;
-            steps[static_cast<int>(TFAction::TURNING)] = 0;
+            turningSteps = 0;
         }
     }
 }
