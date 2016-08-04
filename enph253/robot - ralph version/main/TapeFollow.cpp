@@ -26,7 +26,7 @@ const double GAIN_DER2     {.5*GAIN_DER1*GAIN_DER1/GAIN_PROP*(1.-EPSILON)};
 // const double GAIN_DER2 {0.};
 const int NUM_SAVED_READINGS {52};
 const int INTERSECT_PERIOD {5};  
-const int TURNING_PERIOD   {500}; //previously 50
+const int TURNING_PERIOD   {50}; //previously 50
 const int TURN_WAIT_PERIOD {25};
 const int OFF_TAPE_PERIOD  {50};
 const int ON_TAPE_PERIOD   {10};

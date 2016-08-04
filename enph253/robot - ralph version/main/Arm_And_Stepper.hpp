@@ -35,15 +35,15 @@ const int stepperMicrosDelay = 500; //Time delay between pulses in microseconds
 const int numPulses = 680;
 
 //reachAndGrab/reachAndDrop function Constants
-const float initialAdjMidTarget = 100;
-const float initialAdjBaseTarget = 120;
-const float midAdjMidTarget = 100;
-const float midAdjBaseTarget = 120;
+const float initialAdjMidTarget = 150;
+const float initialAdjBaseTarget = 115;
+const float midAdjMidTarget = 130;
+const float midAdjBaseTarget = 105;
 const float finalAdjMidTarget = 100;
-const float finalAdjBaseTarget = 120;
+const float finalAdjBaseTarget = 95;
 
-const float midGrabTarget = 80;
-const float baseGrabTarget = 125;
+const float midGrabTarget = 10;
+const float baseGrabTarget = 135;
 
 //Holding a passenger?
 bool holding = false;
@@ -358,14 +358,20 @@ midTarget = MID_REST_POSITION;
 
 void setRestPosition(){
     unsigned long startTime = millis();
+    baseTarget = finalAdjBaseTarget;
+    midTarget = finalAdjMidTarget;
+    while(millis() - startTime < 1000){
+      doControl();
+    }
+    
     baseTarget = midAdjBaseTarget; 
     midTarget = midAdjMidTarget;
-    while (millis() - startTime < 500) 
+    while (millis() - startTime < 2000) 
         doControl();
     
     baseTarget = initialAdjBaseTarget;
     midTarget = initialAdjMidTarget;
-    while (millis() - startTime < 1000)  // TODO: no hard coding
+    while (millis() - startTime < 3000)  // TODO: no hard coding
         doControl();
     
     if (holding) {
