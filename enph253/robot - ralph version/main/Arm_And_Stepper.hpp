@@ -202,11 +202,7 @@ void grabShit(){
 void dropShit(){
     motor.speed(MOTOR_PIN_BABY,-140);
     holding = false;
-    if(holding){
-      delay(dropTime/2);
-    }else{
-      delay(dropTime);
-    }
+    delay(dropTime);
     motor.speed(MOTOR_PIN_BABY,0);
 }
 

@@ -54,7 +54,7 @@ void pickDirection(){
     // }
     // printCount++;
     
-    float diff = right - left;
+    /*float diff = right - left;
     if(abs(diff)>DIFF_THRESHOLD){
         if(diff>0){
             giveTurnDirection(0,100,0.1);
@@ -67,7 +67,8 @@ void pickDirection(){
         }else{
             giveTurnDirection(25,10,100);
         }
-    }
+    }*/
+    giveTurnDirection(50,50,50);
 }
 
 void detectBeaconLoop() {
