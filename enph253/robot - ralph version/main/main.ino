@@ -6,7 +6,7 @@
 #include "TapeFollow.hpp"
 #include "CollisionWatch.hpp"
 #include "PassengerSeek.hpp"
-#include "ToDestination.hpp"
+#include "FindBeacon.hpp"
 
 const int FIND_PASSENGER = 0;
 const int LOAD_PASSENGER_LEFT = 1;
@@ -46,7 +46,7 @@ void loop() {
     tapeFollowInit();
     PassengerSeek::init();
     tapeFollowStart();
-    beaconInit();
+    FindBeacon::init();
     LCD.clear();
   }
   if(!started && stopbutton()){
@@ -54,13 +54,13 @@ void loop() {
     tapeFollowInit();
     PassengerSeek::init();
     tapeFollowStart();
-    beaconInit();
+    FindBeacon::init();
     LCD.clear();
   }
   if(startbutton() && started){
       tapeFollowStart();
       PassengerSeek::init();
-      beaconInit();
+      FindBeacon::init();
       LCD.clear();
       
   }
@@ -72,19 +72,16 @@ void loop() {
   }
 
   if (started && printCount % PRINT_PERIOD == 0) {
-        /*if(state == FIND_PASSENGER){
-          printLCD();
-          //PassengerSeek::printLCD();
+        if(state == FIND_PASSENGER){
+          PassengerSeek::printLCD();
         }else if(state == FIND_BEACON)
-          detectBeaconPrintLCD();*/
-          //printLCD();
-        detectBeaconPrintLCD();
+          FindBeacon::printLCD();       
         printCount = 0;
     }
     ++printCount;
   if(started){
         ArmAndStepper::doControl(); //Can't not do this or the arm will EXPLODE
-        detectBeaconLoop();
+        FindBeacon::loop();
         if(state == FIND_PASSENGER){
             findPassengerLoop();
         } else if(state == LOAD_PASSENGER_LEFT){
@@ -113,11 +110,6 @@ void findPassengerLoop(){
         }else if(side == -1){
           state = LOAD_PASSENGER_LEFT;
         }
-        //state = FIND_BEACON;
-        //tapeFollowStart();
-        //PassengerSeek::init();
-        //PassengerSeek::stop();
-        //TODO: uncomment this once passenger seeking is working
     }
     if(CollisionWatch::hasDetectedCollision()){
         turnAround();
@@ -132,15 +124,15 @@ void findBeaconLoop(){
         ArmAndStepper::drop();
       }
     }
-    if(hasArrived()){
+    if(FindBeacon::hasArrived()){
         tapeFollowTest();
         tapeFollowLoop();
         state = DROP_PASSENGER;
     }else{
         tapeFollowLoop();
         CollisionWatch::loop();
-        //detectBeaconLoop();
-        Direction dir = getBeaconDirection();
+        FindBeacon::pickDirection();
+        /*Direction dir = getBeaconDirection();
         switch(dir){
         case Direction::LEFT:
             giveTurnDirection(100,0,0.1);
@@ -151,7 +143,7 @@ void findBeaconLoop(){
         default:
             //giveTurnDirection(50,50,50);
             break;
-        }
+        }*/
         if(CollisionWatch::hasDetectedCollision()){
           turnAround();
         }
@@ -172,26 +164,18 @@ void loadPassengerLoop(){
     if(ArmAndStepper::isHolding()){
        state = FIND_BEACON;
        LCD.clear();
-       //LCD.print("I got something!");
-       //2state = FIND_PASSENGER;
-       //tapeFollowInit();
-       beaconInit();
+       FindBeacon::init();
        PassengerSeek::init();
        tapeFollowStart();
     }else{
-       //go forward
-       //turn around
-       //find passenger again 
        state = FIND_PASSENGER;
-       //tapeFollowInit();
        PassengerSeek::init();
        tapeFollowStart();
-       //missedPassenger();//TODO: TEST THIS!!!!
     }
 }
 
 void dropPassengerLoop(){
-  Direction dir = getBeaconDirection();
+  Direction dir = FindBeacon::getBeaconDirection();
   if(dir == Direction::LEFT){
     ArmAndStepper::turnAndReach(false,false);
   }else if(dir == Direction::RIGHT){
@@ -200,7 +184,7 @@ void dropPassengerLoop(){
   state = FIND_PASSENGER;
   tapeFollowStart();
   PassengerSeek::init();
-  beaconInit();
+  FindBeacon::init();
 }
 
 void debugSequence(){
@@ -372,17 +356,16 @@ void debugSequence(){
   LCD.print("START to continue");
   while(!startbutton()){}
   delay(500);
-  beaconInit();
+  FindBeacon::init();
   while(!startbutton()){
-    detectBeaconLoop();
+    FindBeacon::loop();
     if(printCounter % 50 == 0){
       LCD.clear();
-      detectBeaconPrintLCD();
+      FindBeacon::printLCD();
       printCounter = 0;
     }
     printCounter++;
   }
-  PassengerSeek::pause();
   delay(500);
   LCD.clear();
   LCD.clear();

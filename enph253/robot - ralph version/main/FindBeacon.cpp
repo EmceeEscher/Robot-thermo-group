@@ -1,6 +1,6 @@
 #include <phys253.h>
 #include <LiquidCrystal.h>
-#include "ToDestination.hpp"
+#include "FindBeacon.hpp"
 #include "TapeFollow.hpp"
 
 
@@ -27,7 +27,7 @@ int rightBeaconReadings[numBeaconReadings];
 float rightBeaconSum = 0;
 int beaconReadingIndex = 0;
 
-void beaconInit(){
+void FindBeacon::init(){
   int i;
   for(i = 0; i < numBeaconReadings; i++){
     //leftBeaconReadings[i] = getLeftBeaconReading();
@@ -39,11 +39,12 @@ void beaconInit(){
   }
 }
 
-void pickDirection(){
+void FindBeacon::pickDirection(){
     
     float left = getLeftBeaconReading();
     float right = getRightBeaconReading();
-    
+
+    //the following was changed mid-competition due to problems with the arm swinging
     /*float diff = right - left;
     if(abs(diff)>DIFF_THRESHOLD){
         if(diff>0){
@@ -61,34 +62,34 @@ void pickDirection(){
     giveTurnDirection(50,50,50);
 }
 
-void detectBeaconLoop() {
-    updateLeftBeaconArray();
-    updateRightBeaconArray();
+void FindBeacon::loop() {
+    FindBeacon::updateLeftBeaconArray();
+    FindBeacon::updateRightBeaconArray();
     beaconReadingIndex++;
     if(beaconReadingIndex >= numBeaconReadings){
         beaconReadingIndex = 0;    
     }
 }
 
-void updateLeftBeaconArray(){
-    int newReading = getLeftBeaconReading();
+void FindBeacon::updateLeftBeaconArray(){
+    int newReading = FindBeacon::getLeftBeaconReading();
     leftBeaconSum -= leftBeaconReadings[beaconReadingIndex];
     leftBeaconReadings[beaconReadingIndex] = newReading;
     leftBeaconSum += leftBeaconReadings[beaconReadingIndex];
 }
 
-void updateRightBeaconArray(){
-    int newReading = getRightBeaconReading();
+void FindBeacon::updateRightBeaconArray(){
+    int newReading = FindBeacon::getRightBeaconReading();
     rightBeaconSum -= rightBeaconReadings[beaconReadingIndex];
     rightBeaconReadings[beaconReadingIndex] = newReading;
     rightBeaconSum += rightBeaconReadings[beaconReadingIndex];
 }
 
 // returns -1 for left, 1 for right, 0 for no detection
-Direction getBeaconDirection(){
+Direction FindBeacon::getBeaconDirection(){
     int val;
-    float leftAverage = getLeftBeaconAverage();
-    float rightAverage = getRightBeaconAverage();
+    float leftAverage = FindBeacon::getLeftBeaconAverage();
+    float rightAverage = FindBeacon::getRightBeaconAverage();
     
     if (leftAverage > BEACON_THRESHOLD) {
         if (rightAverage > BEACON_THRESHOLD)
@@ -102,39 +103,39 @@ Direction getBeaconDirection(){
     
 }
 
-int getLeftBeaconReading(){
+int FindBeacon::getLeftBeaconReading(){
     return analogRead(beaconSensorPins[0]);
 }
 
-int getRightBeaconReading(){
+int FindBeacon::getRightBeaconReading(){
     return analogRead(beaconSensorPins[1]);
 }
 
-float getLeftBeaconAverage(){
+float FindBeacon::getLeftBeaconAverage(){
     return leftBeaconSum / numBeaconReadings;
 }
 
-float getRightBeaconAverage(){
+float FindBeacon::getRightBeaconAverage(){
     return rightBeaconSum / numBeaconReadings;
 }
 
-bool hasArrived(){
-    float leftAverage = getLeftBeaconAverage();
-    float rightAverage = getRightBeaconAverage();
+bool FindBeacon::hasArrived(){
+    float leftAverage = FindBeacon::getLeftBeaconAverage();
+    float rightAverage = FindBeacon::getRightBeaconAverage();
     return ((leftAverage > ARRIVED_THRESHOLD) ||
 	    (rightAverage > ARRIVED_THRESHOLD));
 }
 
-void detectBeaconPrintLCD(){
+void FindBeacon::printLCD(){
   LCD.clear();
   LCD.print("LR: ");
-  LCD.print(getLeftBeaconReading());
+  LCD.print(FindBeacon::getLeftBeaconReading());
   LCD.print(" LA: ");
-  LCD.print(getLeftBeaconAverage());
+  LCD.print(FindBeacon::getLeftBeaconAverage());
   LCD.setCursor(0,1);
   LCD.print("RR: ");
-  LCD.print(getRightBeaconReading());
+  LCD.print(FindBeacon::getRightBeaconReading());
   LCD.print(" RA: ");
-  LCD.print(getRightBeaconAverage());
+  LCD.print(FindBeacon::getRightBeaconAverage());
 }
 

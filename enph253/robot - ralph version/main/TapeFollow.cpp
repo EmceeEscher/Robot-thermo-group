@@ -3,7 +3,7 @@
 #include "TapeFollow.hpp"
 #include "pins.hpp"
 #include "PassengerSeek.hpp"
-#include "ToDestination.hpp"
+#include "FindBeacon.hpp"
 
 const int MOTOR_SPEED_FOLLOWING       {140}; //was doing ok at 175, but with lots of grinding at the turns
 const int MOTOR_SPEED_PASSENGER_SEEK  {64};
