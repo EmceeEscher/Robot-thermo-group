@@ -9,8 +9,6 @@
 
 //TODO: add code for QSD that's on digital pin
 
-// const int *QSD_PINS_SIDES {pins::PASSENGER_SENSORS_SIDES};     // left-back, left-mid, left-front, right-front, right-mid, right-back
-// const int NUM_PINS_SIDES  {pins_sizes::PASSENGER_SENSORS_SIDES};
 const int *QSD_PINS_SIDES {PASSENGER_SENSORS_SIDES};     // left-back, left-mid, left-front, right-front, right-mid, right-back
 const int NUM_PINS_SIDES  {
     sizeof(PASSENGER_SENSORS_SIDES) / sizeof(PASSENGER_SENSORS_SIDES[0])};
@@ -40,15 +38,6 @@ static int  numAboveThreshold [NUM_PINS_SIDES];  // number of consecutive reads 
 static int  numPosDeriv       [NUM_PINS_SIDES];  // number of consecutive positive derivatives THE LAST TIME A POSITIVE DERIVATIVE WAS READ
 static int  numNegDeriv       [NUM_PINS_SIDES];  // number of consecutive negative or 0 derivatives THE LAST TIME A NEGATIVE DERIVATIVE WAS READ
 static bool lastDerivPositive [NUM_PINS_SIDES];  // true if the last derivative was negative
-
-
-namespace PassengerSeek
-{
-    //static void init();
-    static bool atMaxSideFront();
-    static bool atMaxSideMiddle();
-    static void updateMax();
-}
 
 
 void PassengerSeek::init()
@@ -85,7 +74,6 @@ bool PassengerSeek::atMaxSideMiddle()
 }
 
 
-// TODO
 void PassengerSeek::updateMax()
 {   
     //for loop uses different values for non-shielded vs. shielded QSDs
@@ -114,14 +102,7 @@ void PassengerSeek::updateMax()
 // TODO
 void PassengerSeek::loop()
 {
-    /*static bool initialized(false);
-      
-    // Initialize, if not yet done
-    if (!initialized) {
-    PassengerSeek::init();
-    initialized = true;
-    }*/
-    
+
     // Get pin readings
     for (int i(0); i < NUM_PINS_SIDES; ++i) {
         lastpinReadingsPS[i] = pinReadingsPS[i];
@@ -170,8 +151,6 @@ void PassengerSeek::loop()
     PassengerSeek::pickDirection();
 }
 
-//currently unutilized
-//will be called in PassengerSeek::loop eventually maybe
 void PassengerSeek::pickDirection(){
     if(!PassengerSeek::atMaxSideMiddle() && !isTurning()){
       float left = pinReadingsPS[1]-49;
@@ -234,11 +213,6 @@ bool PassengerSeek::isAtPassenger()
     return atPassenger;
 }
 
-/*void PassengerSeek::pickedUpPassenger()
-  {
-  atPassenger = false;
-  }*/
-
 int PassengerSeek::getPassengerSide()
 {
     return passengerSide;
@@ -247,17 +221,13 @@ int PassengerSeek::getPassengerSide()
 void PassengerSeek::printLCD(){
     LCD.clear();
     LCD.print("FL: ");
-    //LCD.print(analogRead(QSD_PINS_SIDES[1]));
     LCD.print(pinReadingsPS[1]);
     LCD.print(" FR: ");
     LCD.print(pinReadingsPS[2]);
-    //LCD.print(analogRead(QSD_PINS_SIDES[2]));
     LCD.setCursor(0,1);
     LCD.print("SL: ");
     LCD.print(pinReadingsPS[0]);
-    //LCD.print(analogRead(QSD_PINS_SIDES[0]));
     LCD.print(" SR: ");
     LCD.print(pinReadingsPS[3]);
-    //LCD.print(analogRead(QSD_PINS_SIDES[3]));
 }
 

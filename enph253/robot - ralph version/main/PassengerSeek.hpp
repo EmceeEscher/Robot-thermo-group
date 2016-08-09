@@ -62,6 +62,9 @@ namespace PassengerSeek
      */
     int getPassengerSide();
 
+    /*
+     * prints the values read by the passenger IR sensors on the LCD screen
+     */
     void printLCD();
 
 
@@ -70,6 +73,21 @@ namespace PassengerSeek
      * or not the front QSDs can see an IR beacon
      */
     void pickDirection();
+
+    /*
+     * Returns true if the the robot has reached (and passed) a maximum value for one of the front IR sensors
+     */
+    bool atMaxSideFront();
+
+    /*
+     * Returns true if the robot has reached (and passed) a maximum value for one of the side IR sensors
+     */
+    bool atMaxSideMiddle();
+
+    /*
+     * Updates whether or not the IR sensors have reached a max value 
+     */
+    void updateMax();
     
 }
 
