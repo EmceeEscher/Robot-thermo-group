@@ -3,14 +3,13 @@
 #include "CollisionWatch.hpp"
 #include "pins.hpp"
 
-//const int COLLISION_SENSORS[]  { 4,  5};  // left front right back
 const int collisionDetectPeriod {5};
 const int numSensorsPin = sizeof(COLLISION_SENSORS)/sizeof(COLLISION_SENSORS[0]);
 int numCollisionReads[numSensorsPin];
 bool collisionDetected[numSensorsPin] = {false, false};
 int collisionDirection;
 
-void collisionLoop(){
+void CollisionWatch::loop(){
     // Read collision sensors and update numReads array
     collisionDirection = -1;
     for (int i(0); i < numSensorsPin; ++i) {
@@ -28,7 +27,7 @@ void collisionLoop(){
 }
 
 
-bool hasDetectedCollision(){
-    return collisionDetected[0]; //|| collisionDetected[1];
+bool CollisionWatch::hasDetectedCollision(){
+    return collisionDetected[0];
 }
 

@@ -43,16 +43,6 @@ void pickDirection(){
     
     float left = getLeftBeaconReading();
     float right = getRightBeaconReading();
-    // if(printCount>25){
-    // LCD.clear();
-    // LCD.print("L: ");
-    // LCD.print(leftAverage);
-    // LCD.setCursor(0,1);
-    // LCD.print("R: ");
-    // LCD.print(rightAverage);
-    // printCount = 0;
-    // }
-    // printCount++;
     
     /*float diff = right - left;
     if(abs(diff)>DIFF_THRESHOLD){

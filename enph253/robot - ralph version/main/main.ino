@@ -101,7 +101,7 @@ void loop() {
 
 void findPassengerLoop(){
     tapeFollowLoop();
-    collisionLoop();
+    CollisionWatch::loop();
     PassengerSeek::loop();
     if(PassengerSeek::isAtPassenger()){
         tapeFollowTest();
@@ -119,7 +119,7 @@ void findPassengerLoop(){
         //PassengerSeek::stop();
         //TODO: uncomment this once passenger seeking is working
     }
-    if(hasDetectedCollision()){
+    if(CollisionWatch::hasDetectedCollision()){
         turnAround();
     }
 }
@@ -136,14 +136,9 @@ void findBeaconLoop(){
         tapeFollowTest();
         tapeFollowLoop();
         state = DROP_PASSENGER;
-        //LCD.clear();
-        //LCD.print("I have arrived");
-        //delay(10000);
-        //tapeFollowInit();      
-        //state = DROP_PASSENGER;
     }else{
         tapeFollowLoop();
-        collisionLoop();
+        CollisionWatch::loop();
         //detectBeaconLoop();
         Direction dir = getBeaconDirection();
         switch(dir){
@@ -157,7 +152,7 @@ void findBeaconLoop(){
             //giveTurnDirection(50,50,50);
             break;
         }
-        if(hasDetectedCollision()){
+        if(CollisionWatch::hasDetectedCollision()){
           turnAround();
         }
     } 
@@ -279,7 +274,7 @@ void debugSequence(){
   LCD.setCursor(0,1);
   LCD.print("START to continue");
   while(!startbutton()){
-    collisionLoop();
+    CollisionWatch::loop();
     if(printCounter % 50 == 0){
       LCD.clear();
       if(!digitalRead(ARM_SWITCHES[0])){
@@ -320,10 +315,10 @@ void debugSequence(){
   while(!startbutton()){}
   delay(500);
   while(!startbutton()){
-    collisionLoop();
+    CollisionWatch::loop();
     if(printCounter % 50 == 0){
       LCD.clear();
-      if(hasDetectedCollision()){
+      if(CollisionWatch::hasDetectedCollision()){
         LCD.print("COLLISION!");
       }else{
         LCD.print("NO COLLISION");
