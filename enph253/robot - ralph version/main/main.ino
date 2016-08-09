@@ -2,7 +2,7 @@
 
 #include <phys253.h>
 #include "pins.hpp"
-#include "Arm_And_Stepper.hpp"
+#include "ArmAndStepper.hpp"
 #include "TapeFollow.hpp"
 #include "CollisionWatch.hpp"
 #include "PassengerSeek.hpp"
@@ -35,15 +35,8 @@ void setup() {
     for(auto i(0); i < 16; i++){
       pinMode(i, INPUT_PULLUP);
     }
-//    for(auto i(40); i < 48, i++){
-//      pinMode(i, INPUT);
-//    }
-    //Arm & Stepper Initialization code
-    pinMode(DIR_PIN,OUTPUT);
-    pinMode(PULSE_PIN,OUTPUT);
-    baseTarget = BASE_REST_POSITION;
-    midTarget = MID_REST_POSITION;
-    lastPropErr = 0.;
+
+    ArmAndStepper::init();
 }
 
 void loop() {
@@ -90,7 +83,7 @@ void loop() {
     }
     ++printCount;
   if(started){
-        doControl(); //Can't not do this or the arm will FUCKING EXPLODE
+        ArmAndStepper::doControl(); //Can't not do this or the arm will EXPLODE
         detectBeaconLoop();
         if(state == FIND_PASSENGER){
             findPassengerLoop();
@@ -132,11 +125,11 @@ void findPassengerLoop(){
 }
 
 void findBeaconLoop(){
-    if(holding){
+    if(ArmAndStepper::isHolding()){
       if(!digitalRead(ARM_SWITCHES[1])){
-        holding = false;
+        ArmAndStepper::setHolding(false);
         state = FIND_PASSENGER;
-        dropShit();
+        ArmAndStepper::drop();
       }
     }
     if(hasArrived()){
@@ -174,14 +167,14 @@ void loadPassengerLoop(){
     if(state == LOAD_PASSENGER_RIGHT){
       LCD.clear();
       LCD.print("grabbing on right");
-      turnAndReach(true, true);
+      ArmAndStepper::turnAndReach(true, true);
     }else{
       LCD.clear();
       LCD.print("grabbing on left");
-      turnAndReach(false,true);
+      ArmAndStepper::turnAndReach(false,true);
     }
     
-    if(holding){ //TODO: change back to holding variable!!!! (once we have switches hooked up again)
+    if(ArmAndStepper::isHolding()){
        state = FIND_BEACON;
        LCD.clear();
        //LCD.print("I got something!");
@@ -205,9 +198,9 @@ void loadPassengerLoop(){
 void dropPassengerLoop(){
   Direction dir = getBeaconDirection();
   if(dir == Direction::LEFT){
-    turnAndReach(false,false);
+    ArmAndStepper::turnAndReach(false,false);
   }else if(dir == Direction::RIGHT){
-    turnAndReach(true,false);
+    ArmAndStepper::turnAndReach(true,false);
   }
   state = FIND_PASSENGER;
   tapeFollowStart();
@@ -252,11 +245,11 @@ void debugSequence(){
   while(!startbutton()){
     if(printCounter % 50 == 0){
       LCD.clear();
-      LCD.print(getAngle());
+      LCD.print(ArmAndStepper::getAngle());
       printCounter = 0;
     }
     printCounter++;
-    doControl();
+    ArmAndStepper::doControl();
   }
   motor.speed(MOTOR_PIN_ARM, 0);
   while(startbutton()){}
@@ -274,8 +267,8 @@ void debugSequence(){
     if(stopbutton()){
       delay(500);
       motor.speed(MOTOR_PIN_BABY,-140);
-      holding = false;
-      delay(dropTime/2);
+      ArmAndStepper::setHolding(false);
+      delay(350/2);
       motor.speed(MOTOR_PIN_BABY,0);
     }
   }
@@ -308,7 +301,7 @@ void debugSequence(){
   LCD.print("START to continue");
   while(!startbutton()){}
   delay(500);
-  stepperTurn(false, 200);
+  ArmAndStepper::stepperTurn(false, 200);
   motor.speed(MOTOR_PIN_ARM, 0);
   delay(500);
   LCD.clear();
@@ -317,7 +310,7 @@ void debugSequence(){
   LCD.print("START to continue");
   while(!startbutton()){}
   delay(500);
-  stepperTurn(true,200);
+  ArmAndStepper::stepperTurn(true,200);
   motor.speed(MOTOR_PIN_ARM, 0);
   delay(500);
   LCD.clear();
@@ -405,19 +398,4 @@ void debugSequence(){
   while(startbutton()){}
   delay(500);
   started = true;
-}
-
-void missedPassenger(){
-    LCD.clear();
-    LCD.print("I missed...");
-    unsigned long prevTime = millis();
-    tapeFollowInit();
-    PassengerSeek::init();   
-    tapeFollowStart();
-    while((millis() - prevTime) < 750){
-      doControl();
-      tapeFollowLoop();
-    }
-    turnAround();
-    state = FIND_PASSENGER;
 }

@@ -1,5 +1,7 @@
 #include <phys253.h>
 #include <phys253pins.h>
+#include "ArmAndStepper.hpp"
+#include "pins.hpp"
 
 
 //Amount of time to run motor to drop animal
@@ -12,21 +14,18 @@ const float INT_GAIN = 0.;
 const float DERIV_GAIN = 0.5;
 
 //Dynamic Control Variables
-float baseTarget, midTarget;
-float propErr, derivErr, intErr, lastPropErr;
-float angle;
-float currAngle = 0;
-float now, lastTime;
-int hasInitialized = 0;
+static float baseTarget, midTarget;
+static float propErr, derivErr, intErr, lastPropErr;
+static float angle;
+static float currAngle = 0;
+static float now, lastTime;
+static int hasInitialized = 0;
 
 //Rest Positions
 const float BASE_REST_POSITION = 125;
 const float MID_REST_POSITION = 165;
 const float BASE_HOLD_POSITION = 125;
-const float MID_HOLD_POSITION = 170;//TODO: switch back to 170
-
-//Iterator for LCD printing
-int LCDControl;
+const float MID_HOLD_POSITION = 170;
 
 //Stepper Constants
 const int COUNTERCLOCKWISE = HIGH;
@@ -46,103 +45,37 @@ const float midGrabTarget = 10;
 const float baseGrabTarget = 135;
 
 //Holding a passenger?
-bool holding = false;
+static bool holding = false;
 
-void doControl();
-float getAngle();
-void setBaseMotor(long duty);
-float getControlValue();
-void grabShit();
-void dropShit();
-void reachAndClaw(bool grabbing);
-void setRestPosition();
-void stepperTurn(bool CW,int count);
-void turnAndReach(bool turnRight, bool grab);
-void refinedReachAndGrab();
+void ArmAndStepper::init(){
+    pinMode(DIR_PIN,OUTPUT);
+    pinMode(PULSE_PIN,OUTPUT);
+    baseTarget = BASE_REST_POSITION;
+    midTarget = MID_REST_POSITION;
+    lastPropErr = 0.;
+}
 
-/*
-  void setup() {
-  #include <phys253setup.txt>
-  portMode(1,OUTPUT);
-  pinMode(DIR_PIN,OUTPUT);
-  pinMode(PULSE_PIN,OUTPUT);
-  Serial.begin(9600);
-  baseTarget = BASE_REST_POSITION;
-  midTarget = MID_REST_POSITION;
-  lastPropErr = 0.;
-  LCDControl = 1;
-  }
-*/
-
-/*
-  void loop() {
-  doControl();
-  
-  if(startbutton()){
-  if(knob(7) > 900){
-  turnAndReach(true,true);
-  } else if(knob(7) < 150){
-  turnAndReach(false,true);
-  } else{
-  reachAndGrab();
-  }
-  } else if (stopbutton()){
-  if(knob(7) > 900){
-  turnAndReach(true,false);
-  } else if(knob(7) < 150){
-  turnAndReach(false,false);
-  } else{
-  reachAndDrop();
-  }
-  } else if(knob(6) > 900){
-  stepperTurn(true, 20);
-  } else if(knob(6) < 150){
-  stepperTurn(false, 20);
-  }
-  
-  if(Serial.available() > 0){
-  //TODO, add any serial input processing here
-  }
-  delay(10);
-  }
-*/
-
-// The control loop. Should be implemented wherever the code
-//be for extended perids of time to prevent arm from overcorrecting,
-//grinding gears, etc.
-// Should be repeated with several millisecond delays for integral/
-//derivative control purposes
-void doControl(){
-    angle = getAngle();
+void ArmAndStepper::doControl(){
+    angle = ArmAndStepper::getAngle();
     
     now = micros();
     propErr = angle - baseTarget;
     derivErr = (propErr - lastPropErr)/(now - lastTime) * 1000000.;
     intErr += (propErr + lastPropErr)/2 * (now - lastTime) / 1000000.;
-    setBaseMotor((long) getControlValue());
+    ArmAndStepper::setBaseMotor((long) ArmAndStepper::getControlValue());
     
     RCServo0.write(midTarget);
     
     lastTime = now;
     lastPropErr = propErr;
-    
-    
-    if(LCDControl % 25 == 0){
-        //printState();
-        LCDControl = 1;
-    }
-    LCDControl++;
 }
 
-//Converts base potentiometer voltage to corresponding angle
-float getAngle() {
+float ArmAndStepper::getAngle() {
     float voltage = (float) analogRead(POTENTIOMETER) * 5./1024.;
     return 130.814 * (3. * voltage - 10.) / (voltage - 5.) + 60.;
 }
 
-//Wrapper function for setting motor speed
-//Prevents values larger than 255 in either direction
-void setBaseMotor(long duty){
+void ArmAndStepper::setBaseMotor(long duty){
     if(duty > 255){
         duty = 255;
     }
@@ -152,8 +85,7 @@ void setBaseMotor(long duty){
     motor.speed(MOTOR_PIN_ARM,duty);
 }
 
-//Returns the motor speed based on PID control
-float getControlValue(){
+float ArmAndStepper::getControlValue(){
     float control = 0;
     if(holding){
         control += HOLD_PROP_GAIN * propErr;
@@ -165,9 +97,8 @@ float getControlValue(){
     return control;
 }
 
-//Closes the claw until something is detected in claw, the claw
-//closes on itself or a timeout is reached
-void grabShit(){
+
+void ArmAndStepper::grab(){
     
     //If switches are already triggered, then do nothing
     if(!digitalRead(ARM_SWITCHES[0]) || !digitalRead(ARM_SWITCHES[1])){}
@@ -175,8 +106,8 @@ void grabShit(){
     else{
         motor.speed(MOTOR_PIN_BABY,190);
         unsigned long startTime = millis();
-        while(1){
-            doControl();
+        while(true){
+            ArmAndStepper::doControl();
             if(!digitalRead(ARM_SWITCHES[0])){
                 holding = true;
                 break;
@@ -193,138 +124,62 @@ void grabShit(){
         if(holding){
             motor.speed(MOTOR_PIN_BABY,140);
         }else{
-            dropShit();
+            ArmAndStepper::drop();
         }
     }
 }
 
-//Opens the claw for specified time
-void dropShit(){
+
+void ArmAndStepper::drop(){
     motor.speed(MOTOR_PIN_BABY,-140);
     holding = false;
     delay(dropTime);
     motor.speed(MOTOR_PIN_BABY,0);
 }
 
-/*
-//Function to update the LCD periodically
-void printState(){
-LCD.clear();
-LCD.print("A");
-LCD.print(getAngle());
-LCD.print(" TaR:");
-if(knob(7) > 900){
-LCD.print("R");
-} else if (knob(7) < 150){
-LCD.print("L");
-} else {
-LCD.print("S");
-}
-LCD.print(holding);
-}
-*/
-
-/*
-//Extends arm over two periods and calls grab function
-void reachAndGrab(){
-
-//baseTarget = initialAdjBaseTarget; 
-midTarget = initialAdjMidTarget;
-unsigned long startTime = millis();
-while(millis() - startTime < 500){
-doControl();
-}
-
-baseTarget = initialAdjBaseTarget;
-
-while(millis() - startTime < 1000){
-doControl();
-}
-
-baseTarget = finalAdjBaseTarget; 
-midTarget = finalAdjMidTarget;
-startTime = millis();
-while(millis() - startTime < 2500){
-doControl();
-if(!digitalRead(ARM_SWITCHES[2])){
-baseTarget = getAngle() + 5;
-break;
-}
-}
-grabShit();
-setRestPosition();
-}
-
-
-//equivalent to reachAndGrab, but calls drop function
-void reachAndDrop(){
-
-//baseTarget = initialAdjBaseTarget; 
-midTarget = initialAdjMidTarget;
-unsigned long startTime = millis();
-while(millis() - startTime < 500){
-doControl();
-}
-
-baseTarget = initialAdjBaseTarget;
-while(millis() - startTime < 1000){
-doControl();
-}
-
-baseTarget = finalAdjBaseTarget; 
-midTarget = finalAdjMidTarget;
-startTime = millis();
-while(millis() - startTime < 2500){
-doControl();
-}
-dropShit();
-setRestPosition();
-}
-*/
-
-void reachAndClaw(bool grabbing)
+void ArmAndStepper::reachAndClaw(bool grabbing)
 {
     midTarget = initialAdjMidTarget;
     baseTarget = initialAdjBaseTarget;
     unsigned long startTime = millis();
     while (millis() - startTime < 500){ 
-        doControl();
+        ArmAndStepper::doControl();
         LCD.clear();
-        LCD.print(getAngle());
+        LCD.print(ArmAndStepper::getAngle());
     }
     
     midTarget = midAdjMidTarget;
     baseTarget = midAdjBaseTarget;
     
     while (millis() - startTime < 1000){ 
-        doControl();
+        ArmAndStepper::doControl();
         LCD.clear();
-        LCD.print(getAngle());
+        LCD.print(ArmAndStepper::getAngle());
     }
     baseTarget = finalAdjBaseTarget; 
     midTarget = finalAdjMidTarget;
     while (millis() - startTime < 1500) {  
-        doControl();
+        ArmAndStepper::doControl();
         LCD.clear();
-        LCD.print(getAngle());
+        LCD.print(ArmAndStepper::getAngle());
         if (!digitalRead(ARM_SWITCHES[2])) {
-            baseTarget = getAngle() + 5;
+            baseTarget = ArmAndStepper::getAngle() + 5;
             break;
         } 
     }
     if (grabbing) 
-        grabShit();
+        ArmAndStepper::grab();
     else 
-        dropShit();
-    setRestPosition();
+        ArmAndStepper::drop();
+    ArmAndStepper::setRestPosition();
 }
 
-void refinedReachAndGrab(){
+void ArmAndStepper::refinedReachAndGrab(){
   midTarget = midGrabTarget;
   baseTarget = baseGrabTarget;
   unsigned long startTime = millis();
     while(true){
-      doControl();
+      ArmAndStepper::doControl();
       if(digitalRead(ARM_SWITCHES[2]) 
       && ((millis()-startTime)>250)){
         if(baseTarget > 95){
@@ -338,41 +193,28 @@ void refinedReachAndGrab(){
         break;
       delay(5);
     }
-    grabShit();
-    setRestPosition();
+    ArmAndStepper::grab();
+    ArmAndStepper::setRestPosition();
 }
 
-/*
-//Sets the control target values to rest position
-void setRestPosition(){
-if(holding){
-baseTarget = BASE_HOLD_POSITION;
-midTarget = MID_HOLD_POSITION;
-}else{
-baseTarget = BASE_REST_POSITION;
-midTarget = MID_REST_POSITION;
-}
 
-}
-*/
-
-void setRestPosition(){
+void ArmAndStepper::setRestPosition(){
     unsigned long startTime = millis();
     baseTarget = finalAdjBaseTarget;
     midTarget = finalAdjMidTarget;
     while(millis() - startTime < 1000){
-      doControl();
+      ArmAndStepper::doControl();
     }
     
     baseTarget = midAdjBaseTarget; 
     midTarget = midAdjMidTarget;
     while (millis() - startTime < 2000) 
-        doControl();
+        ArmAndStepper::doControl();
     
     baseTarget = initialAdjBaseTarget;
     midTarget = initialAdjMidTarget;
     while (millis() - startTime < 3000)  // TODO: no hard coding
-        doControl();
+        ArmAndStepper::doControl();
     
     if (holding) {
         baseTarget = BASE_HOLD_POSITION;
@@ -384,7 +226,7 @@ void setRestPosition(){
 }
 
 //Turns the stepper motor a specified number of steps
-void stepperTurn(bool CW,int count){
+void ArmAndStepper::stepperTurn(bool CW,int count){
     if(CW){
         digitalWrite(DIR_PIN,CLOCKWISE);
     } else{
@@ -394,7 +236,7 @@ void stepperTurn(bool CW,int count){
     unsigned long prevTime = millis();
     for(i = 0; i < count; i++){
         if(millis() - prevTime > 10){
-            doControl();
+            ArmAndStepper::doControl();
             prevTime = millis();
         }
         digitalWrite(PULSE_PIN,HIGH);
@@ -404,7 +246,7 @@ void stepperTurn(bool CW,int count){
         delayMicroseconds(stepperMicrosDelay);
 
         LCD.clear();
-        LCD.print(getAngle());
+        LCD.print(ArmAndStepper::getAngle());
     }
 }
 
@@ -412,18 +254,26 @@ void stepperTurn(bool CW,int count){
  * Parameter: turnRight - Turn right if true, left otherwise
  * Parameter: grab - grab if true, drop otherwise
  */
-void turnAndReach(bool turnRight, bool grab){
+void ArmAndStepper::turnAndReach(bool turnRight, bool grab){
     LCD.clear();
     LCD.print("initial turn");
-    stepperTurn(turnRight, numPulses);
+    ArmAndStepper::stepperTurn(turnRight, numPulses);
     LCD.clear();
     LCD.print("grabbing in turn and reach");
     if(grab)
-      refinedReachAndGrab();
+      ArmAndStepper::refinedReachAndGrab();
     else
-      reachAndClaw(grab);
+      ArmAndStepper::reachAndClaw(grab);
     LCD.clear();
     LCD.print("turning back");
-    stepperTurn(!turnRight, numPulses);
+    ArmAndStepper::stepperTurn(!turnRight, numPulses);
+}
+
+bool ArmAndStepper::isHolding(){
+  return holding;
+}
+
+void ArmAndStepper::setHolding(bool newHolding){
+  holding = newHolding;
 }
 
