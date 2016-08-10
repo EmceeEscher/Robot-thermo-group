@@ -2,18 +2,25 @@
 *Jacob Brunette*, *Dilyn Fullerton*, *Ryan Watt*, *Dickson Yao*  
 *Summer 2016*
 
+* [About the project](about)
+* [Our team](team)
+* [Design](design)
+* [Manufacturing and debugging](manufacturing)
+* [Competition](competition)
+* [Conclusion](conclusion)
+
 **TODO**: Picture of MURPH here
 
-### About the Project
+### <a name="about"></a> About the Project
 ---
 **TODO**: Put background information here, links to competition page,
 rules, etc.
 
-### Our team
+### <a name="team"></a> Our team
 ---
 **TODO**: Brief information about our team
 
-### Design
+### <a name="design"></a> Design
 ---
 Our [Formal Design Proposal](./Formal\ Design\ Document.pdf) 
 describes in detail the design as we originally envisioned it.
@@ -30,16 +37,16 @@ circuit and sensor design
 * [_**Software**_][soft]: Information about the
 software system.
 
-### Manufacturing and debugging
+### <a name="manufacturing"></a> Manufacturing and debugging
 ---
 **TODO**: Documentation of how we built and modified the robot,
 including changes to the original design.
 
-### Competition
+### <a name="competition"></a> Competition
 ---
 **TODO**: Pictures, videos, etc. 4th place
 
-### Conclusion
+### <a name="conclusion"></a> Conclusion
 ---
 **TODO**: Final thoughts, lessons learned, etc. 
 
