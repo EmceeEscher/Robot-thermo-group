@@ -21,4 +21,4 @@ vision, the problems encountered with it, and the final resolution.
 #### Final design: Simplicity wins
 **TODO**
 
-[modes]: ./.images/software_modes.jpg
+[modes]: ./.images/modes.jpg
