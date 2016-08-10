@@ -21,13 +21,13 @@ describes the design as we originally envisioned it.
 The following are highlights of our final design, including its
 mechanical, electrical, and software features.
 
-* _**Mechanical**_ ([MECHANICAL.md](MECHANICAL.md)): Information about the
+* _**Mechanical**_ ([MECHANICAL.md](./MECHANICAL.md)): Information about the
 chassis and drive system
 
-* _**Electrical**_ ([ELECTRICAL.md](ELECTRICAL.md)): Information about the
+* _**Electrical**_ ([ELECTRICAL.md](./ELECTRICAL.md)): Information about the
 circuit and sensor design
 
-* _**Software**_ ([SOFTWARE.md](SOFTWARE.md)): Information about the
+* _**Software**_ ([SOFTWARE.md](./SOFTWARE.md)): Information about the
 software system.
 
 ### Manufacturing and debugging
