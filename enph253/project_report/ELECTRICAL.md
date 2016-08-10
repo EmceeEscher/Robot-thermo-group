@@ -3,7 +3,7 @@
 *Summer 2016*
 
 [[previous (*Mechanical*)](./MECHANICAL.md) | [top](./REPORT.md) |
-[next (*Software*))](./SOFTWARE.md)]
+[next (*Software*)](./SOFTWARE.md)]
 
 ### Electrical Design
 ---
