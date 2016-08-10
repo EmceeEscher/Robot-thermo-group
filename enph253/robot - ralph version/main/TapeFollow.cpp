@@ -77,7 +77,7 @@ float leftWeight;
 float rightWeight;
 float straightWeight;
 
-void tapeFollowInit()
+void TapeFollow::init()
 {
     active          = false;
     onTape          = false;
@@ -127,7 +127,7 @@ void tapeFollowInit()
 
 
 // TODO make this more advanced
-double seekTape()
+double TapeFollow::seekTape()
 {
     if (lastError < 0.)              // off tape to the right
         return -ERROR_SEEKING;
@@ -139,7 +139,7 @@ double seekTape()
 
 
 // TODO
-void intersectionSeen()
+void TapeFollow::intersectionSeen()
 {
     bool intersectSeenL = true;
     bool intersectSeenR = true;
@@ -158,7 +158,7 @@ void intersectionSeen()
 }
 
 
-void intersectionDetection()
+void TapeFollow::intersectionDetection()
 {
     // declare static variables (runs once)
     bool intersectL = pinReadings[0];
@@ -197,7 +197,7 @@ void intersectionDetection()
 }
 
 
-double followTape()
+double TapeFollow::followTape()
 {
     // declare static variables (runs once)
     bool intersectL = pinReadings[0];
@@ -237,7 +237,7 @@ double followTape()
 }
 
 
-bool fnAllLastReadings(int period, int fn)
+bool TapeFollow::fnAllLastReadings(int period, int fn)
 {    
     for (int i(0); i < period; ++i) {
         //auto *reading = lastPinReadings[i];
@@ -261,7 +261,7 @@ bool fnAllLastReadings(int period, int fn)
 }
 
 
-bool fnAnyLastReadings(int period, int fn)
+bool TapeFollow::fnAnyLastReadings(int period, int fn)
 {
     for (int i(0); i < period; ++i) {
         bool reading [4];
@@ -284,7 +284,7 @@ bool fnAnyLastReadings(int period, int fn)
 }
 
 
-bool offTape(bool reading[])
+bool TapeFollow::offTape(bool reading[])
 {
     int i;
     for (i = 0; i < 4; i++)
@@ -294,32 +294,32 @@ bool offTape(bool reading[])
 }
 
 
-bool mainsOffTape(bool *reading)
+bool TapeFollow::mainsOffTape(bool *reading)
 {
     return !(reading[1] || reading[2]);
 }
 
 
-bool intsOffTape(bool *reading)
+bool TapeFollow::intsOffTape(bool *reading)
 {
     return !(reading[0] || reading[3]);
 }
 
 
-bool intLOnTape(bool *reading)
+bool TapeFollow::intLOnTape(bool *reading)
 {
     return reading[0];
 }
 
 
-bool intROnTape(bool *reading)
+bool TapeFollow::intROnTape(bool *reading)
 {
     return reading[3];
 }
 
 
 // TODO make more advanced
-double makeTurn()
+double TapeFollow::makeTurn()
 {
     // determine whether end has bee reached
     if ((!halfTurn) && fnAllLastReadings(
@@ -339,14 +339,8 @@ double makeTurn()
         return -(static_cast<int>(turnDirection)-1) * ERROR_TURNING;
 }
 
-Direction chooseTurn(bool left, bool right, bool straight)
+Direction TapeFollow::chooseTurn(bool left, bool right, bool straight)
 {
-    /*if(right)
-      return Direction::RIGHT;
-      else if(straight)
-      return Direction::FRONT;
-      else
-      return Direction::LEFT;*/
     float total = (
             left     * leftWeight +
             right    * rightWeight +
@@ -363,35 +357,23 @@ Direction chooseTurn(bool left, bool right, bool straight)
         straightProb    = straight    * straightWeight    / total * 100.;
     }
     
-    // TODO: do this randValue part differently?
     float randValue = (static_cast<float>(random(1000))) / 10.;
     float leftMax = 0 + leftProb;
     float straightMax = leftProb + straightProb;
-    
-    Serial.print("rand: ");
-    Serial.println(randValue);
-    Serial.print("left: ");
-    Serial.println(leftMax);
-    Serial.print("straight: ");
-    Serial.println(straightMax);
-    Serial.print("direction: ");
     
     leftWeight = 50.;
     rightWeight = 50.;
     straightWeight = 50.;
     
     if (randValue < leftMax){
-        Serial.println("left");
         return Direction::LEFT;}
     else if (randValue < straightMax){
-        Serial.println("straight"); 
         return Direction::FRONT;}
     else{
-        Serial.println("right"); 
         return Direction::RIGHT;}
 }
 
-void printLCD()
+void TapeFollow::printLCD()
 {
     if (!active) {
         LCD.clear();
@@ -443,7 +425,7 @@ void printLCD()
     }
 }
 
-void tapeFollowLoop()
+void TapeFollow::loop()
 {
     if (!active){
         LCD.clear();
@@ -459,15 +441,6 @@ void tapeFollowLoop()
       turningAround = false;
       tapeFollowSteps = 0;
     }
-    
-    // set gains
-    // TODO move this to constructor once values are decided upon
-    /*   if (!motorsActive) {
-         gainProp = static_cast<double>(knob(KNOB_PROP_GAIN)) / 50.;
-         gainDer1 = static_cast<double>(knob(KNOB_DER1_GAIN)) / 50.;
-         gainDer2 = .5*gainDer1*gainDer1 /
-         gainProp*(1.-EPSILON);
-         }*/
     
     // get readings from tape sensors
     for (auto i(0); i < 4; ++i) {
@@ -567,14 +540,12 @@ void tapeFollowLoop()
     // increase time counters
     for (auto &t : etimeArray)
        ++t;
-    //++etimeArray[0];
-    //++etimeArray[1];
     
     // delay
     delay(MAIN_LOOP_DELAY);
 }
 
-void turnAround()
+void TapeFollow::turnAround()
 {
     if(!turningAround){
       switch (turnDirection) {
@@ -600,51 +571,44 @@ void turnAround()
 }
 
 
-void tapeFollowStart()
+void TapeFollow::start()
 {
     active = true;
     motorsActive = true;
 }
 
 
-void tapeFollowStop()
+void TapeFollow::stop()
 {
-    tapeFollowInit();
-    tapeFollowPause();
-}
-
-
-void tapeFollowPause()
-{
+    TapeFollow::init();
     active = false;
     motorsActive = false;
     printLCD();
 }
 
-
-bool isActive()
+bool TapeFollow::isActive()
 {
     return active;
 }
 
 
-void tapeFollowTest()
+void TapeFollow::pause()
 {
     active = true;
     motorsActive = false;
 }
 
-void giveTurnDirection(float left, float right, float straight){
+void TapeFollow::giveTurnDirection(float left, float right, float straight){
     leftWeight = left;
     rightWeight = right;
     straightWeight = straight;
 }
 
-bool isTurning(){
+bool TapeFollow::isTurning(){
   return turning;
 }
 
-float getTimeTurningAround(){
+float TapeFollow::getTimeTurningAround(){
   return timeTurningAround;
 }
 

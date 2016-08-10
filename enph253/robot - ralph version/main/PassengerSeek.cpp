@@ -137,9 +137,9 @@ void PassengerSeek::loop()
     PassengerSeek::updateMax();
     
     // If at a maximum, signal to stop tape following
-    if (PassengerSeek::atMaxSideFront() && !isTurning())
+    if (PassengerSeek::atMaxSideFront() && !TapeFollow::isTurning())
         approachingPassenger = true;
-    else if (PassengerSeek::atMaxSideMiddle() && !isTurning()) {
+    else if (PassengerSeek::atMaxSideMiddle() && !TapeFollow::isTurning()) {
         approachingPassenger = false;
         atPassenger = true;
         if (atMax[0])
@@ -152,20 +152,20 @@ void PassengerSeek::loop()
 }
 
 void PassengerSeek::pickDirection(){
-    if(!PassengerSeek::atMaxSideMiddle() && !isTurning()){
+    if(!PassengerSeek::atMaxSideMiddle() && !TapeFollow::isTurning()){
       float left = pinReadingsPS[1]-49;
       float right = pinReadingsPS[2];
       if(left > DISTANCE_REGISTER_THRESHOLD && left > right){
         if(right > DISTANCE_REGISTER_THRESHOLD)
-          giveTurnDirection(100, 50, 10);
+          TapeFollow::giveTurnDirection(100, 50, 10);
         else{
-          giveTurnDirection(100, 10, 30);
+          TapeFollow::giveTurnDirection(100, 10, 30);
         }
       }if(right > DISTANCE_REGISTER_THRESHOLD && right > left){
         if(left > DISTANCE_REGISTER_THRESHOLD)
-          giveTurnDirection(50, 100, 10);
+          TapeFollow::giveTurnDirection(50, 100, 10);
         else
-          giveTurnDirection(10, 100, 30);
+          TapeFollow::giveTurnDirection(10, 100, 30);
       }
     }
 }

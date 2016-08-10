@@ -59,7 +59,7 @@ void FindBeacon::pickDirection(){
             giveTurnDirection(25,10,100);
         }
     }*/
-    giveTurnDirection(50,50,50);
+    TapeFollow::giveTurnDirection(50,50,50);
 }
 
 void FindBeacon::loop() {

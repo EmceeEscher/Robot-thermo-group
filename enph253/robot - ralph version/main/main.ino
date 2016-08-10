@@ -43,29 +43,29 @@ void loop() {
   if(!started && startbutton()){
     //debugSequence();
     started = true;
-    tapeFollowInit();
+    TapeFollow::init();
     PassengerSeek::init();
-    tapeFollowStart();
+    TapeFollow::start();
     FindBeacon::init();
     LCD.clear();
   }
   if(!started && stopbutton()){
     debugSequence();
-    tapeFollowInit();
+    TapeFollow::init();
     PassengerSeek::init();
-    tapeFollowStart();
+    TapeFollow::start();
     FindBeacon::init();
     LCD.clear();
   }
   if(startbutton() && started){
-      tapeFollowStart();
+      TapeFollow::start();
       PassengerSeek::init();
       FindBeacon::init();
       LCD.clear();
       
   }
   if(stopbutton() && started){
-        tapeFollowTest();
+        TapeFollow::pause();
         PassengerSeek::pause();
         LCD.clear();
         LCD.print("stopped!");
@@ -97,13 +97,13 @@ void loop() {
 }
 
 void findPassengerLoop(){
-    tapeFollowLoop();
+    TapeFollow::loop();
     CollisionWatch::loop();
     PassengerSeek::loop();
     if(PassengerSeek::isAtPassenger()){
-        tapeFollowTest();
+        TapeFollow::pause();
         PassengerSeek::pause();
-        tapeFollowLoop();
+        TapeFollow::loop();
         int side = PassengerSeek::getPassengerSide();
         if(side == 1){
           state = LOAD_PASSENGER_RIGHT;
@@ -112,7 +112,7 @@ void findPassengerLoop(){
         }
     }
     if(CollisionWatch::hasDetectedCollision()){
-        turnAround();
+        TapeFollow::turnAround();
     }
 }
 
@@ -125,27 +125,15 @@ void findBeaconLoop(){
       }
     }
     if(FindBeacon::hasArrived()){
-        tapeFollowTest();
-        tapeFollowLoop();
+        TapeFollow::pause();
+        TapeFollow::loop();
         state = DROP_PASSENGER;
     }else{
-        tapeFollowLoop();
+        TapeFollow::loop();
         CollisionWatch::loop();
         FindBeacon::pickDirection();
-        /*Direction dir = getBeaconDirection();
-        switch(dir){
-        case Direction::LEFT:
-            giveTurnDirection(100,0,0.1);
-            break;
-        case Direction::RIGHT:
-            giveTurnDirection(0,100,0.1);
-            break;
-        default:
-            //giveTurnDirection(50,50,50);
-            break;
-        }*/
         if(CollisionWatch::hasDetectedCollision()){
-          turnAround();
+          TapeFollow::turnAround();
         }
     } 
 }
@@ -166,11 +154,11 @@ void loadPassengerLoop(){
        LCD.clear();
        FindBeacon::init();
        PassengerSeek::init();
-       tapeFollowStart();
+       TapeFollow::start();
     }else{
        state = FIND_PASSENGER;
        PassengerSeek::init();
-       tapeFollowStart();
+       TapeFollow::start();
     }
 }
 
@@ -182,7 +170,7 @@ void dropPassengerLoop(){
     ArmAndStepper::turnAndReach(true,false);
   }
   state = FIND_PASSENGER;
-  tapeFollowStart();
+  TapeFollow::start();
   PassengerSeek::init();
   FindBeacon::init();
 }
@@ -319,18 +307,18 @@ void debugSequence(){
   LCD.print("START to continue");
   while(!startbutton()){}
   delay(500);
-  tapeFollowInit();
-  tapeFollowTest();
+  TapeFollow::init();
+  TapeFollow::pause();
   while(!startbutton()){
-    tapeFollowLoop();
+    TapeFollow::loop();
     if(printCounter % 50 == 0){
       LCD.clear();
-      printLCD();
+      TapeFollow::printLCD();
       printCounter = 0;
     }
     printCounter++;
   }
-  tapeFollowTest();
+  TapeFollow::pause();
   delay(500);
   LCD.clear();
   LCD.print("pass. QSD test");
