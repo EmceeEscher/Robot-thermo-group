@@ -15,6 +15,9 @@ rules, etc.
 
 ### Design
 ---
+Our [Formal Design Proposal](./Formal\ Design\ Document.pdf) verbosely
+describes the design as we originally envisioned it.
+
 **TODO**: Information about the robot design, (here or distributed in
 separate .md files). We could also add our proposal on the github.
 
