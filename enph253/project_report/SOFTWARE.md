@@ -10,7 +10,7 @@ The following details our software design, including our original
 vision, the problems encountered with it, and the final resolution.
 
 #### Original design: Modularity and abstraction
-[Software major modes][modes]
+![Software major modes][modes]
 **TODO**
 
 #### Problems: Dynamic allocations and stack-heap collisions
