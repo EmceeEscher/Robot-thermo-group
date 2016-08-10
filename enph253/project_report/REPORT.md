@@ -13,21 +13,19 @@
 
 ### <a name="about"></a> About the Project
 ---
-[[top](#top)]
-
 **TODO**: Put background information here, links to competition page,
 rules, etc.
 
-### <a name="team"></a> Our team
----
 [[top](#top)]
 
+### <a name="team"></a> Our team
+---
 **TODO**: Brief information about our team
+
+[[top](#top)]
 
 ### <a name="design"></a> Design
 ---
-[[top](#top)]
-
 Our [Formal Design Proposal](./Formal\ Design\ Document.pdf) 
 describes in detail the design as we originally envisioned it.
 
@@ -43,24 +41,26 @@ circuit and sensor design
 * [_**Software**_][soft]: Information about the
 software system.
 
-### <a name="manufacturing"></a> Manufacturing and debugging
----
 [[top](#top)]
 
+### <a name="manufacturing"></a> Manufacturing and debugging
+---
 **TODO**: Documentation of how we built and modified the robot,
 including changes to the original design.
 
-### <a name="competition"></a> Competition
----
 [[top](#top)]
 
+### <a name="competition"></a> Competition
+---
 **TODO**: Pictures, videos, etc. 4th place
+
+[[top](#top)]
 
 ### <a name="conclusion"></a> Conclusion
 ---
-[[top](#top)]
-
 **TODO**: Final thoughts, lessons learned, etc. 
+
+[[top](#top)]
 
 [mech]: ./MECHANICAL.md
 [elec]: ./ELECTRICAL.md
