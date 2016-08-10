@@ -6,6 +6,9 @@
 
 ### Software Design
 ---
+
+![Software][head]
+
 The following details our software design, including our original
 vision, the problems encountered with it, and the final resolution.
 
@@ -21,4 +24,5 @@ vision, the problems encountered with it, and the final resolution.
 #### Final design: Simplicity wins
 **TODO**
 
+[head]: ./.images/software.png
 [modes]: ./.images/modes.jpg
