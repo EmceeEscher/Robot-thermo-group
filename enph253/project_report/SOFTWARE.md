@@ -2,6 +2,8 @@
 *Jacob Brunette*, *Dilyn Fullerton*, *Ryan Watt*, *Dickson Yao*  
 *Summer 2016*
 
+[[top](./REPORT.md)]
+
 ### Software Design
 ---
 The following details our software design, including our original
