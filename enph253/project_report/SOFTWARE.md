@@ -2,7 +2,7 @@
 *Jacob Brunette*, *Dilyn Fullerton*, *Ryan Watt*, *Dickson Yao*  
 *Summer 2016*
 
-[[previous (*Electrical*)](./ELECTRICAL.md) | [top](./REPORT.md)]
+[[previous (*Electrical*)](./ELECTRICAL.md) | [top](./REPORT.md#design)]
 
 ### Software Design
 ---
