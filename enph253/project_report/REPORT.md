@@ -18,17 +18,25 @@ rules, etc.
 Our [Formal Design Proposal](./Formal\ Design\ Document.pdf) verbosely
 describes the design as we originally envisioned it.
 
+The following are highlights of our final design, including its
+mechanical, electrical, and software features.
+
 **TODO**: Information about the robot design, (here or distributed in
 separate .md files). We could also add our proposal on the github.
+
+#### Mechanical
+**TODO**: Information about the chassis and drive system
+
+#### Electrical
+**TODO**: Information about the circuits and sensors
+
+#### Software
+**TODO**: Information about the software system (how it works, etc)
 
 ### Manufacturing and debugging
 ---
 **TODO**: Documentation of how we built and modified the robot,
 including changes to the original design.
-
-### Software construction
----
-**TODO**: Information about the final software system (how it works, etc)
 
 ### Competition
 ---
