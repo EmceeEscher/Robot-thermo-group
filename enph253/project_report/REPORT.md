@@ -21,17 +21,14 @@ describes the design as we originally envisioned it.
 The following are highlights of our final design, including its
 mechanical, electrical, and software features.
 
-**TODO**: Information about the robot design, (here or distributed in
-separate .md files). We could also add our proposal on the github.
+* *Mechanical* [(MECHANICAL.md)](MECHANICAL.md): Information about the
+chassis and drive system
 
-#### Mechanical
-**TODO**: Information about the chassis and drive system
+* *Electrical* [(ELECTRICAL.md)](ELECTRICAL.md): Information about the
+circuit and sensor design
 
-#### Electrical
-**TODO**: Information about the circuits and sensors
-
-#### Software
-**TODO**: Information about the software system (how it works, etc)
+* *Software* [(SOFTWARE.md)](SOFTWARE.md): Information about the
+software system.
 
 ### Manufacturing and debugging
 ---
