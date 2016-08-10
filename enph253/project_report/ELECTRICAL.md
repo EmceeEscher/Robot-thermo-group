@@ -2,7 +2,8 @@
 *Jacob Brunette*, *Dilyn Fullerton*, *Ryan Watt*, *Dickson Yao*  
 *Summer 2016*
 
-[[top](./REPORT.md)]
+[[previous (Mechanical)](./MECHANICAL.md) | [top](./REPORT.md) |
+[next (Software))](./SOFTWARE.md)]
 
 ### Electrical Design
 ---
