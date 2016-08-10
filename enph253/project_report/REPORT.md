@@ -15,8 +15,8 @@ rules, etc.
 
 ### Design
 ---
-Our [Formal Design Proposal](./Formal\ Design\ Document.pdf) verbosely
-describes the design as we originally envisioned it.
+Our [Formal Design Proposal](./Formal\ Design\ Document.pdf) 
+describes in detail the design as we originally envisioned it.
 
 The following are highlights of our final design, including its
 mechanical, electrical, and software features.
