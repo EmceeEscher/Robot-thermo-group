@@ -27,5 +27,5 @@ something of this complexity, it was a slow process, and we didn't
 realize the full extent of the flaws inherent in our design until we
 had run out of time to do a full redesign.
 
-<!-- [full_robot]: ./.images/robo\ pictures/full\ robo\ -\ side.jpg -->
-[full_robot]: ./.images/modes.jpg
+[full_robot]: ./.images/robo pictures/full robo - side.jpg
+<!-- [full_robot]: ./.images/modes.jpg -->
