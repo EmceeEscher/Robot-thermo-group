@@ -68,8 +68,9 @@ software system.
 
 ### <a name="manufacturing"></a> Manufacturing and debugging
 ---
-**TODO**: Documentation of how we built and modified the robot,
-including changes to the original design.
+The mechanical components of the robot were designed in Solidworks, and manufactured using a laser cutter or OMAX waterjet cutter for the most part. The metal components of the chassis were cut with the waterjet cutter, and then bent into shape using a bender. For some metal parts, further alterations were made using hand tools, such as snips or a nibbler. Most of the smaller parts (anything made out of wood or acrylic) were cut using the laser cutter.
+
+Debugging the software took a modular approach, similar to the one we used for designing the chassis. Separate modes (tape following, grabbing and dropping, etc.) were tested seperately, before being integrated into the larger program for further debugging.
 
 [[top](#top)]
 
