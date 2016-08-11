@@ -78,6 +78,8 @@ Debugging the software took a modular approach, similar to the one we used for d
 ---
 **TODO**: Pictures, videos, etc. 4th place
 
+[Group stage: heat 1](https://www.youtube.com/watch?v=PrXCJz5u2yc#t=43m55s)
+
 [[top](#top)]
 
 ### <a name="conclusion"></a> Conclusion
