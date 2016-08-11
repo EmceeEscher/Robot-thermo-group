@@ -28,5 +28,5 @@ realize the full extent of the flaws inherent in our design until we
 had run out of time to do a full redesign.
 
 <!-- [full_robot]: ./.images/robo pictures/full robo - side.jpg -->
-[full_robot]: ./.images/full robo - side.jpg
+[full_robot]: ./.images/full\ robo\ -\ side.jpg
 <!-- [full_robot]: ./.images/modes.jpg -->
