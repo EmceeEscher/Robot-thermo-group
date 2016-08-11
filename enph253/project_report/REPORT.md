@@ -76,12 +76,16 @@ Debugging the software took a modular approach, similar to the one we used for d
 
 ### <a name="competition"></a> Competition
 ---
-**TODO**: Pictures, videos, etc. 4th place
+Our robot placed in 4th place overall (in a field of 15). A malfunction in the first match (caused due to the swinging of the arm) caused Murph to drive in circles after picking up a passenger, but we were able to change the software to accommodate this in between heats. Unfortunately, a chip on the TINAH blew during the semifinal, causing Murph's collision sensors to fail, and while we knew what the problem was, there wasn't enough time between the semifinal and the bronze-medal match to replace the chip, so the problem persisted.
 
 [Group stage: heat 1](https://www.youtube.com/watch?v=PrXCJz5u2yc#t=43m55s)
+
 [Group stage: heat 2](https://www.youtube.com/watch?v=PrXCJz5u2yc#t=60m45s)
+
 [Quarterfinal](https://www.youtube.com/watch?v=PrXCJz5u2yc#t=94m20s)
+
 [Semifinal](https://www.youtube.com/watch?v=PrXCJz5u2yc#t=102m)
+
 [Bronze-medal match](https://www.youtube.com/watch?v=PrXCJz5u2yc#t=105m50s)
 
 [[top](#top)]
