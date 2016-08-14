@@ -37,6 +37,37 @@ the various major modes.
 
 ![Arduino stack-heap collisions][stack]
 
+Unfortunately, the original abstracted software design posed a few
+issues during development. Most notably, when the full design was
+implemented, undefined behaviors were observed including random
+restarting of our TINAH board. We initially suspected that we were
+overloading the 4000 bytes of SRAM by using dynamic types included
+in the C++ STL port we were using.
+
+However, after further analysis, we
+believe the issue was due to dynamic allocation of our ```MajorMode```
+and ```MinorMode``` objects onto the heap, causing stack-heap
+collisions that could have been avoided, by explicitly declaring our
+objects as members of ```RobotState```. That is, as opposed to
+initializing like
+
+   ```C++
+   MinorMode *t = new TapeFollow;
+   this->allMinorModes.push_back(t);
+   ```
+
+for the sake of polymorphism, we should have explicitly declared each
+mode in the ```RobotState``` like
+
+   ```C++
+   class RobotState
+   {
+   private:
+       TapeFollow tapeFollow;
+       ...
+   };
+   ```
+
 **TODO**
 
 #### Final design: Simplicity wins
