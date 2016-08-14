@@ -47,9 +47,9 @@ in the C++ STL port we were using.
 However, after further analysis, we
 believe the issue was due to dynamic allocation of our ```MajorMode```
 and ```MinorMode``` objects onto the heap, causing stack-heap
-collisions that could have been avoided, by explicitly declaring our
+collisions that could have been avoided by explicitly declaring our
 objects as members of ```RobotState```. That is, as opposed to
-initializing like
+initializing minor modes using base pointers for polymorphism,
 
    ```C++
    RobotState::RobotState()
@@ -60,8 +60,7 @@ initializing like
    }
    ```
 
-for the sake of polymorphism, we should have explicitly declared each
-mode in the ```RobotState``` like
+we should have explicitly declared each mode in the ```RobotState``` like
 
    ```C++
    class RobotState
@@ -72,7 +71,7 @@ mode in the ```RobotState``` like
    };
    ```
 
-and then passed pointers to the appropriate minor modes to the major
+and then passed the appropriate minor mode pointers to the major
 modes that needed to control them. 
 
 Alas, regardless of this hindsight speculation,
