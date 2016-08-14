@@ -34,6 +34,9 @@ All major and minor modes would be controlled and owned by a single
 the various major modes.
 
 #### Problems: Dynamic allocations and stack-heap collisions
+
+![Arduino stack-heap collisions][stack]
+
 **TODO**
 
 #### Final design: Simplicity wins
@@ -41,3 +44,4 @@ the various major modes.
 
 [head]: ./.images/software.png
 [modes]: ./.images/modes.jpg
+[stack]: ./.images/arduinostack.gif
