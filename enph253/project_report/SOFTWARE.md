@@ -75,10 +75,34 @@ mode in the ```RobotState``` like
 and then passed pointers to the appropriate minor modes to the major
 modes that needed to control them. 
 
-**TODO**
+Alas, this setup proved too difficult to debug and would have
+inevtiably introduced more problems due to its complexity and the
+subtleties of C++. We eventually opted for a more simple approach.
 
 #### Final design: Simplicity wins
-**TODO**
+
+In the end, we abandoned the structures of the original implementation
+while maintaining as much of the functionality as possible. Instead of
+using classes and inheritance, we simply separated functionality into
+separate files, maintaining the essential idea of the prior
+implementation using an effective form of duck typing. 
+
+Minor modes were kept essentially the same, albeit abandoning the
+class structure. Each minor mode
+was given its own file and namespace, and would implement the
+same fucntions: ```start()```, ```stop()```, ```loop()```, etc.
+Static variables instead of class instance variables were used to
+save state information.
+
+Instead of using a two-level design with major modes and minor modes,
+the major mode was reduced to an enumeration type; thus the final
+design allowed all functionality to be controlled at top level,
+allowing for easier immediate debugging and modification to behavior.
+
+This approach proved more accessible and easier to extend and debug.
+Within a few days, we were able to port the old code into this new
+framework and begin improving upon it. And so this code was that which
+was used in the competition.
 
 [head]: ./.images/software.png
 [modes]: ./.images/modes.jpg
