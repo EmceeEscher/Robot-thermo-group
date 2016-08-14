@@ -80,6 +80,10 @@ Our robot placed in 4th place overall (in a field of 15). Murph's best runs came
 
 [Group stage: heat 1](https://www.youtube.com/watch?v=PrXCJz5u2yc#t=43m55s)
 
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=PrXCJz5u2yc#t=43m55s
+" target="_blank"><img src="http://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg" 
+alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /></a>
+
 [Group stage: heat 2](https://www.youtube.com/watch?v=PrXCJz5u2yc#t=60m45s)
 
 [Quarterfinal](https://www.youtube.com/watch?v=PrXCJz5u2yc#t=94m20s)
