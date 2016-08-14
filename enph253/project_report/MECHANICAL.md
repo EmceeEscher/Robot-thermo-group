@@ -2,7 +2,7 @@
 *Jacob Brunette*, *Dilyn Fullerton*, *Ryan Watt*, *Dickson Yao*  
 *Summer 2016*
 
-[[top](./REPORT.md#design) | [next (*Electrical*)](./ELECTRICAL.md)]
+[[main](./REPORT.md#design) | [next (*Electrical*)](./ELECTRICAL.md)]
 
 ### Mechanical Design
 ---
@@ -26,5 +26,7 @@ avoid these problems, but because it was our first time prototyping
 something of this complexity, it was a slow process, and we didn't
 realize the full extent of the flaws inherent in our design until we
 had run out of time to do a full redesign.
+
+[[main](./REPORT.md#design) | [next (*Electrical*)](./ELECTRICAL.md)]
 
 [full_robot]: ./.images/robo_pictures/full_robo-side.jpg

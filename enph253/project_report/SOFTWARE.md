@@ -2,7 +2,7 @@
 *Jacob Brunette*, *Dilyn Fullerton*, *Ryan Watt*, *Dickson Yao*  
 *Summer 2016*
 
-[[previous (*Electrical*)](./ELECTRICAL.md) | [top](./REPORT.md#design)]
+[[previous (*Electrical*)](./ELECTRICAL.md) | [main](./REPORT.md#design)]
 
 ### Software Design
 ---
@@ -103,6 +103,8 @@ This approach proved more accessible and easier to extend and debug.
 Within a few days, we were able to port the old code into this new
 framework and begin improving upon it. And so this code was that which
 was used in the competition.
+
+[[previous (*Electrical*)](./ELECTRICAL.md) | [main](./REPORT.md#design)]
 
 [head]: ./.images/software.png
 [modes]: ./.images/modes.jpg

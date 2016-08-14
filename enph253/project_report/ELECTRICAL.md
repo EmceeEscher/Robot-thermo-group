@@ -2,7 +2,7 @@
 *Jacob Brunette*, *Dilyn Fullerton*, *Ryan Watt*, *Dickson Yao*  
 *Summer 2016*
 
-[[previous (*Mechanical*)](./MECHANICAL.md) | [top](./REPORT.md#design) |
+[[previous (*Mechanical*)](./MECHANICAL.md) | [main](./REPORT.md#design) |
 [next (*Software*)](./SOFTWARE.md)]
 
 ### Electrical Design
@@ -18,3 +18,6 @@ As per competition rules, IR light (1 kHz) is emitted near passengers to signal 
 Power rail PCBs stretch the length of the robot, and female headers branched off to supply power to the PCBs. Multiple power rails were used to avoid disturbances in the sensor readings from motor noise. Furthermore, decoupling capacitors were placed along the rails to mitigate motor noise.
 
 The use of multiple sensors governed the decision making in our algorithm and led to our success in the competition.
+
+[[previous (*Mechanical*)](./MECHANICAL.md) | [main](./REPORT.md#design) |
+[next (*Software*)](./SOFTWARE.md)]
