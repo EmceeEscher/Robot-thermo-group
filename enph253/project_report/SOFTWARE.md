@@ -75,7 +75,7 @@ mode in the ```RobotState``` like
 and then passed pointers to the appropriate minor modes to the major
 modes that needed to control them. 
 
-Alas, despite this hindsight speculation,
+Alas, regardless of this hindsight speculation,
 the setup proved itself too difficult to debug and would have
 inevtiably introduced more problems due to its complexity and the
 many subtleties of C++. We eventually opted for a more simple approach.
