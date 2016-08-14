@@ -52,8 +52,12 @@ objects as members of ```RobotState```. That is, as opposed to
 initializing like
 
    ```C++
-   MinorMode *t = new TapeFollow;
-   this->allMinorModes.push_back(t);
+   RobotState::RobotState()
+   {
+       MinorMode *t = new TapeFollow;
+       this->allMinorModes.push_back(t);
+       ...
+   }
    ```
 
 for the sake of polymorphism, we should have explicitly declared each
@@ -67,6 +71,9 @@ mode in the ```RobotState``` like
        ...
    };
    ```
+
+and then passed pointers to the appropriate minor modes to the major
+modes that needed to control them. 
 
 **TODO**
 
