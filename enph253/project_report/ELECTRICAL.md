@@ -19,5 +19,7 @@ Power rail PCBs stretch the length of the robot, and female headers branched off
 
 The use of multiple sensors governed the decision making in our algorithm and led to our success in the competition.
 
+![PCBs](./.images/robo_pictures/PCBs-overhead.jpg "Electrical System's PCB Layout")
+
 [[previous (*Mechanical*)](./MECHANICAL.md) | [main](./REPORT.md#design) |
 [next (*Software*)](./SOFTWARE.md)]
