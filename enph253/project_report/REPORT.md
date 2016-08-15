@@ -72,7 +72,7 @@ The mechanical components of the robot were designed in Solidworks, and manufact
 
 Debugging the software took a modular approach, similar to the one we used for designing the chassis. Separate modes (tape following, grabbing and dropping, etc.) were tested seperately, before being integrated into the larger program for further debugging.
 
-The circuits in the electrical systems were made by manually soldering components onto PCBs. We strived to make neat and compact circuits, and used adjustable potentiometers for better adaptabiilty.
+The circuits in the electrical systems were made by manually soldering components onto PCBs. We strived to make neat and compact circuits, and used adjustable potentiometers for better adaptability.
 
 [[top](#top)]
 
