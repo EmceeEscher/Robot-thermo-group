@@ -127,20 +127,8 @@ https://www.youtube.com/watch?v=PrXCJz5u2yc
 *UBC Engineering Physics program homepage:*  
 http://www.engphys.ubc.ca/
 
-*Arduino language:*  
-https://www.arduino.cc/en/Reference/HomePage
-
-*TINAH board:*  
+*About the TINAH board:*  
 http://projectlab.engphys.ubc.ca/enph-253-2016/tinah-2016/
-
-*Standard C++ library for Arduino:*  
-https://github.com/maniacbug/StandardCplusplus
-
-*Arduino Makefile setup:*  
-https://github.com/sudar/Arduino-Makefile
-
-*Atmega128 bootloader setup:*  
-http://arduinoexplained.blogspot.ca/2012/03/how-arduino-download-programs-to-board.html
 
 *Information about Arduino board memory:*  
 https://learn.adafruit.com/memories-of-an-arduino/
