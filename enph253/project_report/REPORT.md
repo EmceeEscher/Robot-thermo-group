@@ -1,15 +1,14 @@
-# <a name="top"></a> ENPH 253 - Group 14 (MURPH) - Project Report
+﻿# <a name="top"></a> ENPH 253 - Group 14 (MURPH) - Project Report
 *Jacob Brunette*, *Dilyn Fullerton*, *Ryan Watt*, *Dickson Yao*  
 *Summer 2016*
 
 * [About the project](#about)
-* [Our team](#team)
 * [Design](#design)
 * [Manufacturing and debugging](#manufacturing)
 * [Competition](#competition)
-* [Conclusion](#conclusion)
+* [Code](../robot - ralph version/main)
 
-**TODO**: Picture of MURPH here
+![The robot][full_robot]
 
 ### <a name="about"></a> About the Project
 ---
@@ -38,12 +37,6 @@ and were required to detect collisions with other robots, and back up
 and turn around when one happened. 
 
 [Official competition overview and rules](http://projectlab.engphys.ubc.ca/enph-253-2016/competition-2016/)
-
-[[top](#top)]
-
-### <a name="team"></a> Our team
----
-**TODO**: Brief information about our team
 
 [[top](#top)]
 
@@ -92,12 +85,8 @@ Our robot placed in 4th place overall (in a field of 15). Murph's best runs came
 
 [[top](#top)]
 
-### <a name="conclusion"></a> Conclusion
----
-**TODO**: Final thoughts, lessons learned, etc. 
-
-[[top](#top)]
 
 [mech]: ./MECHANICAL.md
 [elec]: ./ELECTRICAL.md
 [soft]: ./SOFTWARE.md
+[full_robot]: ./.images/robo_pictures/full_robo-side.jpg
