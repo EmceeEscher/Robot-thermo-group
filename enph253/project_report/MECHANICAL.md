@@ -40,15 +40,15 @@ for determining angle. The base had to be controlled using a simple PID
 implementation which ran nearly constantly to ensure the arm was never
 over-corrected in such a way which would damage the robot. The entire arm
 was rotated about the robot using a stepper motor for precise and repeatable
-tunrs.
+turns.
 
 ![The claw][the_claw]
 
 The claw at the end of the arm had a single mounted DC motor for gripping
 as well as several internal switches. The claw would close or open for specified
 periods of time unless specific switches were triggered. The claw should also
-be noted for having adjustable angles on the claw itself, allowing for easy tuning
-right up until the competition The switches were for sensing whether:
+be noted as having adjustable angles on the claw itself, allowing for easy tuning
+right up until the competition. The switches were for sensing whether:
 
   * The arm collided with an animal while reaching and should not reach further
   * The claw had caught an animal and should begin to lift it
@@ -56,9 +56,9 @@ right up until the competition The switches were for sensing whether:
   
 Issues faced with the arm design included the difficulties of using PID
 control, in particular the integral partition, which would occasionally
-cause the arm to jolt suddenly and destroy its gears in early stages,
+cause the arm to over-correct and destroy its gears in early stages,
 halting development. Future systems will be developed with better fail-safe
-apparatus. Additionally, as we saw with other teams arms, the second degree
+apparatus. Additionally, as we saw with other team's arms, the second degree
 of freedom of our arm was completely inessential and so we learned to properly
 assess what a technological solution needs to be able to do without overcomplicating
 the design.
@@ -67,22 +67,24 @@ the design.
 
 ![Chassis Underside][chassis_underside]
 
-The drive system was intended to give our robot maximum maneuverability.
+The drive system is intended to give our robot maximum maneuverability.
 It is composed of centrally placed wheels rotating with separate axles to provide
 a differential speed steering system, in which different speeds of the wheels
-cause turning motion. The robot was then made balanced by placing plastic
+cause turning motion (see next image). The robot was then made balanced by placing plastic
 semi-spheres under the front-centre and back-centre of the robot which were smooth
-enough to slide along the competition surface. These semi-spheres were actually given
+enough to slide along the competition surface. These semi-spheres were given
 suspension so as to promote stability in the robot while preventing either of the primary
 driving wheels from ever being raised off the surface. The driving wheels were
-powered by their internally mounted gears which interfaced with DC motors protruding
-from the sides of the chassis and geared the motors up for increases in speed.
+powered by their internally mounted gears, interfaced with DC motors protruding
+from the sides of the chassis, which geared the motors up for increases in speed.
+
+![Differential Steering][diff_steer]
 
 Problems arose in the design process and implementation of our drive system frequently
 throughout all stages of development. This was done caused by instability in the axles
 which supported the wheels, causing the gears between the DC motors and drive wheels to
-frequently grind and function poorly, if at all. This problem was caused by several factors.
-One key factor was our limited ability to create precision bushings to hold the axle in
+frequently grind and function poorly, if at all. One key factor in this
+problem was our limited ability to create precision bushings to hold the axle in
 place while the wheel spun, due partially to inexperience in machining precision pieces
 as well the flexure of our sheet metal chassis misaligning the bushings intended to hold
 the axle straight. Furthermore, the problem was worsened by the difficulty in holding the
@@ -98,3 +100,4 @@ problems entirely.
 [the_arm]: ./.images/robo_pictures/arm_fixed.jpg
 [the_claw]: ./.images/robo_pictures/claw.jpg
 [chassis_underside]: ./.images/robo_pictures/chassis-bottom.jpg
+[diff_steer]: ./.images/diff_steer.png
