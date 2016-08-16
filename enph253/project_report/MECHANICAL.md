@@ -48,9 +48,9 @@ periods of time unless specific switches were triggered. The claw should also
 be noted for having adjustable angles on the claw itself, allowing for easy tuning 
 right up until the competition The switches were for sensing whether:
 
-  *The arm collided with an animal while reaching and should not reach further
-  *The claw had caught an animal and should begin to lift it
-  *The claw had closed on itself and should note that no animal was caught
+  * The arm collided with an animal while reaching and should not reach further
+  * The claw had caught an animal and should begin to lift it
+  * The claw had closed on itself and should note that no animal was caught
   
 Issues faced with the arm design included the difficulties of using PID 
 control, in particular the integral partition, which would occasionally 
@@ -93,6 +93,6 @@ problems entirely.
 [[main](./REPORT.md#design) | [next (*Electrical*)](./ELECTRICAL.md)]
 
 [full_robot]: ./.images/robo_pictures/full_robo-side.jpg
-[the_arm]: ./.images/robo_pictures/arm.jpg
+[the_arm]: ./.images/robo_pictures/arm_fixed.jpg
 [the_claw]: ./.images/robo_pictures/claw.jpg
 [chassis_underside]: ./.images/robo_pictures/chassis-bottom.jpg
