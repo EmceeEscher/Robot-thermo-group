@@ -93,11 +93,11 @@ we had to reset after every collision in the last two matches.
 
 #### Competition videos:
 
-* [Group stage: heat 1](https://www.youtube.com/watch?v=PrXCJz5u2yc#t=43m55s)
-* [Group stage: heat 2](https://www.youtube.com/watch?v=PrXCJz5u2yc#t=60m45s)
-* [Quarterfinal](https://www.youtube.com/watch?v=PrXCJz5u2yc#t=94m20s)
-* [Semifinal](https://www.youtube.com/watch?v=PrXCJz5u2yc#t=102m)
-* [Bronze-medal match](https://www.youtube.com/watch?v=PrXCJz5u2yc#t=105m50s)
+[Group stage: heat 1](https://www.youtube.com/watch?v=PrXCJz5u2yc#t=43m55s)  
+[Group stage: heat 2](https://www.youtube.com/watch?v=PrXCJz5u2yc#t=60m45s)  
+[Quarterfinal](https://www.youtube.com/watch?v=PrXCJz5u2yc#t=94m20s)  
+[Semifinal](https://www.youtube.com/watch?v=PrXCJz5u2yc#t=102m)  
+[Bronze-medal match](https://www.youtube.com/watch?v=PrXCJz5u2yc#t=105m50s)  
 
 [[top](#top)]
 
