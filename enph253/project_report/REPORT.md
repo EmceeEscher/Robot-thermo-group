@@ -8,6 +8,7 @@
 * [Manufacturing and debugging](#manufacturing)
 * [Competition](#competition)
 * [Conclusion](#conclusion)
+* [Links](#links)
 
 **TODO**: Picture of MURPH here
 
@@ -78,7 +79,17 @@ The circuits in the electrical systems were made by manually soldering component
 
 ### <a name="competition"></a> Competition
 ---
-Our robot placed in 4th place overall (in a field of 15). Murph's best runs came during the second heat of the group stage and during the quarterfinal. A malfunction in the first match (caused due to the swinging of the arm) caused Murph to drive in circles after picking up a passenger, but we were able to change the software to accommodate this in between heats. Unfortunately, a chip on the TINAH blew during the semifinal, causing Murph's collision sensors to fail, and while we knew what the problem was, there wasn't enough time between the semifinal and the bronze-medal match to replace the chip, so the problem persisted. Due to the sportsmanship rules of the competition, we had to reset after every collision in the last two matches.
+Our robot placed in 4th place overall (in a field of 15). Murph's best
+runs came during the second heat of the group stage and during the
+quarterfinal. A malfunction in the first match (caused due to the
+swinging of the arm) caused Murph to drive in circles after picking up
+a passenger, but we were able to change the software to accommodate
+this in between heats. Unfortunately, a chip on the TINAH blew during
+the semifinal, causing Murph's collision sensors to fail, and while we
+knew what the problem was, there wasn't enough time between the
+semifinal and the bronze-medal match to replace the chip, so the
+problem persisted. Due to the sportsmanship rules of the competition,
+we had to reset after every collision in the last two matches.
 
 [Group stage: heat 1](https://www.youtube.com/watch?v=PrXCJz5u2yc#t=43m55s)
 
@@ -94,7 +105,47 @@ Our robot placed in 4th place overall (in a field of 15). Murph's best runs came
 
 ### <a name="conclusion"></a> Conclusion
 ---
-**TODO**: Final thoughts, lessons learned, etc. 
+
+In this project, we designed and built a fully autonomous robot out of
+little more than scrap material and a TINAH board. In the process, we
+experienced the full prototyping process, including designing for a
+specific task, manufacturing parts, constructing strategic software,
+testing, debugging, and meeting a final deadline with a functional
+product.
+
+**TODO**: Lessons learned
+
+[[top](#top)]
+
+### <a name="links"></a> Links
+---
+
+*Competition overview and rules:*  
+http://projectlab.engphys.ubc.ca/enph-253-2016/competition-2016/
+
+*Full competition video:*  
+https://www.youtube.com/watch?v=PrXCJz5u2yc
+
+*UBC Engineering Physics program homepage:*  
+http://www.engphys.ubc.ca/
+
+*Arduino language:*  
+https://www.arduino.cc/en/Reference/HomePage
+
+*TINAH board:*  
+http://projectlab.engphys.ubc.ca/enph-253-2016/tinah-2016/
+
+*Standard C++ library for Arduino:*  
+https://github.com/maniacbug/StandardCplusplus
+
+*Arduino Makefile setup:*  
+https://github.com/sudar/Arduino-Makefile
+
+*Atmega128 bootloader setup:*  
+http://arduinoexplained.blogspot.ca/2012/03/how-arduino-download-programs-to-board.html
+
+*Information about Arduino board memory:*  
+https://learn.adafruit.com/memories-of-an-arduino/
 
 [[top](#top)]
 
