@@ -2,13 +2,13 @@
 *Jacob Brunette*, *Dilyn Fullerton*, *Ryan Watt*, *Dickson Yao*  
 *Summer 2016*
 
-* [About the project](#about)
-* [Our team](#team)
-* [Design](#design)
-* [Manufacturing and debugging](#manufacturing)
-* [Competition](#competition)
-* [Conclusion](#conclusion)
-* [Links](#links)
+[About the project](#about)  
+[Our team](#team)  
+[Design](#design)  
+[Manufacturing and debugging](#manufacturing)  
+[Competition](#competition)  
+[Conclusion](#conclusion)  
+[Links](#links)  
 
 **TODO**: Picture of MURPH here
 
