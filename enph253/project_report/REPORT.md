@@ -2,11 +2,14 @@
 *Jacob Brunette*, *Dilyn Fullerton*, *Ryan Watt*, *Dickson Yao*  
 *Summer 2016*
 
-* [About the project](#about)
-* [Design](#design)
-* [Manufacturing and debugging](#manufacturing)
-* [Competition](#competition)
-* [Code](../robot - ralph version/main)
+[About the project](#about)  
+[Our team](#team)  
+[Design](#design)  
+[Manufacturing and debugging](#manufacturing)  
+[Competition](#competition)  
+[Conclusion](#conclusion)  
+[Links](#links)  
+
 
 ![The robot][full_robot]
 
@@ -71,22 +74,64 @@ The circuits in the electrical systems were made by manually soldering component
 
 ### <a name="competition"></a> Competition
 ---
-Our robot placed in 4th place overall (in a field of 15). Murph's best runs came during the second heat of the group stage and during the quarterfinal. A malfunction in the first match (caused due to the swinging of the arm) caused Murph to drive in circles after picking up a passenger, but we were able to change the software to accommodate this in between heats. Unfortunately, a chip on the TINAH blew during the semifinal, causing Murph's collision sensors to fail, and while we knew what the problem was, there wasn't enough time between the semifinal and the bronze-medal match to replace the chip, so the problem persisted. Due to the sportsmanship rules of the competition, we had to reset after every collision in the last two matches.
+Our robot placed in 4th place overall (in a field of 15). Murph's best
+runs came during the second heat of the group stage and during the
+quarterfinal. A malfunction in the first match (caused due to the
+swinging of the arm) caused Murph to drive in circles after picking up
+a passenger, but we were able to change the software to accommodate
+this in between heats. Unfortunately, a chip on the TINAH blew during
+the semifinal, causing Murph's collision sensors to fail, and while we
+knew what the problem was, there wasn't enough time between the
+semifinal and the bronze-medal match to replace the chip, so the
+problem persisted. Due to the sportsmanship rules of the competition,
+we had to reset after every collision in the last two matches.
 
-**Competition videos:**
+#### Competition videos:
 
-[Group stage: heat 1](https://www.youtube.com/watch?v=PrXCJz5u2yc#t=43m55s)
-
-[Group stage: heat 2](https://www.youtube.com/watch?v=PrXCJz5u2yc#t=60m45s)
-
-[Quarterfinal](https://www.youtube.com/watch?v=PrXCJz5u2yc#t=94m20s)
-
-[Semifinal](https://www.youtube.com/watch?v=PrXCJz5u2yc#t=102m)
-
-[Bronze-medal match](https://www.youtube.com/watch?v=PrXCJz5u2yc#t=105m50s)
+[Group stage: heat 1](https://www.youtube.com/watch?v=PrXCJz5u2yc#t=43m55s)  
+[Group stage: heat 2](https://www.youtube.com/watch?v=PrXCJz5u2yc#t=60m45s)  
+[Quarterfinal](https://www.youtube.com/watch?v=PrXCJz5u2yc#t=94m20s)  
+[Semifinal](https://www.youtube.com/watch?v=PrXCJz5u2yc#t=102m)  
+[Bronze-medal match](https://www.youtube.com/watch?v=PrXCJz5u2yc#t=105m50s)  
 
 [[top](#top)]
 
+### <a name="conclusion"></a> Conclusion
+---
+
+In this project, we designed and built a fully autonomous robot out of
+little more than scrap material and a TINAH board. In the process, we
+experienced the full prototyping process, including designing for a
+specific task, manufacturing parts, constructing strategic software,
+testing, debugging, and meeting a final deadline with a functional
+product.
+
+**TODO**: Lessons learned
+
+[[top](#top)]
+
+### <a name="links"></a> Links
+---
+
+*Our robot control code*  
+[../robot - ralph version/main](../robot - ralph version/main)
+
+*Competition overview and rules:*  
+http://projectlab.engphys.ubc.ca/enph-253-2016/competition-2016/
+
+*Full competition video:*  
+https://www.youtube.com/watch?v=PrXCJz5u2yc
+
+*UBC Engineering Physics program homepage:*  
+http://www.engphys.ubc.ca/
+
+*About the TINAH board:*  
+http://projectlab.engphys.ubc.ca/enph-253-2016/tinah-2016/
+
+*Information about Arduino board memory:*  
+https://learn.adafruit.com/memories-of-an-arduino/
+
+[[top](#top)]
 
 [mech]: ./MECHANICAL.md
 [elec]: ./ELECTRICAL.md
