@@ -114,7 +114,7 @@ product.
 ---
 
 *Our robot control code*  
-[../robot - ralph version/main](../robot - ralph version/main)
+[../robot - ralph version](../robot - ralph version)
 
 *Competition overview and rules:*  
 http://projectlab.engphys.ubc.ca/enph-253-2016/competition-2016/
